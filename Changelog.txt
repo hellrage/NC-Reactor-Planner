@@ -27,4 +27,7 @@
 	Added my credentials and a short description to the assembly info :^)
 	Refactored cooler placement checking
 	Uploaded the code to GitHub!
+
+	--Important!--
+	From this point on you'll need to have Newtonsoft.json.dll by the executable as it is a reference. I've included the download on mediafire (Unless i'm blind their license allows reuploading so it's all good.)
 	
