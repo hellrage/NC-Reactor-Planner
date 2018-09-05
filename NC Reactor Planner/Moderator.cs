@@ -71,6 +71,11 @@ namespace NC_Reactor_Planner
             return toolTip;
         }
 
+        public override bool IsActive()
+        {
+            return Active;
+        }
+
     }
 
     public enum ModeratorTypes

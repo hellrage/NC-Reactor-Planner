@@ -141,52 +141,20 @@ namespace NC_Reactor_Planner
                     continue;
                 }
 
-                //If checked block matched
-                if (bt == BlockTypes.FuelCell | bt == BlockTypes.Casing)
+                adjacent++;
+                while (placementErrors.Remove("No " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
+
+                if (adjacent >= number)
+                    while (placementErrors.Remove("Too few " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
+
+                if (block.IsActive())
                 {
                     activeAdjacent++;
-                    adjacent++;
-                    while (placementErrors.Remove("No " + bt.ToString())) ;
-
-                    if (activeAdjacent > number & exact)
-                        placementErrors.Add("Too many " + bt.ToString() + "s");
+                    if (activeAdjacent >= number & exact)
+                        placementErrors.Add("Too many " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
                 }
-                else if(bt == BlockTypes.Moderator)
-                {
-                    Moderator moderator = block as Moderator;
-                    adjacent++;
-                    while (placementErrors.Remove("No Moderator")) ;
-
-                    if (adjacent >= number)
-                        while (placementErrors.Remove("Too few Moderator")) ;
-                    
-                    if(moderator.Active)
-                    {
-                        activeAdjacent++;
-                        if (activeAdjacent >= number & exact)
-                            placementErrors.Add("Too many Moderators");
-                    }
-                    else
-                        placementErrors.Add("Inactive Moderator");
-                }
-                else if(bt == BlockTypes.Cooler)
-                {
-                    Cooler cooler = block as Cooler;
-                    while (placementErrors.Remove("No " + cooler.CoolerType.ToString())) ;
-
-                    adjacent++;
-                    if (adjacent >= number)
-                        while (placementErrors.Remove("Too few " + cooler.CoolerType.ToString())) ;
-
-                    if(cooler.Active)
-                    {
-                        activeAdjacent++;
-                        if (activeAdjacent > number & exact)
-                            placementErrors.Add("Too many " + cooler.CoolerType);
-                    }
-                    else
-                        placementErrors.Add("Inactive " + cooler.CoolerType.ToString());
-                }
+                else
+                    placementErrors.Add("Inactive " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
             }
 
             if (exact)
@@ -237,6 +205,11 @@ namespace NC_Reactor_Planner
         public override bool NeedsRedraw()
         {
             return _oldActive != Active;
+        }
+
+        public override bool IsActive()
+        {
+            return Active;
         }
     }
 

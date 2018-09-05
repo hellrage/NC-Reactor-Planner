@@ -53,5 +53,10 @@ namespace NC_Reactor_Planner
         {
             return false;
         }
+
+        public virtual bool IsActive()
+        {
+            return false;
+        }
     }
 }

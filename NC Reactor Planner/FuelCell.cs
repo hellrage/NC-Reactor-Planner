@@ -30,6 +30,7 @@ namespace NC_Reactor_Planner
         public double HeatMultiplier { get => _heatMultiplier; private set => _heatMultiplier = value; }
         public int AdjacentCells { get => _adjacentCells; private set => _adjacentCells = value; }
         public int AdjacentModerators { get => _adjacentModerators; private set => _adjacentModerators = value; }
+        public static readonly bool Active = true;
 
 
         public FuelCell(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.FuelCell, texture, position)
@@ -152,6 +153,11 @@ namespace NC_Reactor_Planner
                     adjModerators++;
             }
             return adjModerators;
+        }
+
+        public override bool IsActive()
+        {
+            return true;
         }
     }
 }
