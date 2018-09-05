@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DB43FE93-507E-4A8F-A855-74B8D1E4E44A}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>NC_Reactor_Planner</RootNamespace>
+    <AssemblyName>NC Reactor Planner</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>I:\Games\Minecraft\Modding\NC Fission Editor\Publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>7D2D8C8A9369E475A50E42B12C12A3A471A6BD75</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>NC Reactor Planner_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Block.cs" />
+    <Compile Include="Casing.cs" />
+    <Compile Include="Cooler.cs" />
+    <Compile Include="DummyUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummyUI.Designer.cs">
+      <DependentUpon>DummyUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModValueSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModValueSettings.Designer.cs">
+      <DependentUpon>ModValueSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlannerUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlannerUI.Designer.cs">
+      <DependentUpon>PlannerUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fuel.cs" />
+    <Compile Include="FuelCell.cs" />
+    <Compile Include="Moderator.cs" />
+    <Compile Include="Palette.cs" />
+    <Compile Include="ReactorGridCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Reactor.cs" />
+    <Compile Include="ReactorGridLayer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="DummyUI.resx">
+      <DependentUpon>DummyUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModValueSettings.resx">
+      <DependentUpon>ModValueSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlannerUI.resx">
+      <DependentUpon>PlannerUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Beryllium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Graphite.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Copper.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Cryotheum.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Diamond.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Emerald.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Enderium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Glowstone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Helium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Iron.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Lapis.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Magnesium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Quartz.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Redstone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Tin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Water.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Air.png" />
+    <Content Include="Resources\FuelCell.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

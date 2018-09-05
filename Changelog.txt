@@ -1,0 +1,30 @@
+01.09.18 v1.0.1
+	Added saveVersion to reactor save file.
+	Modifications to saving, savefile size is about a quarter of what it used to be.
+	Saves are incompatible between 1.0.0 and 1.0.1, sorry! I'll do my best to keep the compatibility going forward.
+	Fixed column alignment for stats display in-app and PNG-exported.
+	Added exact placement error display for invalid cooler blocks (mostly for debugging but it's still useful).
+	Massive reworks to drawing methods and texture handling.
+	More tweaks to tooltip behaviour.
+	Added autonaming when saving reactors, it's %FuelName% %SizeX% x %SizeY% x %SizeZ% is you're saving a new reactor and %OldName% if you're editing a loaded save. Works for PNG export as well and for both single-layer and entire-reactor modes.
+02.09.18 v1.0.2
+	Added build version to the app's title
+	Fixed autonaming when saving PNG
+	Further reworked saving in preparation for implementing value configurations. (Still loads previous version's savefiles yay!)
+02.09.18 v1.0.3
+	Made BIG BOI OPTIMIZATIONS and refactored rendering.
+	Fixed a bunch of typos and capitalization inconsistencies in cooler descriptions.
+	Prepared everything for implementing layer menus, those and block value configurations are next on the list.
+	Finally fixed a memory leak that was the #1 reason for the app crashing! Now you should be completely save to edit any reactors the app allows you to create.
+	The grid doesn't update properly if you're drag-drawing and release your mouse outside of any layers. This is a known minor bug as you can refresh it by clicking inside the layer, changing viewmode, changing displayed layer etc. So just try to keep your mouse inside the layers when drawing and it'll work perfectly.
+	Fixed a bug where exporting as PNG wouldn't draw the error rectangles over invalid coolers.
+03.09.18 v1.1.0
+	Implemented custom general, cooling and fuel values! Check out the new settings window. These do not persist over sessions though, haven't fixed it yet.
+04.09.18 v1.1.1
+	Migrated to JSON storage format for savefiles. MASSIVE decrease in savefile sizes. Old format can still be loaded (change the filter when selecting files) but you can only save in JSON from now on.
+	Fixed a display bug for heating values in stats.
+	Reworked the saving \ loading methods and the save autonaming system.
+	Added my credentials and a short description to the assembly info :^)
+	Refactored cooler placement checking
+	Uploaded the code to GitHub!
+	
