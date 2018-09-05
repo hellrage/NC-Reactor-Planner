@@ -11,6 +11,7 @@ namespace NC_Reactor_Planner
     public class ReactorGridCell : PictureBox
     {
         public Block block;
+        private bool redrawn;
 
         public void Clicked(object sender, EventArgs e)
         {
@@ -75,13 +76,23 @@ namespace NC_Reactor_Planner
                     g.DrawRectangle(errorPen, 0, 0, Image.Size.Width-1, Image.Size.Height-1);
                 }
             }
-
+            redrawn = true;
             ResetToolTip();
         }
 
         public void ResetToolTip()
         {
             PlannerUI.gridToolTip.SetToolTip(this, block.GetToolTip());
+        }
+
+        public bool NeedsRedraw()
+        {
+            return redrawn & block.NeedsRedraw();
+        }
+
+        public void ResetRedrawn()
+        {
+            redrawn = false;
         }
     }
 }

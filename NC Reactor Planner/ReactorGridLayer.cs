@@ -10,7 +10,7 @@ namespace NC_Reactor_Planner
 {
     public class ReactorGridLayer : Panel
     {
-        //private ReactorGridCell[,] cells;
+        private ReactorGridCell[,] cells;
         private MenuStrip menu;
         private int _x;
         private int _y;
@@ -29,16 +29,18 @@ namespace NC_Reactor_Planner
             Size = new Size(X * PlannerUI.blockSize, Z * PlannerUI.blockSize);
             Visible = true;
             BorderStyle = BorderStyle.FixedSingle;
-            
+
             ReloadCells();
         }
 
         public void ReloadCells()
         {
-            //cells = new ReactorGridCell[X, Z];
-            Point location;
-
             Controls.Clear();
+            if (cells != null)
+                foreach (ReactorGridCell c in cells)
+                    c.Dispose();
+            cells = new ReactorGridCell[X, Z];
+            Point location;
 
             for (int x = 0; x < X; x++)
                 for (int z = 0; z < Z; z++)
@@ -51,15 +53,15 @@ namespace NC_Reactor_Planner
                         SizeMode = PictureBoxSizeMode.Zoom,
                         ClientSize = new Size(PlannerUI.blockSize, PlannerUI.blockSize),
                         Location = location,
-                        block = Reactor.blocks[x+1, Y, z+1]
+                        block = Reactor.blocks[x + 1, Y, z + 1]
                     });
                     cell.Click += new EventHandler(cell.Clicked);
                     cell.MouseDown += new MouseEventHandler(cell.Mouse_Down);
                     cell.MouseMove += new MouseEventHandler(cell.Mouse_Move);
                     cell.MouseUp += new MouseEventHandler(Reactor.CauseRedraw);
                     cell.Image = new Bitmap(cell.block.Texture);
-                    //cells[x, z] = cell;
-                    Controls.Add(cell);
+                    cells[x, z] = cell;
+                    Controls.Add(cells[x, z]);
                 }
 
         }
@@ -92,7 +94,7 @@ namespace NC_Reactor_Planner
             int bs = PlannerUI.blockSize;
             Bitmap layerImage = new Bitmap(X * bs, Z * bs);
             using (Graphics g = Graphics.FromImage(layerImage))
-                foreach(ReactorGridCell rgc in Controls)
+                foreach (ReactorGridCell rgc in Controls)
                 {
                     System.Windows.Media.Media3D.Point3D pos = rgc.block.Position;
                     g.DrawImage(rgc.Image,
@@ -103,13 +105,12 @@ namespace NC_Reactor_Planner
             return layerImage;
         }
 
-        //new public void Dispose()
-        //{
-        //    foreach (ReactorGridCell cell in cells)
-        //    {
-        //        cell.Dispose();
-        //    }
-        //    base.Dispose();
-        //}
+        public void ResetRedrawn()
+        {
+            foreach (ReactorGridCell cell in cells)
+            {
+                cell.ResetRedrawn();
+            }
+        }
     }
 }

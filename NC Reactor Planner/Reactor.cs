@@ -195,6 +195,11 @@ namespace NC_Reactor_Planner
             }
         }
 
+        public static void RecursiveRedraw(Point3D origin)
+        {
+            //layers[(int)origin.Y][(int)origin.X, (int)origin.Z].
+        }
+
         public static void RedrawAllLayers()
         {
             foreach (ReactorGridLayer layer in layers)

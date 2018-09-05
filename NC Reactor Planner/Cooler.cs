@@ -14,6 +14,7 @@ namespace NC_Reactor_Planner
         private int _heatActive;
         private int _heatPassive;
         private string _requirements;
+        private bool _oldActive;
         private bool _active;
         private List<string> placementErrors;
 
@@ -22,7 +23,7 @@ namespace NC_Reactor_Planner
         public int HeatActive { get => _heatActive; private set => _heatActive = value; }
         public int HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
         public string Requirements { get => _requirements; private set => _requirements = value; }
-        public bool Active { get => _active; private set => _active = value; }
+        public bool Active { get => _active; private set { _oldActive = _active; _active = value; } }
 
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
@@ -130,7 +131,7 @@ namespace NC_Reactor_Planner
                 BlockTypes nt = needed.BlockType;
 
                 //If checked block doesn't match at all: log errors
-                if (((block.BlockType == BlockTypes.Cooler & needed.BlockType == BlockTypes.Cooler) && ((Cooler)block).CoolerType != ((Cooler)needed).CoolerType) | block.BlockType != needed.BlockType)
+                if (((bt == BlockTypes.Cooler & nt == BlockTypes.Cooler) && ((Cooler)block).CoolerType != ((Cooler)needed).CoolerType) | bt != nt)
                 {
                     if (adjacent == 0)
                         placementErrors.Add("No " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
@@ -231,6 +232,11 @@ namespace NC_Reactor_Planner
                 }
             }
             return false;
+        }
+
+        public override bool NeedsRedraw()
+        {
+            return _oldActive != Active;
         }
     }
 

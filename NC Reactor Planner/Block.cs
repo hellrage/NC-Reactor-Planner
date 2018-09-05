@@ -48,5 +48,10 @@ namespace NC_Reactor_Planner
         public virtual void ReloadValuesFromSetttings()
         {
         }
+
+        public virtual bool NeedsRedraw()
+        {
+            return false;
+        }
     }
 }
