@@ -14,6 +14,7 @@ namespace NC_Reactor_Planner
         [STAThread]
         static void Main()
         {
+            Properties.Settings.Default.Upgrade();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new PlannerUI());
