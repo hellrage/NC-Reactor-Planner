@@ -30,4 +30,5 @@
 
 	--Important!--
 	From this point on you'll need to have Newtonsoft.json.dll by the executable as it is a reference. I've included the download on mediafire (Unless i'm blind their license allows reuploading so it's all good.)
-	
+05.09.18 v1.1.2
+	Finished cooler placement checking refactoring in preparation for rendering changes

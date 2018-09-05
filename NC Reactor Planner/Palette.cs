@@ -104,7 +104,7 @@ namespace NC_Reactor_Planner
             coolers.Add(new Cooler("Gold", textures["Gold"], CoolerTypes.Gold, 7000, 120, "At least one active Water cooler & active Redstone cooler", dummyPosition));
             coolers.Add(new Cooler("Glowstone", textures["Glowstone"], CoolerTypes.Glowstone, 8000, 120, "At least two active Moderators", dummyPosition));
             coolers.Add(new Cooler("Lapis", textures["Lapis"], CoolerTypes.Lapis, 9000, 100, "At least one Reactor Cell and one Reactor Casing", dummyPosition));
-            coolers.Add(new Cooler("Diamond", textures["Diamond"], CoolerTypes.Diamond, 14000, 120, "At least two active Water coolers and one active Quartz cooler", dummyPosition));
+            coolers.Add(new Cooler("Diamond", textures["Diamond"], CoolerTypes.Diamond, 14000, 120, "One active Water cooler and one active Quartz cooler", dummyPosition));
             coolers.Add(new Cooler("Helium", textures["Helium"], CoolerTypes.Helium, 13200, 120, "ONLY one active Redstone cooler and at least one Reactor Casing", dummyPosition));
             coolers.Add(new Cooler("Enderium", textures["Enderium"], CoolerTypes.Enderium, 11000, 140, "Three Reactor Casings (has to be in a corner)", dummyPosition));
             coolers.Add(new Cooler("Cryotheum", textures["Cryotheum"], CoolerTypes.Cryotheum, 13000, 140, "At least two Reactor Cells", dummyPosition));
