@@ -42,3 +42,5 @@
 	The app now initially starts with a blank 5x5x5 reactor open.
 	Added a warning when there's no json.NET dll present.
 	Default setting values are now NuclearCraft 2.11c vanilla ones.
+	Reordered the stats output.
+	Shuffled aroun the UI a bit.
