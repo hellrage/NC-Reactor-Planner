@@ -1,0 +1,36 @@
+Drawing:
+*Draw reactors up to 24x24x24.
+    LMB places the block highlighted in the palette.
+    RMB places Air (clears the block).
+    MMB places a fuel cell.
+*The above works with holding the button down and dragging over the grid.
+*Coolers gain a red border if placement conditions aren't met.
+*Precise errors are shown for such coolers in the block's tooltips.
+*Layout can be toggled between showing one layer at a time or all layers side-by-side.
+*Scale can be adjusted using the box in the top right.
+
+Saving and export:
+*Reactors can be saved/loaded to/from .json.
+*Reactors can be exported as an image containing the full reactor layout and stats, this uses the scale set in the scale box.
+
+Simulation:
+*For a given layout the planner simulates it as per the mod's reactor code.
+*A stats output is generated containing:
+    Total number of interior blocks per type.
+    Total number of casings needed to cover the outer layer.
+    Total cooling generated per tick per cooler type.
+    Total cooling, heat, heat difference generated per tick.
+    Total energy generated per tick.
+    Efficiency, heat multiplier.
+*All blocks have a tooltip that shows extensive info about them.
+
+Configuration:
+*Cooler and fuel values are configurable.
+*General fission reactor values are configurable.
+*Default (vanills 2.11c) configuration is loaded on application start, you need to reload your config file every session for now, this is planned to improve in the next version.
+*You can save/load your configuration settings to a separate file if you want to have (possibly multiple) non-default value sets. Check out the config menu.
+
+Misc:
+*There are tooltips for most ui elements and blocks.
+*There are safeguards in place for large reactor UI stability.
+*You'll get a warning if you don't have the required dependency .dll
