@@ -1,5 +1,6 @@
 # NC-Reactor-Planner
 An application for drawing and simulating NuclearCraft nuclear reactors. Find NuclearCraft at https://minecraft.curseforge.com/projects/nuclearcraft-mod
+
 Changelog https://github.com/hellrage/NC-Reactor-Planner/blob/master/Changelog.txt
 
 Released builds http://www.mediafire.com/folder/14d49uxv4n9z2/NC_Reactor_Planner_builds
