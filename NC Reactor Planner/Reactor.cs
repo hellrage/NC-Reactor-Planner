@@ -302,14 +302,6 @@ namespace NC_Reactor_Planner
             }
 
             report += "\r\n";
-            report += "Heat:\r\n";
-            report += string.Format("{0,-15}\t{1,-10}\r\n", "Fuel cells", fuelCells.Count);
-
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat gen.", (int)totalHeatPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", (int)(totalHeatPerTick - totalCoolingPerTick) + " HU/t");
-
-            report += "\r\n";
             report += "Moderators:\r\n";
             foreach (KeyValuePair<string, List<Moderator>> kvp in moderators)
             {
@@ -318,6 +310,15 @@ namespace NC_Reactor_Planner
                 report += string.Format("{0,-15}\t{1,-10}\r\n", kvp.Key, kvp.Value.Count);
             }
 
+            report += "\r\n";
+            report += string.Format("{0,-15}\t{1,-10}\r\n", "Fuel cells", fuelCells.Count);
+
+            report += "\r\n";
+            report += "Heat:\r\n";
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat gen.", (int)totalHeatPerTick + " HU/t");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", (int)(totalHeatPerTick - totalCoolingPerTick) + " HU/t");
+            
             report += "\r\n";
             report += "Energy:\r\n";
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
