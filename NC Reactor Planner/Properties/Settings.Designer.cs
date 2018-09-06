@@ -25,7 +25,7 @@ namespace NC_Reactor_Planner.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public string FissionPower {
             get {
                 return ((string)(this["FissionPower"]));
@@ -37,7 +37,7 @@ namespace NC_Reactor_Planner.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public string FuelUse {
             get {
                 return ((string)(this["FuelUse"]));
@@ -49,7 +49,7 @@ namespace NC_Reactor_Planner.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public string HeatGeneration {
             get {
                 return ((string)(this["HeatGeneration"]));

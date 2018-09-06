@@ -131,6 +131,7 @@ namespace NC_Reactor_Planner
                 BlockTypes nt = needed.BlockType;
 
                 //If checked block doesn't match at all: log errors
+                //Either cooler types are mismatched or the blocktype is mismatched
                 if (((bt == BlockTypes.Cooler & nt == BlockTypes.Cooler) && ((Cooler)block).CoolerType != ((Cooler)needed).CoolerType) | bt != nt)
                 {
                     if (adjacent == 0)

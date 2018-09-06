@@ -7,10 +7,12 @@
 	Massive reworks to drawing methods and texture handling.
 	More tweaks to tooltip behaviour.
 	Added autonaming when saving reactors, it's %FuelName% %SizeX% x %SizeY% x %SizeZ% is you're saving a new reactor and %OldName% if you're editing a loaded save. Works for PNG export as well and for both single-layer and entire-reactor modes.
+
 02.09.18 v1.0.2
 	Added build version to the app's title
 	Fixed autonaming when saving PNG
 	Further reworked saving in preparation for implementing value configurations. (Still loads previous version's savefiles yay!)
+
 02.09.18 v1.0.3
 	Made BIG BOI OPTIMIZATIONS and refactored rendering.
 	Fixed a bunch of typos and capitalization inconsistencies in cooler descriptions.
@@ -18,8 +20,10 @@
 	Finally fixed a memory leak that was the #1 reason for the app crashing! Now you should be completely save to edit any reactors the app allows you to create.
 	The grid doesn't update properly if you're drag-drawing and release your mouse outside of any layers. This is a known minor bug as you can refresh it by clicking inside the layer, changing viewmode, changing displayed layer etc. So just try to keep your mouse inside the layers when drawing and it'll work perfectly.
 	Fixed a bug where exporting as PNG wouldn't draw the error rectangles over invalid coolers.
+
 03.09.18 v1.1.0
 	Implemented custom general, cooling and fuel values! Check out the new settings window. These do not persist over sessions though, haven't fixed it yet.
+
 04.09.18 v1.1.1
 	Migrated to JSON storage format for savefiles. MASSIVE decrease in savefile sizes. Old format can still be loaded (change the filter when selecting files) but you can only save in JSON from now on.
 	Fixed a display bug for heating values in stats.
@@ -27,8 +31,9 @@
 	Added my credentials and a short description to the assembly info :^)
 	Refactored cooler placement checking
 	Uploaded the code to GitHub!
-
-	--Important!--
+--Important!--
 	From this point on you'll need to have Newtonsoft.json.dll by the executable as it is a reference. I've included the download on mediafire (Unless i'm blind their license allows reuploading so it's all good.)
-05.09.18 v1.1.2
+
+06.09.18 v1.1.2
 	Finished cooler placement checking refactoring in preparation for rendering changes
+	Updated Diamond cooler rules to 2.11b rules (one Water and one Quartz)
