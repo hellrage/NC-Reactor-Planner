@@ -11,7 +11,7 @@ namespace NC_Reactor_Planner
     public class ReactorGridLayer : Panel
     {
         private ReactorGridCell[,] cells;
-        private MenuStrip menu;
+        //private MenuStrip menu;
         private int _x;
         private int _y;
         private int _z;

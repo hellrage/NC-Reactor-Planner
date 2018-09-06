@@ -56,7 +56,8 @@
             this.fuelBaseHeat = new System.Windows.Forms.TextBox();
             this.fuelSelector = new System.Windows.Forms.ComboBox();
             this.stats = new System.Windows.Forms.RichTextBox();
-            this.OpenModValueSettings = new System.Windows.Forms.Button();
+            this.OpenConfig = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHight)).BeginInit();
@@ -286,9 +287,9 @@
             // 
             this.saveReactor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.saveReactor.Enabled = false;
-            this.saveReactor.Location = new System.Drawing.Point(1077, 8);
+            this.saveReactor.Location = new System.Drawing.Point(7, 99);
             this.saveReactor.Name = "saveReactor";
-            this.saveReactor.Size = new System.Drawing.Size(81, 23);
+            this.saveReactor.Size = new System.Drawing.Size(124, 23);
             this.saveReactor.TabIndex = 11;
             this.saveReactor.Text = "Save Reactor";
             this.saveReactor.UseVisualStyleBackColor = true;
@@ -297,9 +298,9 @@
             // loadReactor
             // 
             this.loadReactor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.loadReactor.Location = new System.Drawing.Point(1164, 8);
+            this.loadReactor.Location = new System.Drawing.Point(7, 129);
             this.loadReactor.Name = "loadReactor";
-            this.loadReactor.Size = new System.Drawing.Size(91, 23);
+            this.loadReactor.Size = new System.Drawing.Size(124, 23);
             this.loadReactor.TabIndex = 12;
             this.loadReactor.Text = "Load Reactor";
             this.loadReactor.UseVisualStyleBackColor = true;
@@ -340,9 +341,9 @@
             // 
             this.saveAsImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.saveAsImage.Enabled = false;
-            this.saveAsImage.Location = new System.Drawing.Point(996, 8);
+            this.saveAsImage.Location = new System.Drawing.Point(7, 70);
             this.saveAsImage.Name = "saveAsImage";
-            this.saveAsImage.Size = new System.Drawing.Size(75, 23);
+            this.saveAsImage.Size = new System.Drawing.Size(124, 23);
             this.saveAsImage.TabIndex = 10;
             this.saveAsImage.Text = "Save PNG";
             this.saveAsImage.UseVisualStyleBackColor = true;
@@ -352,7 +353,7 @@
             // 
             this.imageScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.imageScale.Enabled = false;
-            this.imageScale.Location = new System.Drawing.Point(943, 9);
+            this.imageScale.Location = new System.Drawing.Point(1205, 12);
             this.imageScale.Maximum = new decimal(new int[] {
             10,
             0,
@@ -390,9 +391,9 @@
             this.fuelBasePower.Enabled = false;
             this.fuelBasePower.Location = new System.Drawing.Point(623, 923);
             this.fuelBasePower.Name = "fuelBasePower";
+            this.fuelBasePower.ReadOnly = true;
             this.fuelBasePower.Size = new System.Drawing.Size(74, 20);
             this.fuelBasePower.TabIndex = 7;
-            this.fuelBasePower.TextChanged += new System.EventHandler(this.fuelBaseRF_TextChanged);
             // 
             // fuelBaseHeatLabel
             // 
@@ -411,9 +412,9 @@
             this.fuelBaseHeat.Enabled = false;
             this.fuelBaseHeat.Location = new System.Drawing.Point(823, 923);
             this.fuelBaseHeat.Name = "fuelBaseHeat";
+            this.fuelBaseHeat.ReadOnly = true;
             this.fuelBaseHeat.Size = new System.Drawing.Size(74, 20);
             this.fuelBaseHeat.TabIndex = 8;
-            this.fuelBaseHeat.TextChanged += new System.EventHandler(this.fuelBaseHeat_TextChanged);
             // 
             // fuelSelector
             // 
@@ -442,17 +443,26 @@
             this.stats.TabStop = false;
             this.stats.Text = "";
             // 
-            // OpenModValueSettings
+            // OpenConfiguration
             // 
-            this.OpenModValueSettings.Enabled = false;
-            this.OpenModValueSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.OpenModValueSettings.Location = new System.Drawing.Point(7, 24);
-            this.OpenModValueSettings.Name = "OpenModValueSettings";
-            this.OpenModValueSettings.Size = new System.Drawing.Size(124, 23);
-            this.OpenModValueSettings.TabIndex = 25;
-            this.OpenModValueSettings.Text = "Open settings";
-            this.OpenModValueSettings.UseVisualStyleBackColor = true;
-            this.OpenModValueSettings.Click += new System.EventHandler(this.OpenModValueSettings_Click);
+            this.OpenConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.OpenConfig.Location = new System.Drawing.Point(7, 24);
+            this.OpenConfig.Name = "OpenConfig";
+            this.OpenConfig.Size = new System.Drawing.Size(124, 23);
+            this.OpenConfig.TabIndex = 25;
+            this.OpenConfig.Text = "Open configuration";
+            this.OpenConfig.UseVisualStyleBackColor = true;
+            this.OpenConfig.Click += new System.EventHandler(this.OpenConfiguration);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label5.Location = new System.Drawing.Point(1145, 14);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(52, 16);
+            this.label5.TabIndex = 26;
+            this.label5.Text = "Scale:";
             // 
             // PlannerUI
             // 
@@ -460,7 +470,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1264, 952);
-            this.Controls.Add(this.OpenModValueSettings);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.OpenConfig);
             this.Controls.Add(this.stats);
             this.Controls.Add(this.fuelSelector);
             this.Controls.Add(this.fuelBaseHeat);
@@ -523,7 +534,8 @@
         private System.Windows.Forms.TextBox fuelBaseHeat;
         private System.Windows.Forms.ComboBox fuelSelector;
         private System.Windows.Forms.RichTextBox stats;
-        private System.Windows.Forms.Button OpenModValueSettings;
+        private System.Windows.Forms.Button OpenConfig;
+        private System.Windows.Forms.Label label5;
     }
 }
 

@@ -37,7 +37,7 @@ namespace NC_Reactor_Planner
         {
             if (FindAdjacentFuelCells() == 0)
             {
-                HeatGenerationPerTick = Reactor.fuelBaseHeat * Reactor.fuelHeatMulti;
+                HeatGenerationPerTick = Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration;
                 Reactor.totalHeatPerTick += HeatGenerationPerTick;
                 Active = false;
             }

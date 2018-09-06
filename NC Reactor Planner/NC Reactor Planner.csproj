@@ -84,18 +84,19 @@
   <ItemGroup>
     <Compile Include="Block.cs" />
     <Compile Include="Casing.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="ConfigurationUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigurationUI.Designer.cs">
+      <DependentUpon>ConfigurationUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="Cooler.cs" />
     <Compile Include="DummyUI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DummyUI.Designer.cs">
       <DependentUpon>DummyUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ModValueSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ModValueSettings.Designer.cs">
-      <DependentUpon>ModValueSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="PlannerUI.cs">
       <SubType>Form</SubType>
@@ -122,11 +123,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="ConfigurationUI.resx">
+      <DependentUpon>ConfigurationUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DummyUI.resx">
       <DependentUpon>DummyUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ModValueSettings.resx">
-      <DependentUpon>ModValueSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PlannerUI.resx">
       <DependentUpon>PlannerUI.cs</DependentUpon>

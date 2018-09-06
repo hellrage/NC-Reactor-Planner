@@ -69,34 +69,29 @@ namespace NC_Reactor_Planner
             EnergyProducedPerTick = 0;
             HeatProducedPerTick = 0;
 
-            double moderatorExtraPower = Convert.ToDouble(Properties.Settings.Default.ModeratorExtraPower) / 6;
-            double moderatorExtraHeat = Convert.ToDouble(Properties.Settings.Default.ModeratorExtraHeat) / 6;
-            double fissionPower = Convert.ToDouble(Properties.Settings.Default.FissionPower);
-            double fissionHeatGeneration = Convert.ToDouble(Properties.Settings.Default.HeatGeneration);
-
             EnergyMultiplier += AdjacentCells + 1;
             HeatMultiplier += (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
 
             Reactor.energyMultiplier += AdjacentCells + 1;
             Reactor.heatMultiplier += (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
 
-            EnergyProducedPerTick = Reactor.fuelBasePower * fissionPower * (AdjacentCells + 1);
-            HeatProducedPerTick = Reactor.fuelBaseHeat * fissionHeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
+            EnergyProducedPerTick = Reactor.usedFuel.BasePower * Configuration.Fission.Power * (AdjacentCells + 1);
+            HeatProducedPerTick = Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
 
-            Reactor.totalEnergyPerTick += Reactor.fuelBasePower * fissionPower * (AdjacentCells + 1);
-            Reactor.totalHeatPerTick += Reactor.fuelBaseHeat * fissionHeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
+            Reactor.totalEnergyPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * (AdjacentCells + 1);
+            Reactor.totalHeatPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
 
-            EnergyMultiplier += moderatorExtraPower * AdjacentModerators * (AdjacentCells + 1);
-            HeatMultiplier += moderatorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
+            EnergyMultiplier += Configuration.Fission.ModeratorExtraPower * AdjacentModerators * (AdjacentCells + 1);
+            HeatMultiplier += Configuration.Fission.ModeratorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
 
-            Reactor.energyMultiplier += moderatorExtraPower * AdjacentModerators * (AdjacentCells + 1);
-            Reactor.heatMultiplier += moderatorExtraHeat / 6 * AdjacentModerators * (AdjacentCells + 1);
+            Reactor.energyMultiplier += Configuration.Fission.ModeratorExtraPower * AdjacentModerators * (AdjacentCells + 1);
+            Reactor.heatMultiplier += Configuration.Fission.ModeratorExtraHeat / 6 * AdjacentModerators * (AdjacentCells + 1);
 
-            EnergyProducedPerTick += Reactor.fuelBasePower * fissionPower * moderatorExtraPower * AdjacentModerators * (AdjacentCells + 1);
-            HeatProducedPerTick += Reactor.fuelBaseHeat * fissionHeatGeneration * moderatorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
+            EnergyProducedPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * Configuration.Fission.ModeratorExtraPower * AdjacentModerators * (AdjacentCells + 1);
+            HeatProducedPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * Configuration.Fission.ModeratorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
 
-            Reactor.totalEnergyPerTick += Reactor.fuelBasePower * fissionPower * moderatorExtraPower * AdjacentModerators * (AdjacentCells + 1);
-            Reactor.totalHeatPerTick += Reactor.fuelBaseHeat * fissionHeatGeneration * moderatorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
+            Reactor.totalEnergyPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * Configuration.Fission.ModeratorExtraPower * AdjacentModerators * (AdjacentCells + 1);
+            Reactor.totalHeatPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * Configuration.Fission.ModeratorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
         }
 
         public int FindModeratorsThenAdjacentCells()
@@ -114,7 +109,7 @@ namespace NC_Reactor_Planner
         {
             Point3D pos;
 
-            for (int i = 1; i <= Convert.ToInt32(Properties.Settings.Default.NeutronReach); i++)
+            for (int i = 1; i <= Configuration.Fission.NeutronReach; i++)
             {
                 for (int j = 1; j <= i; j++)
                 {

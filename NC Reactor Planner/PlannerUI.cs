@@ -21,7 +21,8 @@ namespace NC_Reactor_Planner
         public static int blockSize;
         public static int paletteBlockSize = 40;
         private static int totalBlocks;
-        private static ModValueSettings settings;
+        //private static ModValueSettings settings;
+        private static ConfigurationUI configurationUI;
         Graphics borderGraphics;
         Pen borderPen;
         Pen highlightPen;
@@ -38,11 +39,6 @@ namespace NC_Reactor_Planner
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
-            //ResaveTestReactor();
-            //Close();
-            //Palette.LoadPalette();
-
             blockSize = (int)(Palette.textures["Air"].Size.Height * imageScale.Value);
 
             borderGraphics = paletteTable.CreateGraphics();
@@ -99,6 +95,9 @@ namespace NC_Reactor_Planner
             Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
             appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
             this.Text = appName;
+
+            Reactor.InitializeReactor((int)(reactorHight.Value = 5), (int)(reactorLength.Value = 5), (int)(reactorWidth.Value = 5));
+            NewResetLayout(true);
         }
 
         private void SetUIToolTips()
@@ -186,7 +185,7 @@ namespace NC_Reactor_Planner
             fuelSelector.Enabled = true;
             fuelBasePower.Enabled = true;
             fuelBaseHeat.Enabled = true;
-            OpenModValueSettings.Enabled = true;
+            OpenConfig.Enabled = true;
 
             gridToolTip.RemoveAll();
 
@@ -220,6 +219,7 @@ namespace NC_Reactor_Planner
                 layerScrollBar.Maximum = (int)Reactor.interiorDims.Y;
             }
 
+            fuelSelector.SelectedItem = Reactor.usedFuel;
             RefreshStats();
 
         }
@@ -281,7 +281,7 @@ namespace NC_Reactor_Planner
 
         private void reactorGrid_MouseEnter(object sender, EventArgs e)
         {
-            if (settings != null && !settings.IsDisposed)
+            if (configurationUI != null && !configurationUI.IsDisposed)
                 return;
             if (drawAllLayers)
                 reactorGrid.Focus();
@@ -322,7 +322,6 @@ namespace NC_Reactor_Planner
 
         private void LoadReactor()
         {
-
             using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "NuclearCraft Reactor files(*.ncr)|*.ncr|JSON files(*.json)|*.json" })
             {
                 fileDialog.FilterIndex = 2;
@@ -462,43 +461,12 @@ namespace NC_Reactor_Planner
             layer.Location = origin;
         }
 
-        private void fuelBaseRF_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                Reactor.fuelBasePower = Convert.ToDouble(fuelBasePower.Text);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                fuelBasePower.Clear();
-                fuelBasePower.Text = Reactor.fuelBasePower.ToString();
-            }
-            RefreshStats();
-        }
-
-        private void fuelBaseHeat_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                Reactor.fuelBaseHeat = Convert.ToDouble(fuelBaseHeat.Text);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                fuelBaseHeat.Clear();
-                fuelBaseHeat.Text = Reactor.fuelBaseHeat.ToString();
-            }
-            RefreshStats();
-        }
-
         private void fuelSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             Fuel selectedFuel = (Fuel)fuelSelector.SelectedItem;
             fuelBasePower.Text = selectedFuel.BasePower.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
-            Reactor.fuelBasePower = selectedFuel.BasePower;
-            Reactor.fuelBaseHeat = selectedFuel.BaseHeat;
+            Reactor.usedFuel = selectedFuel; //[TODO]Change to a method you criminal
 
             Reactor.UpdateStats();
             RefreshStats();
@@ -519,26 +487,20 @@ namespace NC_Reactor_Planner
             reactorLength.Select(0, reactorLength.Value.ToString().Length);
         }
 
-        private void OpenModValueSettings_Click(object sender, EventArgs e)
+        private void OpenConfiguration(object sender, EventArgs e)
         {
-            if (settings == null || settings.IsDisposed)
+            if (configurationUI == null || configurationUI.IsDisposed)
             {
-                settings = new ModValueSettings();
-                settings.FormClosed += new FormClosedEventHandler(SettingsClosed);
-                settings.Show();
+                configurationUI = new ConfigurationUI();
+                configurationUI.FormClosed += new FormClosedEventHandler(ConfigurationClosed);
+                configurationUI.Show();
             }
             else
-                settings.Focus();
+                configurationUI.Focus();
         }
 
-        private void SettingsClosed(object sender, FormClosedEventArgs e)
+        private void ConfigurationClosed(object sender, FormClosedEventArgs e)
         {
-            Reactor.ReloadValuesFromSettings();
-            foreach (ReactorGridCell cell in paletteTable.Controls)
-            {
-                paletteToolTip.SetToolTip(cell, cell.block.GetToolTip());
-            }
-            Reactor.UpdateStats();
             Reactor.RedrawAllLayers();
             RefreshStats();
         }

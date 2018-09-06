@@ -28,12 +28,17 @@
 	Migrated to JSON storage format for savefiles. MASSIVE decrease in savefile sizes. Old format can still be loaded (change the filter when selecting files) but you can only save in JSON from now on.
 	Fixed a display bug for heating values in stats.
 	Reworked the saving \ loading methods and the save autonaming system.
-	Added my credentials and a short description to the assembly info :^)
-	Refactored cooler placement checking
+	Added my credentials and a short description to the assembly info. :^)
+	Refactored cooler placement checking.
 	Uploaded the code to GitHub!
 --Important!--
 	From this point on you'll need to have Newtonsoft.json.dll by the executable as it is a reference. I've included the download on mediafire (Unless i'm blind their license allows reuploading so it's all good.)
 
 06.09.18 v1.1.2
-	Finished cooler placement checking refactoring in preparation for rendering changes
-	Updated Diamond cooler rules to 2.11b rules (one Water and one Quartz)
+	Finished cooler placement checking refactoring in preparation for rendering changes.
+	Updated Diamond cooler rules to 2.11b rules (one Water and one Quartz).
+07.09.18 v1.1.3
+	Migrated configuration saving so json, you can now have any number of configuration files and load them into the application as needed.
+	The app now initially starts with a blank 5x5x5 reactor open.
+	Added a warning when there's no json.NET dll present.
+	Default setting values are now NuclearCraft 2.11c vanilla ones.

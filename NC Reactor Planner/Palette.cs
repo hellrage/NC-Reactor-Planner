@@ -19,7 +19,7 @@ namespace NC_Reactor_Planner
         public static ReactorGridCell selectedBlock;
 
         public static Dictionary<Block, BlockTypes> blocks = new Dictionary<Block, BlockTypes>();
-        public static readonly Dictionary<string, Block> blockPalette;
+        public static Dictionary<string, Block> blockPalette;
         public static List<Block> miscBlocks = new List<Block>();
         public static List<Cooler> coolers = new List<Cooler>();
         public static List<Moderator> moderators = new List<Moderator>();
@@ -53,9 +53,11 @@ namespace NC_Reactor_Planner
 
         public static void ReloadValuesFromConfig()
         {
-            if (Properties.Settings.Default.Exist)
-                foreach (KeyValuePair<Block, BlockTypes> blockEntry in blocks)
-                    blockEntry.Key.ReloadValuesFromSetttings();
+            foreach (KeyValuePair<Block, BlockTypes> blockEntry in blocks)
+                blockEntry.Key.ReloadValuesFromConfig();
+
+            foreach (KeyValuePair<string, Block> blockEntry in blockPalette)
+                blockEntry.Value.ReloadValuesFromConfig();
         }
 
         private static void PopulateBlockPalette()
@@ -98,22 +100,15 @@ namespace NC_Reactor_Planner
 
         private static void PopulateCoolers()
         {
-            coolers.Add(new Cooler("Water", textures["Water"], CoolerTypes.Water, 200, 20, "At least one Reactor Cell or active Moderator", dummyPosition));
-            coolers.Add(new Cooler("Redstone", textures["Redstone"], CoolerTypes.Redstone, 4000, 80, "At least one Reactor Cell", dummyPosition));
-            coolers.Add(new Cooler("Quartz", textures["Quartz"], CoolerTypes.Quartz, 6000, 80, "At least one active Moderator", dummyPosition));
-            coolers.Add(new Cooler("Gold", textures["Gold"], CoolerTypes.Gold, 7000, 120, "At least one active Water cooler & active Redstone cooler", dummyPosition));
-            coolers.Add(new Cooler("Glowstone", textures["Glowstone"], CoolerTypes.Glowstone, 8000, 120, "At least two active Moderators", dummyPosition));
-            coolers.Add(new Cooler("Lapis", textures["Lapis"], CoolerTypes.Lapis, 9000, 100, "At least one Reactor Cell and one Reactor Casing", dummyPosition));
-            coolers.Add(new Cooler("Diamond", textures["Diamond"], CoolerTypes.Diamond, 14000, 120, "One active Water cooler and one active Quartz cooler", dummyPosition));
-            coolers.Add(new Cooler("Helium", textures["Helium"], CoolerTypes.Helium, 13200, 120, "ONLY one active Redstone cooler and at least one Reactor Casing", dummyPosition));
-            coolers.Add(new Cooler("Enderium", textures["Enderium"], CoolerTypes.Enderium, 11000, 140, "Three Reactor Casings (has to be in a corner)", dummyPosition));
-            coolers.Add(new Cooler("Cryotheum", textures["Cryotheum"], CoolerTypes.Cryotheum, 13000, 140, "At least two Reactor Cells", dummyPosition));
-            coolers.Add(new Cooler("Iron", textures["Iron"], CoolerTypes.Iron, 6800, 60, "At least one active Gold cooler", dummyPosition));
-            coolers.Add(new Cooler("Emerald", textures["Emerald"], CoolerTypes.Emerald, 11000, 140, "At least one active Moderator and one Reactor Cell", dummyPosition));
-            coolers.Add(new Cooler("Copper", textures["Copper"], CoolerTypes.Copper, 4500, 60, "At least one active Glowstone Cooler", dummyPosition));
-            coolers.Add(new Cooler("Tin", textures["Tin"], CoolerTypes.Tin, 5000, 80, "Two Lapis Coolers on opposite sides (same axis)", dummyPosition));
-            coolers.Add(new Cooler("Magnesium", textures["Magnesium"], CoolerTypes.Magnesium, 8000, 100, "At least one Reactor Casing and one active Moderator", dummyPosition));
-
+            foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
+            {
+                CoolerValues cv = coolerEntry.Value;
+                CoolerTypes parsedType;
+                if (Enum.TryParse(coolerEntry.Key, out parsedType))
+                    coolers.Add(new Cooler(coolerEntry.Key, textures[coolerEntry.Key], parsedType, cv.HeatActive, cv.HeatPassive, cv.Requirements, dummyPosition));
+                else
+                    throw new ArgumentException("Unexpected cooler type in config!");
+            }
         }
 
         //private static void PopulateModerators()

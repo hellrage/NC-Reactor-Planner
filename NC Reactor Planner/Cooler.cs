@@ -11,8 +11,8 @@ namespace NC_Reactor_Planner
     [Serializable()]
     public class Cooler : Block
     {
-        private int _heatActive;
-        private int _heatPassive;
+        private double _heatActive;
+        private double _heatPassive;
         private string _requirements;
         private bool _oldActive;
         private bool _active;
@@ -20,15 +20,15 @@ namespace NC_Reactor_Planner
 
         private CoolerTypes _coolerType;
 
-        public int HeatActive { get => _heatActive; private set => _heatActive = value; }
-        public int HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
+        public double HeatActive { get => _heatActive; private set => _heatActive = value; }
+        public double HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
         public string Requirements { get => _requirements; private set => _requirements = value; }
         public bool Active { get => _active; private set { _oldActive = _active; _active = value; } }
 
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
 
-        public Cooler(string displayName, Bitmap texture, CoolerTypes type, int heatActive, int heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.Cooler, texture, position)
+        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.Cooler, texture, position)
         {
             CoolerType = type;
             HeatActive = heatActive;
@@ -66,18 +66,12 @@ namespace NC_Reactor_Planner
             placementErrors = new HashSet<string>(placementErrors).ToList();
         }
 
-        public override void ReloadValuesFromSetttings()
+        public override void ReloadValuesFromConfig()
         {
-            List<string> values = ModValueSettings.RetrieveSplitSettings(DisplayName);
-            try
-            {
-                HeatPassive = Convert.ToInt32(values[0]);
-                HeatActive = Convert.ToInt32(values[1]);
-            }
-            catch(Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(e.Message + string.Format("\r\n There were invalid values in the settings: {0}: {1} {2}\r\n Leaving the values as default.", DisplayName, values[0], values[1]));
-            }
+            CoolerValues cv = Configuration.Coolers[CoolerType.ToString()];
+            HeatActive = cv.HeatActive;
+            HeatPassive = cv.HeatPassive;
+            Requirements = cv.Requirements;
         }
 
         public bool CheckPlacementValid()

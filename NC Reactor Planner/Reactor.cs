@@ -11,7 +11,6 @@ using System.IO;
 using System.Drawing;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
-using System.ComponentModel;
 
 namespace NC_Reactor_Planner
 {
@@ -36,7 +35,7 @@ namespace NC_Reactor_Planner
         public static Block[,,] blocks;
         public static List<ReactorGridLayer> layers;
         public static Size3D interiorDims;
-        private static Version saveVersion;
+        public static readonly Version saveVersion;
 
 
         public static Dictionary<string, List<Cooler>> coolers;
@@ -46,7 +45,7 @@ namespace NC_Reactor_Planner
         public static List<string> checkOrder = new List<string> { "Water", "Redstone", "Quartz", "Magnesium", "Emerald", "Enderium", "Gold", "Lapis", "Glowstone", "Diamond", "Cryotheum", "Tin", "Helium", "Copper", "Iron" };
 
         public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
-        public static List<Fuel> fuels = new List<Fuel>();
+        public static List<Fuel> fuels;
 
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalCoolingPerType;
@@ -58,81 +57,28 @@ namespace NC_Reactor_Planner
         public static double efficiency = 0;
         public static double heatMulti = 0;
 
-        public const double fuelEnergyMulti = 3;
-        public const double fuelHeatMulti = 1.2;
-
         public static Fuel usedFuel;
-
-        public static string fuelName = "LEU-235";
-        public static double fuelBasePower = 120;
-        public static double fuelBaseHeat = 50;
 
         static Reactor()
         {
+            saveVersion = Assembly.GetEntryAssembly().GetName().Version;
             PopulateFuels();
         }
 
         public static void PopulateFuels()
         {
-            fuels.Add(new Fuel("TBU", "Th-232", "—", 60, 18, 144000));
-            fuels.Add(new Fuel("TBU Oxide", "Th-232", "—", 84, 22.5, 144000));
-            fuels.Add(new Fuel("LEU-233", "U-233", "U-238", 144, 60, 64000));
-            fuels.Add(new Fuel("LEU-233 Oxide", "U-233", "U-238", 201.6, 75, 64000));
-            fuels.Add(new Fuel("HEU-233", "U-233", "U-238", 576, 360, 64000));
-            fuels.Add(new Fuel("HEU-233 Oxide", "U-233", "U-238", 806.4, 450, 64000));
-            fuels.Add(new Fuel("LEU-235", "U-235", "U-238", 120, 50, 72000));
-            fuels.Add(new Fuel("LEU-235 Oxide", "U-235", "U-238", 168, 62.5, 72000));
-            fuels.Add(new Fuel("HEU-235", "U-235", "U-238", 480, 300, 72000));
-            fuels.Add(new Fuel("HEU-235 Oxide", "U-235", "U-238", 672, 375, 72000));
-            fuels.Add(new Fuel("LEN-236", "Np-236", "Np-237", 90, 36, 102000));
-            fuels.Add(new Fuel("LEN-236 Oxide", "Np-236", "Np-237", 126, 45, 102000));
-            fuels.Add(new Fuel("HEN-236", "Np-236", "Np-237", 360, 216, 102000));
-            fuels.Add(new Fuel("HEN-236 Oxide", "Np-236", "Np-237", 504, 270, 102000));
-            fuels.Add(new Fuel("LEP-239", "Pu-239", "Pu-242", 105, 40, 92000));
-            fuels.Add(new Fuel("LEP-239 Oxide", "Pu-239", "Pu-242", 147, 50, 92000));
-            fuels.Add(new Fuel("HEP-239", "Pu-239", "Pu-242", 420, 240, 92000));
-            fuels.Add(new Fuel("HEP-239 Oxide", "Pu-239", "Pu-242", 588, 300, 92000));
-            fuels.Add(new Fuel("LEP-241", "Pu-241", "Pu-242", 165, 70, 60000));
-            fuels.Add(new Fuel("LEP-241 Oxide", "Pu-241", "Pu-242", 231, 87.5, 60000));
-            fuels.Add(new Fuel("HEP-241", "Pu-241", "Pu-242", 660, 420, 60000));
-            fuels.Add(new Fuel("HEP-241 Oxide", "Pu-241", "Pu-242", 924, 525, 60000));
-            fuels.Add(new Fuel("MOX-239", "Pu-239", "U-238", 155.4, 57.5, 84000));
-            fuels.Add(new Fuel("MOX-241", "Pu-241", "U-238", 243.6, 97.5, 56000));
-            fuels.Add(new Fuel("LEA-242", "Am-242", "Am-243", 192, 94, 54000));
-            fuels.Add(new Fuel("LEA-242 Oxide", "Am-242", "Am-243", 268.8, 117.5, 54000));
-            fuels.Add(new Fuel("HEA-242", "Am-242", "Am-243", 768, 564, 54000));
-            fuels.Add(new Fuel("HEA-242 Oxide", "Am-242", "Am-243", 1075.2, 705, 54000));
-            fuels.Add(new Fuel("LECm-243", "Cm-243", "Cm-246", 210, 112, 52000));
-            fuels.Add(new Fuel("LECm-243 Oxide", "Cm-243", "Cm-246", 294, 140, 52000));
-            fuels.Add(new Fuel("HECm-243", "Cm-243", "Cm-246", 840, 672, 52000));
-            fuels.Add(new Fuel("HECm-243 Oxide", "Cm-243", "Cm-246", 1176, 840, 52000));
-            fuels.Add(new Fuel("LECm-245", "Cm-245", "Cm-246", 162, 68, 68000));
-            fuels.Add(new Fuel("LECm-245 Oxide", "Cm-245", "Cm-246", 226.8, 85, 68000));
-            fuels.Add(new Fuel("HECm-245", "Cm-245", "Cm-246", 648, 408, 68000));
-            fuels.Add(new Fuel("HECm-245 Oxide", "Cm-245", "Cm-246", 907.2, 510, 68000));
-            fuels.Add(new Fuel("LECm-247", "Cm-247", "Cm-246", 138, 54, 78000));
-            fuels.Add(new Fuel("LECm-247 Oxide", "Cm-247", "Cm-246", 193.2, 67.5, 78000));
-            fuels.Add(new Fuel("HECm-247", "Cm-247", "Cm-246", 552, 324, 78000));
-            fuels.Add(new Fuel("HECm-247 Oxide", "Cm-247", "Cm-246", 772.8, 405, 78000));
-            fuels.Add(new Fuel("LEB-248", "Bk-248", "Bk-247", 135, 52, 86000));
-            fuels.Add(new Fuel("LEB-248 Oxide", "Bk-248", "Bk-247", 189, 65, 86000));
-            fuels.Add(new Fuel("HEB-248", "Bk-248", "Bk-247", 540, 312, 86000));
-            fuels.Add(new Fuel("HEB-248 Oxide", "Bk-248", "Bk-247", 756, 390, 86000));
-            fuels.Add(new Fuel("LECf-249", "Cf-249", "Cf-252", 216, 116, 60000));
-            fuels.Add(new Fuel("LECf-249 Oxide", "Cf-249", "Cf-252", 302.4, 145, 60000));
-            fuels.Add(new Fuel("HECf-249", "Cf-249", "Cf-252", 864, 696, 60000));
-            fuels.Add(new Fuel("HECf-249 Oxide", "Cf-249", "Cf-252", 1209.6, 870, 60000));
-            fuels.Add(new Fuel("LECf-251", "Cf-251", "Cf-252", 225, 120, 58000));
-            fuels.Add(new Fuel("LECf-251 Oxide", "Cf-251", "Cf-252", 315, 150, 58000));
-            fuels.Add(new Fuel("HECf-251", "Cf-251", "Cf-252", 900, 720, 58000));
-            fuels.Add(new Fuel("HECf-251 Oxide", "Cf-251", "Cf-252", 1260, 900, 58000));
+            fuels = new List<Fuel>();
+            foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
+            {
+                FuelValues fev = fuelEntry.Value;
+                fuels.Add(new Fuel(fuelEntry.Key, fev.BasePower, fev.BaseHeat, fev.FuelTime));
+            }
         }
 
         public static void InitializeReactor(int interiorX, int interiorY, int interiorZ)
         {
             interiorDims = new Size3D(interiorX, interiorY, interiorZ);
             blocks = new Block[interiorX + 2, interiorY + 2, interiorZ + 2];
-            saveVersion = Assembly.GetEntryAssembly().GetName().Version;
 
             for (int x = 0; x < interiorX + 2; x++)
                 for (int y = 0; y < interiorY + 2; y++)
@@ -178,8 +124,7 @@ namespace NC_Reactor_Planner
 
         public static void ConstructLayer(int layer)
         {
-            layers = new List<ReactorGridLayer>();
-            layers.Add(new ReactorGridLayer(layer));
+            layers = new List<ReactorGridLayer>{new ReactorGridLayer(layer)};
         }
 
         public static void CauseRedraw(object sender, EventArgs e)
@@ -257,7 +202,7 @@ namespace NC_Reactor_Planner
             {
                 if (kvp.Value.Count == 0)
                     continue;
-                int passiveCooling = 0;
+                double passiveCooling = 0;
                 foreach (Cooler cooler in kvp.Value)
                     if (cooler.Active)
                         passiveCooling += cooler.HeatPassive;
@@ -339,10 +284,12 @@ namespace NC_Reactor_Planner
         {
             using (TextWriter tw = File.CreateText(saveFile.FullName))
             {
-                JsonSerializer jss = new JsonSerializer();
-                jss.NullValueHandling = NullValueHandling.Ignore;
-                jss.Formatting = Formatting.Indented;
-                jss.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
+                JsonSerializer jss = new JsonSerializer
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+                };
 
                 CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(), interiorDims, usedFuel);
                 jss.Serialize(tw, csf);
@@ -362,13 +309,12 @@ namespace NC_Reactor_Planner
                 {
                     using (Stream stream = File.Open(saveFile.FullName, FileMode.Open))
                     {
-                        saveVersion = (Version)formatter.Deserialize(stream);
+                        /*saveVersion = (Version)*/formatter.Deserialize(stream); //Version is now only updated when saving
                         blocks = (Block[,,])formatter.Deserialize(stream);
                         interiorDims = (Size3D)formatter.Deserialize(stream);
                         double fBP = (double)formatter.Deserialize(stream);
                         double fBH = (double)formatter.Deserialize(stream);
                         usedFuel = new Fuel("OldFormat", "--", "--", fBP, fBH, 0);
-                        
                     }
                 }
                 catch (Exception ex)
@@ -386,7 +332,7 @@ namespace NC_Reactor_Planner
         private static void FinalizeLoading()
         {
             ReloadBlockTextures();
-            ReloadValuesFromSettings();
+            ReloadValuesFromConfig();
             UpdateStats();
             ConstructLayers();
         }
@@ -401,7 +347,7 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void ReloadValuesFromSettings()
+        public static void ReloadValuesFromConfig()
         {
             ReloadCoolerValues();
             ReloadFuelValues();
@@ -411,19 +357,18 @@ namespace NC_Reactor_Planner
         {
             foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
                 if (kvp.Key is Cooler cooler)
-                    cooler.ReloadValuesFromSetttings();
+                    cooler.ReloadValuesFromConfig();
 
             foreach (Block block in blocks)
                 if (block is Cooler cooler)
-                    cooler.ReloadValuesFromSetttings();
-
+                    cooler.ReloadValuesFromConfig();
         }
 
         private static void ReloadFuelValues()
         {
             foreach (Fuel fuel in fuels)
             {
-                fuel.ReloadValuesFromSettings();
+                fuel.ReloadValuesFromConfig();
             }
         }
 

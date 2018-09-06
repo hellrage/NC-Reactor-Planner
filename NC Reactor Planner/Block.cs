@@ -45,7 +45,7 @@ namespace NC_Reactor_Planner
             return toolTip;
         }
 
-        public virtual void ReloadValuesFromSetttings()
+        public virtual void ReloadValuesFromConfig()
         {
         }
 
