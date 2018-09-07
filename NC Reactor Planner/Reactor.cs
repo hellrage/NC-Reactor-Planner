@@ -387,7 +387,7 @@ namespace NC_Reactor_Planner
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
             int bs = PlannerUI.blockSize;
 
-            Point StatsRectSize = new Point(28 * fontSize, statStringLines * (fontSize + 2));
+            Point StatsRectSize = new Point(28 * fontSize, (statStringLines + 4) * (fontSize + 2));
 
             Bitmap reactorImage = new Bitmap(Math.Max(StatsRectSize.X, (int)(layersPerRow * interiorDims.X * bs + (layersPerRow - 1) * bs)),
                                              StatsRectSize.Y + bs + (int)(rows * interiorDims.Z * bs + (rows - 1) * bs));
@@ -406,8 +406,8 @@ namespace NC_Reactor_Planner
                                     GraphicsUnit.Pixel);
                     layerImage.Dispose();
                 }
-
-                gr.DrawString(GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
+                gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             reactorImage.Save(fileName);
             reactorImage.Dispose();

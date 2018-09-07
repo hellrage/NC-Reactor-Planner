@@ -43,4 +43,9 @@
 	Added a warning when there's no json.NET dll present.
 	Default setting values are now NuclearCraft 2.11c vanilla ones.
 	Reordered the stats output.
-	Shuffled aroun the UI a bit.
+	Shuffled around the UI a bit.
+07.09.18 v1.1.4
+	More tooltip fixes, hopefully gotten rid of all their display bugs.
+	The app now generates a default configuration file that's loaded on startup. Overwrite it to have your custom settings persist between launches.
+	Added effective energy generation and meltdown time to the stats. (Thanks to Jox+Snarklord for the formulas.)
+	Added used fuel to PNG export.

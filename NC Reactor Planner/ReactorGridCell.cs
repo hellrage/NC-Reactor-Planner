@@ -43,7 +43,6 @@ namespace NC_Reactor_Planner
             ((PlannerUI)Parent.Parent.Parent).RefreshStats();
 
             RedrawSelf();
-            PlannerUI.gridToolTip.Active = false;
             PlannerUI.gridToolTip.Active = true;
         }
 
@@ -59,6 +58,7 @@ namespace NC_Reactor_Planner
         public void Mouse_Down(object sender, EventArgs e)
         {
             Capture = false;
+            PlannerUI.gridToolTip.Active = false;
         }
 
         public void RedrawSelf()
