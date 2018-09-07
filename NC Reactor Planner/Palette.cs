@@ -72,8 +72,8 @@ namespace NC_Reactor_Planner
                 blockPalette.Add(cooler.DisplayName, cooler);
             }
 
-            blockPalette.Add("Beryllium", new Moderator("Beryllium", textures["Beryllium"], dummyPosition));
-            blockPalette.Add("Graphite", new Moderator("Graphite", textures["Graphite"], dummyPosition));
+            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition));
+            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition));
         }
 
         private static void PopulateBlocks()
@@ -88,8 +88,8 @@ namespace NC_Reactor_Planner
                 blocks.Add(cooler, BlockTypes.Cooler);
             }
 
-            blocks.Add(new Moderator("Beryllium", textures["Beryllium"], dummyPosition), BlockTypes.Moderator);
-            blocks.Add(new Moderator("Graphite", textures["Graphite"], dummyPosition), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition), BlockTypes.Moderator);
         }
 
         //private static void PopulateMisc()

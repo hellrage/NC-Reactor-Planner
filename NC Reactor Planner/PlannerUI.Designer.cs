@@ -443,7 +443,7 @@
             this.stats.TabStop = false;
             this.stats.Text = "";
             // 
-            // OpenConfiguration
+            // OpenConfig
             // 
             this.OpenConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.OpenConfig.Location = new System.Drawing.Point(7, 24);

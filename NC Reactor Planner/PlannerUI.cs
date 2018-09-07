@@ -21,7 +21,6 @@ namespace NC_Reactor_Planner
         public static int blockSize;
         public static int paletteBlockSize = 40;
         private static int totalBlocks;
-        //private static ModValueSettings settings;
         private static ConfigurationUI configurationUI;
         Graphics borderGraphics;
         Pen borderPen;
@@ -30,6 +29,7 @@ namespace NC_Reactor_Planner
         string appName;
         string loadedSaveFileName = null;
         FileInfo loadedSaveFileInfo = null;
+        public static Block[,] layerBuffer;
 
         public PlannerUI()
         {

@@ -507,7 +507,56 @@ namespace NC_Reactor_Planner
 
         public static void SetBlock(Block block, Point3D position)
         {
-            blocks[(int)position.X, (int)position.Y, (int)position.Z] = block;
+
+            if(block.BlockType == BlockTypes.Air)
+            {
+                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new Block(block.DisplayName, block.BlockType, Palette.textures[block.DisplayName], position);
+            }
+            else if(block.BlockType == BlockTypes.FuelCell)
+            {
+                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new FuelCell(block.DisplayName, Palette.textures[block.DisplayName], position);
+            }
+            else if(block is Moderator moderator)
+            {
+                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new Moderator(moderator, position);
+            }
+            else if(block is Cooler cooler)
+            {
+                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new Cooler(cooler, position);
+            }
+        }
+
+        public static void ClearLayer(ReactorGridLayer layer)
+        {
+            for (int x = 0; x < interiorDims.X; x++)
+                for (int z = 0; z < interiorDims.Z; z++)
+                    SetBlock(new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
+            UpdateStats();
+            layer.Redraw();
+        }
+
+        public static void CopyLayer(ReactorGridLayer layer)
+        {
+            PlannerUI.layerBuffer = new Block[layer.X, layer.Z];
+            for (int x = 0; x < layer.X; x++)
+                for (int z = 0; z < layer.Z; z++)
+                {
+                    PlannerUI.layerBuffer[x, z] = blocks[x + 1, layer.Y, z + 1];
+                }
+        }
+
+        public static void PasteLayer(ReactorGridLayer layer)
+        {
+            if (PlannerUI.layerBuffer == null)
+                return;
+
+            for (int x = 0; x < layer.X; x++)
+                for (int z = 0; z < layer.Z; z++)
+                {
+                    SetBlock(PlannerUI.layerBuffer[x, z], new Point3D(x + 1, layer.Y, z + 1));
+                }
+            UpdateStats();
+            layer.Redraw();
         }
     }
 }

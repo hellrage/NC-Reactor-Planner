@@ -23,13 +23,13 @@ namespace NC_Reactor_Planner
         public double HeatGenerationPerTick { get => _heatGenerationPerTick; private set => _heatGenerationPerTick = value; }
         public ModeratorTypes ModeratorType { get => _moderatorType; private set => _moderatorType = value; }
 
-        public Moderator(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Moderator, texture, position)
+        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             HeatGenerationPerTick = 0;
             Active = false;
         }
 
-        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.Texture, position)
+        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position)
         {
         }
 

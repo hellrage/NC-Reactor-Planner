@@ -63,6 +63,7 @@ namespace NC_Reactor_Planner
 
         public void RedrawSelf()
         {
+            block = Reactor.BlockAt(block.Position);
             if (!Image.Equals(block.Texture))
             {
                 Image.Dispose();

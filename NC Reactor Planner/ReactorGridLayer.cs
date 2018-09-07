@@ -11,7 +11,7 @@ namespace NC_Reactor_Planner
     public class ReactorGridLayer : Panel
     {
         private ReactorGridCell[,] cells;
-        //private MenuStrip menu;
+        private MenuStrip menu;
         private int _x;
         private int _y;
         private int _z;
@@ -26,26 +26,55 @@ namespace NC_Reactor_Planner
             Y = y;
             Z = (int)Reactor.interiorDims.Z;
 
-            Size = new Size(X * PlannerUI.blockSize, Z * PlannerUI.blockSize);
+            ConstructMenu();
+
+            Size = new Size(X * PlannerUI.blockSize, Z * PlannerUI.blockSize + menu.Height);
             Visible = true;
             BorderStyle = BorderStyle.FixedSingle;
 
             ReloadCells();
         }
 
+        private void ConstructMenu()
+        {
+            menu = new MenuStrip();
+            menu.Dock = DockStyle.None;
+            ToolStripMenuItem editMenu = new ToolStripMenuItem { Name = "Edit", Text = "Edit"};
+            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Clear", Text = "Clear layer" });
+            editMenu.DropDownItems["Clear"].Click += new EventHandler(MenuClear);
+            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Copy", Text = "Copy layer" });
+            editMenu.DropDownItems["Copy"].Click += new EventHandler(MenuCopy);
+            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Paste", Text = "Paste layer" });
+            editMenu.DropDownItems["Paste"].Click += new EventHandler(MenuPaste);
+            menu.Items.Add(editMenu);
+
+            ToolStripMenuItem manageMenu = new ToolStripMenuItem { Name = "Manage", Text = "Manage" };
+            manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Delete", Text = "Delete layer" });
+            manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert after", Text = "Insert a new layer after this one" });
+            manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
+            menu.Items.Add(manageMenu);
+
+            menu.Location = new Point(0, 0);
+            menu.Visible = true;
+            Controls.Add(menu);
+            Refresh();
+        }
+
         public void ReloadCells()
         {
-            Controls.Clear();
             if (cells != null)
                 foreach (ReactorGridCell c in cells)
+                {
                     c.Dispose();
+                    Controls.Remove(c);
+                }
             cells = new ReactorGridCell[X, Z];
             Point location;
 
             for (int x = 0; x < X; x++)
                 for (int z = 0; z < Z; z++)
                 {
-                    location = new Point(PlannerUI.blockSize * x, PlannerUI.blockSize * z);
+                    location = new Point(PlannerUI.blockSize * x, menu.Height + PlannerUI.blockSize * z);
                     ReactorGridCell cell = (new ReactorGridCell
                     {
                         Size = new Size(PlannerUI.blockSize, PlannerUI.blockSize),
@@ -72,7 +101,7 @@ namespace NC_Reactor_Planner
             Size = new Size(bs * X, bs * Z);
             Point location;
 
-            foreach (ReactorGridCell cell in Controls)
+            foreach (ReactorGridCell cell in cells)
             {
                 location = new Point(bs * ((int)cell.block.Position.X - 1), bs * ((int)cell.block.Position.Z - 1));
                 cell.Location = location;
@@ -82,7 +111,7 @@ namespace NC_Reactor_Planner
 
         public void Redraw()
         {
-            foreach (ReactorGridCell cell in Controls)
+            foreach (ReactorGridCell cell in cells)
             {
                 cell.RedrawSelf();
             }
@@ -94,11 +123,11 @@ namespace NC_Reactor_Planner
             int bs = PlannerUI.blockSize;
             Bitmap layerImage = new Bitmap(X * bs, Z * bs);
             using (Graphics g = Graphics.FromImage(layerImage))
-                foreach (ReactorGridCell rgc in Controls)
+                foreach (ReactorGridCell rgc in cells)
                 {
                     System.Windows.Media.Media3D.Point3D pos = rgc.block.Position;
                     g.DrawImage(rgc.Image,
-                                new Rectangle((int)(pos.X - 1) * bs, (int)(pos.Z - 1) * bs, bs, bs),
+                                new Rectangle((int)(pos.X - 1) * bs, menu.Height + (int)(pos.Z - 1) * bs, bs, bs),
                                 new Rectangle(0, 0, bs / scale, bs / scale),
                                 GraphicsUnit.Pixel);
                 }
@@ -111,6 +140,23 @@ namespace NC_Reactor_Planner
             {
                 cell.ResetRedrawn();
             }
+        }
+
+        private void MenuClear(object sender, EventArgs e)
+        {
+            Reactor.ClearLayer(this);
+            ((PlannerUI)(Parent.Parent)).RefreshStats();
+        }
+
+        private void MenuCopy(object sender, EventArgs e)
+        {
+            Reactor.CopyLayer(this);
+        }
+
+        private void MenuPaste(object sender, EventArgs e)
+        {
+            Reactor.PasteLayer(this);
+            ((PlannerUI)(Parent.Parent)).RefreshStats();
         }
     }
 }
