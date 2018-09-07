@@ -225,11 +225,7 @@ namespace NC_Reactor_Planner
                 if (!(coolers.ContainsKey(type)))
                     continue;
                 foreach (Cooler cooler in coolers[type])
-                {
                     cooler.UpdateStats();
-                    //cooler.NewCheckPlacementValid();
-                    //cooler.CheckPlacementValid();
-                }
             }
         }
 
@@ -260,13 +256,19 @@ namespace NC_Reactor_Planner
 
             report += "\r\n";
             report += "Heat:\r\n";
+            int heatDiff = (int)(totalHeatPerTick - totalCoolingPerTick);
+            int reactorVolume = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
+            int blockHeatCapacity = 25000;
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat gen.", (int)totalHeatPerTick + " HU/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", (int)(totalHeatPerTick - totalCoolingPerTick) + " HU/t");
-            
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", heatDiff + " HU/t");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Meltdown time", (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
+
+
             report += "\r\n";
             report += "Energy:\r\n";
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Effective E. gen.", ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Efficiency", (int)efficiency + " %");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat mult.", (int)heatMulti + " %");
 

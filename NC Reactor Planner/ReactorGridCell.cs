@@ -40,9 +40,11 @@ namespace NC_Reactor_Planner
 
             Reactor.UpdateStats();
 
-            PlannerUI.gridToolTip.Hide(this);
-
             ((PlannerUI)Parent.Parent.Parent).RefreshStats();
+
+            RedrawSelf();
+            PlannerUI.gridToolTip.Active = false;
+            PlannerUI.gridToolTip.Active = true;
         }
 
         public void Mouse_Move(object sender, EventArgs e)
@@ -52,13 +54,11 @@ namespace NC_Reactor_Planner
             if (Palette.PlacingSameBlock(block, ((MouseEventArgs)e).Button))
                 return;
             Clicked(sender, e);
-            RedrawSelf();
         }
 
         public void Mouse_Down(object sender, EventArgs e)
         {
             Capture = false;
-            PlannerUI.gridToolTip.Hide(this);
         }
 
         public void RedrawSelf()

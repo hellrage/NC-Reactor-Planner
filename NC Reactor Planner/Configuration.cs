@@ -133,6 +133,8 @@ namespace NC_Reactor_Planner
 
         public static void ResetToDefaults()
         {
+            configFileInfo = null;
+
             Coolers = new Dictionary<string, CoolerValues>();
             SetDefaultCoolers();
 

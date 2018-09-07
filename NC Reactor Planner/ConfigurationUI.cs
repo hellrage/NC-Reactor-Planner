@@ -162,8 +162,9 @@ namespace NC_Reactor_Planner
             {
                 MessageBox.Show(ex.Message + "\r\nThere were invalid values in the config, validation is NYI so i had to reset to defaults, sorry!");
                 Configuration.ResetToDefaults();
-                Reactor.ReloadValuesFromConfig();
                 ReloadTabs();
+                Reactor.ReloadValuesFromConfig();
+                Reactor.UpdateStats();
                 return false;
             }
         }

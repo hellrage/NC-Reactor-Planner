@@ -245,7 +245,7 @@ namespace NC_Reactor_Planner
 
         private void NewRedraw()
         {
-            gridToolTip.RemoveAll();
+            //gridToolTip.RemoveAll();
             if (drawAllLayers)
                 Reactor.RedrawAllLayers();
             else
@@ -469,6 +469,7 @@ namespace NC_Reactor_Planner
             Reactor.usedFuel = selectedFuel; //[TODO]Change to a method you criminal
 
             Reactor.UpdateStats();
+            Reactor.RedrawAllLayers();//[TODO]Change redraw logic so it only does the active layer
             RefreshStats();
         }
 
