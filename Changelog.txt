@@ -42,6 +42,5 @@
 	The app now initially starts with a blank 5x5x5 reactor open.
 	Added a warning when there's no json.NET dll present.
 	Default setting values are now NuclearCraft 2.11c vanilla ones.
-07.09.18 v1.1.4
-	More tooltip changes, hopefully fixed all the display bugs related to them.
-	Added effective energy generation and meltdown time to the stats. Thanks to Jox+Snarklord for the formulas.
+	Reordered the stats output.
+	Shuffled aroun the UI a bit.
