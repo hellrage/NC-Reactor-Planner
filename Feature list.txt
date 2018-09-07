@@ -20,15 +20,17 @@ Simulation:
     Total number of casings needed to cover the outer layer.
     Total cooling generated per tick per cooler type.
     Total cooling, heat, heat difference generated per tick.
+    Meltdown time.
     Total energy generated per tick.
+    Effective energy generated per tick.
     Efficiency, heat multiplier.
-*All blocks have a tooltip that shows extensive info about them.
+*All blocks have tooltips that show extensive info about them.
 
 Configuration:
 *Cooler and fuel values are configurable.
 *General fission reactor values are configurable.
-*Default (vanills 2.11c) configuration is loaded on application start, you need to reload your config file every session for now, this is planned to improve in the next version.
 *You can save/load your configuration settings to a separate file if you want to have (possibly multiple) non-default value sets. Check out the config menu.
+*If there is no DefaultConfig.json file in the app's directory, one will be generated with vanilla 2.11c values. This configuration is loaded on application start, overwrite it to have your custom values persist between sessions\versions.
 
 Misc:
 *There are tooltips for most ui elements and blocks.
