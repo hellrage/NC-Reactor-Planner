@@ -15,17 +15,31 @@ namespace NC_Reactor_Planner
         [STAThread]
         static void Main()
         {
-
-            FileInfo jsonDll = new FileInfo("Newtonsoft.json.dll");
-            if(!jsonDll.Exists)
-                MessageBox.Show("You do not have the required dll (Newtonsoft.json.dll) in the application folder, it is a dependency! Please download it from the same mediafire link you got the release from and put it next to the executable. The application will work but it's going to crash when you attempt to save your reactor\\configuration");
-
-            Properties.Settings.Default.Upgrade();
-            Configuration.ResetToDefaults();
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            PreStartUp();
             Application.Run(new PlannerUI());
+        }
+
+        static void PreStartUp()
+        {
+            FileInfo jsonDll = new FileInfo("Newtonsoft.json.dll");
+            if (!jsonDll.Exists)
+                MessageBox.Show("You do not have the required dll (Newtonsoft.json.dll) in the application folder, it is a dependency! Please download it from the same mediafire link you got the release from and put it next to the executable. The application will work but it's going to crash when you attempt to save your reactor\\configuration");
+
+            Configuration.ResetToDefaults();
+            Reactor.InitializeReactor(5, 5, 5);
+
+            FileInfo defaultConfig = new FileInfo("DefaultConfig.json");
+            if (!defaultConfig.Exists)
+                Configuration.Save(defaultConfig);
+            else
+                if(!Configuration.Load(defaultConfig))
+                {
+                    MessageBox.Show("Unable to load default configuration, resetting to hardcoded defaults...");
+                    Configuration.ResetToDefaults();
+                }
         }
     }
 }

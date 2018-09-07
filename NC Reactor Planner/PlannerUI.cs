@@ -96,7 +96,6 @@ namespace NC_Reactor_Planner
             appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
             this.Text = appName;
 
-            Reactor.InitializeReactor((int)(reactorHight.Value = 5), (int)(reactorLength.Value = 5), (int)(reactorWidth.Value = 5));
             NewResetLayout(true);
         }
 
