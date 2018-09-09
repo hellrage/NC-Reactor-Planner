@@ -76,6 +76,11 @@ namespace NC_Reactor_Planner
             return Active;
         }
 
+        public override Block Copy(Point3D newPosition)
+        {
+            return new Moderator(this, newPosition);
+        }
+
     }
 
     public enum ModeratorTypes

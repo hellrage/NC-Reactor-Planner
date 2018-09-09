@@ -115,7 +115,9 @@ namespace NC_Reactor_Planner
 
         public static void ConstructLayers()
         {
+            DisposeClearLayers();
             layers = new List<ReactorGridLayer>();
+
             for (int y = 1; y <= interiorDims.Y; y++)
             {
                 layers.Add(new ReactorGridLayer(y));
@@ -124,7 +126,18 @@ namespace NC_Reactor_Planner
 
         public static void ConstructLayer(int layer)
         {
+            DisposeClearLayers();
             layers = new List<ReactorGridLayer>{new ReactorGridLayer(layer)};
+        }
+
+        private static void DisposeClearLayers()
+        {
+            if (layers != null)
+            {
+                foreach (ReactorGridLayer layer in layers)
+                    layer.Dispose();
+                layers.Clear();
+            }
         }
 
         public static void CauseRedraw(object sender, EventArgs e)
@@ -507,23 +520,7 @@ namespace NC_Reactor_Planner
 
         public static void SetBlock(Block block, Point3D position)
         {
-
-            if(block.BlockType == BlockTypes.Air)
-            {
-                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new Block(block.DisplayName, block.BlockType, Palette.textures[block.DisplayName], position);
-            }
-            else if(block.BlockType == BlockTypes.FuelCell)
-            {
-                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new FuelCell(block.DisplayName, Palette.textures[block.DisplayName], position);
-            }
-            else if(block is Moderator moderator)
-            {
-                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new Moderator(moderator, position);
-            }
-            else if(block is Cooler cooler)
-            {
-                blocks[(int)position.X, (int)position.Y, (int)position.Z] = new Cooler(cooler, position);
-            }
+            blocks[(int)position.X, (int)position.Y, (int)position.Z] = block.Copy(position);
         }
 
         public static void ClearLayer(ReactorGridLayer layer)
@@ -557,6 +554,73 @@ namespace NC_Reactor_Planner
                 }
             UpdateStats();
             layer.Redraw();
+        }
+
+        public static void DeleteLayer(int y)
+        {
+            if (y == 0 | y == interiorDims.Y + 1)
+                throw new ArgumentException("Tried to delete a casing layer!");
+
+            //This is just for visualization of debug info
+            using (TextWriter tw = File.CreateText("ReactorBefore.txt"))
+            {
+                for (int layer = 0; layer <= interiorDims.Y + 1; layer++)
+                {
+                    for (int z = 0; z < interiorDims.Z + 2; z++)
+                    {
+                        for (int x = 0; x < interiorDims.X + 2; x++)
+                        {
+                            tw.Write(string.Format("{0, 10}", blocks[x, layer, z].Position.ToString()));
+                        }
+                        tw.WriteLine();
+                    }
+                    tw.WriteLine();
+                }
+            }
+
+
+            Block[,,] newReactor = new Block[(int)interiorDims.X + 2, (int)interiorDims.Y + 1, (int)interiorDims.Z + 2];
+            for (int layer = 0; layer < y; layer++)
+            {
+                for (int x = 0; x < interiorDims.X+2; x++)
+                {
+                    for (int z = 0; z < interiorDims.Z+2; z++)
+                    {
+                        newReactor[x, layer, z] = blocks[x, layer, z].Copy(new Point3D(x, layer, z));
+                    }
+                }
+            }
+            for (int layer = y+1; layer <= interiorDims.Y+1; layer++)
+            {
+                for (int x = 0; x < interiorDims.X + 2; x++)
+                {
+                    for (int z = 0; z < interiorDims.Z + 2; z++)
+                    {
+                        newReactor[x, layer-1, z] = blocks[x, layer, z].Copy(new Point3D(x, layer-1, z));
+                    }
+                }
+            }
+
+
+            blocks = newReactor;
+            interiorDims = new Size3D(interiorDims.X, interiorDims.Y - 1, interiorDims.Z);
+
+            //This is just for visualization of debug info
+            using (TextWriter tw = File.CreateText("ReactorAfter.txt"))
+            {
+                for (int layer = 0; layer <= interiorDims.Y + 1; layer++)
+                {
+                    for (int z = 0; z < interiorDims.Z + 2; z++)
+                    {
+                        for (int x = 0; x < interiorDims.X + 2; x++)
+                        {
+                            tw.Write(string.Format("{0, 10}", blocks[x, layer, z].Position.ToString()));
+                        }
+                        tw.WriteLine();
+                    }
+                    tw.WriteLine();
+                }
+            }
         }
     }
 }

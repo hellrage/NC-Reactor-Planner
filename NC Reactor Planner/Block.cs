@@ -49,6 +49,11 @@ namespace NC_Reactor_Planner
         {
         }
 
+        public virtual Block Copy(Point3D newPosition)
+        {
+            return new Block(DisplayName, BlockType, Texture, newPosition);
+        }
+
         public virtual bool NeedsRedraw()
         {
             return false;

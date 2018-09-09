@@ -49,3 +49,7 @@
 	The app now generates a default configuration file that's loaded on startup. Overwrite it to have your custom settings persist between launches.
 	Added effective energy generation and meltdown time to the stats. (Thanks to Jox+Snarklord for the formulas.)
 	Added used fuel to PNG export.
+07.09.18 v1.2.0
+	Added a menustrip to each layer to reduce UI clutter, new layer manipulation features are going in there.
+	Implemented layer clearing, copying and pasting!
+	The Management tab is a placeholder and doesn't do anything yet.

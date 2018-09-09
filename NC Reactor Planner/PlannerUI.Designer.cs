@@ -31,7 +31,7 @@
             this.paletteTable = new System.Windows.Forms.TableLayoutPanel();
             this.reactorWidth = new System.Windows.Forms.NumericUpDown();
             this.reactorLength = new System.Windows.Forms.NumericUpDown();
-            this.reactorHight = new System.Windows.Forms.NumericUpDown();
+            this.reactorHeight = new System.Windows.Forms.NumericUpDown();
             this.sizeLabel = new System.Windows.Forms.Label();
             this.x1 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -60,7 +60,7 @@
             this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.reactorHight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).BeginInit();
             this.SuspendLayout();
@@ -103,7 +103,7 @@
             this.reactorWidth.Size = new System.Drawing.Size(40, 20);
             this.reactorWidth.TabIndex = 1;
             this.reactorWidth.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             0});
@@ -126,34 +126,34 @@
             this.reactorLength.Size = new System.Drawing.Size(40, 20);
             this.reactorLength.TabIndex = 3;
             this.reactorLength.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             0});
             this.reactorLength.Enter += new System.EventHandler(this.reactorLength_Enter);
             // 
-            // reactorHight
+            // reactorHeight
             // 
-            this.reactorHight.Location = new System.Drawing.Point(72, 61);
-            this.reactorHight.Maximum = new decimal(new int[] {
+            this.reactorHeight.Location = new System.Drawing.Point(72, 61);
+            this.reactorHeight.Maximum = new decimal(new int[] {
             24,
             0,
             0,
             0});
-            this.reactorHight.Minimum = new decimal(new int[] {
+            this.reactorHeight.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.reactorHight.Name = "reactorHight";
-            this.reactorHight.Size = new System.Drawing.Size(40, 20);
-            this.reactorHight.TabIndex = 2;
-            this.reactorHight.Value = new decimal(new int[] {
-            1,
+            this.reactorHeight.Name = "reactorHeight";
+            this.reactorHeight.Size = new System.Drawing.Size(40, 20);
+            this.reactorHeight.TabIndex = 2;
+            this.reactorHeight.Value = new decimal(new int[] {
+            5,
             0,
             0,
             0});
-            this.reactorHight.Enter += new System.EventHandler(this.reactorHight_Enter);
+            this.reactorHeight.Enter += new System.EventHandler(this.reactorHeight_Enter);
             // 
             // sizeLabel
             // 
@@ -310,7 +310,7 @@
             // 
             this.groupBox1.Controls.Add(this.sizeLabel);
             this.groupBox1.Controls.Add(this.reactorWidth);
-            this.groupBox1.Controls.Add(this.reactorHight);
+            this.groupBox1.Controls.Add(this.reactorHeight);
             this.groupBox1.Controls.Add(this.x1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label3);
@@ -496,7 +496,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.reactorHight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).EndInit();
@@ -509,7 +509,7 @@
         private System.Windows.Forms.TableLayoutPanel paletteTable;
         private System.Windows.Forms.NumericUpDown reactorWidth;
         private System.Windows.Forms.NumericUpDown reactorLength;
-        private System.Windows.Forms.NumericUpDown reactorHight;
+        private System.Windows.Forms.NumericUpDown reactorHeight;
         private System.Windows.Forms.Label sizeLabel;
         private System.Windows.Forms.Label x1;
         private System.Windows.Forms.Label label1;

@@ -18,9 +18,19 @@ namespace NC_Reactor_Planner
 
         }
 
+        public Casing(Casing parent, Point3D position) : base(parent.DisplayName, BlockTypes.Casing, parent.Texture, position)
+        {
+
+        }
+
         public override bool IsActive()
         {
             return true;
+        }
+
+        public override Block Copy(Point3D newPosition)
+        {
+            return new Casing(this, newPosition);
         }
 
     }

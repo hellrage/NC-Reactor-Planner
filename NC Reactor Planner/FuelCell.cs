@@ -154,5 +154,10 @@ namespace NC_Reactor_Planner
         {
             return true;
         }
+
+        public override Block Copy(Point3D newPosition)
+        {
+            return new FuelCell(this, newPosition);
+        }
     }
 }

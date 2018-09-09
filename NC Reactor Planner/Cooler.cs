@@ -206,6 +206,11 @@ namespace NC_Reactor_Planner
         {
             return Active;
         }
+
+        public override Block Copy(Point3D newPosition)
+        {
+            return new Cooler(this, Position);
+        }
     }
 
     public enum CoolerTypes

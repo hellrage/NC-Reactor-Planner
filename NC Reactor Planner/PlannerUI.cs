@@ -34,12 +34,15 @@ namespace NC_Reactor_Planner
         public PlannerUI()
         {
             InitializeComponent();
-            appName = "NC Reactor Planner";
+
+            Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
+            this.Text = appName;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            blockSize = (int)(Palette.textures["Air"].Size.Height * imageScale.Value);
+            blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
 
             borderGraphics = paletteTable.CreateGraphics();
             borderPen = new Pen(Color.Blue, 4);
@@ -48,8 +51,21 @@ namespace NC_Reactor_Planner
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
 
-            paletteLabel.Text = "Palette";
+            SetUpToolTips();
 
+            SetUpPalette();
+
+            this.MouseMove += new MouseEventHandler(PaletteBlockLostFocus);
+
+            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
+
+            SetUIToolTips();
+
+            NewResetLayout(false);
+        }
+
+        private void SetUpToolTips()
+        {
             paletteToolTip = new ToolTip
             {
                 AutoPopDelay = 10000,
@@ -60,19 +76,32 @@ namespace NC_Reactor_Planner
             gridToolTip = new ToolTip
             {
                 AutoPopDelay = 10000,
-                InitialDelay = 600,
+                InitialDelay = 1200,
                 ReshowDelay = 1000,
-                ShowAlways = true,
             };
+        }
 
-            paletteTable.Hide();
+        private void SetUIToolTips()
+        {
+            paletteToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
+            paletteToolTip.SetToolTip(reactorHeight, "Reactor hight (number of internal layers)");
+            paletteToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
+            paletteToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
+            paletteToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
+            paletteToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once. Laggy and crash-prone at extreme reactor sizes in \"All layers\" mode (you'll get a warning)");
+            paletteToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
+            paletteToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Doubleclick to confirm (overwrites your current layout! Save if you want to keep it.)");
+        }
 
+        private void SetUpPalette()
+        {
+            paletteLabel.Text = "Palette";
 
-            //Palette.LoadPalette();
             foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
             {
                 paletteTable.Controls.Add(new ReactorGridCell { block = kvp.Key, Image = kvp.Key.Texture, SizeMode = PictureBoxSizeMode.Zoom });
             }
+
             foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
             {
                 paletteToolTip.SetToolTip(paletteBlock, paletteBlock.block.GetToolTip());
@@ -81,34 +110,9 @@ namespace NC_Reactor_Planner
             }
 
             Palette.selectedBlock = (ReactorGridCell)paletteTable.Controls[0];
-            Palette.selectedType = Palette.blocks[Palette.selectedBlock.block];
-
-            paletteTable.Show();
-            paletteTable.Refresh();
+            Palette.selectedType = Palette.selectedBlock.block.BlockType;
 
             paletteTable.MouseLeave += new EventHandler(PaletteBlockLostFocus);
-            this.MouseMove += new MouseEventHandler(PaletteBlockLostFocus);
-
-            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
-
-            SetUIToolTips();
-            Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
-            this.Text = appName;
-
-            NewResetLayout(true);
-        }
-
-        private void SetUIToolTips()
-        {
-            paletteToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
-            paletteToolTip.SetToolTip(reactorHight, "Reactor hight (number of internal layers)");
-            paletteToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
-            paletteToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
-            paletteToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
-            paletteToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once. Laggy and crash-prone at extreme reactor sizes in \"All layers\" mode (you'll get a warning)");
-            paletteToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
-            paletteToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Doubleclick to confirm (overwrites your current layout! Save if you want to keep it.)");
         }
 
         private void ResetButtonFocusLost(object sender, EventArgs e)
@@ -165,38 +169,30 @@ namespace NC_Reactor_Planner
                 resetLayout.Text = "Confirm reset?";
         }
 
-        private void NewResetLayout(bool loading)
+        public void NewResetLayout(bool loading)
         {
-            totalBlocks = (int)(reactorLength.Value * reactorWidth.Value * reactorHight.Value);
+            totalBlocks = (int)(reactorLength.Value * reactorWidth.Value * reactorHeight.Value);
 
             if (drawAllLayers && !IsCrashRobust())
                 SwitchToPerLayer();
 
-            if(!drawAllLayers)
-                layerScrollBar.Enabled = true;
-
-            layerScrollBar.Value = 1;
-            layerLabel.Text = "Layer 1";
-            saveReactor.Enabled = true;
-            viewStyleSwitch.Enabled = true;
-            saveAsImage.Enabled = true;
-            imageScale.Enabled = true;
-            fuelSelector.Enabled = true;
-            fuelBasePower.Enabled = true;
-            fuelBaseHeat.Enabled = true;
-            OpenConfig.Enabled = true;
+            EnableUIElements();
 
             gridToolTip.RemoveAll();
 
-            ClearDisposeLayers();
+            //ClearDisposeLayers(); //Layers are handlel by the reactor
+            reactorGrid.Controls.Clear();
 
             if (!loading)
             {
                 loadedSaveFileInfo = null;
-                Reactor.InitializeReactor((int)reactorWidth.Value, (int)reactorHight.Value, (int)reactorLength.Value);
+                Reactor.InitializeReactor((int)reactorWidth.Value, (int)reactorHeight.Value, (int)reactorLength.Value);
             }
             else
             {
+                reactorWidth.Value = (int)Reactor.interiorDims.X;
+                reactorHeight.Value = (int)Reactor.interiorDims.Y;
+                reactorLength.Value = (int)Reactor.interiorDims.Z;
                 Reactor.ConstructLayers();
             }
 
@@ -219,8 +215,26 @@ namespace NC_Reactor_Planner
             }
 
             fuelSelector.SelectedItem = Reactor.usedFuel;
+            Reactor.UpdateStats();
             RefreshStats();
 
+        }
+
+        private void EnableUIElements()
+        {
+            if (!drawAllLayers)
+                layerScrollBar.Enabled = true;
+
+            layerScrollBar.Value = 1;
+            layerLabel.Text = "Layer 1";
+            saveReactor.Enabled = true;
+            viewStyleSwitch.Enabled = true;
+            saveAsImage.Enabled = true;
+            imageScale.Enabled = true;
+            fuelSelector.Enabled = true;
+            fuelBasePower.Enabled = true;
+            fuelBaseHeat.Enabled = true;
+            OpenConfig.Enabled = true;
         }
 
         private void ClearDisposeLayers()
@@ -333,7 +347,7 @@ namespace NC_Reactor_Planner
                     return;
             }
 
-            reactorHight.Value = (decimal)Reactor.interiorDims.Y;
+            reactorHeight.Value = (decimal)Reactor.interiorDims.Y;
             reactorLength.Value = (decimal)Reactor.interiorDims.Z;
             reactorWidth.Value = (decimal)Reactor.interiorDims.X;
 
@@ -477,9 +491,9 @@ namespace NC_Reactor_Planner
             reactorWidth.Select(0, reactorWidth.Value.ToString().Length);
         }
 
-        private void reactorHight_Enter(object sender, EventArgs e)
+        private void reactorHeight_Enter(object sender, EventArgs e)
         {
-            reactorHight.Select(0, reactorHight.Value.ToString().Length);
+            reactorHeight.Select(0, reactorHeight.Value.ToString().Length);
         }
 
         private void reactorLength_Enter(object sender, EventArgs e)

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace NC_Reactor_Planner
 {
@@ -50,6 +51,7 @@ namespace NC_Reactor_Planner
 
             ToolStripMenuItem manageMenu = new ToolStripMenuItem { Name = "Manage", Text = "Manage" };
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Delete", Text = "Delete layer" });
+            manageMenu.DropDownItems["Delete"].Click += new EventHandler(MenuDelete);
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert after", Text = "Insert a new layer after this one" });
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
             menu.Items.Add(manageMenu);
@@ -98,12 +100,12 @@ namespace NC_Reactor_Planner
         public void Rescale()
         {
             int bs = PlannerUI.blockSize;
-            Size = new Size(bs * X, bs * Z);
+            Size = new Size(bs * X, bs * Z + menu.Height);
             Point location;
 
             foreach (ReactorGridCell cell in cells)
             {
-                location = new Point(bs * ((int)cell.block.Position.X - 1), bs * ((int)cell.block.Position.Z - 1));
+                location = new Point(bs * ((int)cell.block.Position.X - 1), menu.Height + bs * ((int)cell.block.Position.Z - 1));
                 cell.Location = location;
                 cell.Size = new Size(bs, bs);
             }
@@ -111,9 +113,17 @@ namespace NC_Reactor_Planner
 
         public void Redraw()
         {
-            foreach (ReactorGridCell cell in cells)
+            using (TextWriter tw = File.CreateText(Y.ToString() + ".txt"))
             {
-                cell.RedrawSelf();
+                int x = 0;
+                foreach (ReactorGridCell cell in cells)
+                {
+                    if (x%X == 0)
+                        tw.WriteLine();
+                    tw.Write(string.Format("{0, 10}", cell.block.Position.ToString()));
+                    x++;
+                    cell.RedrawSelf();
+                }
             }
         }
 
@@ -127,7 +137,7 @@ namespace NC_Reactor_Planner
                 {
                     System.Windows.Media.Media3D.Point3D pos = rgc.block.Position;
                     g.DrawImage(rgc.Image,
-                                new Rectangle((int)(pos.X - 1) * bs, menu.Height + (int)(pos.Z - 1) * bs, bs, bs),
+                                new Rectangle((int)(pos.X - 1) * bs, (int)(pos.Z - 1) * bs, bs, bs),
                                 new Rectangle(0, 0, bs / scale, bs / scale),
                                 GraphicsUnit.Pixel);
                 }
@@ -157,6 +167,15 @@ namespace NC_Reactor_Planner
         {
             Reactor.PasteLayer(this);
             ((PlannerUI)(Parent.Parent)).RefreshStats();
+        }
+
+        private void MenuDelete(object sender, EventArgs e)
+        {
+            if (Reactor.layers.Count <= 1)
+                return;
+            Reactor.DeleteLayer(Y);
+            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
+            //((PlannerUI)(Parent.Parent)).RefreshStats();
         }
     }
 }
