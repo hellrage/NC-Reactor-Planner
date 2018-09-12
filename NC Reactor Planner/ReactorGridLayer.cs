@@ -53,7 +53,9 @@ namespace NC_Reactor_Planner
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Delete", Text = "Delete layer" });
             manageMenu.DropDownItems["Delete"].Click += new EventHandler(MenuDelete);
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert after", Text = "Insert a new layer after this one" });
+            manageMenu.DropDownItems["Insert after"].Click += new EventHandler(MenuInsertAfter);
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
+            manageMenu.DropDownItems["Insert before"].Click += new EventHandler(MenuInsertBefore);
             menu.Items.Add(manageMenu);
 
             menu.Location = new Point(0, 0);
@@ -113,17 +115,9 @@ namespace NC_Reactor_Planner
 
         public void Redraw()
         {
-            using (TextWriter tw = File.CreateText(Y.ToString() + ".txt"))
+            foreach (ReactorGridCell cell in cells)
             {
-                int x = 0;
-                foreach (ReactorGridCell cell in cells)
-                {
-                    if (x%X == 0)
-                        tw.WriteLine();
-                    tw.Write(string.Format("{0, 10}", cell.block.Position.ToString()));
-                    x++;
-                    cell.RedrawSelf();
-                }
+                cell.RedrawSelf();
             }
         }
 
@@ -175,7 +169,28 @@ namespace NC_Reactor_Planner
                 return;
             Reactor.DeleteLayer(Y);
             ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
-            //((PlannerUI)(Parent.Parent)).RefreshStats();
+        }
+
+        private void MenuInsertBefore(object sender, EventArgs e)
+        {
+            if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
+            {
+                MessageBox.Show("Reactor at max size!");
+                return;
+            }
+            Reactor.InsertLayer(Y);
+            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
+        }
+
+        private void MenuInsertAfter(object sender, EventArgs e)
+        {
+            if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
+            {
+                MessageBox.Show("Reactor at max size!");
+                return;
+            }
+            Reactor.InsertLayer(Y+1);
+            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
         }
     }
 }

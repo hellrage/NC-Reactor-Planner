@@ -53,3 +53,5 @@
 	Added a menustrip to each layer to reduce UI clutter, new layer manipulation features are going in there.
 	Implemented layer clearing, copying and pasting!
 	The Management tab is a placeholder and doesn't do anything yet.
+12.09.18 v1.2.0
+	Implemented the management tab, you can now delete and insert layers!

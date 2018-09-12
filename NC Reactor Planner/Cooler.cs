@@ -209,7 +209,7 @@ namespace NC_Reactor_Planner
 
         public override Block Copy(Point3D newPosition)
         {
-            return new Cooler(this, Position);
+            return new Cooler(this, newPosition);
         }
     }
 

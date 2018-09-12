@@ -546,6 +546,11 @@ namespace NC_Reactor_Planner
         {
             if (PlannerUI.layerBuffer == null)
                 return;
+            if (PlannerUI.layerBuffer.Length != layer.X * layer.Z)
+            {
+                System.Windows.Forms.MessageBox.Show("Buffered layer size doesn't match the layout!");
+                return;
+            }
 
             for (int x = 0; x < layer.X; x++)
                 for (int z = 0; z < layer.Z; z++)
@@ -561,24 +566,6 @@ namespace NC_Reactor_Planner
             if (y == 0 | y == interiorDims.Y + 1)
                 throw new ArgumentException("Tried to delete a casing layer!");
 
-            //This is just for visualization of debug info
-            using (TextWriter tw = File.CreateText("ReactorBefore.txt"))
-            {
-                for (int layer = 0; layer <= interiorDims.Y + 1; layer++)
-                {
-                    for (int z = 0; z < interiorDims.Z + 2; z++)
-                    {
-                        for (int x = 0; x < interiorDims.X + 2; x++)
-                        {
-                            tw.Write(string.Format("{0, 10}", blocks[x, layer, z].Position.ToString()));
-                        }
-                        tw.WriteLine();
-                    }
-                    tw.WriteLine();
-                }
-            }
-
-
             Block[,,] newReactor = new Block[(int)interiorDims.X + 2, (int)interiorDims.Y + 1, (int)interiorDims.Z + 2];
             for (int layer = 0; layer < y; layer++)
             {
@@ -590,7 +577,7 @@ namespace NC_Reactor_Planner
                     }
                 }
             }
-            for (int layer = y+1; layer <= interiorDims.Y+1; layer++)
+            for (int layer = y + 1; layer <= interiorDims.Y+1; layer++)
             {
                 for (int x = 0; x < interiorDims.X + 2; x++)
                 {
@@ -601,26 +588,44 @@ namespace NC_Reactor_Planner
                 }
             }
 
-
             blocks = newReactor;
             interiorDims = new Size3D(interiorDims.X, interiorDims.Y - 1, interiorDims.Z);
 
-            //This is just for visualization of debug info
-            using (TextWriter tw = File.CreateText("ReactorAfter.txt"))
+        }
+
+        public static void InsertLayer(int y)
+        {
+            Block[,,] newReactor = new Block[(int)interiorDims.X + 2, (int)interiorDims.Y + 3, (int)interiorDims.Z + 2];
+            for (int layer = 0; layer < y; layer++)
             {
-                for (int layer = 0; layer <= interiorDims.Y + 1; layer++)
+                for (int x = 0; x < interiorDims.X + 2; x++)
                 {
                     for (int z = 0; z < interiorDims.Z + 2; z++)
                     {
-                        for (int x = 0; x < interiorDims.X + 2; x++)
-                        {
-                            tw.Write(string.Format("{0, 10}", blocks[x, layer, z].Position.ToString()));
-                        }
-                        tw.WriteLine();
+                        newReactor[x, layer, z] = blocks[x, layer, z].Copy(new Point3D(x, layer, z));
                     }
-                    tw.WriteLine();
                 }
             }
+            for (int x = 0; x < interiorDims.X + 2; x++)
+            {
+                for (int z = 0; z < interiorDims.Z + 2; z++)
+                {
+                    newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
+                }
+            }
+            for (int layer = y + 1; layer < interiorDims.Y + 3; layer++)
+            {
+                for (int x = 0; x < interiorDims.X + 2; x++)
+                {
+                    for (int z = 0; z < interiorDims.Z + 2; z++)
+                    {
+                        newReactor[x, layer, z] = blocks[x, layer-1, z].Copy(new Point3D(x, layer, z));
+                    }
+                }
+            }
+
+            blocks = newReactor;
+            interiorDims = new Size3D(interiorDims.X, interiorDims.Y + 1, interiorDims.Z);
         }
     }
 }

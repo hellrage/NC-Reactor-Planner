@@ -8,6 +8,8 @@ Drawing:
 *Precise errors are shown for such coolers in the block's tooltips.
 *Layout can be toggled between showing one layer at a time or all layers side-by-side.
 *Scale can be adjusted using the box in the top right.
+*You can clear, copy and paste layers! Keep in mind you can press the mouse button down on the menu, keep it held when highlighting the option, release when over the option and it will act as if clicked.
+*You can delete and insert empty layers, expanding or contracting your reactor height as needed!
 
 Saving and export:
 *Reactors can be saved/loaded to/from .json.

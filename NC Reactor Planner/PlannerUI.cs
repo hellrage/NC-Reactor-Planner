@@ -197,6 +197,8 @@ namespace NC_Reactor_Planner
             }
 
             UpdateWindowTitle();
+            fuelSelector.SelectedItem = Reactor.usedFuel;
+            Reactor.UpdateStats();
 
             if (drawAllLayers)
             {
@@ -214,8 +216,6 @@ namespace NC_Reactor_Planner
                 layerScrollBar.Maximum = (int)Reactor.interiorDims.Y;
             }
 
-            fuelSelector.SelectedItem = Reactor.usedFuel;
-            Reactor.UpdateStats();
             RefreshStats();
 
         }
