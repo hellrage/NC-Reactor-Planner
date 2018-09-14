@@ -27,10 +27,12 @@ namespace NC_Reactor_Planner
         {
             HeatGenerationPerTick = 0;
             Active = false;
+            ModeratorType = type;
         }
 
         public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position)
         {
+            ModeratorType = parent.ModeratorType;
         }
 
         public void UpdateStats()
