@@ -37,6 +37,7 @@
 06.09.18 v1.1.2
 	Finished cooler placement checking refactoring in preparation for rendering changes.
 	Updated Diamond cooler rules to 2.11b rules (one Water and one Quartz).
+	
 07.09.18 v1.1.3
 	Migrated configuration saving so json, you can now have any number of configuration files and load them into the application as needed.
 	The app now initially starts with a blank 5x5x5 reactor open.
@@ -44,14 +45,18 @@
 	Default setting values are now NuclearCraft 2.11c vanilla ones.
 	Reordered the stats output.
 	Shuffled around the UI a bit.
+	
 07.09.18 v1.1.4
 	More tooltip fixes, hopefully gotten rid of all their display bugs.
 	The app now generates a default configuration file that's loaded on startup. Overwrite it to have your custom settings persist between launches.
 	Added effective energy generation and meltdown time to the stats. (Thanks to Jox+Snarklord for the formulas.)
 	Added used fuel to PNG export.
+	
 07.09.18 v1.2.0
 	Added a menustrip to each layer to reduce UI clutter, new layer manipulation features are going in there.
 	Implemented layer clearing, copying and pasting!
 	The Management tab is a placeholder and doesn't do anything yet.
 12.09.18 v1.2.0
 	Implemented the management tab, you can now delete and insert layers!
+	
+
