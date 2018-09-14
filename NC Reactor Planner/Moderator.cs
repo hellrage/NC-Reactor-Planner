@@ -61,7 +61,7 @@ namespace NC_Reactor_Planner
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " moderator\r\n";
+            string toolTip = DisplayName + " Moderator\r\n";
             if (Position != Palette.dummyPosition)
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);

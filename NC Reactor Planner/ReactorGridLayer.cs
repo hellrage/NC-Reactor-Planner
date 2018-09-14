@@ -27,12 +27,12 @@ namespace NC_Reactor_Planner
             Y = y;
             Z = (int)Reactor.interiorDims.Z;
 
-            ConstructMenu();
-
-            Size = new Size(X * PlannerUI.blockSize, Z * PlannerUI.blockSize + menu.Height);
+            Width = X * PlannerUI.blockSize;
             Visible = true;
             BorderStyle = BorderStyle.FixedSingle;
 
+            ConstructMenu();
+            Height = Z * PlannerUI.blockSize + menu.Height;
             ReloadCells();
         }
 
@@ -40,7 +40,7 @@ namespace NC_Reactor_Planner
         {
             menu = new MenuStrip();
             menu.Dock = DockStyle.None;
-            ToolStripMenuItem editMenu = new ToolStripMenuItem { Name = "Edit", Text = "Edit"};
+            ToolStripMenuItem editMenu = new ToolStripMenuItem { Name = "Edit", Text = "Edit" };
             editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Clear", Text = "Clear layer" });
             editMenu.DropDownItems["Clear"].Click += new EventHandler(MenuClear);
             editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Copy", Text = "Copy layer" });
@@ -57,6 +57,11 @@ namespace NC_Reactor_Planner
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
             manageMenu.DropDownItems["Insert before"].Click += new EventHandler(MenuInsertBefore);
             menu.Items.Add(manageMenu);
+
+            ToolStripMenuItem layerLabel = new ToolStripMenuItem { Name = "LayerLabel", Text = "Layer " + Y.ToString() };
+            menu.Items.Add(layerLabel);
+
+            RescaleMenu();
 
             menu.Location = new Point(0, 0);
             menu.Visible = true;
@@ -110,6 +115,24 @@ namespace NC_Reactor_Planner
                 location = new Point(bs * ((int)cell.block.Position.X - 1), menu.Height + bs * ((int)cell.block.Position.Z - 1));
                 cell.Location = location;
                 cell.Size = new Size(bs, bs);
+            }
+
+            RescaleMenu();
+        }
+
+        private void RescaleMenu()
+        {
+            if (this.Width < 130)
+            {
+                menu.Items["Edit"].Text = "E";
+                menu.Items["Manage"].Text = "M";
+                menu.Items["LayerLabel"].Text = "L " + Y.ToString();
+            }
+            else
+            {
+                menu.Items["Edit"].Text = "Edit";
+                menu.Items["Manage"].Text = "Manage";
+                menu.Items["LayerLabel"].Text = "Layer " + Y.ToString();
             }
         }
 

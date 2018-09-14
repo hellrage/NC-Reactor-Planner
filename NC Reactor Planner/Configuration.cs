@@ -12,15 +12,17 @@ namespace NC_Reactor_Planner
     {
         public Version saveVersion;
         public FissionValues Fission;
+        public CraftingMaterials ResourceCosts;
         public Dictionary<string, FuelValues> Fuels;
         public Dictionary<string, CoolerValues> Coolers;
 
-        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, CoolerValues> c)
+        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, CoolerValues> c, CraftingMaterials cm)
         {
             saveVersion = sv;
             Fission = fs;
             Fuels = f;
             Coolers = c;
+            ResourceCosts = cm;
         }
     }
 
@@ -76,10 +78,27 @@ namespace NC_Reactor_Planner
         }
     }
 
+    public struct CraftingMaterials
+    {
+        public Dictionary<string, Dictionary<string, int>> CoolerCosts;
+        public Dictionary<string, Dictionary<string, int>> ModeratorCosts;
+        public Dictionary<string, int> FuelCellCosts;
+        public Dictionary<string, int> CasingCosts;
+
+        public CraftingMaterials(Dictionary<string, Dictionary<string, int>> clc, Dictionary<string, Dictionary<string, int>> mc, Dictionary<string, int> fcc, Dictionary<string, int> csc)
+        {
+            CoolerCosts = clc;
+            ModeratorCosts = mc;
+            FuelCellCosts = fcc;
+            CasingCosts = csc;
+        }
+    }
+
     public static class Configuration
     {
         //[TODO] incapsulation .\_/.
         public static FissionValues Fission;
+        public static CraftingMaterials ResourceCosts;
         public static Dictionary<string, FuelValues> Fuels;
         public static Dictionary<string, CoolerValues> Coolers;
 
@@ -126,7 +145,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, Coolers);
+                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, Coolers, ResourceCosts);
                 jss.Serialize(tw, cf);
             }
         }
@@ -142,6 +161,8 @@ namespace NC_Reactor_Planner
             SetDefaultFuels();
 
             SetDefaultFission();
+
+            SetDefaultResourceCosts();
         }
 
         private static void SetDefaultFuels()
@@ -229,6 +250,82 @@ namespace NC_Reactor_Planner
             Fission.ModeratorExtraPower = 1.0;
             Fission.ModeratorExtraHeat = 2.0;
             Fission.NeutronReach = 4;
+        }
+
+        private static void SetDefaultResourceCosts()
+        {
+            ResourceCosts.FuelCellCosts = DefaultFuelCellCosts();
+            ResourceCosts.CasingCosts = DefaultCasingCosts();
+            ResourceCosts.ModeratorCosts = DefaultModeratorCosts();
+            ResourceCosts.CoolerCosts = DefaultCoolerCosts();
+        }
+
+        private static Dictionary<string, int> DefaultFuelCellCosts()
+        {
+            Dictionary<string, int> dfcc = new Dictionary<string, int>();
+            dfcc.Add("Glass", 4);
+            dfcc.Add("Tough alloy", 4);
+            return dfcc;
+        }
+
+        private static Dictionary<string, int> DefaultCasingCosts()
+        {
+            Dictionary<string, int> dcc = new Dictionary<string, int>();
+            dcc.Add("Tough alloy", 1);
+            dcc.Add("Basic Plating", 4);
+            return dcc;
+        }
+
+        private static Dictionary<string, Dictionary<string, int>> DefaultModeratorCosts()
+        {
+            Dictionary<string, Dictionary<string, int>> dmc = new Dictionary<string, Dictionary<string, int>>();
+            dmc.Add("Graphite", new Dictionary<string, int>());
+            dmc["Graphite"].Add("Graphite ingot", 1);
+            dmc.Add("Beryllium", new Dictionary<string, int>());
+            dmc["Beryllium"].Add("Beryllium ingot", 1);
+            return dmc;
+        }
+
+        private static Dictionary<string, Dictionary<string, int>> DefaultCoolerCosts()
+        {
+            Dictionary<string, Dictionary<string, int>> dcc = new Dictionary<string, Dictionary<string, int>>();
+
+            foreach (Cooler cooler in Palette.coolers)
+            {
+                dcc.Add(cooler.DisplayName, new Dictionary<string, int>());
+                dcc[cooler.DisplayName].Add("Empty cooler", 1);
+            }
+
+            dcc["Water"].Add("Water Bucket", 1);
+
+            dcc["Redstone"].Add("Redstone", 2);
+            dcc["Redstone"].Add("Block of Redstone", 2);
+
+            dcc["Quartz"].Add("Block of Quartz", 2);
+            dcc["Quartz"].Add("Crushed Quartz", 2);
+
+            dcc["Gold"].Add("Gold ingot", 8);
+
+            dcc["Glowstone"].Add("Glowstone", 2);
+            dcc["Glowstone"].Add("Glowstone Dust", 6);
+
+            dcc["Lapis"].Add("Lapis Lazuli Block", 2);
+
+            dcc["Diamond"].Add("Diamond", 8);
+
+            dcc["Helium"].Add("Liquid Helium Bucket", 1);
+
+            dcc["Iron"].Add("Iron ingot", 8);
+
+            dcc["Emerald"].Add("Emerald", 6);
+
+            dcc["Copper"].Add("Copper ingot", 8);
+
+            dcc["Tin"].Add("Tin ingot", 8);
+
+            dcc["Magnesium"].Add("Magnesium ingot", 8);
+
+            return dcc;
         }
     }
 }

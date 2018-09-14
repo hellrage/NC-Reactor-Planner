@@ -63,5 +63,10 @@ namespace NC_Reactor_Planner
         {
             return false;
         }
+
+        public virtual Dictionary<string, int> GetResourceCosts()
+        {
+            return new Dictionary<string, int>();
+        }
     }
 }

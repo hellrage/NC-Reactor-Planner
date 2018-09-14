@@ -58,5 +58,10 @@
 	The Management tab is a placeholder and doesn't do anything yet.
 12.09.18 v1.2.0
 	Implemented the management tab, you can now delete and insert layers!
-	
+
+15.09.18 v1.2.1
+	This is a "Hot"fix (a week late ugh).
+	Fixed a bug with moderator multipliers, i was using the full config value instead of 1/6.
+	Added layer numbers to individual layers in layer menus.
+	Resource Costs tab is WIP please ignore it for now :P.
 

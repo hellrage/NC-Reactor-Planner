@@ -11,6 +11,22 @@ using System.IO;
 
 namespace NC_Reactor_Planner
 {
+    public struct ResourceCostComboboxItem
+    {
+        public string DisplayText;
+        public object Resources;
+
+        public ResourceCostComboboxItem(string dt, object rs)
+        {
+            DisplayText = dt;
+            Resources = rs;
+        }
+
+        public override string ToString()
+        {
+            return DisplayText;
+        }
+    }
     public partial class ConfigurationUI : Form
     {
         private Dictionary<string, List<Control>> cIFR; //cooler input field rows
@@ -31,6 +47,7 @@ namespace NC_Reactor_Planner
             ReloadCoolersTab();
             ReloadFuelsTab();
             ReloadFissionTab();
+            ReloadResourceCostTab();
         }
 
         private void ReloadCoolersTab()
@@ -100,6 +117,23 @@ namespace NC_Reactor_Planner
             neutronReach.Text = Configuration.Fission.NeutronReach.ToString();
             minSize.Text = Configuration.Fission.MinSize.ToString();
             maxSize.Text = Configuration.Fission.MaxSize.ToString();
+        }
+
+        private void ReloadResourceCostTab()
+        {
+            blockSelector.Items.Add(new ResourceCostComboboxItem("Fuel cell", Configuration.ResourceCosts.FuelCellCosts));
+            blockSelector.Items.Add(new ResourceCostComboboxItem("Casing", Configuration.ResourceCosts.CasingCosts));
+
+            foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.CoolerCosts)
+            {
+                blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Cooler", kvp.Value));
+            }
+
+            foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.ModeratorCosts)
+            {
+                blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Moderator", kvp.Value));
+            }
+
         }
         
         private void DisposeAndClear(Dictionary<string, List<Control>> cl)

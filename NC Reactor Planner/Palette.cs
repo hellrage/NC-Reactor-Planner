@@ -168,7 +168,8 @@ namespace NC_Reactor_Planner
                 if (cooler.DisplayName == displayName)
                     return cooler;
             }
-            return new Cooler(coolers.First(), dummyPosition);
+            //return new Cooler(coolers.First(), dummyPosition);
+            throw new ArgumentException("No such cooler! Looked for: " + displayName);
         }
     }
 

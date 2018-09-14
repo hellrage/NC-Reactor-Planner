@@ -477,6 +477,11 @@ namespace NC_Reactor_Planner
         private void fuelSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             Fuel selectedFuel = (Fuel)fuelSelector.SelectedItem;
+            if(selectedFuel == null)
+            {
+                fuelSelector.Text = "";
+                return;
+            }
             fuelBasePower.Text = selectedFuel.BasePower.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             Reactor.usedFuel = selectedFuel; //[TODO]Change to a method you criminal
