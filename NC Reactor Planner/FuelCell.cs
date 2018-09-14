@@ -81,11 +81,11 @@ namespace NC_Reactor_Planner
             Reactor.totalEnergyPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * (AdjacentCells + 1);
             Reactor.totalHeatPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
 
-            EnergyMultiplier += Configuration.Fission.ModeratorExtraPower * AdjacentModerators * (AdjacentCells + 1);
-            HeatMultiplier += Configuration.Fission.ModeratorExtraHeat * AdjacentModerators * (AdjacentCells + 1);
+            EnergyMultiplier += Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
+            HeatMultiplier += Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
 
-            Reactor.energyMultiplier += Configuration.Fission.ModeratorExtraPower * AdjacentModerators * (AdjacentCells + 1);
-            Reactor.heatMultiplier += Configuration.Fission.ModeratorExtraHeat / 6 * AdjacentModerators * (AdjacentCells + 1);
+            Reactor.energyMultiplier += Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
+            Reactor.heatMultiplier += Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
 
             EnergyProducedPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
             HeatProducedPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
