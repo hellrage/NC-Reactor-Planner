@@ -127,6 +127,9 @@ namespace NC_Reactor_Planner
                 return false;
             }
             Fission = cf.Fission;
+            ResourceCosts = cf.ResourceCosts;
+            if (ResourceCosts.CasingCosts == null)
+                SetDefaultResourceCosts();
             Fuels = cf.Fuels;
             Coolers = cf.Coolers;
             Reactor.ReloadValuesFromConfig();
@@ -280,9 +283,9 @@ namespace NC_Reactor_Planner
         {
             Dictionary<string, Dictionary<string, int>> dmc = new Dictionary<string, Dictionary<string, int>>();
             dmc.Add("Graphite", new Dictionary<string, int>());
-            dmc["Graphite"].Add("Graphite ingot", 1);
+            dmc["Graphite"].Add("Graphite ingot", 9);
             dmc.Add("Beryllium", new Dictionary<string, int>());
-            dmc["Beryllium"].Add("Beryllium ingot", 1);
+            dmc["Beryllium"].Add("Beryllium ingot", 9);
             return dmc;
         }
 

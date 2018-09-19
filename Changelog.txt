@@ -64,5 +64,10 @@
 	Fixed a bug with moderator multipliers, i was using the full config value instead of 1/6.
 	Added layer numbers to individual layers in layer menus.
 	Resource Costs tab is WIP please ignore it for now :P.
+
 15.09.18 v1.2.2
 	Fixed moderators not saving properly and reverting to Beryllium regardless of type.
+
+19.09.18 v1.2.3
+	Fixed a bug with layer modification when inserting a layer.
+	Changed the way Enderium placement validity is checked.

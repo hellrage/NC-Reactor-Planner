@@ -96,7 +96,7 @@ namespace NC_Reactor_Planner
                 case CoolerTypes.Helium:
                     return Active = HasAdjacent(Palette.blockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case CoolerTypes.Enderium:
-                    return Active = HasAdjacent(new Casing("Casing", null, new Point3D()), 3);
+                    return Active = CheckEnderium();
                 case CoolerTypes.Cryotheum:
                     return Active = HasAdjacent(Palette.blockPalette["FuelCell"], 2);
                 case CoolerTypes.Iron:
@@ -194,6 +194,32 @@ namespace NC_Reactor_Planner
                     continue;
                 }
             }
+            return false;
+        }
+
+        private bool CheckEnderium()
+        {
+            double x = Position.X;
+            double y = Position.Y;
+            double z = Position.Z;
+
+            if (y != 1 & y != Reactor.interiorDims.Y)
+            {
+                placementErrors.Add("Not in a corner!");
+                return false;
+            }
+
+            if(Reactor.interiorDims.Y == 1)
+            {
+                placementErrors.Add("Pancake reactor, Enderium won't work here!");
+                return false;
+            }
+
+            if ((x == 1 & z == 1) || (x == 1 & z == Reactor.interiorDims.Z) || (x == Reactor.interiorDims.X & z == 1) || (x == Reactor.interiorDims.X & z == Reactor.interiorDims.Z))
+                return true;
+            else
+                placementErrors.Add("Not in a corner!");
+
             return false;
         }
 

@@ -14,9 +14,9 @@ namespace NC_Reactor_Planner
     public struct ResourceCostComboboxItem
     {
         public string DisplayText;
-        public object Resources;
+        public Dictionary<string,int> Resources;
 
-        public ResourceCostComboboxItem(string dt, object rs)
+        public ResourceCostComboboxItem(string dt, Dictionary<string, int> rs)
         {
             DisplayText = dt;
             Resources = rs;
@@ -31,6 +31,7 @@ namespace NC_Reactor_Planner
     {
         private Dictionary<string, List<Control>> cIFR; //cooler input field rows
         private Dictionary<string, List<Control>> fIFR; //fuel input field rows
+        private Dictionary<string, List<Control>> rDC; //resource Disposable Controls
 
         public ConfigurationUI()
         {
@@ -48,6 +49,7 @@ namespace NC_Reactor_Planner
             ReloadFuelsTab();
             ReloadFissionTab();
             ReloadResourceCostTab();
+            blockSelector.SelectedIndexChanged += new EventHandler(SelectedBlockChanged);
         }
 
         private void ReloadCoolersTab()
@@ -134,6 +136,33 @@ namespace NC_Reactor_Planner
                 blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Moderator", kvp.Value));
             }
 
+        }
+
+        private void SelectedBlockChanged(object sender, EventArgs e)
+        {
+            if (rDC != null)
+            {
+                foreach (KeyValuePair<string, List<Control>> kvp in rDC)
+                    foreach (Control c in kvp.Value)
+                    { 
+                        c.Dispose();
+                        resourceCostsTab.Controls.Remove(c);
+                    }
+            }
+            rDC = new Dictionary<string, List<Control>>();
+
+            int row = 1;
+            foreach(KeyValuePair<string, int> resource in ((ResourceCostComboboxItem)blockSelector.SelectedItem).Resources)
+            {
+                rDC[resource.Key] = new List<Control>();
+                rDC[resource.Key].Add(new TextBox { Text = resource.Key, Location = new Point(10, row * 30) });
+                rDC[resource.Key].Add(new NumericUpDown { Value = resource.Value, Location = new Point(130, row * 30) });
+                row++;
+                //rDC.Add(new Button { Text = resource.Key, Location = new Point(10, row++ * 20) });
+                resourceCostsTab.Controls.AddRange(rDC[resource.Key].ToArray());
+            }
+
+            
         }
         
         private void DisposeAndClear(Dictionary<string, List<Control>> cl)

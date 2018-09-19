@@ -606,13 +606,18 @@ namespace NC_Reactor_Planner
                     }
                 }
             }
+
             for (int x = 0; x < interiorDims.X + 2; x++)
             {
                 for (int z = 0; z < interiorDims.Z + 2; z++)
                 {
-                    newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
+                    if(((x == 0 | x == interiorDims.X + 1)&(z > 0 & z < interiorDims.Z + 1)) || ((z == 0 | z == interiorDims.Z + 1) & (x > 0 & x < interiorDims.X + 1)))
+                        newReactor[x, y, z] = new Block("Casing", BlockTypes.Casing, null, new Point3D(x, y, z));
+                    else
+                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
                 }
             }
+
             for (int layer = y + 1; layer < interiorDims.Y + 3; layer++)
             {
                 for (int x = 0; x < interiorDims.X + 2; x++)
@@ -626,6 +631,20 @@ namespace NC_Reactor_Planner
 
             blocks = newReactor;
             interiorDims = new Size3D(interiorDims.X, interiorDims.Y + 1, interiorDims.Z);
+
+            using (TextWriter tw = File.CreateText("Debug.txt"))
+            {
+                for(int layer = 0; layer < interiorDims.Y + 2; layer++)
+                {
+                    for(int x = 0; x < interiorDims.X + 2; x++)
+                    {
+                        for (int z = 0; z < interiorDims.Z + 2; z++)
+                            tw.Write(string.Format("{0,7}", blocks[x, layer, z].BlockType.ToString()));
+                        tw.WriteLine();
+                    }
+                    tw.WriteLine();
+                }
+            }
         }
     }
 }
