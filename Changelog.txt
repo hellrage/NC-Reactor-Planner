@@ -71,3 +71,9 @@
 19.09.18 v1.2.3
 	Fixed a bug with layer modification when inserting a layer.
 	Changed the way Enderium placement validity is checked.
+
+21.09.18 v1.2.4
+	Fixed a bug with palette tooltips not updating on config changes.
+	Fixed a typo in "HELP-239 Oxide" fuel and related save\loading.
+	Fixed used fuel not loading when loading a reactor savefile.
+	Fixed fuels not loading with config files.

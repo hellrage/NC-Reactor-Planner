@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -126,6 +127,14 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Invalid config file contents!");
                 return false;
             }
+
+            if(cf.saveVersion <= new Version(1,2,3))
+            {
+                var fuelvalue = cf.Fuels["HELP-239  Oxide"];
+                cf.Fuels.Remove("HELP-239  Oxide");
+                cf.Fuels.Add("HEP-239 Oxide", fuelvalue);
+            }
+
             Fission = cf.Fission;
             ResourceCosts = cf.ResourceCosts;
             if (ResourceCosts.CasingCosts == null)
@@ -187,7 +196,7 @@ namespace NC_Reactor_Planner
             Fuels.Add("LEP-239", new FuelValues(105, 40, 92000));
             Fuels.Add("LEP-239 Oxide", new FuelValues(147, 50, 92000));
             Fuels.Add("HEP-239", new FuelValues(420, 240, 92000));
-            Fuels.Add("HELP-239  Oxide", new FuelValues(588, 300, 92000));
+            Fuels.Add("HEP-239 Oxide", new FuelValues(588, 300, 92000));
             Fuels.Add("LEP-241", new FuelValues(165, 70, 60000));
             Fuels.Add("LEP-241 Oxide", new FuelValues(231, 87.5, 60000));
             Fuels.Add("HEP-241", new FuelValues(660, 420, 60000));

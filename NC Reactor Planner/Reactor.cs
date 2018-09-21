@@ -11,6 +11,7 @@ using System.IO;
 using System.Drawing;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NC_Reactor_Planner
 {
@@ -308,6 +309,7 @@ namespace NC_Reactor_Planner
 
                 CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(), interiorDims, usedFuel);
                 jss.Serialize(tw, csf);
+                //jss.Serialize(tw, usedFuel);
             }
         }
 
@@ -502,6 +504,7 @@ namespace NC_Reactor_Planner
             {
                 JsonSerializer js = new JsonSerializer();
                 csf = (CompressedSaveFile)js.Deserialize(sr, typeof(CompressedSaveFile));
+                //usedFuel = (Fuel)js.Deserialize(sr, typeof(Fuel));
             }
 
             InitializeReactor(csf.InteriorDimensions);
@@ -515,6 +518,18 @@ namespace NC_Reactor_Planner
                 }
             }
 
+            using (StreamReader sr = File.OpenText(fileName))
+            {
+                JObject jsave = JObject.Parse(sr.ReadToEnd());
+                JToken jFuel = jsave["UsedFuel"];
+
+                string fName = jFuel["Name"].ToObject<string>();
+                double fPower = jFuel["BasePower"].ToObject<double>();
+                double fHeat = jFuel["BaseHeat"].ToObject<double>();
+                double fTime = jFuel["FuelTime"].ToObject<double>();
+
+                usedFuel = new Fuel(fName, fPower, fHeat, fTime);
+            }
             FinalizeLoading();
         }
 

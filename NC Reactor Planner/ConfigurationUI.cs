@@ -207,6 +207,7 @@ namespace NC_Reactor_Planner
                 {
                     Configuration.Save(new FileInfo(fileDialog.FileName));
                     MessageBox.Show("Saved and applied!");
+                    Close();
                 }
             }
         }

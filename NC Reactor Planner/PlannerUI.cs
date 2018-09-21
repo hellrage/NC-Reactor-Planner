@@ -104,15 +104,24 @@ namespace NC_Reactor_Planner
 
             foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
             {
-                paletteToolTip.SetToolTip(paletteBlock, paletteBlock.block.GetToolTip());
                 paletteBlock.Click += new EventHandler(PaletteBlockClicked);
                 paletteBlock.MouseEnter += new EventHandler(PaletteBlockHighlighted);
             }
+
+            UpdatePaletteTooltips();
 
             Palette.selectedBlock = (ReactorGridCell)paletteTable.Controls[0];
             Palette.selectedType = Palette.selectedBlock.block.BlockType;
 
             paletteTable.MouseLeave += new EventHandler(PaletteBlockLostFocus);
+        }
+
+        private void UpdatePaletteTooltips()
+        {
+            foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
+            {
+                paletteToolTip.SetToolTip(paletteBlock, paletteBlock.block.GetToolTip());
+            }
         }
 
         private void ResetButtonFocusLost(object sender, EventArgs e)
@@ -351,11 +360,16 @@ namespace NC_Reactor_Planner
             reactorLength.Value = (decimal)Reactor.interiorDims.Z;
             reactorWidth.Value = (decimal)Reactor.interiorDims.X;
 
-            fuelBasePower.Text = Reactor.usedFuel.BasePower.ToString();
-            fuelBaseHeat.Text = Reactor.usedFuel.BaseHeat.ToString();
-            fuelSelector.SelectedText = Reactor.usedFuel.Name;
+            UpdateSelectedFuel();
 
             NewResetLayout(true);
+        }
+
+        private void UpdateSelectedFuel()
+        {
+            fuelBasePower.Text = Reactor.usedFuel.BasePower.ToString();
+            fuelBaseHeat.Text = Reactor.usedFuel.BaseHeat.ToString();
+            fuelSelector.Text = Reactor.usedFuel.Name;
         }
 
         private void refreshStats_Click(object sender, EventArgs e)
@@ -520,6 +534,10 @@ namespace NC_Reactor_Planner
 
         private void ConfigurationClosed(object sender, FormClosedEventArgs e)
         {
+            fuelSelector.Items.Clear();
+            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
+            UpdateSelectedFuel();
+            UpdatePaletteTooltips();
             Reactor.RedrawAllLayers();
             RefreshStats();
         }
