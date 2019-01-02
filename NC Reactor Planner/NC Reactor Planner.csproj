@@ -98,6 +98,7 @@
     <Compile Include="DummyUI.Designer.cs">
       <DependentUpon>DummyUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="NuclearcraftConfigImport.cs" />
     <Compile Include="PlannerUI.cs">
       <SubType>Form</SubType>
     </Compile>
