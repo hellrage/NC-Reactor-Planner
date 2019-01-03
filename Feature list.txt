@@ -31,6 +31,7 @@ Simulation:
 Configuration:
 *Cooler and fuel values are configurable.
 *General fission reactor values are configurable.
+*You can import the settings directly from your nuclearcraft.cfg: "Open configuration" -> Import -> navigate to your minecraft instance and select the nuclearcraft.cfg file.
 *You can save/load your configuration settings to a separate file if you want to have (possibly multiple) non-default value sets. Check out the config menu.
 *If there is no DefaultConfig.json file in the app's directory, one will be generated with vanilla 2.11c values. This configuration is loaded on application start, overwrite it to have your custom values persist between sessions\versions.
 
