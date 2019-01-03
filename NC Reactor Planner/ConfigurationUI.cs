@@ -412,7 +412,7 @@ namespace NC_Reactor_Planner
         }
     }
 
-    public static class ObjectExtenstions
+    public static class ObjectExtensions
     {
         public static T Set<T>(this T item, Action<T> setter)
         {
