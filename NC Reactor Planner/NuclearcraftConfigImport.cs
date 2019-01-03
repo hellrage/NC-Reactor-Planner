@@ -39,6 +39,11 @@ namespace NC_Reactor_Planner
 
         private Dictionary<string, Dictionary<string, object>> configurationValues = new Dictionary<string, Dictionary<string, object>>();
 
+        public bool HasBlock(string block)
+        {
+            return configurationValues.ContainsKey(block);
+        }
+
         public T Get<T>(string block, string key) {
             return (T)configurationValues[block][key];
         }
@@ -47,6 +52,8 @@ namespace NC_Reactor_Planner
         {
             return ((List<T>)configurationValues[block][key])[item];
         }
+
+        public string LastError { get; set; }
 
         private void ParseConfig(FileInfo file)
         {
@@ -91,6 +98,9 @@ namespace NC_Reactor_Planner
                 else
                 {
                     // Could not find the string? wha?
+                    if (string.IsNullOrWhiteSpace(LastError))
+                        LastError = string.Empty;
+                    LastError += "Could not find the start of the next block?" + Environment.NewLine;
                     return;
                 }
             }
@@ -127,6 +137,10 @@ namespace NC_Reactor_Planner
                     state = ParseState.List;
                     return;
                 }
+
+                if (string.IsNullOrWhiteSpace(LastError))
+                    LastError = string.Empty;
+                LastError += $"Unknown token, looking for the end of a block, or a simple variable, or a list variable? {line}" + Environment.NewLine;
             }
             else if (state == ParseState.List)
             {
@@ -144,7 +158,12 @@ namespace NC_Reactor_Planner
                 if (item.Success)
                 {
                     _listValues.Add(item.Groups[1].Value);
+                    return;
                 }
+
+                if (string.IsNullOrWhiteSpace(LastError))
+                    LastError = string.Empty;
+                LastError += $"Unknown token, looking for the end of a list, or a list item? {line}" + Environment.NewLine;
             }
         }
 
@@ -155,7 +174,10 @@ namespace NC_Reactor_Planner
 
             if (configurationValues[block].ContainsKey(name))
             {
-                throw new Exception($"Duplicate configuration key: '{name}' in block '{block}'");
+                if (string.IsNullOrWhiteSpace(LastError))
+                    LastError = string.Empty;
+                LastError += $"Duplicate configuration key: '{name}' in block '{block}'" + Environment.NewLine;
+                return;
             }
 
             switch (type)
@@ -188,7 +210,10 @@ namespace NC_Reactor_Planner
 
             if (configurationValues[block].ContainsKey(name))
             {
-                throw new Exception($"Duplicate configuration key: '{name}' in block '{block}'");
+                if (string.IsNullOrWhiteSpace(LastError))
+                    LastError = string.Empty;
+                LastError += $"Duplicate configuration key: '{name}' in block '{block}'" + Environment.NewLine;
+                return;
             }
 
             switch (type)
