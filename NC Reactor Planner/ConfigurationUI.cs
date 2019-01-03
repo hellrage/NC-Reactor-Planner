@@ -36,6 +36,15 @@ namespace NC_Reactor_Planner
         public ConfigurationUI()
         {
             InitializeComponent();
+
+            power.Validating += CheckDoubleValue;
+            fuelUse.Validating += CheckDoubleValue;
+            heatGeneration.Validating += CheckDoubleValue;
+            moderatorExtraPower.Validating += CheckDoubleValue;
+            moderatorExtraHeat.Validating += CheckDoubleValue;
+            neutronReach.Validating += CheckIntValue;
+            minSize.Validating += CheckIntValue;
+            maxSize.Validating += CheckIntValue;
         }
 
         private void ConfigurationUI_Load(object sender, EventArgs e)
@@ -64,9 +73,9 @@ namespace NC_Reactor_Planner
                 row++;
                 int y = 3 + row * 20;
                 List<Control> fields = new List<Control>();
-                fields.Add(new Label { Text = coolerEntry.Key, Location = new Point(3, y), Size = new Size(70, 13) });
-                fields.Add(new TextBox { Text = cv.HeatPassive.ToString(), Location = new Point(85, y), Size = new Size(70, 14) });
-                fields.Add(new TextBox { Text = cv.HeatActive.ToString(), Location = new Point(165, y), Size = new Size(110, 14) });
+                fields.Add(new Label { Text = coolerEntry.Key, Location = new Point(3, y), Size = new Size(70, 13), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = cv.HeatPassive.ToString(), Location = new Point(85, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = cv.HeatActive.ToString(), Location = new Point(165, y), Size = new Size(110, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = cv.Requirements, Location = new Point(285, y), Size = new Size(350, 14) });
                 cIFR.Add(coolerEntry.Key, fields);
                 //fields.Clear();
@@ -94,9 +103,9 @@ namespace NC_Reactor_Planner
                 int y = 3 + row * 20;
                 List<Control> fields = new List<Control>();
                 fields.Add(new Label { Text = fuelEntry.Key, Location = new Point(3, y), Size = new Size(150, 13) });
-                fields.Add(new TextBox { Text = fv.BasePower.ToString(), Location = new Point(160, y), Size = new Size(75, 14) });
-                fields.Add(new TextBox { Text = fv.BaseHeat.ToString(), Location = new Point(240, y), Size = new Size(70, 14) });
-                fields.Add(new TextBox { Text = fv.FuelTime.ToString(), Location = new Point(312, y), Size = new Size(70, 14) });
+                fields.Add(new TextBox { Text = fv.BasePower.ToString(), Location = new Point(160, y), Size = new Size(75, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = fv.BaseHeat.ToString(), Location = new Point(240, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = fv.FuelTime.ToString(), Location = new Point(312, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fIFR.Add(fuelEntry.Key, fields);
             }
 
@@ -266,6 +275,149 @@ namespace NC_Reactor_Planner
             }
         }
 
-        //[TODO] Add validation for input fields
+        private void Import_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Nuclear craft config|nuclearcraft.cfg|Any config file|*.cfg|All Files|*.*" })
+            {
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var config = NuclearcraftConfigImport.ImportConfig(new FileInfo(fileDialog.FileName));
+                    if (config == null || !config.HasBlock("fission"))
+                    {
+                        MessageBox.Show("Configuration could not be imported, check the file can be loaded by minecraft, or has come from the modpack you want to load");
+                        return;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(config.LastError))
+                    {
+                        MessageBox.Show("We had the following errors while parsing the config file, please check that it's correct (not all values may import)");
+                    }
+
+                    Configuration.Fission.Power = config.Get<double>("fission", "fission_power");
+                    Configuration.Fission.HeatGeneration = config.Get<double>("fission", "fission_heat_generation");
+                    Configuration.Fission.FuelUse = config.Get<double>("fission", "fission_fuel_use");
+                    Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
+                    Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
+                    Configuration.Fission.ModeratorExtraHeat = config.Get<double>("fission", "fission_moderator_extra_heat");
+                    Configuration.Fission.ModeratorExtraPower = config.Get<double>("fission", "fission_moderator_extra_power");
+                    Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
+
+                    SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
+                    SetFuelValues(config,
+                        new[] { "LEU-233", "LEU-233 Oxide", "HEU-233", "HEU-233 Oxide", "LEU-235", "LEU-235 Oxide", "HEU-235", "HEU-235 Oxide" },
+                        "uranium");
+                    SetFuelValues(config, new[] { "LEN-236", "LEN-236 Oxide", "HEN-236", "HEN-236 Oxide" },
+                        "neptunium");
+                    SetFuelValues(config, new[] { "LEP-239", "LEP-239 Oxide", "HEP-239", "HEP-239 Oxide", "LEP-241", "LEP-241 Oxide", "HEP-241", "HEP-241 Oxide" },
+                        "plutonium");
+                    SetFuelValues(config, new[] { "MOX-239", "MOX-241" },
+                        "mox");
+                    SetFuelValues(config, new[] { "LEA-242", "LEA-242 Oxide", "HEA-242", "HEA-242 Oxide" },
+                        "americium");
+                    SetFuelValues(config, new[] { "LECm-243", "LECm-243 Oxide", "HECm-243", "HECm-243 Oxide", "LECm-245", "LECm-245 Oxide", "HECm-245", "HECm-245 Oxide", "LECm-247", "LECm-247 Oxide", "HECm-247", "HECm-247 Oxide" },
+                        "curium");
+                    SetFuelValues(config, new[] { "LEB-248", "LEB-248 Oxide", "HEB-248", "HEB-248 Oxide" },
+                        "berkelium");
+                    SetFuelValues(config, new[] { "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide" },
+                        "californium");
+
+                    SetCoolingRates(config);
+
+                    ReloadTabs();
+                    Reactor.ReloadValuesFromConfig();
+                    Reactor.UpdateStats();
+                    MessageBox.Show("Loaded and applied, please save as a json file");
+                }
+                else
+                    return;
+            }
+        }
+
+        private static void SetCoolingRates(NuclearcraftConfigImport config)
+        {
+            var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = Configuration.Coolers[items[i]];
+                item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
+                item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
+                Configuration.Coolers[items[i]] = item;
+            }
+        }
+
+        private static void SetFuelValues(NuclearcraftConfigImport config, string[] items, string element)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = Configuration.Fuels[items[i]];
+                item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
+                item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
+                item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
+                Configuration.Fuels[items[i]] = item;
+            }
+        }
+
+        private void CheckDoubleValue(object sender, EventArgs args)
+        {
+            var control = sender as TextBox;
+            if (control == null)
+                return;
+
+            var data = control.Text;
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                control.BackColor = Color.LightSalmon;
+                this.ttValidation.SetToolTip(control, "Please enter a value");
+                return;
+            }
+
+            if (double.TryParse(data, out double value))
+            {
+                control.BackColor = SystemColors.Window;
+                control.Text = value.ToString();
+                this.ttValidation.SetToolTip(control, null);
+            }
+            else
+            {
+                control.BackColor = Color.LightSalmon;
+                this.ttValidation.SetToolTip(control, "The value entered is not a valid number");
+            }
+        }
+
+        private void CheckIntValue(object sender, EventArgs args)
+        {
+            var control = sender as TextBox;
+            if (control == null)
+                return;
+
+            var data = control.Text;
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                control.BackColor = Color.LightSalmon;
+                this.ttValidation.SetToolTip(control, "Please enter a value");
+                return;
+            }
+
+            if (int.TryParse(data, out int value))
+            {
+                control.BackColor = SystemColors.Window;
+                control.Text = value.ToString();
+                this.ttValidation.SetToolTip(control, null);
+            }
+            else
+            {
+                control.BackColor = Color.LightSalmon;
+                this.ttValidation.SetToolTip(control, "The value entered is not a valid number");
+            }
+        }
+    }
+
+    public static class ObjectExtensions
+    {
+        public static T Set<T>(this T item, Action<T> setter)
+        {
+            setter?.Invoke(item);
+            return item;
+        }
     }
 }
