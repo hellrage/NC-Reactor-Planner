@@ -77,3 +77,7 @@
 	Fixed a typo in "HELP-239 Oxide" fuel and related save\loading.
 	Fixed used fuel not loading when loading a reactor savefile.
 	Fixed fuels not loading with config files.
+
+03.01.19 v1.2.5
+	Added nuclearcraft configuration file parsing - Anoyomouse
+	Added realtime configuration textbox validation - Anoyomouse
