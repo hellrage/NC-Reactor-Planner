@@ -118,7 +118,7 @@ namespace NC_Reactor_Planner
                         if (pos.X > 0 & pos.Y > 0 & pos.Z > 0)
                             if (!(Reactor.BlockAt(pos) is Moderator))
                                 return 0;
-                    pos = Position + offset * (i + 1);
+                    pos = Position + offset * (j + 1);
                     if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
                         if (pos.X > 0 & pos.Y > 0 & pos.Z > 0)
                             if ((Reactor.BlockAt(pos) is FuelCell))
