@@ -150,7 +150,14 @@ namespace NC_Reactor_Planner
                 if (sender is ReactorGridLayer layer)
                     layer.Redraw();
                 else if (sender is ReactorGridCell cell)
-                    layers[(int)cell.block.Position.Y - 1].Redraw();
+                {
+                    //[TODO] properly handle 24x24x15+ layouts
+                    int yLayer = (int)cell.block.Position.Y - 1;
+                    if (yLayer >= layers.Count)
+                        layers.First().Redraw();
+                    else
+                        layers[yLayer].Redraw();
+                }
             }
         }
 
@@ -396,7 +403,7 @@ namespace NC_Reactor_Planner
             layerImage.Dispose();
         }
 
-        public static void SaveReactorAsImage(string fileName, int statStringLines, int scale = 2, int fontSize = 24)
+        public static void SaveReactorAsImage(string fileName, int statStringLines, int scale = 2, bool large = false, int fontSize = 24)
         {
             int layersPerRow = (int)Math.Ceiling(Math.Sqrt(interiorDims.Y));
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
@@ -409,18 +416,38 @@ namespace NC_Reactor_Planner
             using (Graphics gr = Graphics.FromImage(reactorImage))
             {
                 gr.Clear(Color.LightGray);
-                foreach (ReactorGridLayer layer in layers)
+
+                //[TODO] deduplicate code
+                if(large)
                 {
-                    Bitmap layerImage = layer.DrawToImage(scale);
-                    int y = layer.Y - 1;
-                    gr.DrawImage(layerImage,
-                                    new Rectangle((int)((y % layersPerRow) * interiorDims.X * bs + (y % layersPerRow) * bs),
-                                                StatsRectSize.Y + bs + (int)((y / layersPerRow) * interiorDims.Z * bs + (y / layersPerRow) * bs),
-                                                (int)(interiorDims.X * bs), (int)(interiorDims.Z * bs)),
-                                    new Rectangle(0, 0, layerImage.Size.Width, layerImage.Size.Height),
-                                    GraphicsUnit.Pixel);
-                    layerImage.Dispose();
+                    for (int i = 1; i <= interiorDims.Y; i++)
+                    {
+                        ConstructLayer(i);
+                        ReactorGridLayer layer = layers.First();
+                        Bitmap layerImage = layer.DrawToImage(scale);
+                        int y = layer.Y - 1;
+                        gr.DrawImage(layerImage,
+                                        new Rectangle((int)((y % layersPerRow) * interiorDims.X * bs + (y % layersPerRow) * bs),
+                                                    StatsRectSize.Y + bs + (int)((y / layersPerRow) * interiorDims.Z * bs + (y / layersPerRow) * bs),
+                                                    (int)(interiorDims.X * bs), (int)(interiorDims.Z * bs)),
+                                        new Rectangle(0, 0, layerImage.Size.Width, layerImage.Size.Height),
+                                        GraphicsUnit.Pixel);
+                        layerImage.Dispose();
+                    }
                 }
+                else
+                    foreach (ReactorGridLayer layer in layers)
+                    {
+                        Bitmap layerImage = layer.DrawToImage(scale);
+                        int y = layer.Y - 1;
+                        gr.DrawImage(layerImage,
+                                        new Rectangle((int)((y % layersPerRow) * interiorDims.X * bs + (y % layersPerRow) * bs),
+                                                    StatsRectSize.Y + bs + (int)((y / layersPerRow) * interiorDims.Z * bs + (y / layersPerRow) * bs),
+                                                    (int)(interiorDims.X * bs), (int)(interiorDims.Z * bs)),
+                                        new Rectangle(0, 0, layerImage.Size.Width, layerImage.Size.Height),
+                                        GraphicsUnit.Pixel);
+                        layerImage.Dispose();
+                    }
                 string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
                 gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }

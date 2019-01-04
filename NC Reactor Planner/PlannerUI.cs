@@ -451,7 +451,15 @@ namespace NC_Reactor_Planner
             if (fileName != null)
             {
                 if (saveAll)
-                    Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value);
+                {
+                    if(drawAllLayers | totalBlocks <= 9500)
+                        Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value);
+                    else
+                    {
+                        Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value, true);
+                        NewResetLayout(true);
+                    }
+                }
                 else
                     Reactor.SaveLayerAsImage(layerScrollBar.Value, fileName, (int)imageScale.Value);
             }
