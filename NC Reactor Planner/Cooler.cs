@@ -145,7 +145,7 @@ namespace NC_Reactor_Planner
                 if (block.IsActive())
                 {
                     activeAdjacent++;
-                    if (activeAdjacent >= number & exact)
+                    if (activeAdjacent > number & exact)
                         placementErrors.Add("Too many " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
                 }
                 else

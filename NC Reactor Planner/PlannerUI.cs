@@ -61,7 +61,9 @@ namespace NC_Reactor_Planner
 
             SetUIToolTips();
 
-            NewResetLayout(false);
+            NewResetLayout(false); // [TODO] I don't even know anymore okay?
+            NewResetLayout(false); // This makes tooltips work right away but it's still inconsistent
+            //wasted hours on this
         }
 
         private void SetUpToolTips()

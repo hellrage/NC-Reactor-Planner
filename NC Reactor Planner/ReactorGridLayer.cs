@@ -202,7 +202,7 @@ namespace NC_Reactor_Planner
                 return;
             }
             Reactor.InsertLayer(Y);
-            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
+            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//[TODO] And another thing? THIS  U G L Y
         }
 
         private void MenuInsertAfter(object sender, EventArgs e)
@@ -213,7 +213,7 @@ namespace NC_Reactor_Planner
                 return;
             }
             Reactor.InsertLayer(Y+1);
-            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
+            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//[TODO] And another thing? THIS  U G L Y
         }
     }
 }
