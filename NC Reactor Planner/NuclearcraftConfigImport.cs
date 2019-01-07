@@ -186,12 +186,10 @@ namespace NC_Reactor_Planner
                     configurationValues[block].Add(name, value);
                     break;
                 case "I":
-                    var itest = int.Parse(value);
-                    configurationValues[block].Add(name, itest);
+                    configurationValues[block].Add(name, int.Parse(value, System.Globalization.CultureInfo.InvariantCulture));
                     break;
                 case "D":
-                    var dtest = double.Parse(value);
-                    configurationValues[block].Add(name, dtest);
+                    configurationValues[block].Add(name, double.Parse(value, System.Globalization.CultureInfo.InvariantCulture));
                     break;
                 case "B":
                     configurationValues[block].Add(name, bool.Parse(value));
@@ -222,10 +220,10 @@ namespace NC_Reactor_Planner
                     configurationValues[block].Add(name, value);
                     break;
                 case "I":
-                    configurationValues[block].Add(name, value.Select(x => int.Parse(x)).ToList());
+                    configurationValues[block].Add(name, value.Select(x => int.Parse(x, System.Globalization.CultureInfo.InvariantCulture)).ToList());
                     break;
                 case "D":
-                    configurationValues[block].Add(name, value.Select(x => double.Parse(x)).ToList());
+                    configurationValues[block].Add(name, value.Select(x => double.Parse(x, System.Globalization.CultureInfo.InvariantCulture)).ToList());
                     break;
                 case "B":
                     configurationValues[block].Add(name, value.Select(x => bool.Parse(x)).ToList());
