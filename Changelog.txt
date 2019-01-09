@@ -81,11 +81,17 @@
 03.01.19 v1.2.5
 	Added nuclearcraft configuration file parsing - Anoyomouse
 	Added realtime configuration textbox validation - Anoyomouse
+
 04.01.19 v1.2.6
 	Fixed https://github.com/hellrage/NC-Reactor-Planner/issues/1
+
 04.01.19 v1.2.7
 	Fixed image export only drawing the current layer for extra large reactors.
 	Fixed a crash with extra large reactors.
+
 04.01.19 v1.2.8
 	Fixed a bug with inserting layers creating invalid casings.
 	Improved tooltip behaviour AGAIN.
+
+09.01.19 v1.2.9
+	Fix for decimal delimeter - Anoyomouse
