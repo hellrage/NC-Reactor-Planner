@@ -59,6 +59,8 @@ namespace NC_Reactor_Planner
         public static double heatMulti = 0;
 
         public static Fuel usedFuel;
+        public static double maxBaseHeat = 0;
+        public static double fuelDuratiion = 0;
 
         static Reactor()
         {
@@ -237,6 +239,9 @@ namespace NC_Reactor_Planner
 
             efficiency = (fuelCells.Count == 0) ? 0 : 100 * energyMultiplier / fuelCells.Count;
             heatMulti = (fuelCells.Count == 0) ? 0 : 100 * heatMultiplier / fuelCells.Count;
+
+            maxBaseHeat = (fuelCells.Count == 0) ? 0 : 100 * totalCoolingPerTick / (fuelCells.Count * heatMulti);
+            fuelDuratiion = (fuelCells.Count == 0) ? 0 : usedFuel.FuelTime / fuelCells.Count;
         }
 
         private static void OrderedUpdateCoolerStats()
@@ -283,8 +288,9 @@ namespace NC_Reactor_Planner
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat gen.", (int)totalHeatPerTick + " HU/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", heatDiff + " HU/t");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Max base heat", Math.Round(maxBaseHeat,2) + " HU/t");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Fuel pellet dur.", Math.Round(fuelDuratiion/20,2) + " s");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Meltdown time", (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
-
 
             report += "\r\n";
             report += "Energy:\r\n";
