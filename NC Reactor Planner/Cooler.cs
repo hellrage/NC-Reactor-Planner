@@ -16,37 +16,43 @@ namespace NC_Reactor_Planner
         private string _requirements;
         private bool _oldValid;
         private bool _valid;
+        private bool _active;
         private List<string> placementErrors;
 
         private CoolerTypes _coolerType;
 
         public double HeatActive { get => _heatActive; private set => _heatActive = value; }
         public double HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
+        public double Cooling { get => Active ? HeatActive : HeatPassive; }
         public string Requirements { get => _requirements; private set => _requirements = value; }
         public bool Valid { get => _valid; private set { _oldValid = _valid; _valid = value; } }
+        public bool Active { get => _active; private set { _active = value; } }
 
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
 
-        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.Cooler, texture, position)
+        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position, bool active = false) : base(displayName, BlockTypes.Cooler, texture, position)
         {
             CoolerType = type;
             HeatActive = heatActive;
             HeatPassive = heatPassive;
             Requirements = requirements;
             Valid = false;
+            Active = active;
             placementErrors = new List<string>();
         }
 
-        public Cooler(Cooler parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position)
+        public Cooler(Cooler parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, parent.Active)
         {
         }
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " Cooler\r\n";
+            string toolTip = (Active ? "Active " : "") + DisplayName + " Cooler\r\n";
+
             if (Position != Palette.dummyPosition)
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
+
             toolTip += string.Format(" Passive cooling: {0} HU/t\r\n" +
                                     " Active cooling: {1} HU/t\r\n" +
                                     " Requires: {2}\r\n", HeatPassive, HeatActive, Requirements);

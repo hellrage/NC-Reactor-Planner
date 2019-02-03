@@ -18,11 +18,11 @@ namespace NC_Reactor_Planner
         public static BlockTypes selectedType = BlockTypes.Air;
         public static ReactorGridCell selectedBlock;
 
-        public static Dictionary<Block, BlockTypes> blocks = new Dictionary<Block, BlockTypes>();
+        public static Dictionary<Block, BlockTypes> blocks;
         public static Dictionary<string, Block> blockPalette;
-        public static List<Block> miscBlocks = new List<Block>();
-        public static List<Cooler> coolers = new List<Cooler>();
-        public static List<Moderator> moderators = new List<Moderator>();
+        //public static List<Block> miscBlocks = new List<Block>();
+        public static List<Cooler> coolers;
+        //public static List<Moderator> moderators = new List<Moderator>();
         public static Dictionary<string, Bitmap> textures;
 
         public static Point3D dummyPosition = new Point3D(-1, -1, -1);
@@ -37,14 +37,16 @@ namespace NC_Reactor_Planner
             while (textureEnumerator.MoveNext())
                 textures.Add((string)textureEnumerator.Key, (Bitmap)textureEnumerator.Value);
 
-            blockPalette = new Dictionary<string, Block>();
             LoadPalette();
-
         }
 
-        public static void LoadPalette()
+        public static void LoadPalette(bool Active = false)
         {
-            PopulateBlocks();
+            blocks = new Dictionary<Block, BlockTypes>();
+            blockPalette = new Dictionary<string, Block>();
+            coolers = new List<Cooler>();
+
+            PopulateBlocks(Active);
 
             PopulateBlockPalette();
 
@@ -76,9 +78,9 @@ namespace NC_Reactor_Planner
             blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition));
         }
 
-        private static void PopulateBlocks()
+        private static void PopulateBlocks(bool Active = false)
         {
-            PopulateCoolers();
+            PopulateCoolers(Active);
 
             blocks.Add(new Block("Air", BlockTypes.Air, textures["Air"], dummyPosition), BlockTypes.Air);
             blocks.Add(new FuelCell("FuelCell", textures["FuelCell"], dummyPosition), BlockTypes.FuelCell);
@@ -92,30 +94,18 @@ namespace NC_Reactor_Planner
             blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition), BlockTypes.Moderator);
         }
 
-        //private static void PopulateMisc()
-        //{
-        //    miscBlocks.Add(new Block("Air", BlockTypes.Air, textures["Air"], dummyPosition));
-        //    miscBlocks.Add(new FuelCell("FuelCell", textures["FuelCell"], dummyPosition));
-        //}
-
-        private static void PopulateCoolers()
+        private static void PopulateCoolers(bool Active = false)
         {
             foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
             {
                 CoolerValues cv = coolerEntry.Value;
                 CoolerTypes parsedType;
                 if (Enum.TryParse(coolerEntry.Key, out parsedType))
-                    coolers.Add(new Cooler(coolerEntry.Key, textures[coolerEntry.Key], parsedType, cv.HeatActive, cv.HeatPassive, cv.Requirements, dummyPosition));
+                    coolers.Add(new Cooler(coolerEntry.Key, textures[coolerEntry.Key], parsedType, cv.HeatActive, cv.HeatPassive, cv.Requirements, dummyPosition, Active));
                 else
                     throw new ArgumentException("Unexpected cooler type in config!");
             }
         }
-
-        //private static void PopulateModerators()
-        //{
-        //    moderators.Add(new Moderator("Beryllium", textures["Beryllium"],  dummyPosition));
-        //    moderators.Add(new Moderator("Graphite", textures["Graphite"],  dummyPosition));
-        //}
 
         public static Block BlockToPlace(Block previousBlock)
         {
@@ -158,7 +148,17 @@ namespace NC_Reactor_Planner
                 default:
                     break;
             }
-            return block.DisplayName == blockToPlace;
+            if (block.DisplayName == blockToPlace)
+                if ((selectedBlock.block is Cooler selCooler) && block is Cooler placedCooler)
+                {
+                    if (selCooler.Active & placedCooler.Active)
+                        return true;
+                }
+                else
+                    return true;
+
+
+            return false;
         }
 
         public static Cooler GetCooler(string displayName)

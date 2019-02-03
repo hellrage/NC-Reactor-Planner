@@ -39,7 +39,8 @@ namespace NC_Reactor_Planner
         public static readonly Version saveVersion;
 
 
-        public static Dictionary<string, List<Cooler>> coolers;
+        public static Dictionary<string, List<Cooler>> passiveCoolers;
+        public static Dictionary<string, List<Cooler>> activeCoolers;
         public static List<FuelCell> fuelCells;
         public static Dictionary<string, List<Moderator>> moderators;
 
@@ -49,7 +50,8 @@ namespace NC_Reactor_Planner
         public static List<Fuel> fuels;
 
         public static double totalCoolingPerTick = 0;
-        public static Dictionary<string, double> totalCoolingPerType;
+        public static Dictionary<string, double> totalPassiveCoolingPerType;
+        public static Dictionary<string, double> totalActiveCoolingPerType;
         public static double totalHeatPerTick = 0;
         public static double totalEnergyPerTick = 0;
 
@@ -178,7 +180,8 @@ namespace NC_Reactor_Planner
 
         public static void UpdateStats()
         {
-            coolers = new Dictionary<string, List<Cooler>>();
+            passiveCoolers = new Dictionary<string, List<Cooler>>();
+            activeCoolers = new Dictionary<string, List<Cooler>>();
             fuelCells = new List<FuelCell>();
             moderators = new Dictionary<string, List<Moderator>>
             {
@@ -187,7 +190,8 @@ namespace NC_Reactor_Planner
             };
 
             totalCoolingPerTick = 0;
-            totalCoolingPerType = new Dictionary<string, double>();
+            totalPassiveCoolingPerType = new Dictionary<string, double>();
+            totalActiveCoolingPerType = new Dictionary<string, double>();
             totalHeatPerTick = 0;
             totalEnergyPerTick = 0;
 
@@ -197,12 +201,20 @@ namespace NC_Reactor_Planner
 
             foreach (Block block in blocks)
             {
-                if (block is Cooler)
+                if (block is Cooler cooler)
                 {
-                    if (coolers.ContainsKey(block.DisplayName))
-                        coolers[block.DisplayName].Add((Cooler)block);
+                    if (cooler.Active)
+                    {
+                        if (activeCoolers.ContainsKey(block.DisplayName))
+                            activeCoolers[block.DisplayName].Add(cooler);
+                        else
+                            activeCoolers.Add(block.DisplayName, new List<Cooler> { cooler });
+                    }
                     else
-                        coolers.Add(block.DisplayName, new List<Cooler> { (Cooler)block });
+                        if (passiveCoolers.ContainsKey(block.DisplayName))
+                            passiveCoolers[block.DisplayName].Add(cooler);
+                        else
+                            passiveCoolers.Add(block.DisplayName, new List<Cooler> { cooler });
                 }
                 else if (block is FuelCell)
                 {
@@ -221,18 +233,33 @@ namespace NC_Reactor_Planner
 
             OrderedUpdateCoolerStats();
 
-            foreach (KeyValuePair<string, List<Cooler>> kvp in coolers)
+            foreach (KeyValuePair<string, List<Cooler>> kvp in passiveCoolers)
             {
                 if (kvp.Value.Count == 0)
                     continue;
                 double passiveCooling = 0;
                 foreach (Cooler cooler in kvp.Value)
                     if (cooler.Valid)
-                        passiveCooling += cooler.HeatPassive;
-                totalCoolingPerType.Add(kvp.Key, passiveCooling);
+                            passiveCooling += cooler.Cooling;
+                totalPassiveCoolingPerType.Add(kvp.Key, passiveCooling);
             }
 
-            foreach (KeyValuePair<string, double> coolingPerType in totalCoolingPerType)
+            foreach (KeyValuePair<string, List<Cooler>> kvp in activeCoolers)
+            {
+                if (kvp.Value.Count == 0)
+                    continue;
+                double activeCooling = 0;
+                foreach (Cooler cooler in kvp.Value)
+                    if (cooler.Valid)
+                        activeCooling += cooler.Cooling;
+                totalActiveCoolingPerType.Add(kvp.Key, activeCooling);
+            }
+
+            foreach (KeyValuePair<string, double> coolingPerType in totalPassiveCoolingPerType)
+            {
+                totalCoolingPerTick += coolingPerType.Value;
+            }
+            foreach (KeyValuePair<string, double> coolingPerType in totalActiveCoolingPerType)
             {
                 totalCoolingPerTick += coolingPerType.Value;
             }
@@ -248,40 +275,54 @@ namespace NC_Reactor_Planner
         {
             foreach (string type in checkOrder)
             {
-                if (!(coolers.ContainsKey(type)))
-                    continue;
-                foreach (Cooler cooler in coolers[type])
-                    cooler.UpdateStats();
+                if (passiveCoolers.ContainsKey(type))
+                    foreach (Cooler cooler in passiveCoolers[type])
+                        cooler.UpdateStats();
+                if (activeCoolers.ContainsKey(type))
+                    foreach (Cooler cooler in activeCoolers[type])
+                        cooler.UpdateStats();
             }
         }
 
         public static string GetStatString()
         {
             string report = "";
-            report += "Coolers:\r\n";
-            foreach (KeyValuePair<Block, BlockTypes> pb in Palette.blocks)
+            if (passiveCoolers.Count > 0)
             {
-                if (!(pb.Key is Cooler))
-                    continue;
-                if (!totalCoolingPerType.ContainsKey(pb.Key.DisplayName))
-                    continue;
-                report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", pb.Key.DisplayName, coolers[pb.Key.DisplayName].Count, "*  " + ((Cooler)pb.Key).HeatPassive, (int)totalCoolingPerType[pb.Key.DisplayName] + " HU/t");
+                report += "Passive coolers:\r\n";
+                foreach (KeyValuePair<string, List<Cooler>> coolerType in passiveCoolers)
+                {
+                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", coolerType.Key, passiveCoolers[coolerType.Key].Count, "*  " + (coolerType.Value)[0].Cooling, (int)totalPassiveCoolingPerType[coolerType.Key] + " HU/t");
+                }
             }
 
-            report += "\r\n";
-            report += "Moderators:\r\n";
-            foreach (KeyValuePair<string, List<Moderator>> kvp in moderators)
+            if (activeCoolers.Count > 0)
             {
-                if (kvp.Value.Count == 0)
-                    continue;
-                report += string.Format("{0,-15}\t{1,-10}\r\n", kvp.Key, kvp.Value.Count);
+                report += "\r\n";
+                report += "Active coolers:\r\n";
+                foreach (KeyValuePair<string, List<Cooler>> coolerType in activeCoolers)
+                {
+                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", coolerType.Key, activeCoolers[coolerType.Key].Count, "*  " + (coolerType.Value)[0].Cooling, (int)totalActiveCoolingPerType[coolerType.Key] + " HU/t");
+                }
+            }
+
+            if (moderators.Count > 0)
+            {
+                report += "\r\n";
+                report += "Moderators:\r\n";
+                foreach (KeyValuePair<string, List<Moderator>> kvp in moderators)
+                {
+                    if (kvp.Value.Count == 0)
+                        continue;
+                    report += string.Format("{0,-15}\t{1,-10}\r\n", kvp.Key, kvp.Value.Count);
+                }
             }
 
             report += "\r\n";
             report += string.Format("{0,-15}\t{1,-10}\r\n", "Fuel cells", fuelCells.Count);
 
             report += "\r\n";
-            report += "Heat:\r\n";
+            //report += "Heat:\r\n";
             int heatDiff = (int)(totalHeatPerTick - totalCoolingPerTick);
             int reactorVolume = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
             int blockHeatCapacity = 25000;
@@ -293,14 +334,14 @@ namespace NC_Reactor_Planner
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Meltdown time", (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
 
             report += "\r\n";
-            report += "Energy:\r\n";
+            //report += "Energy:\r\n";
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Effective E. gen.", ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Efficiency", (int)efficiency + " %");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat mult.", (int)heatMulti + " %");
 
             report += "\r\n";
-            report += "Misc:\r\n";
+            //report += "Misc:\r\n";
             int totalCasings = 0;
             totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
             totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);

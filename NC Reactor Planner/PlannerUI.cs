@@ -23,8 +23,8 @@ namespace NC_Reactor_Planner
         private static int totalBlocks;
         private static ConfigurationUI configurationUI;
         Graphics borderGraphics;
-        Pen borderPen;
-        Pen highlightPen;
+        Pen passiveHighlightPen;
+        Pen activeHighlightPen;
         public static bool drawAllLayers = false;
         string appName;
         string loadedSaveFileName = null;
@@ -45,8 +45,8 @@ namespace NC_Reactor_Planner
             blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
 
             borderGraphics = paletteTable.CreateGraphics();
-            borderPen = new Pen(Color.Blue, 4);
-            highlightPen = new Pen(Color.LightBlue, 4);
+            passiveHighlightPen = new Pen(Color.Blue, 4);
+            activeHighlightPen = new Pen(Color.Green, 4);
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
@@ -98,6 +98,7 @@ namespace NC_Reactor_Planner
         private void SetUpPalette()
         {
             paletteLabel.Text = "Palette";
+            paletteTable.Controls.Clear();
 
             foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
             {
@@ -137,8 +138,11 @@ namespace NC_Reactor_Planner
 
             ReactorGridCell selected = Palette.selectedBlock;
             paletteLabel.Text = selected.block.DisplayName;
+            if(PaletteActive.Checked)
+                borderGraphics.DrawRectangle(activeHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+            else
+                borderGraphics.DrawRectangle(passiveHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
 
-            borderGraphics.DrawRectangle(borderPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
         }
 
         private void PaletteBlockHighlighted(object sender, EventArgs e)
@@ -148,7 +152,11 @@ namespace NC_Reactor_Planner
             ReactorGridCell paletteBox = (ReactorGridCell)sender;
             paletteLabel.Text = paletteBox.block.DisplayName;
 
-            borderGraphics.DrawRectangle(highlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+            if(PaletteActive.Checked)
+                borderGraphics.DrawRectangle(activeHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+            else
+                borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+                
         }
 
         private void PaletteBlockClicked(object sender, EventArgs e)
@@ -159,8 +167,10 @@ namespace NC_Reactor_Planner
 
             Palette.selectedBlock = paletteBox;
             Palette.selectedType = (Palette.blocks[paletteBox.block]);
-
-            borderGraphics.DrawRectangle(borderPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);           
+            if(PaletteActive.Checked)
+                borderGraphics.DrawRectangle(activeHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+            else
+                borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);         
         }
 
         private void resetLayout_Click(object sender, EventArgs e)
@@ -558,6 +568,21 @@ namespace NC_Reactor_Planner
                 this.Text = appName + "   " + loadedSaveFileInfo.FullName;
             else
                 this.Text = appName;
+        }
+
+        private void PaletteActive_CheckedChanged(object sender, EventArgs e)
+        {
+            Palette.LoadPalette(PaletteActive.Checked);
+            if (Palette.selectedBlock.block is Cooler)
+            {
+                ReactorGridCell oldSelected = Palette.selectedBlock;
+                SetUpPalette();
+                oldSelected.block = Palette.GetCooler(oldSelected.block.DisplayName);
+                PaletteBlockClicked(oldSelected, new EventArgs());
+            }
+            else
+                SetUpPalette();
+            paletteTable.Invalidate();
         }
     }
 }

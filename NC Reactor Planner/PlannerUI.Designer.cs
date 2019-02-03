@@ -58,6 +58,8 @@
             this.stats = new System.Windows.Forms.RichTextBox();
             this.OpenConfig = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.PaletteActive = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -308,6 +310,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.PaletteActive);
             this.groupBox1.Controls.Add(this.sizeLabel);
             this.groupBox1.Controls.Add(this.reactorWidth);
             this.groupBox1.Controls.Add(this.reactorHeight);
@@ -316,6 +319,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.paletteLabel);
             this.groupBox1.Controls.Add(this.resetLayout);
             this.groupBox1.Controls.Add(this.paletteTable);
@@ -464,6 +468,26 @@
             this.label5.TabIndex = 26;
             this.label5.Text = "Scale:";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label6.Location = new System.Drawing.Point(104, 124);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(51, 16);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Active";
+            // 
+            // PaletteActive
+            // 
+            this.PaletteActive.AutoSize = true;
+            this.PaletteActive.Location = new System.Drawing.Point(157, 126);
+            this.PaletteActive.Name = "PaletteActive";
+            this.PaletteActive.Size = new System.Drawing.Size(15, 14);
+            this.PaletteActive.TabIndex = 15;
+            this.PaletteActive.UseVisualStyleBackColor = true;
+            this.PaletteActive.CheckedChanged += new System.EventHandler(this.PaletteActive_CheckedChanged);
+            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -536,6 +560,8 @@
         private System.Windows.Forms.RichTextBox stats;
         private System.Windows.Forms.Button OpenConfig;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox PaletteActive;
+        private System.Windows.Forms.Label label6;
     }
 }
 

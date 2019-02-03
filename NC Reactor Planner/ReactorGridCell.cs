@@ -69,13 +69,20 @@ namespace NC_Reactor_Planner
                 Image.Dispose();
                 Image = new Bitmap(block.Texture);
             }
-            if (block is Cooler cooler && !cooler.Valid)
+            if (block is Cooler cooler)
             {
-                using (Graphics g = Graphics.FromImage(Image))
-                {
-                    Pen errorPen = new Pen(Color.Red, 1);
-                    g.DrawRectangle(errorPen, 0, 0, Image.Size.Width-1, Image.Size.Height-1);
-                }
+                if (cooler.Active)
+                    using (Graphics g = Graphics.FromImage(Image))
+                    {
+                        Pen activePen = new Pen(Color.Green, 2);
+                        g.DrawRectangle(activePen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                    }
+                if (!cooler.Valid)
+                    using (Graphics g = Graphics.FromImage(Image))
+                    {
+                        Pen errorPen = new Pen(Color.Red, 1);
+                        g.DrawRectangle(errorPen, 0, 0, Image.Size.Width - 1, Image.Size.Height - 1);
+                    }
             }
             redrawn = true;
             ResetToolTip();
