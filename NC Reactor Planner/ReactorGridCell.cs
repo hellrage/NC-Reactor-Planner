@@ -69,7 +69,7 @@ namespace NC_Reactor_Planner
                 Image.Dispose();
                 Image = new Bitmap(block.Texture);
             }
-            if (block is Cooler cooler && !cooler.Active)
+            if (block is Cooler cooler && !cooler.Valid)
             {
                 using (Graphics g = Graphics.FromImage(Image))
                 {

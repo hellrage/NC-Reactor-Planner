@@ -73,7 +73,7 @@ namespace NC_Reactor_Planner
             return toolTip;
         }
 
-        public override bool IsActive()
+        public override bool IsValid()
         {
             return Active;
         }

@@ -14,8 +14,8 @@ namespace NC_Reactor_Planner
         private double _heatActive;
         private double _heatPassive;
         private string _requirements;
-        private bool _oldActive;
-        private bool _active;
+        private bool _oldValid;
+        private bool _valid;
         private List<string> placementErrors;
 
         private CoolerTypes _coolerType;
@@ -23,7 +23,7 @@ namespace NC_Reactor_Planner
         public double HeatActive { get => _heatActive; private set => _heatActive = value; }
         public double HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
         public string Requirements { get => _requirements; private set => _requirements = value; }
-        public bool Active { get => _active; private set { _oldActive = _active; _active = value; } }
+        public bool Valid { get => _valid; private set { _oldValid = _valid; _valid = value; } }
 
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
@@ -34,7 +34,7 @@ namespace NC_Reactor_Planner
             HeatActive = heatActive;
             HeatPassive = heatPassive;
             Requirements = requirements;
-            Active = false;
+            Valid = false;
             placementErrors = new List<string>();
         }
 
@@ -50,7 +50,7 @@ namespace NC_Reactor_Planner
             toolTip += string.Format(" Passive cooling: {0} HU/t\r\n" +
                                     " Active cooling: {1} HU/t\r\n" +
                                     " Requires: {2}\r\n", HeatPassive, HeatActive, Requirements);
-            if (Position != Palette.dummyPosition & !Active)
+            if (Position != Palette.dummyPosition & !Valid)
             {
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
@@ -80,35 +80,35 @@ namespace NC_Reactor_Planner
             switch (CoolerType)
             {
                 case CoolerTypes.Water:
-                    return Active = HasAdjacent(Palette.blockPalette["Graphite"]) | HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) | HasAdjacent(Palette.blockPalette["FuelCell"]);
                 case CoolerTypes.Redstone:
-                    return Active = HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]);
                 case CoolerTypes.Quartz:
-                    return Active = HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]);
                 case CoolerTypes.Gold:
-                    return Active = HasAdjacent(Palette.blockPalette["Water"]) & HasAdjacent(Palette.blockPalette["Redstone"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Water"]) & HasAdjacent(Palette.blockPalette["Redstone"]);
                 case CoolerTypes.Glowstone:
-                    return Active = HasAdjacent(Palette.blockPalette["Graphite"], 2);
+                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 2);
                 case CoolerTypes.Lapis:
-                    return Active = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case CoolerTypes.Diamond:
-                    return Active = HasAdjacent(Palette.blockPalette["Water"]) & HasAdjacent(Palette.blockPalette["Quartz"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Water"]) & HasAdjacent(Palette.blockPalette["Quartz"]);
                 case CoolerTypes.Helium:
-                    return Active = HasAdjacent(Palette.blockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.blockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case CoolerTypes.Enderium:
-                    return Active = CheckEnderium();
+                    return Valid = CheckEnderium();
                 case CoolerTypes.Cryotheum:
-                    return Active = HasAdjacent(Palette.blockPalette["FuelCell"], 2);
+                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 2);
                 case CoolerTypes.Iron:
-                    return Active = HasAdjacent(Palette.blockPalette["Gold"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Gold"]);
                 case CoolerTypes.Emerald:
-                    return Active = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(Palette.blockPalette["FuelCell"]);
                 case CoolerTypes.Copper:
-                    return Active = HasAdjacent(Palette.blockPalette["Glowstone"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]);
                 case CoolerTypes.Tin:
-                    return Active = CheckTin();
+                    return Valid = CheckTin();
                 case CoolerTypes.Magnesium:
-                    return Active = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 default:
                     throw new ArgumentException("Unexpected cooler type");
             }
@@ -142,7 +142,7 @@ namespace NC_Reactor_Planner
                 if (adjacent >= number)
                     while (placementErrors.Remove("Too few " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
 
-                if (block.IsActive())
+                if (block.IsValid())
                 {
                     activeAdjacent++;
                     if (activeAdjacent > number & exact)
@@ -172,8 +172,8 @@ namespace NC_Reactor_Planner
                     {
                         while (placementErrors.Remove("No axial Lapis")) ;
                         hasAxialLapis = true;
-                        if (c1.Active)
-                            if (c2.Active)
+                        if (c1.Valid)
+                            if (c2.Valid)
                             {
                                 while (placementErrors.Remove("No axial Lapis")) ;
                                 return true;
@@ -225,12 +225,12 @@ namespace NC_Reactor_Planner
 
         public override bool NeedsRedraw()
         {
-            return _oldActive != Active;
+            return _oldValid != Valid;
         }
 
-        public override bool IsActive()
+        public override bool IsValid()
         {
-            return Active;
+            return Valid;
         }
 
         public override Block Copy(Point3D newPosition)

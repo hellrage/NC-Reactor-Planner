@@ -150,7 +150,7 @@ namespace NC_Reactor_Planner
             return adjModerators;
         }
 
-        public override bool IsActive()
+        public override bool IsValid()
         {
             return true;
         }

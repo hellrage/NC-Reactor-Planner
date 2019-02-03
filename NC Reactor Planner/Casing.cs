@@ -23,7 +23,7 @@ namespace NC_Reactor_Planner
 
         }
 
-        public override bool IsActive()
+        public override bool IsValid()
         {
             return true;
         }

@@ -227,7 +227,7 @@ namespace NC_Reactor_Planner
                     continue;
                 double passiveCooling = 0;
                 foreach (Cooler cooler in kvp.Value)
-                    if (cooler.Active)
+                    if (cooler.Valid)
                         passiveCooling += cooler.HeatPassive;
                 totalCoolingPerType.Add(kvp.Key, passiveCooling);
             }

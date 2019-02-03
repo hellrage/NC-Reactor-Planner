@@ -59,7 +59,7 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        public virtual bool IsActive()
+        public virtual bool IsValid()
         {
             return false;
         }
