@@ -534,7 +534,7 @@ namespace NC_Reactor_Planner
                 string btype;
                 if (block is Cooler cooler)
                 {
-                    btype = cooler.CoolerType.ToString();
+                    btype = (cooler.Active?"Active ":"") + cooler.CoolerType.ToString();
                     if ((n = DLContainsType(btype, cr)) != -1)
                         cr[n][btype].Add(block.Position);
                     else
@@ -569,8 +569,10 @@ namespace NC_Reactor_Planner
                     return new FuelCell("FuelCell", Palette.textures["FuelCell"], position);
                 else if (type == "Beryllium" | type == "Graphite")
                     return new Moderator((Moderator)Palette.blockPalette[type], position);
+                else if(type.Contains("Active"))
+                    return new Cooler((Cooler)Palette.blockPalette[type.Split(' ')[1]], position, true);
                 else
-                    return new Cooler((Cooler)Palette.blockPalette[type], position);
+                    return new Cooler((Cooler)Palette.blockPalette[type], position, false);
                 throw new ArgumentException("Tried to restore an invalid block");
             }
 

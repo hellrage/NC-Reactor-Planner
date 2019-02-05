@@ -46,6 +46,10 @@ namespace NC_Reactor_Planner
         {
         }
 
+        public Cooler(Cooler parent, Point3D position, bool active) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, active)
+        {
+        }
+
         public override string GetToolTip()
         {
             string toolTip = (Active ? "Active " : "") + DisplayName + " Cooler\r\n";
