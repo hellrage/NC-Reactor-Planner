@@ -95,3 +95,9 @@
 
 09.01.19 v1.2.9
 	Fix for decimal delimeter - Anoyomouse
+
+05.02.19 v1.2.10
+	Added burn time per fuel pellet and max base heat to stats output.
+	Implemented active cooler support.
+	Bundled the Newtonsoft.json.dll with the executable.
+	Internal changes for resource handling.

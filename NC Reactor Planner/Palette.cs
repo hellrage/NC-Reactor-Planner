@@ -10,6 +10,7 @@ using System.Resources;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Media.Media3D;
+using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner
 {
@@ -29,15 +30,33 @@ namespace NC_Reactor_Planner
 
         static Palette()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            ResourceReader rReader = new ResourceReader(assembly.GetManifestResourceStream("NC_Reactor_Planner.Properties.Resources.resources"));
-            IDictionaryEnumerator textureEnumerator = rReader.GetEnumerator();
 
-            textures = new Dictionary<string, Bitmap>();
-            while (textureEnumerator.MoveNext())
-                textures.Add((string)textureEnumerator.Key, (Bitmap)textureEnumerator.Value);
-
+            LoadTextures();
             LoadPalette();
+        }
+
+        private static void LoadTextures()
+        {
+            textures = new Dictionary<string, Bitmap>();
+            textures.Add("Air", Resources.Air);
+            textures.Add("FuelCell", Resources.FuelCell);
+            textures.Add("Graphite", Resources.Graphite);
+            textures.Add("Beryllium", Resources.Beryllium);
+            textures.Add("Water", Resources.Water);
+            textures.Add("Copper", Resources.Copper);
+            textures.Add("Cryotheum", Resources.Cryotheum);
+            textures.Add("Diamond", Resources.Diamond);
+            textures.Add("Emerald", Resources.Emerald);
+            textures.Add("Enderium", Resources.Enderium);
+            textures.Add("Glowstone", Resources.Glowstone);
+            textures.Add("Gold", Resources.Gold);
+            textures.Add("Helium", Resources.Helium);
+            textures.Add("Iron", Resources.Iron);
+            textures.Add("Lapis", Resources.Lapis);
+            textures.Add("Quartz", Resources.Quartz);
+            textures.Add("Redstone", Resources.Redstone);
+            textures.Add("Tin", Resources.Tin);
+            textures.Add("Magnesium", Resources.Magnesium);
         }
 
         public static void LoadPalette(bool Active = false)

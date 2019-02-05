@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner
 {
@@ -26,8 +27,13 @@ namespace NC_Reactor_Planner
         {
             FileInfo jsonDll = new FileInfo("Newtonsoft.json.dll");
             if (!jsonDll.Exists)
-                MessageBox.Show("You do not have the required dll (Newtonsoft.json.dll) in the application folder, it is a dependency! Please download it from the same mediafire link you got the release from and put it next to the executable. The application will work but it's going to crash when you attempt to save your reactor\\configuration");
-
+            {
+                //MessageBox.Show("You do not have the required dll (Newtonsoft.json.dll) in the application folder, it is a dependency! Please download it from the same mediafire link you got the release from and put it next to the executable. The application will work but it's going to crash when you attempt to save your reactor\\configuration");
+                using (var writer = jsonDll.OpenWrite())
+                {
+                    writer.Write(Resources.Newtonsoft_Json, 0, Resources.Newtonsoft_Json.Length);
+                }
+            }
             Configuration.ResetToDefaults();
             //Reactor.InitializeReactor(1, 1, 1);
 
