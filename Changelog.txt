@@ -101,3 +101,5 @@
 	Implemented active cooler support.
 	Bundled the Newtonsoft.json.dll with the executable.
 	Internal changes for resource handling.
+06.02.19 v 1.2.11
+	Fixes to UI resizing.
