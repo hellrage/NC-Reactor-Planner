@@ -69,23 +69,24 @@
             // 
             // paletteTable
             // 
+            this.paletteTable.AutoSize = true;
             this.paletteTable.ColumnCount = 4;
             this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.paletteTable.Location = new System.Drawing.Point(6, 145);
             this.paletteTable.Margin = new System.Windows.Forms.Padding(5);
             this.paletteTable.Name = "paletteTable";
             this.paletteTable.Padding = new System.Windows.Forms.Padding(4);
-            this.paletteTable.RowCount = 5;
+            this.paletteTable.RowCount = 6;
             this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.Size = new System.Drawing.Size(168, 208);
+            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.paletteTable.Size = new System.Drawing.Size(168, 250);
             this.paletteTable.TabIndex = 2;
             // 
             // reactorWidth
@@ -278,7 +279,7 @@
             // 
             this.statsLabel.AutoSize = true;
             this.statsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.statsLabel.Location = new System.Drawing.Point(12, 369);
+            this.statsLabel.Location = new System.Drawing.Point(12, 420);
             this.statsLabel.Name = "statsLabel";
             this.statsLabel.Size = new System.Drawing.Size(52, 20);
             this.statsLabel.TabIndex = 19;
@@ -307,6 +308,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.AutoSize = true;
             this.groupBox1.Controls.Add(this.PaletteActive);
             this.groupBox1.Controls.Add(this.sizeLabel);
             this.groupBox1.Controls.Add(this.reactorWidth);
@@ -323,7 +325,7 @@
             this.groupBox1.Controls.Add(this.reactorLength);
             this.groupBox1.Location = new System.Drawing.Point(137, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(178, 358);
+            this.groupBox1.Size = new System.Drawing.Size(182, 416);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             // 
@@ -453,12 +455,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.stats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.stats.Location = new System.Drawing.Point(7, 392);
+            this.stats.Location = new System.Drawing.Point(7, 443);
             this.stats.MaximumSize = new System.Drawing.Size(325, 607);
             this.stats.MinimumSize = new System.Drawing.Size(325, 100);
             this.stats.Name = "stats";
             this.stats.ReadOnly = true;
-            this.stats.Size = new System.Drawing.Size(325, 259);
+            this.stats.Size = new System.Drawing.Size(325, 208);
             this.stats.TabIndex = 24;
             this.stats.TabStop = false;
             this.stats.Text = "";

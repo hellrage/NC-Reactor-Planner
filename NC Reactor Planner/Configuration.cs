@@ -137,8 +137,8 @@ namespace NC_Reactor_Planner
 
             Fission = cf.Fission;
             ResourceCosts = cf.ResourceCosts;
-            if (ResourceCosts.CasingCosts == null)
-                SetDefaultResourceCosts();
+            //if (ResourceCosts.CasingCosts == null)
+                //SetDefaultResourceCosts();
             Fuels = cf.Fuels;
             Coolers = cf.Coolers;
             Reactor.ReloadValuesFromConfig();
@@ -174,7 +174,7 @@ namespace NC_Reactor_Planner
 
             SetDefaultFission();
 
-            SetDefaultResourceCosts();
+            //SetDefaultResourceCosts();
         }
 
         private static void SetDefaultFuels()
@@ -235,21 +235,27 @@ namespace NC_Reactor_Planner
 
         private static void SetDefaultCoolers()
         {
-            Coolers.Add("Water", new CoolerValues(60, 300, "At least one Reactor Cell or active Moderator"));
-            Coolers.Add("Redstone", new CoolerValues(90, 6400, "At least one Reactor Cell"));
-            Coolers.Add("Quartz", new CoolerValues(70, 6000, "At least one active Moderator"));
-            Coolers.Add("Gold", new CoolerValues(120, 9600, "At least one active Water cooler & active Redstone cooler"));
-            Coolers.Add("Glowstone", new CoolerValues(130, 8000, "At least two active Moderators"));
-            Coolers.Add("Lapis", new CoolerValues(120, 5600, "At least one Reactor Cell and one Reactor Casing"));
-            Coolers.Add("Diamond", new CoolerValues(150, 14000, "One active Water cooler and one active Quartz cooler"));
-            Coolers.Add("Helium", new CoolerValues(140, 13200, "ONLY one active Redstone cooler and at least one Reactor Casing"));
-            Coolers.Add("Enderium", new CoolerValues(120, 10800, "Three Reactor Casings (has to be in a corner)"));
-            Coolers.Add("Cryotheum", new CoolerValues(160, 12800, "At least two Reactor Cells"));
-            Coolers.Add("Iron", new CoolerValues(80, 4800, "At least one active Gold cooler"));
-            Coolers.Add("Emerald", new CoolerValues(160, 7200, "At least one active Moderator and one Reactor Cell"));
-            Coolers.Add("Copper", new CoolerValues(80, 5200, "At least one active Glowstone Cooler"));
-            Coolers.Add("Tin", new CoolerValues(120, 6000, "Two Lapis Coolers on opposite sides (same axis)"));
-            Coolers.Add("Magnesium", new CoolerValues(110, 7200, "At least one Reactor Casing and one active Moderator"));
+            Coolers.Add("Water", new CoolerValues(55, 0, "One FuelCell"));
+            Coolers.Add("Iron", new CoolerValues(60, 0, "One Moderator"));
+            Coolers.Add("Redstone", new CoolerValues(85, 0, "One FuelCell and one Moderator"));
+            Coolers.Add("Quartz", new CoolerValues(90, 0, "One Magnesium"));
+            Coolers.Add("Obsidian", new CoolerValues(80, 0, "One Glowstone and one Casing"));
+            Coolers.Add("Glowstone", new CoolerValues(115, 0, "Two Moderators"));
+            Coolers.Add("Lapis", new CoolerValues(100, 0, "One FuelCell and one Casing"));
+            Coolers.Add("Gold", new CoolerValues(110, 0, "Two Iron"));
+            Coolers.Add("Prismarine", new CoolerValues(125, 0, "Two Water"));
+            Coolers.Add("Diamond", new CoolerValues(130, 0, "One Gold and one FuelCell"));
+            Coolers.Add("Emerald", new CoolerValues(135, 0, "One Prismarine and one Moderator"));
+            Coolers.Add("Copper", new CoolerValues(65, 0, "One Water"));
+            Coolers.Add("Tin", new CoolerValues(75, 0, "Two Lapis"));
+            Coolers.Add("Lead", new CoolerValues(70, 0, "One Iron"));
+            Coolers.Add("Bronze", new CoolerValues(105, 0, "One Copper and one Tin"));
+            Coolers.Add("Boron", new CoolerValues(95, 0, "One Bronze"));
+            Coolers.Add("Magnesium", new CoolerValues(120, 0, "One Lead and one Casing"));
+            Coolers.Add("Helium", new CoolerValues(150, 0, "Two Redstone and one Casing"));
+            Coolers.Add("Enderium", new CoolerValues(140, 0, "Three Moderators"));
+            Coolers.Add("Cryotheum", new CoolerValues(145, 0, "Three FuelCells"));
+
         }
 
         private static void SetDefaultFission()

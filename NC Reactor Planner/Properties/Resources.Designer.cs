@@ -83,6 +83,26 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Boron {
+            get {
+                object obj = ResourceManager.GetObject("Boron", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Bronze {
+            get {
+                object obj = ResourceManager.GetObject("Bronze", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Copper {
             get {
                 object obj = ResourceManager.GetObject("Copper", resourceCulture);
@@ -203,6 +223,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Lead {
+            get {
+                object obj = ResourceManager.GetObject("Lead", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Magnesium {
             get {
                 object obj = ResourceManager.GetObject("Magnesium", resourceCulture);
@@ -217,6 +247,26 @@ namespace NC_Reactor_Planner.Properties {
             get {
                 object obj = ResourceManager.GetObject("Newtonsoft_Json", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Obsidian {
+            get {
+                object obj = ResourceManager.GetObject("Obsidian", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Prismarine {
+            get {
+                object obj = ResourceManager.GetObject("Prismarine", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

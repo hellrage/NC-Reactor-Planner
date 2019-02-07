@@ -44,7 +44,7 @@ namespace NC_Reactor_Planner
         public static List<FuelCell> fuelCells;
         public static Dictionary<string, List<Moderator>> moderators;
 
-        public static List<string> checkOrder = new List<string> { "Water", "Redstone", "Quartz", "Magnesium", "Emerald", "Enderium", "Gold", "Lapis", "Glowstone", "Diamond", "Cryotheum", "Tin", "Helium", "Copper", "Iron" };
+        public static List<string> checkOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Obsidian","Gold", "Prismarine", "Copper", "Tin", "Lead", "Helium", "Diamond", "Emerald", "Bronze", "Magnesium", "Quartz", "Boron" };
 
         public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
         public static List<Fuel> fuels;

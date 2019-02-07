@@ -28,10 +28,10 @@ namespace NC_Reactor_Planner
 
         public static Point3D dummyPosition = new Point3D(-1, -1, -1);
 
-        static Palette()
+        public static void Load()
         {
-
-            LoadTextures();
+            if(textures == null)
+                LoadTextures();
             LoadPalette();
         }
 
@@ -39,24 +39,33 @@ namespace NC_Reactor_Planner
         {
             textures = new Dictionary<string, Bitmap>();
             textures.Add("Air", Resources.Air);
-            textures.Add("FuelCell", Resources.FuelCell);
-            textures.Add("Graphite", Resources.Graphite);
-            textures.Add("Beryllium", Resources.Beryllium);
+
             textures.Add("Water", Resources.Water);
-            textures.Add("Copper", Resources.Copper);
-            textures.Add("Cryotheum", Resources.Cryotheum);
+            textures.Add("Iron", Resources.Iron);
+            textures.Add("Redstone", Resources.Redstone);
+            textures.Add("Quartz", Resources.Quartz);
+            textures.Add("Obsidian", Resources.Obsidian);
+            textures.Add("Glowstone", Resources.Glowstone);
+            textures.Add("Lapis", Resources.Lapis);
+            textures.Add("Gold", Resources.Gold);
+            textures.Add("Prismarine", Resources.Prismarine);
             textures.Add("Diamond", Resources.Diamond);
             textures.Add("Emerald", Resources.Emerald);
-            textures.Add("Enderium", Resources.Enderium);
-            textures.Add("Glowstone", Resources.Glowstone);
-            textures.Add("Gold", Resources.Gold);
-            textures.Add("Helium", Resources.Helium);
-            textures.Add("Iron", Resources.Iron);
-            textures.Add("Lapis", Resources.Lapis);
-            textures.Add("Quartz", Resources.Quartz);
-            textures.Add("Redstone", Resources.Redstone);
+            textures.Add("Copper", Resources.Copper);
             textures.Add("Tin", Resources.Tin);
+            textures.Add("Lead", Resources.Lead);
+            textures.Add("Bronze", Resources.Bronze);
+            textures.Add("Boron", Resources.Boron);
             textures.Add("Magnesium", Resources.Magnesium);
+            textures.Add("Helium", Resources.Helium);
+            textures.Add("Enderium", Resources.Enderium);
+            textures.Add("Cryotheum", Resources.Cryotheum);
+
+            textures.Add("Graphite", Resources.Graphite);
+            textures.Add("Beryllium", Resources.Beryllium);
+
+            textures.Add("FuelCell", Resources.FuelCell);
+
         }
 
         public static void LoadPalette(bool Active = false)

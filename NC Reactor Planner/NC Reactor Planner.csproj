@@ -205,6 +205,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Air.png" />
+    <None Include="Resources\Prismarine.png" />
+    <None Include="Resources\Lead.png" />
+    <None Include="Resources\Obsidian.png" />
+    <None Include="Resources\Boron.png" />
+    <None Include="Resources\Bronze.png" />
     <Content Include="Resources\FuelCell.png" />
   </ItemGroup>
   <ItemGroup>
