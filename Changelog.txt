@@ -101,5 +101,8 @@
 	Implemented active cooler support.
 	Bundled the Newtonsoft.json.dll with the executable.
 	Internal changes for resource handling.
-06.02.19 v 1.2.11
+06.02.19 v1.2.11
 	Fixes to UI resizing.
+09.02.19 v1.2.12
+	Added total RF per fuel pellet to stats.
+	Inactive moderators are now highlighted.

@@ -338,6 +338,7 @@ namespace NC_Reactor_Planner
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Effective E. gen.", ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Efficiency", (int)efficiency + " %");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy per pellet", (int)efficiency*totalEnergyPerTick*fuelDuratiion + " RF");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat mult.", (int)heatMulti + " %");
 
             report += "\r\n";
