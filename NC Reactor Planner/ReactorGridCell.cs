@@ -84,6 +84,17 @@ namespace NC_Reactor_Planner
                         g.DrawRectangle(errorPen, 0, 0, Image.Size.Width - 1, Image.Size.Height - 1);
                     }
             }
+            if(block is Moderator moderator)
+            {
+                if(!moderator.Active)
+                {
+                    using (Graphics g = Graphics.FromImage(Image))
+                    {
+                        Pen errorPen = new Pen(Color.LightPink, 2);
+                        g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                    }
+                }
+            }
             redrawn = true;
             ResetToolTip();
         }
