@@ -43,6 +43,7 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, List<Cooler>> activeCoolers;
         public static List<FuelCell> fuelCells;
         public static Dictionary<string, List<Moderator>> moderators;
+        public static int totalCasings;
 
         public static List<string> checkOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Obsidian","Gold", "Prismarine", "Copper", "Tin", "Lead", "Helium", "Diamond", "Emerald", "Bronze", "Magnesium", "Quartz", "Boron" };
 
@@ -62,7 +63,7 @@ namespace NC_Reactor_Planner
 
         public static Fuel usedFuel;
         public static double maxBaseHeat = 0;
-        public static double fuelDuratiion = 0;
+        public static double fuelDuration = 0;
 
         static Reactor()
         {
@@ -108,6 +109,7 @@ namespace NC_Reactor_Planner
                     blocks[x, y, interiorZ + 1] = new Casing("Casing", null, new Point3D(x, y, interiorZ + 1));
                     blocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
                 }
+
             usedFuel = fuels.First();
             UpdateStats();
             ConstructLayers();
@@ -195,6 +197,11 @@ namespace NC_Reactor_Planner
             totalHeatPerTick = 0;
             totalEnergyPerTick = 0;
 
+            totalCasings = 0;
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
+            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
+
             efficiency = 0;
             energyMultiplier = 0;
             heatMultiplier = 0;
@@ -268,7 +275,7 @@ namespace NC_Reactor_Planner
             heatMulti = (fuelCells.Count == 0) ? 0 : 100 * heatMultiplier / fuelCells.Count;
 
             maxBaseHeat = (fuelCells.Count == 0) ? 0 : 100 * totalCoolingPerTick / (fuelCells.Count * heatMulti);
-            fuelDuratiion = (fuelCells.Count == 0) ? 0 : usedFuel.FuelTime / fuelCells.Count;
+            fuelDuration = (fuelCells.Count == 0) ? 0 : usedFuel.FuelTime / (fuelCells.Count * Configuration.Fission.FuelUse);
         }
 
         private static void OrderedUpdateCoolerStats()
@@ -330,7 +337,7 @@ namespace NC_Reactor_Planner
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", heatDiff + " HU/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Max base heat", Math.Round(maxBaseHeat,2) + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Fuel pellet dur.", Math.Round(fuelDuratiion/20,2) + " s");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Fuel pellet dur.", Math.Round(fuelDuration/20,2) + " s");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Meltdown time", (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
 
             report += "\r\n";
@@ -338,14 +345,12 @@ namespace NC_Reactor_Planner
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Effective E. gen.", ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Efficiency", (int)efficiency + " %");
+            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy per pellet",(int)totalEnergyPerTick*fuelDuration + " RF");
             report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat mult.", (int)heatMulti + " %");
 
             report += "\r\n";
             //report += "Misc:\r\n";
-            int totalCasings = 0;
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
-            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
+
             report += string.Format("{0,-15}\t{1,-10}\r\n", "Casings", totalCasings);
             return report;
         }
