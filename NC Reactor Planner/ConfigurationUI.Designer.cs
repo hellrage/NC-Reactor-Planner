@@ -62,6 +62,7 @@
             this.ApplyConfig = new System.Windows.Forms.Button();
             this.Import = new System.Windows.Forms.Button();
             this.ttValidation = new System.Windows.Forms.ToolTip(this.components);
+            this.CalculateTotals = new System.Windows.Forms.Button();
             this.settingTabs.SuspendLayout();
             this.fissionPage.SuspendLayout();
             this.coolersPage.SuspendLayout();
@@ -101,7 +102,7 @@
             this.fissionPage.Controls.Add(this.label1);
             this.fissionPage.Location = new System.Drawing.Point(4, 22);
             this.fissionPage.Name = "fissionPage";
-            this.fissionPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.fissionPage.Padding = new System.Windows.Forms.Padding(3);
             this.fissionPage.Size = new System.Drawing.Size(638, 369);
             this.fissionPage.TabIndex = 0;
             this.fissionPage.Text = "Fission";
@@ -251,7 +252,7 @@
             this.coolersPage.Controls.Add(this.label7);
             this.coolersPage.Location = new System.Drawing.Point(4, 22);
             this.coolersPage.Name = "coolersPage";
-            this.coolersPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.coolersPage.Padding = new System.Windows.Forms.Padding(3);
             this.coolersPage.Size = new System.Drawing.Size(638, 369);
             this.coolersPage.TabIndex = 1;
             this.coolersPage.Text = "Coolers";
@@ -295,7 +296,7 @@
             this.fuelsPage.Controls.Add(this.label9);
             this.fuelsPage.Location = new System.Drawing.Point(4, 22);
             this.fuelsPage.Name = "fuelsPage";
-            this.fuelsPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.fuelsPage.Padding = new System.Windows.Forms.Padding(3);
             this.fuelsPage.Size = new System.Drawing.Size(638, 369);
             this.fuelsPage.TabIndex = 2;
             this.fuelsPage.Text = "Fuels";
@@ -333,10 +334,11 @@
             // 
             // resourceCostsTab
             // 
+            this.resourceCostsTab.Controls.Add(this.CalculateTotals);
             this.resourceCostsTab.Controls.Add(this.blockSelector);
             this.resourceCostsTab.Location = new System.Drawing.Point(4, 22);
             this.resourceCostsTab.Name = "resourceCostsTab";
-            this.resourceCostsTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.resourceCostsTab.Padding = new System.Windows.Forms.Padding(3);
             this.resourceCostsTab.Size = new System.Drawing.Size(638, 369);
             this.resourceCostsTab.TabIndex = 3;
             this.resourceCostsTab.Text = "Resource Costs";
@@ -389,6 +391,16 @@
             this.Import.Text = "Import";
             this.Import.UseVisualStyleBackColor = true;
             this.Import.Click += new System.EventHandler(this.Import_Click);
+            // 
+            // CalculateTotals
+            // 
+            this.CalculateTotals.Location = new System.Drawing.Point(320, 4);
+            this.CalculateTotals.Name = "CalculateTotals";
+            this.CalculateTotals.Size = new System.Drawing.Size(312, 52);
+            this.CalculateTotals.TabIndex = 1;
+            this.CalculateTotals.Text = "Reactor totals";
+            this.CalculateTotals.UseVisualStyleBackColor = true;
+            this.CalculateTotals.Click += new System.EventHandler(this.CalculateTotals_Click);
             // 
             // ConfigurationUI
             // 
@@ -450,5 +462,6 @@
         private System.Windows.Forms.ComboBox blockSelector;
         private System.Windows.Forms.Button Import;
         private System.Windows.Forms.ToolTip ttValidation;
+        private System.Windows.Forms.Button CalculateTotals;
     }
 }
