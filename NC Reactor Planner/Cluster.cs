@@ -25,6 +25,7 @@ namespace NC_Reactor_Planner
         {
             blocks = new List<Block>();
             ID = id;
+            HasPathToCasing = false;
             ResetValues();
         }
 
@@ -32,7 +33,6 @@ namespace NC_Reactor_Planner
         {
             TotalCoolingPerTick = 0;
             TotalHeatPerTick = 0;
-            HasPathToCasing = false;
             FuelDurationMultiplier = 1;
             HeatMultiplier = 0;
             TotalOutput = 0;

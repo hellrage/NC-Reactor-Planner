@@ -46,6 +46,16 @@ namespace NC_Reactor_Planner
             RevertToSetup();
         }
 
+        public override void RevertToSetup()
+        {
+            SetCluster(-1);
+            AdjacentCells = new List<FuelCell>();
+            AdjacentModeratorLines = 0;
+            PositionalEfficiency = 0;
+            FirstPass = true;
+            Active = false;
+        }
+
         public FuelCell(FuelCell parent, Point3D position, Fuel usedFuel) : this(parent.DisplayName, parent.Texture, position, usedFuel)
         {
         }
@@ -153,15 +163,7 @@ namespace NC_Reactor_Planner
             return Valid;
         }
 
-        public override void RevertToSetup()
-        {
-            SetCluster(-1);
-            AdjacentCells = new List<FuelCell>();
-            AdjacentModeratorLines = 0;
-            PositionalEfficiency = 0;
-            FirstPass = true;
-            Active = false;
-        }
+        
 
         public override Block Copy(Point3D newPosition)
         {
