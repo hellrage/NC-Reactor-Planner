@@ -29,28 +29,28 @@ namespace NC_Reactor_Planner
 
     public struct FuelValues
     {
-        public double BasePower;
+        public double BaseEfficiency;
         public double BaseHeat;
         public double FuelTime;
+        public double CriticalityFactor;
 
-        public FuelValues(double bp, double bh, double ft)
+        public FuelValues(double be, double bh, double ft, double cf)
         {
-            BasePower = bp;
+            BaseEfficiency = be;
             BaseHeat = bh;
             FuelTime = ft;
+            CriticalityFactor = cf;
         }
     }
 
     public struct CoolerValues
     {
-        public double HeatActive;
         public double HeatPassive;
         public string Requirements;
 
-        public CoolerValues(double hp, double ha, string req)
+        public CoolerValues(double hp, string req)
         {
             HeatPassive = hp;
-            HeatActive = ha;
             Requirements = req;
         }
     }
@@ -137,8 +137,8 @@ namespace NC_Reactor_Planner
 
             Fission = cf.Fission;
             ResourceCosts = cf.ResourceCosts;
-            //if (ResourceCosts.CasingCosts == null)
-                //SetDefaultResourceCosts();
+            if (ResourceCosts.CasingCosts == null)
+                SetDefaultResourceCosts();
             Fuels = cf.Fuels;
             Coolers = cf.Coolers;
             Reactor.ReloadValuesFromConfig();
@@ -179,82 +179,82 @@ namespace NC_Reactor_Planner
 
         private static void SetDefaultFuels()
         {
-            Fuels.Add("TBU", new FuelValues(60, 18, 144000));
-            Fuels.Add("TBU Oxide", new FuelValues(84, 22.5, 144000));
-            Fuels.Add("LEU-233", new FuelValues(144, 60, 64000));
-            Fuels.Add("LEU-233 Oxide", new FuelValues(201.6, 75, 64000));
-            Fuels.Add("HEU-233", new FuelValues(576, 360, 64000));
-            Fuels.Add("HEU-233 Oxide", new FuelValues(806.4, 450, 64000));
-            Fuels.Add("LEU-235", new FuelValues(120, 50, 72000));
-            Fuels.Add("LEU-235 Oxide", new FuelValues(168, 62.5, 72000));
-            Fuels.Add("HEU-235", new FuelValues(480, 300, 72000));
-            Fuels.Add("HEU-235 Oxide", new FuelValues(672, 375, 72000));
-            Fuels.Add("LEN-236", new FuelValues(90, 36, 102000));
-            Fuels.Add("LEN-236 Oxide", new FuelValues(126, 45, 102000));
-            Fuels.Add("HEN-236", new FuelValues(360, 216, 102000));
-            Fuels.Add("HEN-236 Oxide", new FuelValues(504, 270, 102000));
-            Fuels.Add("LEP-239", new FuelValues(105, 40, 92000));
-            Fuels.Add("LEP-239 Oxide", new FuelValues(147, 50, 92000));
-            Fuels.Add("HEP-239", new FuelValues(420, 240, 92000));
-            Fuels.Add("HEP-239 Oxide", new FuelValues(588, 300, 92000));
-            Fuels.Add("LEP-241", new FuelValues(165, 70, 60000));
-            Fuels.Add("LEP-241 Oxide", new FuelValues(231, 87.5, 60000));
-            Fuels.Add("HEP-241", new FuelValues(660, 420, 60000));
-            Fuels.Add("HEP-241 Oxide", new FuelValues(924, 525, 60000));
-            Fuels.Add("MOX-239", new FuelValues(155.4, 57.5, 84000));
-            Fuels.Add("MOX-241", new FuelValues(243.6, 97.5, 56000));
-            Fuels.Add("LEA-242", new FuelValues(192, 94, 54000));
-            Fuels.Add("LEA-242 Oxide", new FuelValues(268.8, 117.5, 54000));
-            Fuels.Add("HEA-242", new FuelValues(768, 564, 54000));
-            Fuels.Add("HEA-242 Oxide", new FuelValues(1075.2, 705, 54000));
-            Fuels.Add("LECm-243", new FuelValues(210, 112, 52000));
-            Fuels.Add("LECm-243 Oxide", new FuelValues(294, 140, 52000));
-            Fuels.Add("HECm-243", new FuelValues(840, 672, 52000));
-            Fuels.Add("HECm-243 Oxide", new FuelValues(1176, 840, 52000));
-            Fuels.Add("LECm-245", new FuelValues(162, 68, 68000));
-            Fuels.Add("LECm-245 Oxide", new FuelValues(226.8, 85, 68000));
-            Fuels.Add("HECm-245", new FuelValues(648, 408, 68000));
-            Fuels.Add("HECm-245 Oxide", new FuelValues(907.2, 510, 68000));
-            Fuels.Add("LECm-247", new FuelValues(138, 54, 78000));
-            Fuels.Add("LECm-247 Oxide", new FuelValues(193.2, 67.5, 78000));
-            Fuels.Add("HECm-247", new FuelValues(552, 324, 78000));
-            Fuels.Add("HECm-247 Oxide", new FuelValues(772.8, 405, 78000));
-            Fuels.Add("LEB-248", new FuelValues(135, 52, 86000));
-            Fuels.Add("LEB-248 Oxide", new FuelValues(189, 65, 86000));
-            Fuels.Add("HEB-248", new FuelValues(540, 312, 86000));
-            Fuels.Add("HEB-248 Oxide", new FuelValues(756, 390, 86000));
-            Fuels.Add("LECf-249", new FuelValues(216, 116, 60000));
-            Fuels.Add("LECf-249 Oxide", new FuelValues(302.4, 145, 60000));
-            Fuels.Add("HECf-249", new FuelValues(864, 696, 60000));
-            Fuels.Add("HECf-249 Oxide", new FuelValues(1209.6, 870, 60000));
-            Fuels.Add("LECf-251", new FuelValues(225, 120, 58000));
-            Fuels.Add("LECf-251 Oxide", new FuelValues(315, 150, 58000));
-            Fuels.Add("HECf-251", new FuelValues(900, 720, 58000));
-            Fuels.Add("HECf-251 Oxide", new FuelValues(1260, 900, 58000));
+            Fuels.Add("TBU", new FuelValues(1, 18, 144000, 1));
+            Fuels.Add("TBU Oxide", new FuelValues(1, 22.5, 144000, 1));
+            Fuels.Add("LEU-233", new FuelValues(1, 60, 64000, 1));
+            Fuels.Add("LEU-233 Oxide", new FuelValues(1, 75, 64000, 1));
+            Fuels.Add("HEU-233", new FuelValues(1, 360, 64000, 1));
+            Fuels.Add("HEU-233 Oxide", new FuelValues(1, 450, 64000, 1));
+            Fuels.Add("LEU-235", new FuelValues(1, 50, 72000, 1));
+            Fuels.Add("LEU-235 Oxide", new FuelValues(1, 62.5, 72000, 1));
+            Fuels.Add("HEU-235", new FuelValues(1, 300, 72000, 1));
+            Fuels.Add("HEU-235 Oxide", new FuelValues(1, 375, 72000, 1));
+            Fuels.Add("LEN-236", new FuelValues(1, 36, 102000, 1));
+            Fuels.Add("LEN-236 Oxide", new FuelValues(1, 45, 102000, 1));
+            Fuels.Add("HEN-236", new FuelValues(1, 216, 102000, 1));
+            Fuels.Add("HEN-236 Oxide", new FuelValues(1, 270, 102000, 1));
+            Fuels.Add("LEP-239", new FuelValues(1, 40, 92000, 1));
+            Fuels.Add("LEP-239 Oxide", new FuelValues(1, 50, 92000, 1));
+            Fuels.Add("HEP-239", new FuelValues(1, 240, 92000, 1));
+            Fuels.Add("HEP-239 Oxide", new FuelValues(1, 300, 92000, 1));
+            Fuels.Add("LEP-241", new FuelValues(1, 70, 60000, 1));
+            Fuels.Add("LEP-241 Oxide", new FuelValues(1, 87.5, 60000, 1));
+            Fuels.Add("HEP-241", new FuelValues(1, 420, 60000, 1));
+            Fuels.Add("HEP-241 Oxide", new FuelValues(1, 525, 60000, 1));
+            Fuels.Add("MOX-239", new FuelValues(1, 57.5, 84000, 1));
+            Fuels.Add("MOX-241", new FuelValues(1, 97.5, 56000, 1));
+            Fuels.Add("LEA-242", new FuelValues(1, 94, 54000, 1));
+            Fuels.Add("LEA-242 Oxide", new FuelValues(1, 117.5, 54000, 1));
+            Fuels.Add("HEA-242", new FuelValues(1, 564, 54000, 1));
+            Fuels.Add("HEA-242 Oxide", new FuelValues(1, 705, 54000, 1));
+            Fuels.Add("LECm-243", new FuelValues(1, 112, 52000, 1));
+            Fuels.Add("LECm-243 Oxide", new FuelValues(1, 140, 52000, 1));
+            Fuels.Add("HECm-243", new FuelValues(1, 672, 52000, 1));
+            Fuels.Add("HECm-243 Oxide", new FuelValues(1, 840, 52000, 1));
+            Fuels.Add("LECm-245", new FuelValues(1, 68, 68000, 1));
+            Fuels.Add("LECm-245 Oxide", new FuelValues(1, 85, 68000, 1));
+            Fuels.Add("HECm-245", new FuelValues(1, 408, 68000, 1));
+            Fuels.Add("HECm-245 Oxide", new FuelValues(1, 510, 68000, 1));
+            Fuels.Add("LECm-247", new FuelValues(1, 54, 78000, 1));
+            Fuels.Add("LECm-247 Oxide", new FuelValues(1, 67.5, 78000, 1));
+            Fuels.Add("HECm-247", new FuelValues(1, 324, 78000, 1));
+            Fuels.Add("HECm-247 Oxide", new FuelValues(1, 405, 78000, 1));
+            Fuels.Add("LEB-248", new FuelValues(1, 52, 86000, 1));
+            Fuels.Add("LEB-248 Oxide", new FuelValues(1, 65, 86000, 1));
+            Fuels.Add("HEB-248", new FuelValues(1, 312, 86000, 1));
+            Fuels.Add("HEB-248 Oxide", new FuelValues(1, 390, 86000, 1));
+            Fuels.Add("LECf-249", new FuelValues(1, 116, 60000, 1));
+            Fuels.Add("LECf-249 Oxide", new FuelValues(1, 145, 60000, 1));
+            Fuels.Add("HECf-249", new FuelValues(1, 696, 60000, 1));
+            Fuels.Add("HECf-249 Oxide", new FuelValues(1, 870, 60000, 1));
+            Fuels.Add("LECf-251", new FuelValues(1, 120, 58000, 1));
+            Fuels.Add("LECf-251 Oxide", new FuelValues(1, 150, 58000, 1));
+            Fuels.Add("HECf-251", new FuelValues(1, 720, 58000, 1));
+            Fuels.Add("HECf-251 Oxide", new FuelValues(1, 900, 58000, 1));
         }
 
         private static void SetDefaultCoolers()
         {
-            Coolers.Add("Water", new CoolerValues(55, 0, "One FuelCell"));
-            Coolers.Add("Iron", new CoolerValues(60, 0, "One Moderator"));
-            Coolers.Add("Redstone", new CoolerValues(85, 0, "One FuelCell and one Moderator"));
-            Coolers.Add("Quartz", new CoolerValues(90, 0, "One Magnesium"));
-            Coolers.Add("Obsidian", new CoolerValues(80, 0, "One Glowstone and one Casing"));
-            Coolers.Add("Glowstone", new CoolerValues(115, 0, "Two Moderators"));
-            Coolers.Add("Lapis", new CoolerValues(100, 0, "One FuelCell and one Casing"));
-            Coolers.Add("Gold", new CoolerValues(110, 0, "Two Iron"));
-            Coolers.Add("Prismarine", new CoolerValues(125, 0, "Two Water"));
-            Coolers.Add("Diamond", new CoolerValues(130, 0, "One Gold and one FuelCell"));
-            Coolers.Add("Emerald", new CoolerValues(135, 0, "One Prismarine and one Moderator"));
-            Coolers.Add("Copper", new CoolerValues(65, 0, "One Water"));
-            Coolers.Add("Tin", new CoolerValues(75, 0, "Two Lapis"));
-            Coolers.Add("Lead", new CoolerValues(70, 0, "One Iron"));
-            Coolers.Add("Bronze", new CoolerValues(105, 0, "One Copper and one Tin"));
-            Coolers.Add("Boron", new CoolerValues(95, 0, "One Bronze"));
-            Coolers.Add("Magnesium", new CoolerValues(120, 0, "One Lead and one Casing"));
-            Coolers.Add("Helium", new CoolerValues(150, 0, "Two Redstone and one Casing"));
-            Coolers.Add("Enderium", new CoolerValues(140, 0, "Three Moderators"));
-            Coolers.Add("Cryotheum", new CoolerValues(145, 0, "Three FuelCells"));
+            Coolers.Add("Water", new CoolerValues(55, "One FuelCell"));
+            Coolers.Add("Iron", new CoolerValues(60, "One Moderator"));
+            Coolers.Add("Redstone", new CoolerValues(85, "One FuelCell and one Moderator"));
+            Coolers.Add("Quartz", new CoolerValues(90, "One Magnesium"));
+            Coolers.Add("Obsidian", new CoolerValues(80, "One Glowstone and one Casing"));
+            Coolers.Add("Glowstone", new CoolerValues(115, "Two Moderators"));
+            Coolers.Add("Lapis", new CoolerValues(100, "One FuelCell and one Casing"));
+            Coolers.Add("Gold", new CoolerValues(110, "Two Iron"));
+            Coolers.Add("Prismarine", new CoolerValues(125, "Two Water"));
+            Coolers.Add("Diamond", new CoolerValues(130, "One Gold and one FuelCell"));
+            Coolers.Add("Emerald", new CoolerValues(135, "One Prismarine and one Moderator"));
+            Coolers.Add("Copper", new CoolerValues(65, "One Water"));
+            Coolers.Add("Tin", new CoolerValues(75, "Two Lapis"));
+            Coolers.Add("Lead", new CoolerValues(70, "One Iron"));
+            Coolers.Add("Bronze", new CoolerValues(105, "One Copper and one Tin"));
+            Coolers.Add("Boron", new CoolerValues(95, "One Bronze"));
+            Coolers.Add("Magnesium", new CoolerValues(120, "One Lead and one Casing"));
+            Coolers.Add("Helium", new CoolerValues(150, "Two Redstone and one Casing"));
+            Coolers.Add("Enderium", new CoolerValues(140, "Three Moderators"));
+            Coolers.Add("Cryotheum", new CoolerValues(145, "Three FuelCells"));
 
         }
 
@@ -308,10 +308,10 @@ namespace NC_Reactor_Planner
         {
             Dictionary<string, Dictionary<string, int>> dcc = new Dictionary<string, Dictionary<string, int>>();
 
-            foreach (Cooler cooler in Palette.coolers)
+            foreach (HeatSink cooler in Palette.coolers)
             {
                 dcc.Add(cooler.DisplayName, new Dictionary<string, int>());
-                dcc[cooler.DisplayName].Add("Empty Cooler", 1);
+                dcc[cooler.DisplayName].Add("Empty HeatSink", 1);
             }
 
             dcc["Water"].Add("Water Bucket", 1);
@@ -343,13 +343,29 @@ namespace NC_Reactor_Planner
 
             dcc["Magnesium"].Add("Magnesium Ingot", 8);
 
+            dcc["Boron"].Add("Boron Ingot", 8);
+
+            dcc["Obsidian"].Add("Obsidian", 8);
+
+            dcc["Prismarine"].Add("Prismarine Shard", 8);
+
+            dcc["Lead"].Add("Lead Ingot", 8);
+
+            dcc["Bronze"].Add("Bronze Ingot", 8);
+
+            dcc["Enderium"].Add("Enderium Ingot", 8);
+
+            dcc["Cryotheum"].Add("Cryotheum Dust", 8);
+
+
+
             return dcc;
         }
 
         public static Dictionary<string, int> CalculateTotalResourceCosts()
         {
             Dictionary<string, int> totals = new Dictionary<string, int>();
-            foreach (KeyValuePair<string,List<Cooler>> c in Reactor.passiveCoolers)
+            foreach (KeyValuePair<string,List<HeatSink>> c in Reactor.heatSinks)
             {
                 foreach (KeyValuePair<string,int> resource in ResourceCosts.CoolerCosts[c.Key])
                 {
@@ -357,11 +373,6 @@ namespace NC_Reactor_Planner
                         totals.Add(resource.Key, 0);
                     totals[resource.Key] += resource.Value * c.Value.Count();
                 }
-            }
-
-            foreach (KeyValuePair<string, List<Cooler>> c in Reactor.activeCoolers)
-            {
-                totals.Add("Active " + c.Key +" Cooler", c.Value.Count);
             }
 
             if(Reactor.fuelCells.Count >0)

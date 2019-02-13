@@ -11,53 +11,38 @@ namespace NC_Reactor_Planner
     [Serializable()]
     public class Moderator : Block
     {
-        //[field: NonSerialized()]
-        //public double powerMulti = (double)1 / (double)6;
-        //[field: NonSerialized()]
-        //public double heatMulti = (double)1 / (double)3;
         private bool _active;
-        private double _heatGenerationPerTick;
         private ModeratorTypes _moderatorType;
+        private double _fluxFactor;
 
         public bool Active { get => _active; private set => _active = value; }
-        public double HeatGenerationPerTick { get => _heatGenerationPerTick; private set => _heatGenerationPerTick = value; }
         public ModeratorTypes ModeratorType { get => _moderatorType; private set => _moderatorType = value; }
+        public double FluxFactor { get => _fluxFactor; private set => _fluxFactor = value; }
 
-        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Moderator, texture, position)
+        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {
-            HeatGenerationPerTick = 0;
+            FluxFactor = fluxFactor;
             Active = false;
             ModeratorType = type;
         }
 
-        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position)
+        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position, parent.FluxFactor)
         {
             ModeratorType = parent.ModeratorType;
         }
 
         public void UpdateStats()
         {
-            if (FindAdjacentFuelCells() == 0)
-            {
-                HeatGenerationPerTick = Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration;
-                Reactor.totalHeatPerTick += HeatGenerationPerTick;
-                Active = false;
-            }
-            else
-            {
-                HeatGenerationPerTick = 0;
-                Active = true;
-            }
+            Active = FindAdjacentFuelCells() > 0;
         }
 
         public int FindAdjacentFuelCells()
         {
             int adjCells = 0;
             foreach (Vector3D o in Reactor.sixAdjOffsets)
-            {
-                if (Reactor.BlockAt(Position + o) is FuelCell)
-                    adjCells++;
-            }
+                if (Reactor.BlockAt(Position + o) is FuelCell fuelCell)
+                    if(fuelCell.Active)
+                        adjCells++;
             return adjCells;
         }
 
@@ -68,8 +53,9 @@ namespace NC_Reactor_Planner
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 if (!Active)
-                    toolTip += "INACTIVE!!!";
+                    toolTip += "INACTIVE!!!\r\n";
             }
+            toolTip += string.Format("Flux Factor: {0}\r\n", FluxFactor);
             return toolTip;
         }
 

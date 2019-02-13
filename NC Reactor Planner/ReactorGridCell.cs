@@ -11,7 +11,6 @@ namespace NC_Reactor_Planner
     public class ReactorGridCell : PictureBox
     {
         public Block block;
-        private bool redrawn;
 
         public void Clicked(object sender, EventArgs e)
         {
@@ -23,6 +22,11 @@ namespace NC_Reactor_Planner
             switch (button)
             {
                 case MouseButtons.Left:
+                    if(((ModifierKeys & Keys.Shift)!=0) & block.BlockType == BlockTypes.FuelCell)
+                    {
+                        ((FuelCell)block).TogglePrimed();
+                        break;
+                    }
                     Reactor.blocks[x, y, z] = Palette.BlockToPlace(block);
                     break;
                 case MouseButtons.None:
@@ -31,17 +35,17 @@ namespace NC_Reactor_Planner
                     Reactor.blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], block.Position);
                     break;
                 case MouseButtons.Middle:
-                    Reactor.blocks[x, y, z] = new FuelCell("FuelCell", Palette.textures["FuelCell"], block.Position);
+                    Reactor.blocks[x, y, z] = new FuelCell("FuelCell", Palette.textures["FuelCell"], block.Position, Palette.selectedFuel);
                     break;
                 default:
                     return;
             }
             block = Reactor.blocks[x, y, z];
 
-            Reactor.UpdateStats();
+            Reactor.Update();
 
             ((PlannerUI)Parent.Parent.Parent).RefreshStats();
-
+            PlannerUI.gridToolTip.Active = false;
             RedrawSelf();
             PlannerUI.gridToolTip.Active = true;
         }
@@ -51,6 +55,8 @@ namespace NC_Reactor_Planner
             if (((MouseEventArgs)e).Button == MouseButtons.None)
                 return;
             if (Palette.PlacingSameBlock(block, ((MouseEventArgs)e).Button))
+                return;
+            if ((ModifierKeys & Keys.Shift) != 0)
                 return;
             Clicked(sender, e);
         }
@@ -69,49 +75,47 @@ namespace NC_Reactor_Planner
                 Image.Dispose();
                 Image = new Bitmap(block.Texture);
             }
-            if (block is Cooler cooler)
+            using (Graphics g = Graphics.FromImage(Image))
             {
-                if (cooler.Active)
-                    using (Graphics g = Graphics.FromImage(Image))
-                    {
-                        Pen activePen = new Pen(Color.Green, 2);
-                        g.DrawRectangle(activePen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
-                    }
-                if (!cooler.Valid)
-                    using (Graphics g = Graphics.FromImage(Image))
-                    {
+                if (block is HeatSink | block is Conductor)
+                {
+
+                    if (!block.IsValid())
+                    { 
                         Pen errorPen = new Pen(Color.Red, 1);
                         g.DrawRectangle(errorPen, 0, 0, Image.Size.Width - 1, Image.Size.Height - 1);
                     }
-            }
-            if(block is Moderator moderator)
-            {
-                if(!moderator.Active)
+                }
+                if(block is Moderator moderator)
                 {
-                    using (Graphics g = Graphics.FromImage(Image))
+                    if(!moderator.Active)
                     {
-                        Pen errorPen = new Pen(Color.LightPink, 2);
-                        g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                            Pen errorPen = new Pen(Color.LightPink, 2);
+                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
                     }
                 }
+                if (block is FuelCell fuelCell)
+                {
+                    if (!fuelCell.Active & !fuelCell.Primed)
+                    {
+                            Pen errorPen = new Pen(Color.Pink, 2);
+                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                    }
+                    if (fuelCell.Primed)
+                    {
+                            Pen errorPen = new Pen(Color.Orange, 2);
+                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                    }
+                }
+                if(block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator)
+                    g.DrawString(block.Cluster.ToString(), new Font(FontFamily.GenericSansSerif, 7, FontStyle.Bold), Brushes.Orange, 3, 3);
             }
-            redrawn = true;
             ResetToolTip();
         }
 
         public void ResetToolTip()
         {
             PlannerUI.gridToolTip.SetToolTip(this, block.GetToolTip());
-        }
-
-        public bool NeedsRedraw()
-        {
-            return redrawn & block.NeedsRedraw();
-        }
-
-        public void ResetRedrawn()
-        {
-            redrawn = false;
         }
     }
 }

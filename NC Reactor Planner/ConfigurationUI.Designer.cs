@@ -49,20 +49,20 @@
             this.label1 = new System.Windows.Forms.Label();
             this.coolersPage = new System.Windows.Forms.TabPage();
             this.label12 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.fuelsPage = new System.Windows.Forms.TabPage();
+            this.label15 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.resourceCostsTab = new System.Windows.Forms.TabPage();
+            this.CalculateTotals = new System.Windows.Forms.Button();
             this.blockSelector = new System.Windows.Forms.ComboBox();
             this.Save = new System.Windows.Forms.Button();
             this.LoadConfig = new System.Windows.Forms.Button();
             this.ApplyConfig = new System.Windows.Forms.Button();
             this.Import = new System.Windows.Forms.Button();
             this.ttValidation = new System.Windows.Forms.ToolTip(this.components);
-            this.CalculateTotals = new System.Windows.Forms.Button();
             this.settingTabs.SuspendLayout();
             this.fissionPage.SuspendLayout();
             this.coolersPage.SuspendLayout();
@@ -248,7 +248,6 @@
             // 
             this.coolersPage.AutoScroll = true;
             this.coolersPage.Controls.Add(this.label12);
-            this.coolersPage.Controls.Add(this.label8);
             this.coolersPage.Controls.Add(this.label7);
             this.coolersPage.Location = new System.Drawing.Point(4, 22);
             this.coolersPage.Name = "coolersPage";
@@ -262,21 +261,11 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label12.Location = new System.Drawing.Point(281, 3);
+            this.label12.Location = new System.Drawing.Point(217, 3);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(84, 13);
             this.label12.TabIndex = 2;
             this.label12.Text = "Requirements";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label8.Location = new System.Drawing.Point(161, 3);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(114, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "Active cooling rate";
             // 
             // label7
             // 
@@ -291,6 +280,7 @@
             // fuelsPage
             // 
             this.fuelsPage.AutoScroll = true;
+            this.fuelsPage.Controls.Add(this.label15);
             this.fuelsPage.Controls.Add(this.label11);
             this.fuelsPage.Controls.Add(this.label10);
             this.fuelsPage.Controls.Add(this.label9);
@@ -301,6 +291,16 @@
             this.fuelsPage.TabIndex = 2;
             this.fuelsPage.Text = "Fuels";
             this.fuelsPage.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label15.Location = new System.Drawing.Point(380, 3);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(99, 13);
+            this.label15.TabIndex = 3;
+            this.label15.Text = "Criticality Factor";
             // 
             // label11
             // 
@@ -326,11 +326,11 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label9.Location = new System.Drawing.Point(160, 3);
+            this.label9.Location = new System.Drawing.Point(139, 3);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(74, 13);
+            this.label9.Size = new System.Drawing.Size(95, 13);
             this.label9.TabIndex = 0;
-            this.label9.Text = "Base Power";
+            this.label9.Text = "Base Efficiency";
             // 
             // resourceCostsTab
             // 
@@ -343,6 +343,16 @@
             this.resourceCostsTab.TabIndex = 3;
             this.resourceCostsTab.Text = "Resource Costs";
             this.resourceCostsTab.UseVisualStyleBackColor = true;
+            // 
+            // CalculateTotals
+            // 
+            this.CalculateTotals.Location = new System.Drawing.Point(320, 4);
+            this.CalculateTotals.Name = "CalculateTotals";
+            this.CalculateTotals.Size = new System.Drawing.Size(312, 52);
+            this.CalculateTotals.TabIndex = 1;
+            this.CalculateTotals.Text = "Reactor totals";
+            this.CalculateTotals.UseVisualStyleBackColor = true;
+            this.CalculateTotals.Click += new System.EventHandler(this.CalculateTotals_Click);
             // 
             // blockSelector
             // 
@@ -384,6 +394,7 @@
             // 
             // Import
             // 
+            this.Import.Enabled = false;
             this.Import.Location = new System.Drawing.Point(255, 415);
             this.Import.Name = "Import";
             this.Import.Size = new System.Drawing.Size(75, 23);
@@ -391,16 +402,6 @@
             this.Import.Text = "Import";
             this.Import.UseVisualStyleBackColor = true;
             this.Import.Click += new System.EventHandler(this.Import_Click);
-            // 
-            // CalculateTotals
-            // 
-            this.CalculateTotals.Location = new System.Drawing.Point(320, 4);
-            this.CalculateTotals.Name = "CalculateTotals";
-            this.CalculateTotals.Size = new System.Drawing.Size(312, 52);
-            this.CalculateTotals.TabIndex = 1;
-            this.CalculateTotals.Text = "Reactor totals";
-            this.CalculateTotals.UseVisualStyleBackColor = true;
-            this.CalculateTotals.Click += new System.EventHandler(this.CalculateTotals_Click);
             // 
             // ConfigurationUI
             // 
@@ -444,7 +445,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage coolersPage;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TabPage fuelsPage;
         private System.Windows.Forms.Label label11;
@@ -463,5 +463,6 @@
         private System.Windows.Forms.Button Import;
         private System.Windows.Forms.ToolTip ttValidation;
         private System.Windows.Forms.Button CalculateTotals;
+        private System.Windows.Forms.Label label15;
     }
 }

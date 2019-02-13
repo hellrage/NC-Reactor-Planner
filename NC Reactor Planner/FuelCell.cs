@@ -12,35 +12,38 @@ namespace NC_Reactor_Planner
     public class FuelCell : Block
     {
         [field: NonSerialized()]
-        private double _energyProducedPerTick;
+        private List<FuelCell> _adjacentCells;
         [field: NonSerialized()]
-        private double _heatProducedPerTick;
+        private int _adjacentModeratorLines;
         [field: NonSerialized()]
-        private double _energyMultiplier;
-        [field: NonSerialized()]
-        private double _heatMultiplier;
-        [field: NonSerialized()]
-        private int _adjacentCells;
-        [field: NonSerialized()]
-        private int _adjacentModerators;
+        private double _positionalEfficiency;
 
-        public double EnergyProducedPerTick { get => _energyProducedPerTick; private set => _energyProducedPerTick = value; }
-        public double HeatProducedPerTick { get => _heatProducedPerTick; private set => _heatProducedPerTick = value; }
-        public double EnergyMultiplier { get => _energyMultiplier; private set => _energyMultiplier = value; }
-        public double HeatMultiplier { get => _heatMultiplier; private set => _heatMultiplier = value; }
-        public int AdjacentCells { get => _adjacentCells; private set => _adjacentCells = value; }
-        public int AdjacentModerators { get => _adjacentModerators; private set => _adjacentModerators = value; }
-        public static readonly bool Active = true;
+        private bool _active;
+        private bool _shielded;
+        private Fuel _usedFuel;
 
 
-        public FuelCell(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.FuelCell, texture, position)
+        
+        public double HeatProducedPerTick { get => HeatMultiplier * _usedFuel.BaseHeat;}
+        public double HeatMultiplier { get => _adjacentModeratorLines;}
+        public List<FuelCell> AdjacentCells { get => _adjacentCells; private set => _adjacentCells = value; }
+        public int AdjacentModeratorLines { get => _adjacentModeratorLines; private set => _adjacentModeratorLines = value; }
+        public bool Active { get => _active; private set => _active = value; }
+        public bool Shielded { get => _shielded; private set => _shielded = value; }
+        public Fuel UsedFuel { get => _usedFuel; private set => _usedFuel = value; }
+        public double PositionalEfficiency { get => _positionalEfficiency; private set => _positionalEfficiency = value; }
+        public double Efficiency { get => _positionalEfficiency * _usedFuel.BaseEfficiency; }
+
+        public bool FirstPass;
+        public bool Primed;
+
+        public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel) : base(displayName, BlockTypes.FuelCell, texture, position)
         {
-            AdjacentCells = 0;
-            EnergyProducedPerTick = 0;
-            HeatProducedPerTick = 0;
+            UsedFuel = usedFuel;
+            RevertToSetup();
         }
 
-        public FuelCell(FuelCell parent, Point3D position) : this(parent.DisplayName, parent.Texture, position)
+        public FuelCell(FuelCell parent, Point3D position, Fuel usedFuel) : this(parent.DisplayName, parent.Texture, position, usedFuel)
         {
         }
 
@@ -50,114 +53,111 @@ namespace NC_Reactor_Planner
                 return base.GetToolTip();
             else
                 return string.Format("{0}" +
+                                    " Fuel: {5}\r\n" +
+                                    (Active?" Active\r\n":" Inactive!\r\n") +
                                     " Adjacent cells: {1}\r\n" +
-                                    " Adjacent moderators: {2}\r\n" +
-                                    " Energy multiplier: {3} %\r\n" +
-                                    " Energy produced: {4} RF/t\r\n" +
-                                    " Heat multiplier: {5} %\r\n" +
-                                    " Heat produced: {6} HU/t", base.GetToolTip(), AdjacentCells, AdjacentModerators, (int)(EnergyMultiplier*100), EnergyProducedPerTick, (int)(HeatMultiplier*100), HeatProducedPerTick);
+                                    " Adjacent moderator lines: {2}\r\n" +
+                                    " Heat multiplier: {3} %\r\n" +
+                                    " Heat produced: {4} HU/t\r\n",
+                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name);
         }
 
         public void UpdateStats()
         {
-            AdjacentCells = FindAdjacentCells();
-            AdjacentCells += FindModeratorsThenAdjacentCells();
-            AdjacentModerators = FindAdjacentModerators();
-
-            EnergyMultiplier = 0;
-            HeatMultiplier = 0;
-            EnergyProducedPerTick = 0;
-            HeatProducedPerTick = 0;
-
-            EnergyMultiplier += AdjacentCells + 1;
-            HeatMultiplier += (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
-
-            Reactor.energyMultiplier += AdjacentCells + 1;
-            Reactor.heatMultiplier += (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
-
-            EnergyProducedPerTick = Reactor.usedFuel.BasePower * Configuration.Fission.Power * (AdjacentCells + 1);
-            HeatProducedPerTick = Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
-
-            Reactor.totalEnergyPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * (AdjacentCells + 1);
-            Reactor.totalHeatPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * (AdjacentCells + 1) * (AdjacentCells + 2) / 2;
-
-            EnergyMultiplier += Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
-            HeatMultiplier += Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
-
-            Reactor.energyMultiplier += Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
-            Reactor.heatMultiplier += Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
-
-            EnergyProducedPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
-            HeatProducedPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
-
-            Reactor.totalEnergyPerTick += Reactor.usedFuel.BasePower * Configuration.Fission.Power * Configuration.Fission.ModeratorExtraPower/6 * AdjacentModerators * (AdjacentCells + 1);
-            Reactor.totalHeatPerTick += Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration * Configuration.Fission.ModeratorExtraHeat/6 * AdjacentModerators * (AdjacentCells + 1);
+            
         }
 
-        public int FindModeratorsThenAdjacentCells()
+        public List<FuelCell> FindModeratorsThenAdjacentCells()
         {
-            int moderatorAdjacentCells = 0;
+            List<FuelCell> moderatorAdjacentCells = new List<FuelCell>();
+            FuelCell fuelCell;
             foreach (Vector3D offset in Reactor.sixAdjOffsets)
             {
-                moderatorAdjacentCells += FindModeratorThenAdjacentCell(offset);
+                if ((fuelCell = FindModeratorThenAdjacentCell(offset)) != null)
+                {
+                    moderatorAdjacentCells.Add(fuelCell);
+                    AdjacentModeratorLines++;
+                }
             }
-
+            AdjacentCells.AddRange(moderatorAdjacentCells);
             return moderatorAdjacentCells;
         }
 
-        public int FindModeratorThenAdjacentCell(Vector3D offset)
+        public FuelCell FindModeratorThenAdjacentCell(Vector3D offset)
         {
-            Point3D pos;
-
-            for (int i = 1; i <= Configuration.Fission.NeutronReach; i++)
+            double moderatedNeutronFlux = 0;
+            int moderatorsInLine = 0;
+            Point3D pos = Position + offset;
+            int i = 1;
+            while (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach + 1)
             {
-                for (int j = 1; j <= i; j++)
+                if (Reactor.BlockAt(pos) is Moderator moderator)
                 {
-                    pos = Position + offset * j;
-                    if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
-                        if (pos.X > 0 & pos.Y > 0 & pos.Z > 0)
-                            if (!(Reactor.BlockAt(pos) is Moderator))
-                                return 0;
-                    pos = Position + offset * (j + 1);
-                    if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
-                        if (pos.X > 0 & pos.Y > 0 & pos.Z > 0)
-                            if ((Reactor.BlockAt(pos) is FuelCell))
-                                return 1;
+                    moderatedNeutronFlux += moderator.FluxFactor;
+                    moderatorsInLine++;
+                    i++;
+                    pos = Position + offset * i;
+                    continue;
                 }
+                else if (Reactor.BlockAt(pos) is FuelCell fuelCell && i > 1)
+                {
+                    if (moderatedNeutronFlux / moderatorsInLine >= fuelCell.UsedFuel.CriticalityFactor)
+                        if(fuelCell.FirstPass)
+                        {
+                            fuelCell.FirstPass = false;
+                            fuelCell.Activate();
+                            fuelCell.AddAdjacentFuelCell(this);
+                            fuelCell.AddAdjacentModerator();
+                            _positionalEfficiency += moderatedNeutronFlux / moderatorsInLine;
+                            return fuelCell;
+                        }
+                        else
+                            return null;
+                }
+                else
+                    return null;
+
             }
-            return 0;
+            return null;
         }
 
-        public int FindAdjacentCells()
+        public void AddAdjacentFuelCell(FuelCell fuelCell)
         {
-            int adjCells = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
-            {
-                if (Reactor.BlockAt(Position + o) is FuelCell)
-                    adjCells++;
-            }
-            return adjCells;
+            AdjacentCells.Add(fuelCell);
         }
 
-        public int FindAdjacentModerators()
+        public void AddAdjacentModerator()
         {
-            int adjModerators = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
-            {
-                if (Reactor.BlockAt(Position + o) is Moderator)
-                    adjModerators++;
-            }
-            return adjModerators;
+            AdjacentModeratorLines++;
+        }
+
+        public void TogglePrimed()
+        {
+            Primed = !Primed;
+        }
+
+        public void Activate()
+        {
+            Active = true;
+        }
+
+        public override void RevertToSetup()
+        {
+            SetCluster(-1);
+            AdjacentCells = new List<FuelCell>();
+            AdjacentModeratorLines = 0;
+            FirstPass = true;
+            Active = false;
         }
 
         public override bool IsValid()
         {
-            return true;
+            return Active;
         }
 
         public override Block Copy(Point3D newPosition)
         {
-            return new FuelCell(this, newPosition);
+            return new FuelCell(this, newPosition, this.UsedFuel);
         }
     }
 }

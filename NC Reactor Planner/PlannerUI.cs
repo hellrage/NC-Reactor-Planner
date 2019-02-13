@@ -138,10 +138,7 @@ namespace NC_Reactor_Planner
 
             ReactorGridCell selected = Palette.selectedBlock;
             paletteLabel.Text = selected.block.DisplayName;
-            if(PaletteActive.Checked)
-                borderGraphics.DrawRectangle(activeHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            else
-                borderGraphics.DrawRectangle(passiveHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+            borderGraphics.DrawRectangle(passiveHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
 
         }
 
@@ -152,10 +149,7 @@ namespace NC_Reactor_Planner
             ReactorGridCell paletteBox = (ReactorGridCell)sender;
             paletteLabel.Text = paletteBox.block.DisplayName;
 
-            if(PaletteActive.Checked)
-                borderGraphics.DrawRectangle(activeHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            else
-                borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
+            borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
                 
         }
 
@@ -167,10 +161,7 @@ namespace NC_Reactor_Planner
 
             Palette.selectedBlock = paletteBox;
             Palette.selectedType = (Palette.blocks[paletteBox.block]);
-            if(PaletteActive.Checked)
-                borderGraphics.DrawRectangle(activeHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            else
-                borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);         
+            borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);         
         }
 
         private void resetLayout_Click(object sender, EventArgs e)
@@ -218,8 +209,8 @@ namespace NC_Reactor_Planner
             }
 
             UpdateWindowTitle();
-            fuelSelector.SelectedItem = Reactor.usedFuel;
-            Reactor.UpdateStats();
+            fuelSelector.SelectedItem = fuelSelector.Items[0];
+            //Reactor.Update();
 
             if (drawAllLayers)
             {
@@ -253,7 +244,7 @@ namespace NC_Reactor_Planner
             saveAsImage.Enabled = true;
             imageScale.Enabled = true;
             fuelSelector.Enabled = true;
-            fuelBasePower.Enabled = true;
+            fuelBaseEfficiency.Enabled = true;
             fuelBaseHeat.Enabled = true;
             OpenConfig.Enabled = true;
         }
@@ -372,16 +363,7 @@ namespace NC_Reactor_Planner
             reactorLength.Value = (decimal)Reactor.interiorDims.Z;
             reactorWidth.Value = (decimal)Reactor.interiorDims.X;
 
-            UpdateSelectedFuel();
-
             NewResetLayout(true);
-        }
-
-        private void UpdateSelectedFuel()
-        {
-            fuelBasePower.Text = Reactor.usedFuel.BasePower.ToString();
-            fuelBaseHeat.Text = Reactor.usedFuel.BaseHeat.ToString();
-            fuelSelector.Text = Reactor.usedFuel.Name;
         }
 
         private void refreshStats_Click(object sender, EventArgs e)
@@ -516,13 +498,14 @@ namespace NC_Reactor_Planner
                 fuelSelector.Text = "";
                 return;
             }
-            fuelBasePower.Text = selectedFuel.BasePower.ToString();
+            fuelBaseEfficiency.Text = selectedFuel.BaseEfficiency.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
-            Reactor.usedFuel = selectedFuel; //[TODO]Change to a method you criminal
+            fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
+            Palette.selectedFuel = selectedFuel; //[TODO]Change to a method you criminal
 
-            Reactor.UpdateStats();
-            Reactor.RedrawAllLayers();//[TODO]Change redraw logic so it only does the active layer
-            RefreshStats();
+            //Reactor.Update();
+            //Reactor.RedrawAllLayers();//[TODO]Change redraw logic so it only does the active layer
+            //RefreshStats();
         }
 
         private void reactorWidth_Enter(object sender, EventArgs e)
@@ -556,7 +539,6 @@ namespace NC_Reactor_Planner
         {
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
-            UpdateSelectedFuel();
             UpdatePaletteTooltips();
             Reactor.RedrawAllLayers();
             RefreshStats();
@@ -572,8 +554,8 @@ namespace NC_Reactor_Planner
 
         private void PaletteActive_CheckedChanged(object sender, EventArgs e)
         {
-            Palette.LoadPalette(PaletteActive.Checked);
-            if (Palette.selectedBlock.block is Cooler)
+            Palette.LoadPalette();
+            if (Palette.selectedBlock.block is HeatSink)
             {
                 ReactorGridCell oldSelected = Palette.selectedBlock;
                 SetUpPalette();
@@ -583,6 +565,23 @@ namespace NC_Reactor_Planner
             else
                 SetUpPalette();
             paletteTable.Invalidate();
+        }
+
+        private void RunReactor_Click(object sender, EventArgs e)
+        {
+            switch(Reactor.state)
+            {
+                case ReactorStates.Setup:
+                    Reactor.Run();
+                    RunReactor.BackColor = Color.Red;
+                    RunReactor.Text = "Running";
+                    break;
+                case ReactorStates.Running:
+                    Reactor.RevertToSetup();
+                    RunReactor.BackColor = Color.Chartreuse;
+                    RunReactor.Text = "Run Reactor";
+                    break;
+            }
         }
     }
 }

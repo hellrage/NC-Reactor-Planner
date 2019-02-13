@@ -20,39 +20,40 @@ namespace NC_Reactor_Planner
         public Version SaveVersion;
         public List<Dictionary<string, List<Point3D>>> CompressedReactor;
         public Size3D InteriorDimensions;
-        public Fuel UsedFuel;
+        //public Fuel UsedFuel;
 
-        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, Size3D id, Fuel uf)
+        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, Size3D id)
         {
             SaveVersion = sv;
             CompressedReactor = cr;
             InteriorDimensions = id;
-            UsedFuel = uf;
+           // UsedFuel = uf;
         }
     }
 
     public static class Reactor
     {
         public static Block[,,] blocks;
+        public static List<Cluster> clusters;
+        public static List<ConductorGroup> conductorGroups;
         public static List<ReactorGridLayer> layers;
         public static Size3D interiorDims;
         public static readonly Version saveVersion;
 
 
-        public static Dictionary<string, List<Cooler>> passiveCoolers;
-        public static Dictionary<string, List<Cooler>> activeCoolers;
+        public static Dictionary<string, List<HeatSink>> heatSinks;
         public static List<FuelCell> fuelCells;
         public static Dictionary<string, List<Moderator>> moderators;
+        public static List<Conductor> conductors;
         public static int totalCasings;
 
-        public static List<string> checkOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Obsidian","Gold", "Prismarine", "Copper", "Tin", "Lead", "Helium", "Diamond", "Emerald", "Bronze", "Magnesium", "Quartz", "Boron" };
+        public static List<string> updateOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Obsidian","Gold", "Prismarine", "Copper", "Tin", "Lead", "Helium", "Diamond", "Emerald", "Bronze", "Magnesium", "Quartz", "Boron" };
 
         public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
         public static List<Fuel> fuels;
 
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalPassiveCoolingPerType;
-        public static Dictionary<string, double> totalActiveCoolingPerType;
         public static double totalHeatPerTick = 0;
         public static double totalEnergyPerTick = 0;
 
@@ -60,10 +61,11 @@ namespace NC_Reactor_Planner
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
         public static double heatMulti = 0;
-
-        public static Fuel usedFuel;
+        
         public static double maxBaseHeat = 0;
         public static double fuelDuration = 0;
+
+        public static ReactorStates state = ReactorStates.Setup;
 
         static Reactor()
         {
@@ -77,7 +79,7 @@ namespace NC_Reactor_Planner
             foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
             {
                 FuelValues fev = fuelEntry.Value;
-                fuels.Add(new Fuel(fuelEntry.Key, fev.BasePower, fev.BaseHeat, fev.FuelTime));
+                fuels.Add(new Fuel(fuelEntry.Key, fev.BaseEfficiency, fev.BaseHeat, fev.FuelTime, fev.CriticalityFactor));
             }
         }
 
@@ -110,9 +112,8 @@ namespace NC_Reactor_Planner
                     blocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
                 }
 
-            usedFuel = fuels.First();
-            UpdateStats();
             ConstructLayers();
+
         }
 
         public static void InitializeReactor(Size3D interiorDims)
@@ -180,10 +181,262 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void UpdateStats()
+        public static void Run()
         {
-            passiveCoolers = new Dictionary<string, List<Cooler>>();
-            activeCoolers = new Dictionary<string, List<Cooler>>();
+            state = ReactorStates.Running;
+            Update();
+        }
+
+        public static void RevertToSetup()
+        {
+            state = ReactorStates.Setup;
+            Update();
+        }
+
+        public static void Update()
+        {
+            DateTime Start = DateTime.Now;
+            RegenerateTypedLists();
+            clusters = new List<Cluster>();
+
+            foreach (FuelCell fuelCell in fuelCells)
+            {
+                fuelCell.RevertToSetup();
+            }
+
+            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
+                foreach (Moderator moderator in moderators.Value)
+                moderator.RevertToSetup();
+
+            foreach (KeyValuePair<string, List<HeatSink>> heatSinks in heatSinks)
+                foreach (HeatSink heatSink in heatSinks.Value)
+                    heatSink.RevertToSetup();
+
+            switch (state)
+            {
+                case ReactorStates.Setup:
+                    foreach (FuelCell fuelCell in fuelCells)
+                    {
+                        fuelCell.Activate();
+                    }
+                    break;
+                case ReactorStates.Running:
+                    foreach (FuelCell fuelCell in fuelCells)
+                    {
+                        if (fuelCell.Primed)
+                            fuelCell.Activate();
+                    }
+                    RunFuelCellActivation();
+                    break;
+                default:
+                    break;
+            }
+
+            UpdateModerators();
+
+            OrderedUpdateHeatSinks();
+
+            FormConductorGroups();
+
+            if (state == ReactorStates.Running)
+            {
+                FormClusters();
+            }
+
+            DateTime End = DateTime.Now;
+            TimeSpan total = End - Start;
+            //System.Windows.Forms.MessageBox.Show(total.Milliseconds.ToString());
+            Start = DateTime.Now;
+            RedrawAllLayers();
+            End = DateTime.Now;
+            total = End - Start;
+            //System.Windows.Forms.MessageBox.Show(total.Milliseconds.ToString());
+
+            totalCoolingPerTick = 0;
+            totalPassiveCoolingPerType = new Dictionary<string, double>();
+            totalHeatPerTick = 0;
+            totalEnergyPerTick = 0;
+
+            totalCasings = 0;
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
+            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
+
+            efficiency = 0;
+            energyMultiplier = 0;
+            heatMultiplier = 0;
+
+        }
+
+        private static void RegenerateTypedLists()
+        {
+            heatSinks = new Dictionary<string, List<HeatSink>>();
+            fuelCells = new List<FuelCell>();
+            moderators = new Dictionary<string, List<Moderator>>
+            {
+                { "Graphite", new List<Moderator>() },
+                { "Beryllium", new List<Moderator>() }
+            };
+            conductors = new List<Conductor>();
+
+
+            foreach (Block block in blocks)
+            {
+                if (block is HeatSink heatSink)
+                {
+
+                    if (heatSinks.ContainsKey(heatSink.DisplayName))
+                        heatSinks[heatSink.DisplayName].Add(heatSink);
+                    else
+                        heatSinks.Add(heatSink.DisplayName, new List<HeatSink> { heatSink });
+                }
+                else if (block is FuelCell fuelCell)
+                {
+                    fuelCells.Add(fuelCell);
+                }
+                else if (block is Moderator moderator)
+                {
+                    if (moderators.ContainsKey(moderator.DisplayName))
+                        moderators[moderator.DisplayName].Add(moderator);
+                    else
+                        moderators.Add(moderator.DisplayName, new List<Moderator> { moderator });
+                }
+                else if (block is Conductor conductor)
+                {
+                        conductors.Add(conductor);
+                }
+
+            }
+        }
+
+        private static void RunFuelCellActivation()
+        {
+            List<FuelCell> visited = new List<FuelCell>();
+            List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Active; });
+            foreach (FuelCell activeFuelCell in activeFuelCells)
+            {
+                activeFuelCell.FirstPass = false;
+                List<FuelCell> queue = new List<FuelCell>();
+                queue.Add(activeFuelCell);
+                FuelCell fuelCell;
+                while (queue.Count > 0 && (fuelCell = queue.First()) != null)
+                {
+                    queue.Remove(fuelCell);
+                    visited.Add(fuelCell);
+                    foreach (FuelCell fc in fuelCell.FindModeratorsThenAdjacentCells())
+                    {
+                        if (!visited.Contains(fc))
+                            queue.Add(fc);
+                    }
+                }
+            }
+        }
+
+        private static void UpdateModerators()
+        {
+            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
+                foreach (Moderator moderator in moderators.Value)
+                    moderator.UpdateStats();
+        }
+
+        private static void FormClusters()
+        {
+            bool FormCluster(Block root, int id)
+            {
+                if (root.Cluster != -1)
+                    return false;
+
+                List<Block> queue = new List<Block>();
+                queue.Add(root);
+                clusters.Add(new Cluster(id));
+
+                while (queue.Count > 0)
+                {
+                    root = queue.First();
+                    root.SetCluster(id);
+                    clusters[id].AddBlock(root);
+
+                    foreach(Vector3D offset in sixAdjOffsets)
+                    {
+                        Point3D pos = root.Position + offset;
+                        if (!(interiorDims.X >= pos.X & interiorDims.Y >= pos.Y & interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0))
+                            continue;
+                        Block neighbour = BlockAt(pos);
+                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & root.IsValid())
+                        {
+                            if(neighbour.Cluster == -1)
+                                queue.Add(neighbour);
+                        }
+                        else if(neighbour is Conductor conductor)
+                        {
+                            if (conductorGroups[conductor.GroupID].HasPathToCasing)
+                                clusters[id].HasPathToCasing = true;
+                        }
+                    }
+                    queue.Remove(root);
+                }
+                return true;
+            }
+            int clusterID = 0;
+            foreach (FuelCell fuelCell in fuelCells)
+            {
+                if (FormCluster(fuelCell, clusterID))
+                    clusterID++;
+            }
+        }
+
+        public static void FormConductorGroups()
+        {
+            bool FormConductorGroup(Conductor root, int id)
+            {
+                if (root.GroupID != -1)
+                    return false;
+                List<Conductor> queue = new List<Conductor>();
+                queue.Add(root);
+                conductorGroups.Add(new ConductorGroup(id));
+                while (queue.Count > 0)
+                {
+                    root = queue.First();
+                    root.GroupID = id;
+                    conductorGroups[id].conductors.Add(root);
+                    foreach (Vector3D offset in sixAdjOffsets)
+                    {
+                        if (BlockAt(root.Position + offset) is Conductor conductor)
+                        {
+                            if (conductor.GroupID == -1)
+                            {
+                                conductor.GroupID = id;
+                                queue.Add(conductor);
+                            }
+                        }
+                        else if(BlockAt(root.Position + offset) is Casing casing)
+                        {
+                            root.HasPathToCasing = true;
+                            conductorGroups[id].HasPathToCasing = true;
+                        }
+                    }
+                    queue.Remove(root);
+                }
+                return true;
+            }
+
+            conductorGroups = new List<ConductorGroup>();
+            int groupId = 0;
+            foreach(Conductor conductor in conductors)
+            {
+                if (FormConductorGroup(conductor, groupId))
+                {
+                    if (conductorGroups[groupId].HasPathToCasing)
+                        foreach (Conductor c in conductorGroups[groupId].conductors)
+                            c.HasPathToCasing = true;
+                    groupId++;
+                }
+            }
+        }
+
+        public static void OldUpdateStats()
+        {
+            heatSinks = new Dictionary<string, List<HeatSink>>();
             fuelCells = new List<FuelCell>();
             moderators = new Dictionary<string, List<Moderator>>
             {
@@ -193,7 +446,6 @@ namespace NC_Reactor_Planner
 
             totalCoolingPerTick = 0;
             totalPassiveCoolingPerType = new Dictionary<string, double>();
-            totalActiveCoolingPerType = new Dictionary<string, double>();
             totalHeatPerTick = 0;
             totalEnergyPerTick = 0;
 
@@ -208,20 +460,13 @@ namespace NC_Reactor_Planner
 
             foreach (Block block in blocks)
             {
-                if (block is Cooler cooler)
+                if (block is HeatSink heatSink)
                 {
-                    if (cooler.Active)
-                    {
-                        if (activeCoolers.ContainsKey(block.DisplayName))
-                            activeCoolers[block.DisplayName].Add(cooler);
-                        else
-                            activeCoolers.Add(block.DisplayName, new List<Cooler> { cooler });
-                    }
+
+                    if (heatSinks.ContainsKey(block.DisplayName))
+                        heatSinks[block.DisplayName].Add(heatSink);
                     else
-                        if (passiveCoolers.ContainsKey(block.DisplayName))
-                            passiveCoolers[block.DisplayName].Add(cooler);
-                        else
-                            passiveCoolers.Add(block.DisplayName, new List<Cooler> { cooler });
+                        heatSinks.Add(block.DisplayName, new List<HeatSink> { heatSink });
                 }
                 else if (block is FuelCell)
                 {
@@ -238,35 +483,20 @@ namespace NC_Reactor_Planner
                 }
             }
 
-            OrderedUpdateCoolerStats();
+            OrderedUpdateHeatSinks();
 
-            foreach (KeyValuePair<string, List<Cooler>> kvp in passiveCoolers)
+            foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
             {
                 if (kvp.Value.Count == 0)
                     continue;
                 double passiveCooling = 0;
-                foreach (Cooler cooler in kvp.Value)
+                foreach (HeatSink cooler in kvp.Value)
                     if (cooler.Valid)
                             passiveCooling += cooler.Cooling;
                 totalPassiveCoolingPerType.Add(kvp.Key, passiveCooling);
             }
 
-            foreach (KeyValuePair<string, List<Cooler>> kvp in activeCoolers)
-            {
-                if (kvp.Value.Count == 0)
-                    continue;
-                double activeCooling = 0;
-                foreach (Cooler cooler in kvp.Value)
-                    if (cooler.Valid)
-                        activeCooling += cooler.Cooling;
-                totalActiveCoolingPerType.Add(kvp.Key, activeCooling);
-            }
-
             foreach (KeyValuePair<string, double> coolingPerType in totalPassiveCoolingPerType)
-            {
-                totalCoolingPerTick += coolingPerType.Value;
-            }
-            foreach (KeyValuePair<string, double> coolingPerType in totalActiveCoolingPerType)
             {
                 totalCoolingPerTick += coolingPerType.Value;
             }
@@ -275,41 +505,29 @@ namespace NC_Reactor_Planner
             heatMulti = (fuelCells.Count == 0) ? 0 : 100 * heatMultiplier / fuelCells.Count;
 
             maxBaseHeat = (fuelCells.Count == 0) ? 0 : 100 * totalCoolingPerTick / (fuelCells.Count * heatMulti);
-            fuelDuration = (fuelCells.Count == 0) ? 0 : usedFuel.FuelTime / (fuelCells.Count * Configuration.Fission.FuelUse);
+            //fuelDuration = (fuelCells.Count == 0) ? 0 : usedFuel.FuelTime / (fuelCells.Count * Configuration.Fission.FuelUse);
         }
 
-        private static void OrderedUpdateCoolerStats()
+        private static void OrderedUpdateHeatSinks()
         {
-            foreach (string type in checkOrder)
+            foreach (string type in updateOrder)
             {
-                if (passiveCoolers.ContainsKey(type))
-                    foreach (Cooler cooler in passiveCoolers[type])
-                        cooler.UpdateStats();
-                if (activeCoolers.ContainsKey(type))
-                    foreach (Cooler cooler in activeCoolers[type])
+                if (heatSinks.ContainsKey(type))
+                    foreach (HeatSink cooler in heatSinks[type])
                         cooler.UpdateStats();
             }
         }
 
         public static string GetStatString()
         {
+            return "";
             string report = "";
-            if (passiveCoolers.Count > 0)
+            if (heatSinks.Count > 0)
             {
-                report += "Passive coolers:\r\n";
-                foreach (KeyValuePair<string, List<Cooler>> coolerType in passiveCoolers)
+                report += "HeatSinks:\r\n";
+                foreach (KeyValuePair<string, List<HeatSink>> heatSinkType in heatSinks)
                 {
-                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", coolerType.Key, passiveCoolers[coolerType.Key].Count, "*  " + (coolerType.Value)[0].Cooling, (int)totalPassiveCoolingPerType[coolerType.Key] + " HU/t");
-                }
-            }
-
-            if (activeCoolers.Count > 0)
-            {
-                report += "\r\n";
-                report += "Active coolers:\r\n";
-                foreach (KeyValuePair<string, List<Cooler>> coolerType in activeCoolers)
-                {
-                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", coolerType.Key, activeCoolers[coolerType.Key].Count, "*  " + (coolerType.Value)[0].Cooling, (int)totalActiveCoolingPerType[coolerType.Key] + " HU/t");
+                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", heatSinkType.Key, heatSinks[heatSinkType.Key].Count, "*  " + (heatSinkType.Value)[0].Cooling, (int)totalPassiveCoolingPerType[heatSinkType.Key] + " HU/t");
                 }
             }
 
@@ -366,7 +584,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(), interiorDims, usedFuel);
+                CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(), interiorDims);
                 jss.Serialize(tw, csf);
                 //jss.Serialize(tw, usedFuel);
             }
@@ -390,7 +608,7 @@ namespace NC_Reactor_Planner
                         interiorDims = (Size3D)formatter.Deserialize(stream);
                         double fBP = (double)formatter.Deserialize(stream);
                         double fBH = (double)formatter.Deserialize(stream);
-                        usedFuel = new Fuel("OldFormat", "--", "--", fBP, fBH, 0);
+                        //usedFuel = new Fuel("OldFormat", "--", "--", fBP, fBH, 0);
                     }
                 }
                 catch (Exception ex)
@@ -409,7 +627,7 @@ namespace NC_Reactor_Planner
         {
             ReloadBlockTextures();
             ReloadValuesFromConfig();
-            UpdateStats();
+            //Update();
             ConstructLayers();
         }
 
@@ -432,12 +650,12 @@ namespace NC_Reactor_Planner
         private static void ReloadCoolerValues()
         {
             foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
-                if (kvp.Key is Cooler cooler)
+                if (kvp.Key is HeatSink cooler)
                     cooler.ReloadValuesFromConfig();
 
             if (blocks == null) return;
             foreach (Block block in blocks)
-                if (block is Cooler cooler)
+                if (block is HeatSink cooler)
                     cooler.ReloadValuesFromConfig();
         }
 
@@ -501,8 +719,8 @@ namespace NC_Reactor_Planner
                                         GraphicsUnit.Pixel);
                         layerImage.Dispose();
                     }
-                string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
-                gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                //string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
+                //gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             reactorImage.Save(fileName);
             reactorImage.Dispose();
@@ -537,9 +755,9 @@ namespace NC_Reactor_Planner
                     continue;
 
                 string btype;
-                if (block is Cooler cooler)
+                if (block is HeatSink cooler)
                 {
-                    btype = (cooler.Active?"Active ":"") + cooler.CoolerType.ToString();
+                    btype = (cooler.Active?"Active ":"") + cooler.HeatSinkType.ToString();
                     if ((n = DLContainsType(btype, cr)) != -1)
                         cr[n][btype].Add(block.Position);
                     else
@@ -571,13 +789,11 @@ namespace NC_Reactor_Planner
             Block restoreBlock(string type, Point3D position)
             {
                 if (type == "FuelCell")
-                    return new FuelCell("FuelCell", Palette.textures["FuelCell"], position);
+                    return new FuelCell("FuelCell", Palette.textures["FuelCell"], position, new Fuel());
                 else if (type == "Beryllium" | type == "Graphite")
                     return new Moderator((Moderator)Palette.blockPalette[type], position);
-                else if(type.Contains("Active"))
-                    return new Cooler((Cooler)Palette.blockPalette[type.Split(' ')[1]], position, true);
                 else
-                    return new Cooler((Cooler)Palette.blockPalette[type], position, false);
+                    return new HeatSink((HeatSink)Palette.blockPalette[type], position);
                 throw new ArgumentException("Tried to restore an invalid block");
             }
 
@@ -599,19 +815,6 @@ namespace NC_Reactor_Planner
                         SetBlock(restoreBlock(kvp.Key, pos), pos);
                 }
             }
-
-            using (StreamReader sr = File.OpenText(fileName))
-            {
-                JObject jsave = JObject.Parse(sr.ReadToEnd());
-                JToken jFuel = jsave["UsedFuel"];
-
-                string fName = jFuel["Name"].ToObject<string>();
-                double fPower = jFuel["BasePower"].ToObject<double>();
-                double fHeat = jFuel["BaseHeat"].ToObject<double>();
-                double fTime = jFuel["FuelTime"].ToObject<double>();
-
-                usedFuel = new Fuel(fName, fPower, fHeat, fTime);
-            }
             FinalizeLoading();
         }
 
@@ -625,7 +828,7 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < interiorDims.X; x++)
                 for (int z = 0; z < interiorDims.Z; z++)
                     SetBlock(new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
-            UpdateStats();
+            //Update();
             layer.Redraw();
         }
 
@@ -654,7 +857,7 @@ namespace NC_Reactor_Planner
                 {
                     SetBlock(PlannerUI.layerBuffer[x, z], new Point3D(x + 1, layer.Y, z + 1));
                 }
-            UpdateStats();
+            //Update();
             layer.Redraw();
         }
 
@@ -743,6 +946,12 @@ namespace NC_Reactor_Planner
                 }
             }
         }
+    }
+
+    public enum ReactorStates
+    {
+        Setup,
+        Running,
     }
 }
 

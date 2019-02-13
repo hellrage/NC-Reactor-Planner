@@ -9,7 +9,7 @@ using System.Windows.Media.Media3D;
 namespace NC_Reactor_Planner
 {
     [Serializable()]
-    public class Cooler : Block
+    public class HeatSink : Block
     {
         private double _heatActive;
         private double _heatPassive;
@@ -19,47 +19,43 @@ namespace NC_Reactor_Planner
         private bool _active;
         private List<string> placementErrors;
 
-        private CoolerTypes _coolerType;
+        private HeatSinkTypes _coolerType;
 
         public double HeatActive { get => _heatActive; private set => _heatActive = value; }
         public double HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
-        public double Cooling { get => Active ? HeatActive : HeatPassive; }
+        public double Cooling { get => HeatPassive; }
         public string Requirements { get => _requirements; private set => _requirements = value; }
         public bool Valid { get => _valid; private set { _oldValid = _valid; _valid = value; } }
         public bool Active { get => _active; private set { _active = value; } }
 
-        public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
+        public HeatSinkTypes HeatSinkType { get => _coolerType; private set => _coolerType = value; }
 
 
-        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position, bool active = false) : base(displayName, BlockTypes.Cooler, texture, position)
+        public HeatSink(string displayName, Bitmap texture, HeatSinkTypes type, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.HeatSink, texture, position)
         {
-            CoolerType = type;
-            HeatActive = heatActive;
+            HeatSinkType = type;
             HeatPassive = heatPassive;
             Requirements = requirements;
             Valid = false;
-            Active = active;
             placementErrors = new List<string>();
         }
 
-        public Cooler(Cooler parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, parent.Active)
-        {
-        }
-
-        public Cooler(Cooler parent, Point3D position, bool active) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, active)
+        public HeatSink(HeatSink parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.HeatPassive, parent.Requirements, position)
         {
         }
 
         public override string GetToolTip()
         {
-            string toolTip = (Active ? "Active " : "") + DisplayName + " Cooler\r\n";
+            string toolTip = DisplayName + " HeatSink\r\n";
 
             if (Position != Palette.dummyPosition)
+            {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
+                toolTip += string.Format("Cluster: {0}\r\n", Cluster.ToString());
+            }
 
-            toolTip += string.Format(" Passive cooling: {0} HU/t\r\n" +
-                                    " Active cooling: {1} HU/t\r\n" +
-                                    " Requires: {2}\r\n", HeatPassive, HeatActive, Requirements);
+            toolTip += string.Format(" Cooling: {0} HU/t\r\n" +
+                                    " Requires: {1}\r\n", HeatPassive, Requirements);
             if (Position != Palette.dummyPosition & !Valid)
             {
                 foreach (string error in new HashSet<string>(placementErrors))
@@ -76,10 +72,14 @@ namespace NC_Reactor_Planner
             placementErrors = new HashSet<string>(placementErrors).ToList();
         }
 
+        public override void RevertToSetup()
+        {
+            SetCluster(-1);
+        }
+
         public override void ReloadValuesFromConfig()
         {
-            CoolerValues cv = Configuration.Coolers[CoolerType.ToString()];
-            HeatActive = cv.HeatActive;
+            CoolerValues cv = Configuration.Coolers[HeatSinkType.ToString()];
             HeatPassive = cv.HeatPassive;
             Requirements = cv.Requirements;
         }
@@ -87,50 +87,50 @@ namespace NC_Reactor_Planner
         public bool CheckPlacementValid()
         {
             placementErrors = new List<string>();
-            switch (CoolerType)
+            switch (HeatSinkType)
             {
-                case CoolerTypes.Water:
+                case HeatSinkTypes.Water:
                     return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]);
-                case CoolerTypes.Redstone:
+                case HeatSinkTypes.Redstone:
                     return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(Palette.blockPalette["Graphite"]);
-                case CoolerTypes.Quartz:
+                case HeatSinkTypes.Quartz:
                     return Valid = HasAdjacent(Palette.blockPalette["Magnesium"]);
-                case CoolerTypes.Gold:
+                case HeatSinkTypes.Gold:
                     return Valid = HasAdjacent(Palette.blockPalette["Iron"], 2);
-                case CoolerTypes.Glowstone:
+                case HeatSinkTypes.Glowstone:
                     return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 2);
-                case CoolerTypes.Lapis:
+                case HeatSinkTypes.Lapis:
                     return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case CoolerTypes.Diamond:
+                case HeatSinkTypes.Diamond:
                     return Valid = HasAdjacent(Palette.blockPalette["Gold"]) & HasAdjacent(Palette.blockPalette["FuelCell"]);
-                case CoolerTypes.Helium:
+                case HeatSinkTypes.Helium:
                     return Valid = HasAdjacent(Palette.blockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case CoolerTypes.Enderium:
+                case HeatSinkTypes.Enderium:
                     return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 3);
-                case CoolerTypes.Cryotheum:
+                case HeatSinkTypes.Cryotheum:
                     return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 3);
-                case CoolerTypes.Iron:
+                case HeatSinkTypes.Iron:
                     return Valid = HasAdjacent(Palette.blockPalette["Graphite"]);
-                case CoolerTypes.Emerald:
+                case HeatSinkTypes.Emerald:
                     return Valid = HasAdjacent(Palette.blockPalette["Prismarine"]) & HasAdjacent(Palette.blockPalette["Graphite"]);
-                case CoolerTypes.Copper:
+                case HeatSinkTypes.Copper:
                     return Valid = HasAdjacent(Palette.blockPalette["Water"]);
-                case CoolerTypes.Tin:
+                case HeatSinkTypes.Tin:
                     return Valid = HasAdjacent(Palette.blockPalette["Lapis"], 2);
-                case CoolerTypes.Magnesium:
+                case HeatSinkTypes.Magnesium:
                     return Valid = HasAdjacent(Palette.blockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case CoolerTypes.Boron:
+                case HeatSinkTypes.Boron:
                     return Valid = HasAdjacent(Palette.blockPalette["Bronze"]);
-                case CoolerTypes.Bronze:
+                case HeatSinkTypes.Bronze:
                     return Valid = HasAdjacent(Palette.blockPalette["Copper"]) & HasAdjacent(Palette.blockPalette["Tin"]);
-                case CoolerTypes.Prismarine:
+                case HeatSinkTypes.Prismarine:
                     return Valid = HasAdjacent(Palette.blockPalette["Water"], 2);
-                case CoolerTypes.Obsidian:
+                case HeatSinkTypes.Obsidian:
                     return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case CoolerTypes.Lead:
+                case HeatSinkTypes.Lead:
                     return Valid = HasAdjacent(Palette.blockPalette["Iron"]);
                 default:
-                    throw new ArgumentException("Unexpected cooler type");
+                    throw new ArgumentException("Unexpected HeatSink type");
             }
         }
 
@@ -146,30 +146,30 @@ namespace NC_Reactor_Planner
 
                 //If checked block doesn't match at all: log errors
                 //Either cooler types are mismatched or the blocktype is mismatched
-                if (((bt == BlockTypes.Cooler & nt == BlockTypes.Cooler) && ((Cooler)block).CoolerType != ((Cooler)needed).CoolerType) | bt != nt)
+                if (((bt == BlockTypes.HeatSink & nt == BlockTypes.HeatSink) && ((HeatSink)block).HeatSinkType != ((HeatSink)needed).HeatSinkType) | bt != nt)
                 {
                     if (adjacent == 0)
-                        placementErrors.Add("No " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
+                        placementErrors.Add("No " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
                     else if (adjacent < number)
-                        placementErrors.Add("Too few " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
+                        placementErrors.Add("Too few " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
 
                     continue;
                 }
 
                 adjacent++;
-                while (placementErrors.Remove("No " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
+                while (placementErrors.Remove("No " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString())));
 
                 if (adjacent >= number)
-                    while (placementErrors.Remove("Too few " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
+                    while (placementErrors.Remove("Too few " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString())));
 
                 if (block.IsValid())
                 {
                     activeAdjacent++;
                     if (activeAdjacent > number & exact)
-                        placementErrors.Add("Too many " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
+                        placementErrors.Add("Too many " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
                 }
                 else
-                    placementErrors.Add("Inactive " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
+                    placementErrors.Add("Inactive " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
             }
 
             if (exact)
@@ -186,9 +186,9 @@ namespace NC_Reactor_Planner
             {
                 Block block1 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i]);
                 Block block2 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i + 1]);
-                if (block1 is Cooler c1 && c1.CoolerType == CoolerTypes.Lapis)
+                if (block1 is HeatSink c1 && c1.HeatSinkType == HeatSinkTypes.Lapis)
                 {
-                    if (block2 is Cooler c2 && c2.CoolerType == CoolerTypes.Lapis)
+                    if (block2 is HeatSink c2 && c2.HeatSinkType == HeatSinkTypes.Lapis)
                     {
                         while (placementErrors.Remove("No axial Lapis")) ;
                         hasAxialLapis = true;
@@ -243,11 +243,6 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        public override bool NeedsRedraw()
-        {
-            return _oldValid != Valid;
-        }
-
         public override bool IsValid()
         {
             return Valid;
@@ -255,11 +250,11 @@ namespace NC_Reactor_Planner
 
         public override Block Copy(Point3D newPosition)
         {
-            return new Cooler(this, newPosition);
+            return new HeatSink(this, newPosition);
         }
     }
 
-    public enum CoolerTypes
+    public enum HeatSinkTypes
     {
         Water,
         Redstone,

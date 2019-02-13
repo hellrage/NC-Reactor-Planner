@@ -75,8 +75,7 @@ namespace NC_Reactor_Planner
                 List<Control> fields = new List<Control>();
                 fields.Add(new Label { Text = coolerEntry.Key, Location = new Point(3, y), Size = new Size(70, 13), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = cv.HeatPassive.ToString(), Location = new Point(85, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = cv.HeatActive.ToString(), Location = new Point(165, y), Size = new Size(110, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = cv.Requirements, Location = new Point(285, y), Size = new Size(350, 14) });
+                fields.Add(new TextBox { Text = cv.Requirements, Location = new Point(165, y), Size = new Size(350, 14) });
                 cIFR.Add(coolerEntry.Key, fields);
                 //fields.Clear();
             }
@@ -103,9 +102,10 @@ namespace NC_Reactor_Planner
                 int y = 3 + row * 20;
                 List<Control> fields = new List<Control>();
                 fields.Add(new Label { Text = fuelEntry.Key, Location = new Point(3, y), Size = new Size(150, 13) });
-                fields.Add(new TextBox { Text = fv.BasePower.ToString(), Location = new Point(160, y), Size = new Size(75, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = fv.BaseEfficiency.ToString(), Location = new Point(160, y), Size = new Size(75, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = fv.BaseHeat.ToString(), Location = new Point(240, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = fv.FuelTime.ToString(), Location = new Point(312, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = fv.CriticalityFactor.ToString(), Location = new Point(382, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fIFR.Add(fuelEntry.Key, fields);
             }
 
@@ -137,7 +137,7 @@ namespace NC_Reactor_Planner
 
             foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.CoolerCosts)
             {
-                blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Cooler", kvp.Value));
+                blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " HeatSink", kvp.Value));
             }
 
             foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.ModeratorCosts)
@@ -196,7 +196,7 @@ namespace NC_Reactor_Planner
                     {
                         ReloadTabs();
                         Reactor.ReloadValuesFromConfig();
-                        Reactor.UpdateStats();
+                        //Reactor.Update();
                         MessageBox.Show("Loaded and applied!");
                         Close();
                     }
@@ -228,7 +228,7 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
-                Reactor.UpdateStats();
+                //Reactor.Update();
                 return true;
             }
             catch (Exception ex)
@@ -237,7 +237,7 @@ namespace NC_Reactor_Planner
                 Configuration.ResetToDefaults();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
-                Reactor.UpdateStats();
+                //Reactor.Update();
                 return false;
             }
         }
@@ -255,13 +255,13 @@ namespace NC_Reactor_Planner
 
             foreach (KeyValuePair<string, List<Control>> kvp in cIFR)
             {
-                CoolerValues cv = new CoolerValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), kvp.Value[3].Text);
+                CoolerValues cv = new CoolerValues(Convert.ToDouble(kvp.Value[1].Text), kvp.Value[2].Text);
                 Configuration.Coolers[kvp.Key] = cv;
             }
 
             foreach (KeyValuePair<string, List<Control>> kvp in fIFR)
             {
-                FuelValues fv = new FuelValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), Convert.ToDouble(kvp.Value[3].Text));
+                FuelValues fv = new FuelValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), Convert.ToDouble(kvp.Value[3].Text), Convert.ToDouble(kvp.Value[4].Text));
                 Configuration.Fuels[kvp.Key] = fv;
             }
         }
@@ -325,7 +325,7 @@ namespace NC_Reactor_Planner
 
                     ReloadTabs();
                     Reactor.ReloadValuesFromConfig();
-                    Reactor.UpdateStats();
+                    //Reactor.Update();
                     MessageBox.Show("Loaded and applied, please save as a json file");
                 }
                 else
@@ -340,7 +340,7 @@ namespace NC_Reactor_Planner
             {
                 var item = Configuration.Coolers[items[i]];
                 item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
-                item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
+                //item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
                 Configuration.Coolers[items[i]] = item;
             }
         }
@@ -351,7 +351,7 @@ namespace NC_Reactor_Planner
             {
                 var item = Configuration.Fuels[items[i]];
                 item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
-                item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
+                //item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
                 item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
                 Configuration.Fuels[items[i]] = item;
             }

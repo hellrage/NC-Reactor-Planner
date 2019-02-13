@@ -10,31 +10,25 @@ namespace NC_Reactor_Planner
     {
         private string _name;
         //private string _saveSafeName;
-        private string _fissile;
-        private string _fertile;
-        private double _basePower;
+
         private double _baseHeat;
         private double _fuelTime;
+        private double _baseEfficiency;
+        private double _criticalityFactor;
 
         public string Name { get => _name; private set => _name = value; }
-        public string Fissile { get => _fissile; private set => _fissile = value; }
-        public string Fertile { get => _fertile; private set => _fertile = value; }
-        public double BasePower { get => _basePower; private set => _basePower = value; }
         public double BaseHeat { get => _baseHeat; private set => _baseHeat = value; }
         public double FuelTime { get => _fuelTime; private set => _fuelTime = value; }
+        public double BaseEfficiency { get => _baseEfficiency; private set => _baseEfficiency = value; }
+        public double CriticalityFactor { get => _criticalityFactor; private set => _criticalityFactor = value; }
 
-        public Fuel(string name, string fissile, string fertile, double basePower, double baseHeat, double fuelTime): this(name, basePower, baseHeat, fuelTime)
-        {
-            Fissile = fissile;
-            Fertile = fertile;
-        }
-
-        public Fuel(string name, double basePower, double baseHeat, double fuelTime)
+        public Fuel(string name, double baseEfficiency, double baseHeat, double fuelTime, double criticalityFactor)
         {
             Name = name;
-            BasePower = basePower;
             BaseHeat = baseHeat;
             FuelTime = fuelTime;
+            CriticalityFactor = criticalityFactor;
+            BaseEfficiency = baseEfficiency;
         }
 
         public Fuel()
@@ -50,7 +44,6 @@ namespace NC_Reactor_Planner
         public void ReloadValuesFromConfig()
         {
             FuelValues fv = Configuration.Fuels[Name];
-            BasePower = fv.BasePower;
             BaseHeat = fv.BaseHeat;
             FuelTime = fv.FuelTime;
         }

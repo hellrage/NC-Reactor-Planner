@@ -84,6 +84,9 @@
   <ItemGroup>
     <Compile Include="Block.cs" />
     <Compile Include="Casing.cs" />
+    <Compile Include="Cluster.cs" />
+    <Compile Include="Conductor.cs" />
+    <Compile Include="ConductorGroup.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConfigurationUI.cs">
       <SubType>Form</SubType>
@@ -91,7 +94,7 @@
     <Compile Include="ConfigurationUI.Designer.cs">
       <DependentUpon>ConfigurationUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Cooler.cs" />
+    <Compile Include="HeatSink.cs" />
     <Compile Include="DummyUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -210,6 +213,7 @@
     <None Include="Resources\Obsidian.png" />
     <None Include="Resources\Boron.png" />
     <None Include="Resources\Bronze.png" />
+    <Content Include="Resources\Conductor.png" />
     <Content Include="Resources\FuelCell.png" />
   </ItemGroup>
   <ItemGroup>

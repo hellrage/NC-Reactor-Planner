@@ -18,11 +18,12 @@ namespace NC_Reactor_Planner
     {
         public static BlockTypes selectedType = BlockTypes.Air;
         public static ReactorGridCell selectedBlock;
+        public static Fuel selectedFuel;
 
         public static Dictionary<Block, BlockTypes> blocks;
         public static Dictionary<string, Block> blockPalette;
         //public static List<Block> miscBlocks = new List<Block>();
-        public static List<Cooler> coolers;
+        public static List<HeatSink> coolers;
         //public static List<Moderator> moderators = new List<Moderator>();
         public static Dictionary<string, Bitmap> textures;
 
@@ -66,15 +67,17 @@ namespace NC_Reactor_Planner
 
             textures.Add("FuelCell", Resources.FuelCell);
 
+            textures.Add("Conductor", Resources.Conductor);
+
         }
 
-        public static void LoadPalette(bool Active = false)
+        public static void LoadPalette()
         {
             blocks = new Dictionary<Block, BlockTypes>();
             blockPalette = new Dictionary<string, Block>();
-            coolers = new List<Cooler>();
+            coolers = new List<HeatSink>();
 
-            PopulateBlocks(Active);
+            PopulateBlocks();
 
             PopulateBlockPalette();
 
@@ -95,41 +98,45 @@ namespace NC_Reactor_Planner
             //PopulateCoolers();
 
             blockPalette.Add("Air", new Block("Air", BlockTypes.Air, textures["Air"], dummyPosition));
-            blockPalette.Add("FuelCell", new FuelCell("FuelCell", textures["FuelCell"], dummyPosition));
+            blockPalette.Add("FuelCell", new FuelCell("FuelCell", textures["FuelCell"], dummyPosition, new Fuel()));
 
-            foreach (Cooler cooler in coolers)
+            foreach (HeatSink cooler in coolers)
             {
                 blockPalette.Add(cooler.DisplayName, cooler);
             }
 
-            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition));
-            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition));
+            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.1));
+            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2));
+
+            blockPalette.Add("Conductor", new Conductor("Conductor", textures["Conductor"], dummyPosition));
         }
 
-        private static void PopulateBlocks(bool Active = false)
+        private static void PopulateBlocks()
         {
-            PopulateCoolers(Active);
+            PopulateCoolers();
 
             blocks.Add(new Block("Air", BlockTypes.Air, textures["Air"], dummyPosition), BlockTypes.Air);
-            blocks.Add(new FuelCell("FuelCell", textures["FuelCell"], dummyPosition), BlockTypes.FuelCell);
+            blocks.Add(new FuelCell("FuelCell", textures["FuelCell"], dummyPosition, new Fuel()), BlockTypes.FuelCell);
 
-            foreach (Cooler cooler in coolers)
+            foreach (HeatSink cooler in coolers)
             {
-                blocks.Add(cooler, BlockTypes.Cooler);
+                blocks.Add(cooler, BlockTypes.HeatSink);
             }
 
-            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition), BlockTypes.Moderator);
-            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.1), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2), BlockTypes.Moderator);
+
+            blocks.Add(new Conductor("Conductor", textures["Conductor"], dummyPosition), BlockTypes.Conductor);
         }
 
-        private static void PopulateCoolers(bool Active = false)
+        private static void PopulateCoolers()
         {
             foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
             {
                 CoolerValues cv = coolerEntry.Value;
-                CoolerTypes parsedType;
+                HeatSinkTypes parsedType;
                 if (Enum.TryParse(coolerEntry.Key, out parsedType))
-                    coolers.Add(new Cooler(coolerEntry.Key, textures[coolerEntry.Key], parsedType, cv.HeatActive, cv.HeatPassive, cv.Requirements, dummyPosition, Active));
+                    coolers.Add(new HeatSink(coolerEntry.Key, textures[coolerEntry.Key], parsedType, cv.HeatPassive, cv.Requirements, dummyPosition));
                 else
                     throw new ArgumentException("Unexpected cooler type in config!");
             }
@@ -141,12 +148,14 @@ namespace NC_Reactor_Planner
             {
                 case BlockTypes.Air:
                     return new Block("Air", BlockTypes.Air, textures["Air"], previousBlock.Position);
-                case BlockTypes.Cooler:
-                    return new Cooler((Cooler)selectedBlock.block, previousBlock.Position);
+                case BlockTypes.HeatSink:
+                    return new HeatSink((HeatSink)selectedBlock.block, previousBlock.Position);
                 case BlockTypes.Moderator:
                     return new Moderator((Moderator)selectedBlock.block, previousBlock.Position);
                 case BlockTypes.FuelCell:
-                    return new FuelCell((FuelCell)selectedBlock.block, previousBlock.Position);
+                    return new FuelCell((FuelCell)selectedBlock.block, previousBlock.Position, selectedFuel);
+                case BlockTypes.Conductor:
+                    return new Conductor("Conductor", textures["Conductor"], previousBlock.Position);
                 default:
                     return new Block("Air", BlockTypes.Air, textures["Air"], previousBlock.Position);
             }
@@ -177,11 +186,16 @@ namespace NC_Reactor_Planner
                     break;
             }
             if (block.DisplayName == blockToPlace)
-                if ((selectedBlock.block is Cooler selCooler) && block is Cooler placedCooler)
+                if ((selectedBlock.block is HeatSink selCooler) && block is HeatSink placedCooler)
                 {
                     if (selCooler.Active & placedCooler.Active)
                         return true;
                 }
+                else if ((selectedBlock.block is FuelCell fuelCell) && block is FuelCell placedFuelCell)
+                    if (fuelCell.UsedFuel == placedFuelCell.UsedFuel)
+                        return true;
+                    else
+                        return false;
                 else
                     return true;
 
@@ -189,14 +203,14 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        public static Cooler GetCooler(string displayName)
+        public static HeatSink GetCooler(string displayName)
         {
-            foreach (Cooler cooler in coolers)
+            foreach (HeatSink cooler in coolers)
             {
                 if (cooler.DisplayName == displayName)
                     return cooler;
             }
-            //return new Cooler(coolers.First(), dummyPosition);
+            //return new HeatSink(coolers.First(), dummyPosition);
             throw new ArgumentException("No such cooler! Looked for: " + displayName);
         }
     }
@@ -204,9 +218,10 @@ namespace NC_Reactor_Planner
     public enum BlockTypes
     {
         Air,
-        Cooler,
+        HeatSink,
         Moderator,
         FuelCell,
         Casing,
+        Conductor,
     }
 }

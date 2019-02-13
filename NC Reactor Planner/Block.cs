@@ -16,11 +16,14 @@ namespace NC_Reactor_Planner
         private Bitmap _texture;
         private Point3D _position;
         private BlockTypes _type;
+        [NonSerialized()]
+        private int _cluster;
 
         public string DisplayName { get => _displayName; private set => _displayName = value; }
         public Bitmap Texture { get => _texture; set => _texture = value; }
         public Point3D Position { get => _position; private set => _position = value; }
         public BlockTypes BlockType { get => _type; private set => _type = value; }
+        public int Cluster { get => _cluster; private set => _cluster = value; }
 
         public Block()
         {
@@ -29,19 +32,32 @@ namespace NC_Reactor_Planner
             Position = Palette.dummyPosition;
         }
 
-        public Block(string displayName, BlockTypes blockType, Bitmap texture, Point3D position)
+        public Block(string displayName, BlockTypes blockType, Bitmap texture, Point3D position, int clusterID = -1)
         {
             DisplayName = displayName;
             Texture = texture;
             Position = position;
             BlockType = blockType;
+            Cluster = clusterID;
+        }
+
+        public virtual void SetCluster(int clusterID)
+        {
+            Cluster = clusterID;
+        }
+
+        public virtual void RevertToSetup()
+        {
         }
 
         public virtual string GetToolTip()
         {
             string toolTip = DisplayName + "\r\n";
-            if(Position != Palette.dummyPosition)
+            if (Position != Palette.dummyPosition)
+            {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
+                toolTip += string.Format("Cluster: {0}\r\n", Cluster);
+            }
             return toolTip;
         }
 
@@ -52,11 +68,6 @@ namespace NC_Reactor_Planner
         public virtual Block Copy(Point3D newPosition)
         {
             return new Block(DisplayName, BlockType, Texture, newPosition);
-        }
-
-        public virtual bool NeedsRedraw()
-        {
-            return false;
         }
 
         public virtual bool IsValid()

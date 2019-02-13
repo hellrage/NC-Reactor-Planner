@@ -161,14 +161,6 @@ namespace NC_Reactor_Planner
             return layerImage;
         }
 
-        public void ResetRedrawn()
-        {
-            foreach (ReactorGridCell cell in cells)
-            {
-                cell.ResetRedrawn();
-            }
-        }
-
         private void MenuClear(object sender, EventArgs e)
         {
             Reactor.ClearLayer(this);

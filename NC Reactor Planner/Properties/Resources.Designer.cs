@@ -103,6 +103,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Conductor {
+            get {
+                object obj = ResourceManager.GetObject("Conductor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Copper {
             get {
                 object obj = ResourceManager.GetObject("Copper", resourceCulture);
