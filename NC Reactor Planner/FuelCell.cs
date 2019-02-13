@@ -101,14 +101,14 @@ namespace NC_Reactor_Planner
                 }
                 else if (Reactor.BlockAt(pos) is FuelCell fuelCell && i > 1)
                 {
-                    if (moderatedNeutronFlux / moderatorsInLine >= fuelCell.UsedFuel.CriticalityFactor)
+                    fuelCell.PositionalEfficiency += moderatedNeutronFlux / moderatorsInLine;
+                    if (fuelCell.PositionalEfficiency >= fuelCell.UsedFuel.CriticalityFactor)
                         if(fuelCell.FirstPass)
                         {
                             fuelCell.FirstPass = false;
                             fuelCell.Activate();
                             fuelCell.AddAdjacentFuelCell(this);
                             fuelCell.AddAdjacentModerator();
-                            _positionalEfficiency += moderatedNeutronFlux / moderatorsInLine;
                             return fuelCell;
                         }
                         else

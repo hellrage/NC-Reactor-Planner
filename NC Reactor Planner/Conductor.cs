@@ -27,6 +27,7 @@ namespace NC_Reactor_Planner
         {
             GroupID = -1;
             HasPathToCasing = false;
+            SetCluster(-1);
         }
 
         public override string GetToolTip()

@@ -33,6 +33,8 @@ namespace NC_Reactor_Planner
 
     public static class Reactor
     {
+        public static readonly PlannerUI plannerUI;
+
         public static Block[,,] blocks;
         public static List<Cluster> clusters;
         public static List<ConductorGroup> conductorGroups;
@@ -70,6 +72,7 @@ namespace NC_Reactor_Planner
         static Reactor()
         {
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
+            plannerUI = new PlannerUI();
             PopulateFuels();
         }
 
@@ -151,7 +154,7 @@ namespace NC_Reactor_Planner
         public static void CauseRedraw(object sender, EventArgs e)
         {
             if (PlannerUI.drawAllLayers)
-                RedrawAllLayers();
+                Redraw();
             else
             {
                 if (sender is ReactorGridLayer layer)
@@ -168,17 +171,10 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void RecursiveRedraw(Point3D origin)
-        {
-            //layers[(int)origin.Y][(int)origin.X, (int)origin.Z].
-        }
-
-        public static void RedrawAllLayers()
+        public static void Redraw()
         {
             foreach (ReactorGridLayer layer in layers)
-            {
                 layer.Redraw();
-            }
         }
 
         public static void Run()
@@ -195,14 +191,11 @@ namespace NC_Reactor_Planner
 
         public static void Update()
         {
-            DateTime Start = DateTime.Now;
             RegenerateTypedLists();
             clusters = new List<Cluster>();
 
             foreach (FuelCell fuelCell in fuelCells)
-            {
                 fuelCell.RevertToSetup();
-            }
 
             foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
                 foreach (Moderator moderator in moderators.Value)
@@ -211,6 +204,9 @@ namespace NC_Reactor_Planner
             foreach (KeyValuePair<string, List<HeatSink>> heatSinks in heatSinks)
                 foreach (HeatSink heatSink in heatSinks.Value)
                     heatSink.RevertToSetup();
+
+            foreach (Conductor conductor in conductors)
+                conductor.RevertToSetup();
 
             switch (state)
             {
@@ -243,14 +239,7 @@ namespace NC_Reactor_Planner
                 FormClusters();
             }
 
-            DateTime End = DateTime.Now;
-            TimeSpan total = End - Start;
-            //System.Windows.Forms.MessageBox.Show(total.Milliseconds.ToString());
-            Start = DateTime.Now;
-            RedrawAllLayers();
-            End = DateTime.Now;
-            total = End - Start;
-            //System.Windows.Forms.MessageBox.Show(total.Milliseconds.ToString());
+            Redraw();
 
             totalCoolingPerTick = 0;
             totalPassiveCoolingPerType = new Dictionary<string, double>();
@@ -757,7 +746,7 @@ namespace NC_Reactor_Planner
                 string btype;
                 if (block is HeatSink cooler)
                 {
-                    btype = (cooler.Active?"Active ":"") + cooler.HeatSinkType.ToString();
+                    btype = cooler.HeatSinkType.ToString();
                     if ((n = DLContainsType(btype, cr)) != -1)
                         cr[n][btype].Add(block.Position);
                     else

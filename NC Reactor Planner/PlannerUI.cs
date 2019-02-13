@@ -214,7 +214,7 @@ namespace NC_Reactor_Planner
 
             if (drawAllLayers)
             {
-                Reactor.RedrawAllLayers();
+                Reactor.Redraw();
                 foreach (ReactorGridLayer layer in Reactor.layers)
                     UpdateLocation(layer);
                 reactorGrid.Controls.AddRange(Reactor.layers.ToArray());
@@ -270,9 +270,8 @@ namespace NC_Reactor_Planner
 
         private void NewRedraw()
         {
-            //gridToolTip.RemoveAll();
             if (drawAllLayers)
-                Reactor.RedrawAllLayers();
+                Reactor.Redraw();
             else
             {
                 ReactorGridLayer layer;
@@ -504,7 +503,7 @@ namespace NC_Reactor_Planner
             Palette.selectedFuel = selectedFuel; //[TODO]Change to a method you criminal
 
             //Reactor.Update();
-            //Reactor.RedrawAllLayers();//[TODO]Change redraw logic so it only does the active layer
+            //Reactor.Redraw();//[TODO]Change redraw logic so it only does the active layer
             //RefreshStats();
         }
 
@@ -540,7 +539,7 @@ namespace NC_Reactor_Planner
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
             UpdatePaletteTooltips();
-            Reactor.RedrawAllLayers();
+            Reactor.Redraw();
             RefreshStats();
         }
 

@@ -186,12 +186,7 @@ namespace NC_Reactor_Planner
                     break;
             }
             if (block.DisplayName == blockToPlace)
-                if ((selectedBlock.block is HeatSink selCooler) && block is HeatSink placedCooler)
-                {
-                    if (selCooler.Active & placedCooler.Active)
-                        return true;
-                }
-                else if ((selectedBlock.block is FuelCell fuelCell) && block is FuelCell placedFuelCell)
+                if ((selectedBlock.block is FuelCell fuelCell) && block is FuelCell placedFuelCell)
                     if (fuelCell.UsedFuel == placedFuelCell.UsedFuel)
                         return true;
                     else

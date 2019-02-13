@@ -75,40 +75,38 @@ namespace NC_Reactor_Planner
                 Image.Dispose();
                 Image = new Bitmap(block.Texture);
             }
+
             using (Graphics g = Graphics.FromImage(Image))
             {
+                Pen errorPen = new Pen(Color.Red, 1);
                 if (block is HeatSink | block is Conductor)
                 {
-
                     if (!block.IsValid())
                     { 
-                        Pen errorPen = new Pen(Color.Red, 1);
                         g.DrawRectangle(errorPen, 0, 0, Image.Size.Width - 1, Image.Size.Height - 1);
                     }
                 }
-                if(block is Moderator moderator)
+                else if(block is Moderator moderator)
                 {
                     if(!moderator.Active)
                     {
-                            Pen errorPen = new Pen(Color.LightPink, 2);
                             g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
                     }
                 }
-                if (block is FuelCell fuelCell)
+                else if (block is FuelCell fuelCell)
                 {
                     if (!fuelCell.Active & !fuelCell.Primed)
                     {
-                            Pen errorPen = new Pen(Color.Pink, 2);
-                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                            g.DrawRectangle(errorPen, 0, 0, Image.Size.Width - 1, Image.Size.Height - 1);
                     }
                     if (fuelCell.Primed)
                     {
-                            Pen errorPen = new Pen(Color.Orange, 2);
-                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                            Pen primedPen = new Pen(Color.Orange, 2);
+                            g.DrawRectangle(primedPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
                     }
                 }
-                if(block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator)
-                    g.DrawString(block.Cluster.ToString(), new Font(FontFamily.GenericSansSerif, 7, FontStyle.Bold), Brushes.Orange, 3, 3);
+                //if(block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator)
+                //    g.DrawString(block.Cluster.ToString(), new Font(FontFamily.GenericSansSerif, 7, FontStyle.Bold), Brushes.Orange, 3, 3);
             }
             ResetToolTip();
         }
