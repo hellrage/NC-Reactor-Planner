@@ -11,8 +11,7 @@ namespace NC_Reactor_Planner
     [Serializable()]
     public class HeatSink : Block
     {
-        private double _heatActive;
-        private double _heatPassive;
+        private double _cooling;
         private string _requirements;
         private bool _oldValid;
         private bool _valid;
@@ -20,10 +19,8 @@ namespace NC_Reactor_Planner
         private List<string> placementErrors;
 
         private HeatSinkTypes _coolerType;
-
-        public double HeatActive { get => _heatActive; private set => _heatActive = value; }
-        public double HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
-        public double Cooling { get => HeatPassive; }
+        
+        public double Cooling { get => _cooling; private set => _cooling = value; }
         public string Requirements { get => _requirements; private set => _requirements = value; }
         public bool Valid { get => _valid; private set { _oldValid = _valid; _valid = value; } }
         public bool Active { get => _active; private set { _active = value; } }
@@ -34,13 +31,13 @@ namespace NC_Reactor_Planner
         public HeatSink(string displayName, Bitmap texture, HeatSinkTypes type, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.HeatSink, texture, position)
         {
             HeatSinkType = type;
-            HeatPassive = heatPassive;
+            Cooling = heatPassive;
             Requirements = requirements;
             Valid = false;
             placementErrors = new List<string>();
         }
 
-        public HeatSink(HeatSink parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.HeatPassive, parent.Requirements, position)
+        public HeatSink(HeatSink parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.Cooling, parent.Requirements, position)
         {
         }
 
@@ -51,11 +48,13 @@ namespace NC_Reactor_Planner
             if (Position != Palette.dummyPosition)
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
-                toolTip += string.Format("Cluster: {0}\r\n", Cluster.ToString());
+                toolTip += string.Format(" Cluster: {0}\r\n", Cluster.ToString());
+                if(Reactor.state == ReactorStates.Running && Cluster != -1)
+                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : " Invalid Cluster!\r\n");
             }
 
             toolTip += string.Format(" Cooling: {0} HU/t\r\n" +
-                                    " Requires: {1}\r\n", HeatPassive, Requirements);
+                                    " Requires: {1}\r\n", Cooling, Requirements);
             if (Position != Palette.dummyPosition & !Valid)
             {
                 foreach (string error in new HashSet<string>(placementErrors))
@@ -80,7 +79,7 @@ namespace NC_Reactor_Planner
         public override void ReloadValuesFromConfig()
         {
             CoolerValues cv = Configuration.Coolers[HeatSinkType.ToString()];
-            HeatPassive = cv.HeatPassive;
+            Cooling = cv.HeatPassive;
             Requirements = cv.Requirements;
         }
 

@@ -29,10 +29,12 @@ namespace NC_Reactor_Planner
         public List<FuelCell> AdjacentCells { get => _adjacentCells; private set => _adjacentCells = value; }
         public int AdjacentModeratorLines { get => _adjacentModeratorLines; private set => _adjacentModeratorLines = value; }
         public bool Active { get => _active; private set => _active = value; }
+        public bool Valid { get => Active; }
         public bool Shielded { get => _shielded; private set => _shielded = value; }
         public Fuel UsedFuel { get => _usedFuel; private set => _usedFuel = value; }
         public double PositionalEfficiency { get => _positionalEfficiency; private set => _positionalEfficiency = value; }
-        public double Efficiency { get => _positionalEfficiency * _usedFuel.BaseEfficiency; }
+        public double Efficiency { get => _positionalEfficiency * _usedFuel.BaseEfficiency * (1/(1 + Math.Exp(3*(PositionalEfficiency-UsedFuel.CriticalityFactor-3)))); }
+        public double FuelDuration { get => _usedFuel.FuelTime * Reactor.clusters[Cluster].FuelDurationMultiplier; }
 
         public bool FirstPass;
         public bool Primed;
@@ -40,6 +42,7 @@ namespace NC_Reactor_Planner
         public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel) : base(displayName, BlockTypes.FuelCell, texture, position)
         {
             UsedFuel = usedFuel;
+
             RevertToSetup();
         }
 
@@ -51,15 +54,18 @@ namespace NC_Reactor_Planner
         {
             if (Position == Palette.dummyPosition)
                 return base.GetToolTip();
-            else
+            else 
                 return string.Format("{0}" +
+                                    ((Reactor.state == ReactorStates.Running)?(Reactor.clusters[Cluster].Valid?"Has casing connection\r\n":" Invalid Cluster!\r\n"):"") +
                                     " Fuel: {5}\r\n" +
                                     (Active?" Active\r\n":" Inactive!\r\n") +
                                     " Adjacent cells: {1}\r\n" +
                                     " Adjacent moderator lines: {2}\r\n" +
                                     " Heat multiplier: {3} %\r\n" +
-                                    " Heat produced: {4} HU/t\r\n",
-                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name);
+                                    " Heat produced: {4} HU/t\r\n" +
+                                    " Efficiency: {6} %\r\n" +
+                                    " Positional Eff.: {7} %\r\n",
+                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name, Efficiency, PositionalEfficiency);
         }
 
         public void UpdateStats()
@@ -105,6 +111,7 @@ namespace NC_Reactor_Planner
                     if (fuelCell.PositionalEfficiency >= fuelCell.UsedFuel.CriticalityFactor)
                         if(fuelCell.FirstPass)
                         {
+                            this.PositionalEfficiency += moderatedNeutronFlux / moderatorsInLine;
                             fuelCell.FirstPass = false;
                             fuelCell.Activate();
                             fuelCell.AddAdjacentFuelCell(this);
@@ -141,18 +148,19 @@ namespace NC_Reactor_Planner
             Active = true;
         }
 
+        public override bool IsValid()
+        {
+            return Valid;
+        }
+
         public override void RevertToSetup()
         {
             SetCluster(-1);
             AdjacentCells = new List<FuelCell>();
             AdjacentModeratorLines = 0;
+            PositionalEfficiency = 0;
             FirstPass = true;
             Active = false;
-        }
-
-        public override bool IsValid()
-        {
-            return Active;
         }
 
         public override Block Copy(Point3D newPosition)

@@ -181,12 +181,14 @@ namespace NC_Reactor_Planner
         {
             state = ReactorStates.Running;
             Update();
+            Redraw();
         }
 
         public static void RevertToSetup()
         {
             state = ReactorStates.Setup;
             Update();
+            Redraw();
         }
 
         public static void Update()
@@ -237,9 +239,10 @@ namespace NC_Reactor_Planner
             if (state == ReactorStates.Running)
             {
                 FormClusters();
+                foreach (Cluster cluster in clusters)
+                    cluster.UpdateStats();
             }
-
-            Redraw();
+            
 
             totalCoolingPerTick = 0;
             totalPassiveCoolingPerType = new Dictionary<string, double>();
@@ -348,10 +351,10 @@ namespace NC_Reactor_Planner
                     foreach(Vector3D offset in sixAdjOffsets)
                     {
                         Point3D pos = root.Position + offset;
-                        if (!(interiorDims.X >= pos.X & interiorDims.Y >= pos.Y & interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0))
+                        if (!(interiorDims.X >= pos.X+1 & interiorDims.Y >= pos.Y+1 & interiorDims.Z >= pos.Z+1 & pos.X >= 0 & pos.Y >= 0 & pos.Z >= 0))
                             continue;
                         Block neighbour = BlockAt(pos);
-                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & root.IsValid())
+                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Casing) & root.IsValid())
                         {
                             if(neighbour.Cluster == -1)
                                 queue.Add(neighbour);
@@ -361,11 +364,16 @@ namespace NC_Reactor_Planner
                             if (conductorGroups[conductor.GroupID].HasPathToCasing)
                                 clusters[id].HasPathToCasing = true;
                         }
+                        else if (neighbour is Casing casing)
+                        {
+                                clusters[id].HasPathToCasing = true;
+                        }
                     }
                     queue.Remove(root);
                 }
                 return true;
             }
+
             int clusterID = 0;
             foreach (FuelCell fuelCell in fuelCells)
             {
@@ -423,80 +431,6 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void OldUpdateStats()
-        {
-            heatSinks = new Dictionary<string, List<HeatSink>>();
-            fuelCells = new List<FuelCell>();
-            moderators = new Dictionary<string, List<Moderator>>
-            {
-                { "Graphite", new List<Moderator>() },
-                { "Beryllium", new List<Moderator>() }
-            };
-
-            totalCoolingPerTick = 0;
-            totalPassiveCoolingPerType = new Dictionary<string, double>();
-            totalHeatPerTick = 0;
-            totalEnergyPerTick = 0;
-
-            totalCasings = 0;
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
-            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
-
-            efficiency = 0;
-            energyMultiplier = 0;
-            heatMultiplier = 0;
-
-            foreach (Block block in blocks)
-            {
-                if (block is HeatSink heatSink)
-                {
-
-                    if (heatSinks.ContainsKey(block.DisplayName))
-                        heatSinks[block.DisplayName].Add(heatSink);
-                    else
-                        heatSinks.Add(block.DisplayName, new List<HeatSink> { heatSink });
-                }
-                else if (block is FuelCell)
-                {
-                    fuelCells.Add((FuelCell)block);
-                    ((FuelCell)block).UpdateStats();
-                }
-                else if (block is Moderator)
-                {
-                    if (moderators.ContainsKey(block.DisplayName))
-                        moderators[block.DisplayName].Add((Moderator)block);
-                    else
-                        moderators.Add(block.DisplayName, new List<Moderator> { (Moderator)block });
-                    ((Moderator)block).UpdateStats();
-                }
-            }
-
-            OrderedUpdateHeatSinks();
-
-            foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
-            {
-                if (kvp.Value.Count == 0)
-                    continue;
-                double passiveCooling = 0;
-                foreach (HeatSink cooler in kvp.Value)
-                    if (cooler.Valid)
-                            passiveCooling += cooler.Cooling;
-                totalPassiveCoolingPerType.Add(kvp.Key, passiveCooling);
-            }
-
-            foreach (KeyValuePair<string, double> coolingPerType in totalPassiveCoolingPerType)
-            {
-                totalCoolingPerTick += coolingPerType.Value;
-            }
-
-            efficiency = (fuelCells.Count == 0) ? 0 : 100 * energyMultiplier / fuelCells.Count;
-            heatMulti = (fuelCells.Count == 0) ? 0 : 100 * heatMultiplier / fuelCells.Count;
-
-            maxBaseHeat = (fuelCells.Count == 0) ? 0 : 100 * totalCoolingPerTick / (fuelCells.Count * heatMulti);
-            //fuelDuration = (fuelCells.Count == 0) ? 0 : usedFuel.FuelTime / (fuelCells.Count * Configuration.Fission.FuelUse);
-        }
-
         private static void OrderedUpdateHeatSinks()
         {
             foreach (string type in updateOrder)
@@ -509,56 +443,11 @@ namespace NC_Reactor_Planner
 
         public static string GetStatString()
         {
-            return "";
             string report = "";
-            if (heatSinks.Count > 0)
+            foreach (Cluster cluster in clusters)
             {
-                report += "HeatSinks:\r\n";
-                foreach (KeyValuePair<string, List<HeatSink>> heatSinkType in heatSinks)
-                {
-                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", heatSinkType.Key, heatSinks[heatSinkType.Key].Count, "*  " + (heatSinkType.Value)[0].Cooling, (int)totalPassiveCoolingPerType[heatSinkType.Key] + " HU/t");
-                }
+                report += cluster.GetStatString();
             }
-
-            if (moderators.Count > 0)
-            {
-                report += "\r\n";
-                report += "Moderators:\r\n";
-                foreach (KeyValuePair<string, List<Moderator>> kvp in moderators)
-                {
-                    if (kvp.Value.Count == 0)
-                        continue;
-                    report += string.Format("{0,-15}\t{1,-10}\r\n", kvp.Key, kvp.Value.Count);
-                }
-            }
-
-            report += "\r\n";
-            report += string.Format("{0,-15}\t{1,-10}\r\n", "Fuel cells", fuelCells.Count);
-
-            report += "\r\n";
-            //report += "Heat:\r\n";
-            int heatDiff = (int)(totalHeatPerTick - totalCoolingPerTick);
-            int reactorVolume = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
-            int blockHeatCapacity = 25000;
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat gen.", (int)totalHeatPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", heatDiff + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Max base heat", Math.Round(maxBaseHeat,2) + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Fuel pellet dur.", Math.Round(fuelDuration/20,2) + " s");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Meltdown time", (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
-
-            report += "\r\n";
-            //report += "Energy:\r\n";
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Effective E. gen.", ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Efficiency", (int)efficiency + " %");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy per pellet",(int)totalEnergyPerTick*fuelDuration + " RF");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat mult.", (int)heatMulti + " %");
-
-            report += "\r\n";
-            //report += "Misc:\r\n";
-
-            report += string.Format("{0,-15}\t{1,-10}\r\n", "Casings", totalCasings);
             return report;
         }
 

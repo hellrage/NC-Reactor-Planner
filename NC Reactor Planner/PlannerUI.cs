@@ -579,6 +579,7 @@ namespace NC_Reactor_Planner
                     Reactor.RevertToSetup();
                     RunReactor.BackColor = Color.Chartreuse;
                     RunReactor.Text = "Run Reactor";
+                    stats.Text = Reactor.GetStatString();
                     break;
             }
         }
