@@ -164,7 +164,6 @@ namespace NC_Reactor_Planner
         private void MenuClear(object sender, EventArgs e)
         {
             Reactor.ClearLayer(this);
-            ((PlannerUI)(Parent.Parent)).RefreshStats();
         }
 
         private void MenuCopy(object sender, EventArgs e)
@@ -175,7 +174,6 @@ namespace NC_Reactor_Planner
         private void MenuPaste(object sender, EventArgs e)
         {
             Reactor.PasteLayer(this);
-            ((PlannerUI)(Parent.Parent)).RefreshStats();
         }
 
         private void MenuDelete(object sender, EventArgs e)
@@ -183,7 +181,7 @@ namespace NC_Reactor_Planner
             if (Reactor.layers.Count <= 1)
                 return;
             Reactor.DeleteLayer(Y);
-            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//And another thing? THIS  U G L Y
+            ((PlannerUI)(Parent.Parent)).ResetLayout(true);//And another thing? THIS  U G L Y
         }
 
         private void MenuInsertBefore(object sender, EventArgs e)
@@ -194,7 +192,7 @@ namespace NC_Reactor_Planner
                 return;
             }
             Reactor.InsertLayer(Y);
-            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//[TODO] And another thing? THIS  U G L Y
+            ((PlannerUI)(Parent.Parent)).ResetLayout(true);//[TODO] And another thing? THIS  U G L Y
         }
 
         private void MenuInsertAfter(object sender, EventArgs e)
@@ -205,7 +203,7 @@ namespace NC_Reactor_Planner
                 return;
             }
             Reactor.InsertLayer(Y+1);
-            ((PlannerUI)(Parent.Parent)).NewResetLayout(true);//[TODO] And another thing? THIS  U G L Y
+            ((PlannerUI)(Parent.Parent)).ResetLayout(true);//[TODO] And another thing? THIS  U G L Y
         }
     }
 }

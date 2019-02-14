@@ -61,8 +61,8 @@ namespace NC_Reactor_Planner
 
             SetUIToolTips();
 
-            NewResetLayout(false); // [TODO] I don't even know anymore okay?
-            NewResetLayout(false); // This makes tooltips work right away but it's still inconsistent
+            ResetLayout(false); // [TODO] I don't even know anymore okay?
+            ResetLayout(false); // This makes tooltips work right away but it's still inconsistent
             //wasted hours on this
         }
 
@@ -174,14 +174,14 @@ namespace NC_Reactor_Planner
                     return;
                 }
                 resetLayout.Text = "RESETTING...";
-                NewResetLayout(false);
+                ResetLayout(false);
                 resetLayout.Text = "Reset layout";
             }
             else
                 resetLayout.Text = "Confirm reset?";
         }
 
-        public void NewResetLayout(bool loading)
+        public void ResetLayout(bool loading)
         {
             totalBlocks = (int)(reactorLength.Value * reactorWidth.Value * reactorHeight.Value);
 
@@ -210,7 +210,16 @@ namespace NC_Reactor_Planner
 
             UpdateWindowTitle();
             fuelSelector.SelectedItem = fuelSelector.Items[0];
-            //Reactor.Update();
+
+            if (Reactor.state == ReactorStates.Running)
+            {
+                Reactor.RevertToSetup();
+                RunReactor.BackColor = Color.Chartreuse;
+                RunReactor.Text = "Run Reactor";
+            }
+            Reactor.Update();
+
+            RefreshStats();
 
             if (drawAllLayers)
             {
@@ -227,8 +236,7 @@ namespace NC_Reactor_Planner
                 reactorGrid.Controls.Add(layer);
                 layerScrollBar.Maximum = (int)Reactor.interiorDims.Y;
             }
-
-            RefreshStats();
+            
 
         }
 
@@ -262,13 +270,13 @@ namespace NC_Reactor_Planner
         private void SwitchToPerLayer()
         {
             drawAllLayers = false;
-            NewResetLayout(true);
+            ResetLayout(true);
             viewStyleSwitch.Text = "Per layer";
             layerScrollBar.Enabled = true;
             layerLabel.Show();
         }
 
-        private void NewRedraw()
+        private void Redraw()
         {
             if (drawAllLayers)
                 Reactor.Redraw();
@@ -297,7 +305,7 @@ namespace NC_Reactor_Planner
         {
             layerLabel.Text = "Layer " + layerScrollBar.Value;
 
-            NewRedraw();
+            Redraw();
 
             gridToolTip.Active = false;
             gridToolTip.Active = true;
@@ -362,12 +370,7 @@ namespace NC_Reactor_Planner
             reactorLength.Value = (decimal)Reactor.interiorDims.Z;
             reactorWidth.Value = (decimal)Reactor.interiorDims.X;
 
-            NewResetLayout(true);
-        }
-
-        private void refreshStats_Click(object sender, EventArgs e)
-        {
-            RefreshStats();
+            ResetLayout(true);
         }
 
         public void RefreshStats()
@@ -393,7 +396,7 @@ namespace NC_Reactor_Planner
             }
             viewStyleSwitch.Text = "All layers";
 
-            NewResetLayout(true);
+            ResetLayout(true);
 
             layerScrollBar.Enabled = false;
             layerLabel.Hide();
@@ -450,7 +453,7 @@ namespace NC_Reactor_Planner
                     else
                     {
                         Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value, true);
-                        NewResetLayout(true);
+                        ResetLayout(true);
                     }
                 }
                 else
@@ -579,9 +582,9 @@ namespace NC_Reactor_Planner
                     Reactor.RevertToSetup();
                     RunReactor.BackColor = Color.Chartreuse;
                     RunReactor.Text = "Run Reactor";
-                    stats.Text = Reactor.GetStatString();
                     break;
             }
+            RefreshStats();
         }
     }
 }

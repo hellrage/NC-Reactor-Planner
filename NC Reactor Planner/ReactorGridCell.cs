@@ -43,8 +43,7 @@ namespace NC_Reactor_Planner
             block = Reactor.blocks[x, y, z];
 
             Reactor.Update();
-
-            ((PlannerUI)Parent.Parent.Parent).RefreshStats();
+            
             PlannerUI.gridToolTip.Active = false;
             RedrawSelf();
             PlannerUI.gridToolTip.Active = true;

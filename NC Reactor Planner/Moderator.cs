@@ -14,19 +14,22 @@ namespace NC_Reactor_Planner
         private bool _active;
         private ModeratorTypes _moderatorType;
         private double _fluxFactor;
+        private double _efficiencyFactor;
 
         public bool Active { get => _active; private set => _active = value; }
         public ModeratorTypes ModeratorType { get => _moderatorType; private set => _moderatorType = value; }
         public double FluxFactor { get => _fluxFactor; private set => _fluxFactor = value; }
+        public double EfficiencyFactor { get => _efficiencyFactor; private set => _efficiencyFactor = value; }
 
-        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor) : base(displayName, BlockTypes.Moderator, texture, position)
+        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             FluxFactor = fluxFactor;
+            EfficiencyFactor = efficiencyFactor;
             Active = false;
             ModeratorType = type;
         }
 
-        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position, parent.FluxFactor)
+        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position, parent.FluxFactor, parent.EfficiencyFactor)
         {
             ModeratorType = parent.ModeratorType;
         }
@@ -53,9 +56,10 @@ namespace NC_Reactor_Planner
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 if (!Active)
-                    toolTip += "INACTIVE!!!\r\n";
+                    toolTip += "Inactive!\r\n";
             }
             toolTip += string.Format("Flux Factor: {0}\r\n", FluxFactor);
+            toolTip += string.Format("Efficiency Factor: {0}\r\n", EfficiencyFactor);
             return toolTip;
         }
 
@@ -67,6 +71,12 @@ namespace NC_Reactor_Planner
         public override Block Copy(Point3D newPosition)
         {
             return new Moderator(this, newPosition);
+        }
+
+        public override void ReloadValuesFromConfig()
+        {
+            FluxFactor = Configuration.Moderators[DisplayName].FluxFactor;
+            EfficiencyFactor = Configuration.Moderators[DisplayName].EfficiencyFactor;
         }
 
     }

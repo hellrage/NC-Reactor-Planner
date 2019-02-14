@@ -34,7 +34,7 @@ namespace NC_Reactor_Planner
         {
             return string.Format("Conductor \r\n" +
                                 "Group: " + GroupID.ToString() +"\r\n" +
-                                (HasPathToCasing?"Has path to casing":"Inactive!"));
+                                (HasPathToCasing?"Has path to casing":"Has no path to casing!"));
         }
 
     }

@@ -16,13 +16,15 @@ namespace NC_Reactor_Planner
         public CraftingMaterials ResourceCosts;
         public Dictionary<string, FuelValues> Fuels;
         public Dictionary<string, CoolerValues> Coolers;
+        public Dictionary<string, ModeratorValues> Moderators;
 
-        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, CoolerValues> c, CraftingMaterials cm)
+        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, CoolerValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
         {
             saveVersion = sv;
             Fission = fs;
             Fuels = f;
             Coolers = c;
+            Moderators = m;
             ResourceCosts = cm;
         }
     }
@@ -55,6 +57,18 @@ namespace NC_Reactor_Planner
         }
     }
 
+    public struct ModeratorValues
+    {
+        public double FluxFactor;
+        public double EfficiencyFactor;
+
+        public ModeratorValues(double ff, double ef)
+        {
+            FluxFactor = ff;
+            EfficiencyFactor = ef;
+        }
+    }
+
     public struct FissionValues
     {
         public double Power;
@@ -63,10 +77,8 @@ namespace NC_Reactor_Planner
         public int MinSize;
         public int MaxSize;
         public int NeutronReach;
-        public double ModeratorExtraPower;
-        public double ModeratorExtraHeat;
 
-        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double mep, double meh)
+        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr)
         {
             Power = p;
             FuelUse = fu;
@@ -74,8 +86,6 @@ namespace NC_Reactor_Planner
             MinSize = ms;
             MaxSize = mxs;
             NeutronReach = nr;
-            ModeratorExtraPower = mep;
-            ModeratorExtraHeat = meh;
         }
     }
 
@@ -102,6 +112,7 @@ namespace NC_Reactor_Planner
         public static CraftingMaterials ResourceCosts;
         public static Dictionary<string, FuelValues> Fuels;
         public static Dictionary<string, CoolerValues> Coolers;
+        public static Dictionary<string, ModeratorValues> Moderators;
 
         private static FileInfo configFileInfo;
 
@@ -141,6 +152,10 @@ namespace NC_Reactor_Planner
                 SetDefaultResourceCosts();
             Fuels = cf.Fuels;
             Coolers = cf.Coolers;
+            if (cf.saveVersion >= new Version(2, 0, 0))
+                Moderators = cf.Moderators;
+            else
+                SetDefaultModerators();
             Reactor.ReloadValuesFromConfig();
             return true;
         }
@@ -157,7 +172,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, Coolers, ResourceCosts);
+                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, Coolers, Moderators, ResourceCosts);
                 jss.Serialize(tw, cf);
             }
         }
@@ -166,11 +181,11 @@ namespace NC_Reactor_Planner
         {
             configFileInfo = null;
 
-            Coolers = new Dictionary<string, CoolerValues>();
             SetDefaultCoolers();
 
-            Fuels = new Dictionary<string, FuelValues>();
             SetDefaultFuels();
+
+            SetDefaultModerators();
 
             SetDefaultFission();
 
@@ -179,6 +194,7 @@ namespace NC_Reactor_Planner
 
         private static void SetDefaultFuels()
         {
+            Fuels = new Dictionary<string, FuelValues>();
             Fuels.Add("TBU", new FuelValues(1, 18, 144000, 1));
             Fuels.Add("TBU Oxide", new FuelValues(1, 22.5, 144000, 1));
             Fuels.Add("LEU-233", new FuelValues(1, 60, 64000, 1));
@@ -235,6 +251,7 @@ namespace NC_Reactor_Planner
 
         private static void SetDefaultCoolers()
         {
+            Coolers = new Dictionary<string, CoolerValues>();
             Coolers.Add("Water", new CoolerValues(55, "One FuelCell"));
             Coolers.Add("Iron", new CoolerValues(60, "One Moderator"));
             Coolers.Add("Redstone", new CoolerValues(85, "One FuelCell and one Moderator"));
@@ -258,6 +275,13 @@ namespace NC_Reactor_Planner
 
         }
 
+        private static void SetDefaultModerators()
+        {
+            Moderators = new Dictionary<string, ModeratorValues>();
+            Moderators.Add("Beryllium", new ModeratorValues(1.0, 1.2));
+            Moderators.Add("Graphite", new ModeratorValues(1.2, 1.0));
+        }
+
         private static void SetDefaultFission()
         {
             Fission.Power = 1.0;
@@ -265,8 +289,6 @@ namespace NC_Reactor_Planner
             Fission.HeatGeneration = 1.0;
             Fission.MinSize = 1;
             Fission.MaxSize = 24;
-            Fission.ModeratorExtraPower = 1.0;
-            Fission.ModeratorExtraHeat = 2.0;
             Fission.NeutronReach = 4;
         }
 

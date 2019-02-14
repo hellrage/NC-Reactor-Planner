@@ -31,6 +31,7 @@ namespace NC_Reactor_Planner
     {
         private Dictionary<string, List<Control>> cIFR; //cooler input field rows
         private Dictionary<string, List<Control>> fIFR; //fuel input field rows
+        private Dictionary<string, List<Control>> mIFR; //moderator input field rows
         private Dictionary<string, List<Control>> rDC; //resource Disposable Controls
 
         public ConfigurationUI()
@@ -40,8 +41,6 @@ namespace NC_Reactor_Planner
             power.Validating += CheckDoubleValue;
             fuelUse.Validating += CheckDoubleValue;
             heatGeneration.Validating += CheckDoubleValue;
-            moderatorExtraPower.Validating += CheckDoubleValue;
-            moderatorExtraHeat.Validating += CheckDoubleValue;
             neutronReach.Validating += CheckIntValue;
             minSize.Validating += CheckIntValue;
             maxSize.Validating += CheckIntValue;
@@ -57,6 +56,7 @@ namespace NC_Reactor_Planner
             ReloadCoolersTab();
             ReloadFuelsTab();
             ReloadFissionTab();
+            ReloadModeratorsTab();
             ReloadResourceCostTab();
             blockSelector.SelectedIndexChanged += new EventHandler(SelectedBlockChanged);
         }
@@ -123,11 +123,37 @@ namespace NC_Reactor_Planner
             power.Text = Configuration.Fission.Power.ToString();
             fuelUse.Text = Configuration.Fission.FuelUse.ToString();
             heatGeneration.Text = Configuration.Fission.HeatGeneration.ToString();
-            moderatorExtraPower.Text = Configuration.Fission.ModeratorExtraPower.ToString();
-            moderatorExtraHeat.Text = Configuration.Fission.ModeratorExtraHeat.ToString();
             neutronReach.Text = Configuration.Fission.NeutronReach.ToString();
             minSize.Text = Configuration.Fission.MinSize.ToString();
             maxSize.Text = Configuration.Fission.MaxSize.ToString();
+        }
+
+        private void ReloadModeratorsTab()
+        {
+            if (mIFR != null)
+                DisposeAndClear(mIFR);
+            mIFR = new Dictionary<string, List<Control>>();
+
+            int row = 0;
+            foreach (KeyValuePair<string, ModeratorValues> moderatorEntry in Configuration.Moderators)
+            {
+                ModeratorValues mv = moderatorEntry.Value;
+                row++;
+                int y = 3 + row * 20;
+                List<Control> fields = new List<Control>();
+                fields.Add(new Label { Text = moderatorEntry.Key, Location = new Point(3, y), Size = new Size(150, 13) });
+                fields.Add(new TextBox { Text = mv.FluxFactor.ToString(), Location = new Point(160, y), Size = new Size(75, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = mv.EfficiencyFactor.ToString(), Location = new Point(240, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                mIFR.Add(moderatorEntry.Key, fields);
+            }
+
+            foreach (KeyValuePair<string, List<Control>> slkvp in mIFR)
+            {
+                foreach (Control c in slkvp.Value)
+                {
+                    settingTabs.TabPages["moderatorsPage"].Controls.Add(c);
+                }
+            }
         }
 
         private void ReloadResourceCostTab()
@@ -155,7 +181,7 @@ namespace NC_Reactor_Planner
                     foreach (Control c in kvp.Value)
                     { 
                         c.Dispose();
-                        resourceCostsTab.Controls.Remove(c);
+                        resourceCostsPage.Controls.Remove(c);
                     }
             }
             rDC = new Dictionary<string, List<Control>>();
@@ -168,7 +194,7 @@ namespace NC_Reactor_Planner
                 rDC[resource.Key].Add(new NumericUpDown { Value = resource.Value, Location = new Point(130, row * 30) });
                 row++;
                 //rDC.Add(new Button { Text = resource.Key, Location = new Point(10, row++ * 20) });
-                resourceCostsTab.Controls.AddRange(rDC[resource.Key].ToArray());
+                resourceCostsPage.Controls.AddRange(rDC[resource.Key].ToArray());
             }
 
             
@@ -249,8 +275,6 @@ namespace NC_Reactor_Planner
             Configuration.Fission.FuelUse = Convert.ToDouble(fuelUse.Text);
             Configuration.Fission.MinSize = Convert.ToInt32(minSize.Text);
             Configuration.Fission.MaxSize = Convert.ToInt32(maxSize.Text);
-            Configuration.Fission.ModeratorExtraHeat = Convert.ToDouble(moderatorExtraHeat.Text);
-            Configuration.Fission.ModeratorExtraPower = Convert.ToDouble(moderatorExtraPower.Text);
             Configuration.Fission.NeutronReach = Convert.ToInt32(neutronReach.Text);
 
             foreach (KeyValuePair<string, List<Control>> kvp in cIFR)
@@ -263,6 +287,12 @@ namespace NC_Reactor_Planner
             {
                 FuelValues fv = new FuelValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), Convert.ToDouble(kvp.Value[3].Text), Convert.ToDouble(kvp.Value[4].Text));
                 Configuration.Fuels[kvp.Key] = fv;
+            }
+
+            foreach (KeyValuePair<string, List<Control>> kvp in mIFR)
+            {
+                ModeratorValues mv = new ModeratorValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text));
+                Configuration.Moderators[kvp.Key] = mv;
             }
         }
 
@@ -298,8 +328,6 @@ namespace NC_Reactor_Planner
                     Configuration.Fission.FuelUse = config.Get<double>("fission", "fission_fuel_use");
                     Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
                     Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
-                    Configuration.Fission.ModeratorExtraHeat = config.Get<double>("fission", "fission_moderator_extra_heat");
-                    Configuration.Fission.ModeratorExtraPower = config.Get<double>("fission", "fission_moderator_extra_power");
                     Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
 
                     SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");

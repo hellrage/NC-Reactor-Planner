@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationUI));
             this.settingTabs = new System.Windows.Forms.TabControl();
             this.fissionPage = new System.Windows.Forms.TabPage();
             this.maxSize = new System.Windows.Forms.TextBox();
@@ -37,10 +38,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.neutronReach = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.moderatorExtraHeat = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.moderatorExtraPower = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.heatGeneration = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.fuelUse = new System.Windows.Forms.TextBox();
@@ -50,12 +47,15 @@
             this.coolersPage = new System.Windows.Forms.TabPage();
             this.label12 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.moderatorsPage = new System.Windows.Forms.TabPage();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.fuelsPage = new System.Windows.Forms.TabPage();
             this.label15 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.resourceCostsTab = new System.Windows.Forms.TabPage();
+            this.resourceCostsPage = new System.Windows.Forms.TabPage();
             this.CalculateTotals = new System.Windows.Forms.Button();
             this.blockSelector = new System.Windows.Forms.ComboBox();
             this.Save = new System.Windows.Forms.Button();
@@ -66,16 +66,18 @@
             this.settingTabs.SuspendLayout();
             this.fissionPage.SuspendLayout();
             this.coolersPage.SuspendLayout();
+            this.moderatorsPage.SuspendLayout();
             this.fuelsPage.SuspendLayout();
-            this.resourceCostsTab.SuspendLayout();
+            this.resourceCostsPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // settingTabs
             // 
             this.settingTabs.Controls.Add(this.fissionPage);
             this.settingTabs.Controls.Add(this.coolersPage);
+            this.settingTabs.Controls.Add(this.moderatorsPage);
             this.settingTabs.Controls.Add(this.fuelsPage);
-            this.settingTabs.Controls.Add(this.resourceCostsTab);
+            this.settingTabs.Controls.Add(this.resourceCostsPage);
             this.settingTabs.Location = new System.Drawing.Point(12, 12);
             this.settingTabs.Name = "settingTabs";
             this.settingTabs.SelectedIndex = 0;
@@ -90,10 +92,6 @@
             this.fissionPage.Controls.Add(this.label13);
             this.fissionPage.Controls.Add(this.neutronReach);
             this.fissionPage.Controls.Add(this.label6);
-            this.fissionPage.Controls.Add(this.moderatorExtraHeat);
-            this.fissionPage.Controls.Add(this.label5);
-            this.fissionPage.Controls.Add(this.moderatorExtraPower);
-            this.fissionPage.Controls.Add(this.label4);
             this.fissionPage.Controls.Add(this.heatGeneration);
             this.fissionPage.Controls.Add(this.label3);
             this.fissionPage.Controls.Add(this.fuelUse);
@@ -110,7 +108,7 @@
             // 
             // maxSize
             // 
-            this.maxSize.Location = new System.Drawing.Point(10, 304);
+            this.maxSize.Location = new System.Drawing.Point(10, 224);
             this.maxSize.Name = "maxSize";
             this.maxSize.Size = new System.Drawing.Size(174, 20);
             this.maxSize.TabIndex = 13;
@@ -119,7 +117,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label14.Location = new System.Drawing.Point(7, 287);
+            this.label14.Location = new System.Drawing.Point(7, 207);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(105, 13);
             this.label14.TabIndex = 14;
@@ -127,7 +125,7 @@
             // 
             // minSize
             // 
-            this.minSize.Location = new System.Drawing.Point(10, 264);
+            this.minSize.Location = new System.Drawing.Point(10, 184);
             this.minSize.Name = "minSize";
             this.minSize.Size = new System.Drawing.Size(174, 20);
             this.minSize.TabIndex = 11;
@@ -136,7 +134,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label13.Location = new System.Drawing.Point(7, 247);
+            this.label13.Location = new System.Drawing.Point(7, 167);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(102, 13);
             this.label13.TabIndex = 12;
@@ -144,7 +142,7 @@
             // 
             // neutronReach
             // 
-            this.neutronReach.Location = new System.Drawing.Point(10, 224);
+            this.neutronReach.Location = new System.Drawing.Point(10, 144);
             this.neutronReach.Name = "neutronReach";
             this.neutronReach.Size = new System.Drawing.Size(174, 20);
             this.neutronReach.TabIndex = 6;
@@ -153,45 +151,11 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(7, 207);
+            this.label6.Location = new System.Drawing.Point(7, 127);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(129, 13);
             this.label6.TabIndex = 10;
             this.label6.Text = "Fission neutron reach";
-            // 
-            // moderatorExtraHeat
-            // 
-            this.moderatorExtraHeat.Location = new System.Drawing.Point(10, 184);
-            this.moderatorExtraHeat.Name = "moderatorExtraHeat";
-            this.moderatorExtraHeat.Size = new System.Drawing.Size(174, 20);
-            this.moderatorExtraHeat.TabIndex = 5;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label5.Location = new System.Drawing.Point(7, 167);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(168, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Fission Moderator extra heat";
-            // 
-            // moderatorExtraPower
-            // 
-            this.moderatorExtraPower.Location = new System.Drawing.Point(10, 144);
-            this.moderatorExtraPower.Name = "moderatorExtraPower";
-            this.moderatorExtraPower.Size = new System.Drawing.Size(174, 20);
-            this.moderatorExtraPower.TabIndex = 4;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(7, 127);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(177, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Fission Moderator extra power";
             // 
             // heatGeneration
             // 
@@ -277,6 +241,38 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Cooling rate";
             // 
+            // moderatorsPage
+            // 
+            this.moderatorsPage.Controls.Add(this.label16);
+            this.moderatorsPage.Controls.Add(this.label8);
+            this.moderatorsPage.Location = new System.Drawing.Point(4, 22);
+            this.moderatorsPage.Name = "moderatorsPage";
+            this.moderatorsPage.Padding = new System.Windows.Forms.Padding(3);
+            this.moderatorsPage.Size = new System.Drawing.Size(638, 369);
+            this.moderatorsPage.TabIndex = 4;
+            this.moderatorsPage.Text = "Moderators";
+            this.moderatorsPage.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label16.Location = new System.Drawing.Point(211, 3);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(103, 13);
+            this.label16.TabIndex = 1;
+            this.label16.Text = "Efficiency Factor";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label8.Location = new System.Drawing.Point(130, 3);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(70, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Flux Factor";
+            // 
             // fuelsPage
             // 
             this.fuelsPage.AutoScroll = true;
@@ -332,17 +328,17 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "Base Efficiency";
             // 
-            // resourceCostsTab
+            // resourceCostsPage
             // 
-            this.resourceCostsTab.Controls.Add(this.CalculateTotals);
-            this.resourceCostsTab.Controls.Add(this.blockSelector);
-            this.resourceCostsTab.Location = new System.Drawing.Point(4, 22);
-            this.resourceCostsTab.Name = "resourceCostsTab";
-            this.resourceCostsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.resourceCostsTab.Size = new System.Drawing.Size(638, 369);
-            this.resourceCostsTab.TabIndex = 3;
-            this.resourceCostsTab.Text = "Resource Costs";
-            this.resourceCostsTab.UseVisualStyleBackColor = true;
+            this.resourceCostsPage.Controls.Add(this.CalculateTotals);
+            this.resourceCostsPage.Controls.Add(this.blockSelector);
+            this.resourceCostsPage.Location = new System.Drawing.Point(4, 22);
+            this.resourceCostsPage.Name = "resourceCostsPage";
+            this.resourceCostsPage.Padding = new System.Windows.Forms.Padding(3);
+            this.resourceCostsPage.Size = new System.Drawing.Size(638, 369);
+            this.resourceCostsPage.TabIndex = 3;
+            this.resourceCostsPage.Text = "Resource Costs";
+            this.resourceCostsPage.UseVisualStyleBackColor = true;
             // 
             // CalculateTotals
             // 
@@ -413,6 +409,7 @@
             this.Controls.Add(this.LoadConfig);
             this.Controls.Add(this.Save);
             this.Controls.Add(this.settingTabs);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigurationUI";
             this.Text = "Configuration";
             this.Load += new System.EventHandler(this.ConfigurationUI_Load);
@@ -421,9 +418,11 @@
             this.fissionPage.PerformLayout();
             this.coolersPage.ResumeLayout(false);
             this.coolersPage.PerformLayout();
+            this.moderatorsPage.ResumeLayout(false);
+            this.moderatorsPage.PerformLayout();
             this.fuelsPage.ResumeLayout(false);
             this.fuelsPage.PerformLayout();
-            this.resourceCostsTab.ResumeLayout(false);
+            this.resourceCostsPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -434,10 +433,6 @@
         private System.Windows.Forms.TabPage fissionPage;
         private System.Windows.Forms.TextBox neutronReach;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox moderatorExtraHeat;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox moderatorExtraPower;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox heatGeneration;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
@@ -458,11 +453,14 @@
         private System.Windows.Forms.Button Save;
         private System.Windows.Forms.Button LoadConfig;
         private System.Windows.Forms.Button ApplyConfig;
-        private System.Windows.Forms.TabPage resourceCostsTab;
+        private System.Windows.Forms.TabPage resourceCostsPage;
         private System.Windows.Forms.ComboBox blockSelector;
         private System.Windows.Forms.Button Import;
         private System.Windows.Forms.ToolTip ttValidation;
         private System.Windows.Forms.Button CalculateTotals;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TabPage moderatorsPage;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label8;
     }
 }

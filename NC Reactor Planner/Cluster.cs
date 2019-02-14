@@ -82,25 +82,27 @@ namespace NC_Reactor_Planner
             FuelDurationMultiplier = Math.Min(1, TotalCoolingPerTick / TotalHeatPerTick);
             HeatMultiplier = sumHeatMulti / fuelCells.Count;
 
-            if(!HasPathToCasing)
-            {
-                TotalCoolingPerTick = 0;
-                Efficiency = 0;
-                FuelDurationMultiplier = 0;
-                HeatMultiplier = 0;
-                TotalOutput = 0;
-            }
+            //if(!HasPathToCasing)
+            //{
+            //    TotalCoolingPerTick = 0;
+            //    Efficiency = 0;
+            //    FuelDurationMultiplier = 0;
+            //    HeatMultiplier = 0;
+            //    TotalOutput = 0;
+            //}
         }
 
         public string GetStatString()
         {
-            return string.Format("Cluster №{6}\r\n" +
+            if (!Valid)
+                return string.Format("Cluster №{0}\r\nInvalid! Skipping.\r\n\r\n", ID);
+            else return string.Format("Cluster №{6}\r\n" +
                                 "Total output: {0}\r\n" +
-                                "Efficiency: {1}\r\n" +
+                                "Efficiency: {1} %\r\n" +
                                 "Total Heating: {2} HU/t\r\n" +
                                 "Total Cooling: {3} HU/t\r\n" +
                                 "Net Heating: {4} HU/t\r\n" +
-                                "Heat Multiplier: {5} %", TotalOutput, Efficiency, TotalHeatPerTick, TotalCoolingPerTick, NetHeatingRate, HeatMultiplier, ID);
+                                "Heat Multiplier: {5} %\r\n\r\n", TotalOutput, (int)(Efficiency*100), TotalHeatPerTick, TotalCoolingPerTick, NetHeatingRate, (int)(HeatMultiplier*100), ID);
         }
     }
 }

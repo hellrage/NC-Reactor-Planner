@@ -19,13 +19,15 @@ namespace NC_Reactor_Planner
     {
         public Version SaveVersion;
         public List<Dictionary<string, List<Point3D>>> CompressedReactor;
+        public List<Tuple<Point3D, string, bool>> FuelCells;
         public Size3D InteriorDimensions;
         //public Fuel UsedFuel;
 
-        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, Size3D id)
+        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, List<Tuple<Point3D, string, bool>> fc, Size3D id)
         {
             SaveVersion = sv;
             CompressedReactor = cr;
+            FuelCells = fc;
             InteriorDimensions = id;
            // UsedFuel = uf;
         }
@@ -55,17 +57,13 @@ namespace NC_Reactor_Planner
         public static List<Fuel> fuels;
 
         public static double totalCoolingPerTick = 0;
-        public static Dictionary<string, double> totalPassiveCoolingPerType;
+        public static Dictionary<string, double> totalCoolingPerType;
         public static double totalHeatPerTick = 0;
-        public static double totalEnergyPerTick = 0;
-
-        public static double energyMultiplier = 0;
+        public static double totalOutputPerTick = 0;
+        
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
-        public static double heatMulti = 0;
-        
-        public static double maxBaseHeat = 0;
-        public static double fuelDuration = 0;
+
 
         public static ReactorStates state = ReactorStates.Setup;
 
@@ -242,22 +240,9 @@ namespace NC_Reactor_Planner
                 foreach (Cluster cluster in clusters)
                     cluster.UpdateStats();
             }
+
+            UpdateStats();
             
-
-            totalCoolingPerTick = 0;
-            totalPassiveCoolingPerType = new Dictionary<string, double>();
-            totalHeatPerTick = 0;
-            totalEnergyPerTick = 0;
-
-            totalCasings = 0;
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
-            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
-
-            efficiency = 0;
-            energyMultiplier = 0;
-            heatMultiplier = 0;
-
         }
 
         private static void RegenerateTypedLists()
@@ -338,21 +323,21 @@ namespace NC_Reactor_Planner
                 if (root.Cluster != -1)
                     return false;
 
-                List<Block> queue = new List<Block>();
-                queue.Add(root);
+                List<Block> queue = new List<Block>{root};
                 clusters.Add(new Cluster(id));
 
                 while (queue.Count > 0)
                 {
                     root = queue.First();
                     root.SetCluster(id);
-                    clusters[id].AddBlock(root);
+                    if(!clusters[id].blocks.Contains(root))
+                        clusters[id].AddBlock(root);
 
                     foreach(Vector3D offset in sixAdjOffsets)
                     {
                         Point3D pos = root.Position + offset;
-                        if (!(interiorDims.X >= pos.X+1 & interiorDims.Y >= pos.Y+1 & interiorDims.Z >= pos.Z+1 & pos.X >= 0 & pos.Y >= 0 & pos.Z >= 0))
-                            continue;
+                        //if (!((interiorDims.X+1 >= pos.X) & (interiorDims.Y+1 >= pos.Y) & (interiorDims.Z+1 >= pos.Z) & (pos.X >= 0) & (pos.Y >= 0) & (pos.Z >= 0)))
+                        //    continue;
                         Block neighbour = BlockAt(pos);
                         if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Casing) & root.IsValid())
                         {
@@ -441,9 +426,65 @@ namespace NC_Reactor_Planner
             }
         }
 
+        private static void UpdateStats()
+        {
+            totalCoolingPerTick = 0;
+            totalCoolingPerType = new Dictionary<string, double>();
+            totalHeatPerTick = 0;
+            totalOutputPerTick = 0;
+
+            totalCasings = 0;
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
+            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
+
+            int activeFuelCells = 0;
+            double sumEfficiency = 0;
+            efficiency = 0;
+            double sumHeatMultiplier = 0;
+            heatMultiplier = 0;
+
+            foreach (Cluster cluster in clusters)
+            {
+                if (!cluster.Valid)
+                    continue;
+
+                totalOutputPerTick += cluster.TotalOutput;
+                totalCoolingPerTick += cluster.TotalCoolingPerTick;
+                totalHeatPerTick += cluster.TotalHeatPerTick;
+            }
+
+            foreach (FuelCell fuelCell in fuelCells)
+            {
+                if (!fuelCell.Active)
+                    continue;
+                activeFuelCells++;
+                sumEfficiency += fuelCell.Efficiency;
+                sumHeatMultiplier += fuelCell.HeatMultiplier;
+            }
+
+            efficiency = sumEfficiency / activeFuelCells;
+            heatMultiplier = sumHeatMultiplier / activeFuelCells;
+
+            totalHeatPerTick *= Configuration.Fission.HeatGeneration;
+            totalOutputPerTick *= Configuration.Fission.Power;
+        }
+
         public static string GetStatString()
         {
-            string report = "";
+            if (state == ReactorStates.Setup)
+                return "Run the reactor to get stats";
+
+            string report = string.Format("Overall reactor stats:\r\n" +
+                                        "Total output: {5} mb/t\r\n" +
+                                        "Total Heat: {0} HU/t\r\n" +
+                                        "Total Cooling: {1} HU/t\r\n" +
+                                        "Net Heat: {2} HU/t\r\n" +
+                                        "Overall Efficiency: {3} %\r\n" +
+                                        "Overall Heat Multiplier: {4} %\r\n\r\n",
+                                        totalHeatPerTick,totalCoolingPerTick,totalHeatPerTick-totalCoolingPerTick,(int)(efficiency*100),(int)(heatMultiplier*100), (int)(totalOutputPerTick/16)
+                );
+
             foreach (Cluster cluster in clusters)
             {
                 report += cluster.GetStatString();
@@ -461,8 +502,7 @@ namespace NC_Reactor_Planner
                     Formatting = Formatting.Indented,
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
-
-                CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(), interiorDims);
+                CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(out List<Tuple<Point3D, string, bool>> fuelCells), fuelCells, interiorDims);
                 jss.Serialize(tw, csf);
                 //jss.Serialize(tw, usedFuel);
             }
@@ -470,33 +510,7 @@ namespace NC_Reactor_Planner
 
         public static void Load(FileInfo saveFile)
         {
-            if (saveFile.Extension == ".json")
-            {
-                LoadCompressedReactor(saveFile.FullName);
-            }
-            else if (saveFile.Extension == ".ncr")
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                try
-                {
-                    using (Stream stream = File.Open(saveFile.FullName, FileMode.Open))
-                    {
-                        /*saveVersion = (Version)*/formatter.Deserialize(stream); //Version is now only updated when saving
-                        blocks = (Block[,,])formatter.Deserialize(stream);
-                        interiorDims = (Size3D)formatter.Deserialize(stream);
-                        double fBP = (double)formatter.Deserialize(stream);
-                        double fBH = (double)formatter.Deserialize(stream);
-                        //usedFuel = new Fuel("OldFormat", "--", "--", fBP, fBH, 0);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.Forms.MessageBox.Show(ex.Message + "\r\nThis savefile was created before save versioning was in place, unable to load, sorry \"^^");
-                    InitializeReactor(5, 5, 5);
-                }
-            }
-            else
-                throw new FileFormatException("Unknown save file format!");
+            LoadCompressedReactor(saveFile.FullName);
 
             FinalizeLoading();
         }
@@ -521,20 +535,18 @@ namespace NC_Reactor_Planner
 
         public static void ReloadValuesFromConfig()
         {
-            ReloadCoolerValues();
+            ReloadBlockValues();
             ReloadFuelValues();
         }
 
-        private static void ReloadCoolerValues()
+        private static void ReloadBlockValues()
         {
             foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
-                if (kvp.Key is HeatSink cooler)
-                    cooler.ReloadValuesFromConfig();
+                    kvp.Key.ReloadValuesFromConfig();
 
             if (blocks == null) return;
             foreach (Block block in blocks)
-                if (block is HeatSink cooler)
-                    cooler.ReloadValuesFromConfig();
+                    block.ReloadValuesFromConfig();
         }
 
         private static void ReloadFuelValues()
@@ -609,7 +621,7 @@ namespace NC_Reactor_Planner
             return blocks[(int)position.X, (int)position.Y, (int)position.Z];
         }
 
-        private static List<Dictionary<string, List<Point3D>>> CompressReactor()
+        private static List<Dictionary<string, List<Point3D>>> CompressReactor(out List<Tuple<Point3D, string, bool>> fuelCells)
         {
             int DLContainsType(string type, List<Dictionary<string, List<Point3D>>> dl)
             {
@@ -626,6 +638,7 @@ namespace NC_Reactor_Planner
             }
 
             List<Dictionary<string, List<Point3D>>> cr = new List<Dictionary<string, List<Point3D>>>();
+            fuelCells = new List<Tuple<Point3D, string, bool>>();
             int n;
             foreach (Block block in blocks)
             {
@@ -649,13 +662,9 @@ namespace NC_Reactor_Planner
                     else
                         cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
                 }
-                else if (block is FuelCell)
+                else if (block is FuelCell fuelCell)
                 {
-                    btype = "FuelCell";
-                    if ((n = DLContainsType(btype, cr)) != -1)
-                        cr[n][btype].Add(block.Position);
-                    else
-                        cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
+                    fuelCells.Add(Tuple.Create(block.Position, fuelCell.UsedFuel.Name, fuelCell.Primed));
                 }
 
             }
@@ -666,9 +675,7 @@ namespace NC_Reactor_Planner
         {
             Block restoreBlock(string type, Point3D position)
             {
-                if (type == "FuelCell")
-                    return new FuelCell("FuelCell", Palette.textures["FuelCell"], position, new Fuel());
-                else if (type == "Beryllium" | type == "Graphite")
+                if (type == "Beryllium" | type == "Graphite")
                     return new Moderator((Moderator)Palette.blockPalette[type], position);
                 else
                     return new HeatSink((HeatSink)Palette.blockPalette[type], position);
@@ -692,6 +699,10 @@ namespace NC_Reactor_Planner
                     foreach(Point3D pos in kvp.Value)
                         SetBlock(restoreBlock(kvp.Key, pos), pos);
                 }
+            }
+            foreach (Tuple<Point3D, string, bool> fuelCell in csf.FuelCells)
+            {
+                SetBlock(new FuelCell("FuelCell", Palette.textures["FuelCell"], fuelCell.Item1, fuels.Find(f => f.Name == fuelCell.Item2), fuelCell.Item3), fuelCell.Item1);
             }
             FinalizeLoading();
         }

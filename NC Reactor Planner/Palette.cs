@@ -105,8 +105,8 @@ namespace NC_Reactor_Planner
                 blockPalette.Add(cooler.DisplayName, cooler);
             }
 
-            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.1));
-            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2));
+            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2));
+            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2, 1.0));
 
             blockPalette.Add("Conductor", new Conductor("Conductor", textures["Conductor"], dummyPosition));
         }
@@ -123,8 +123,8 @@ namespace NC_Reactor_Planner
                 blocks.Add(cooler, BlockTypes.HeatSink);
             }
 
-            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.1), BlockTypes.Moderator);
-            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2, 1.0), BlockTypes.Moderator);
 
             blocks.Add(new Conductor("Conductor", textures["Conductor"], dummyPosition), BlockTypes.Conductor);
         }

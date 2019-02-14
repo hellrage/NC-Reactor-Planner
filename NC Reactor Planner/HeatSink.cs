@@ -50,7 +50,7 @@ namespace NC_Reactor_Planner
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 toolTip += string.Format(" Cluster: {0}\r\n", Cluster.ToString());
                 if(Reactor.state == ReactorStates.Running && Cluster != -1)
-                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : " Invalid Cluster!\r\n");
+                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : " Invalid cluster!\r\n");
             }
 
             toolTip += string.Format(" Cooling: {0} HU/t\r\n" +

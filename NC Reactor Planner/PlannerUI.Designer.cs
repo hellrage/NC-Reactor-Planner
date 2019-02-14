@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlannerUI));
             this.paletteTable = new System.Windows.Forms.TableLayoutPanel();
             this.reactorWidth = new System.Windows.Forms.NumericUpDown();
             this.reactorLength = new System.Windows.Forms.NumericUpDown();
@@ -527,6 +528,7 @@
             this.Controls.Add(this.statsLabel);
             this.Controls.Add(this.layerLabel);
             this.Controls.Add(this.reactorGrid);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.MinimumSize = new System.Drawing.Size(993, 542);
             this.Name = "PlannerUI";
