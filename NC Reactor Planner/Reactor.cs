@@ -470,7 +470,7 @@ namespace NC_Reactor_Planner
             totalOutputPerTick *= Configuration.Fission.Power;
         }
 
-        public static string GetStatString()
+        public static string GetStatString(bool includeClusterInfo = true)
         {
             if (state == ReactorStates.Setup)
                 return "Run the reactor to get stats";
@@ -485,10 +485,11 @@ namespace NC_Reactor_Planner
                                         totalHeatPerTick,totalCoolingPerTick,totalHeatPerTick-totalCoolingPerTick,(int)(efficiency*100),(int)(heatMultiplier*100), (int)(totalOutputPerTick/16)
                 );
 
-            foreach (Cluster cluster in clusters)
-            {
-                report += cluster.GetStatString();
-            }
+            if(includeClusterInfo)
+                foreach (Cluster cluster in clusters)
+                {
+                    report += cluster.GetStatString();
+                }
             return report;
         }
 

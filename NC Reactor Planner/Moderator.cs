@@ -15,6 +15,7 @@ namespace NC_Reactor_Planner
         public ModeratorTypes ModeratorType { get; private set; }
         public double FluxFactor { get; private set; }
         public double EfficiencyFactor { get; private set; }
+        public override bool Valid { get => Active; }
 
         public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {

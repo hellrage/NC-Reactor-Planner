@@ -48,6 +48,7 @@
             this.saveReactor = new System.Windows.Forms.Button();
             this.loadReactor = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.showClusterInfo = new System.Windows.Forms.CheckBox();
             this.viewStyleSwitch = new System.Windows.Forms.Button();
             this.saveAsImage = new System.Windows.Forms.Button();
             this.imageScale = new System.Windows.Forms.NumericUpDown();
@@ -312,6 +313,7 @@
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
+            this.groupBox1.Controls.Add(this.showClusterInfo);
             this.groupBox1.Controls.Add(this.sizeLabel);
             this.groupBox1.Controls.Add(this.reactorWidth);
             this.groupBox1.Controls.Add(this.reactorHeight);
@@ -326,9 +328,23 @@
             this.groupBox1.Controls.Add(this.reactorLength);
             this.groupBox1.Location = new System.Drawing.Point(137, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(182, 455);
+            this.groupBox1.Size = new System.Drawing.Size(182, 477);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
+            // 
+            // showClusterInfo
+            // 
+            this.showClusterInfo.AutoSize = true;
+            this.showClusterInfo.Checked = true;
+            this.showClusterInfo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showClusterInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.showClusterInfo.Location = new System.Drawing.Point(40, 439);
+            this.showClusterInfo.Name = "showClusterInfo";
+            this.showClusterInfo.Size = new System.Drawing.Size(136, 19);
+            this.showClusterInfo.TabIndex = 30;
+            this.showClusterInfo.Text = "Show cluster info";
+            this.showClusterInfo.UseVisualStyleBackColor = true;
+            this.showClusterInfo.CheckedChanged += new System.EventHandler(this.showClusterInfo_CheckedChanged);
             // 
             // viewStyleSwitch
             // 
@@ -580,6 +596,7 @@
         private System.Windows.Forms.Label fuelCriticalityFactorLabel;
         private System.Windows.Forms.TextBox fuelCriticalityFactor;
         private System.Windows.Forms.Button RunReactor;
+        private System.Windows.Forms.CheckBox showClusterInfo;
     }
 }
 

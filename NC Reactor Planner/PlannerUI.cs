@@ -27,9 +27,10 @@ namespace NC_Reactor_Planner
         Pen activeHighlightPen;
         public static bool drawAllLayers = false;
         string appName;
-        string loadedSaveFileName = null;
-        FileInfo loadedSaveFileInfo = null;
+        FileInfo loadedSaveFileInfo;
         public static Block[,] layerBuffer;
+
+        private bool showClustersInStats;
 
         public PlannerUI()
         {
@@ -43,6 +44,7 @@ namespace NC_Reactor_Planner
         private void Form1_Load(object sender, EventArgs e)
         {
             blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
+            showClustersInStats = true;
 
             borderGraphics = paletteTable.CreateGraphics();
             passiveHighlightPen = new Pen(Color.Blue, 4);
@@ -219,7 +221,7 @@ namespace NC_Reactor_Planner
             }
             Reactor.Update();
 
-            RefreshStats();
+            RefreshStats(showClustersInStats);
 
             if (drawAllLayers)
             {
@@ -373,9 +375,9 @@ namespace NC_Reactor_Planner
             ResetLayout(true);
         }
 
-        public void RefreshStats()
+        public void RefreshStats(bool includeClustersInStats)
         {
-            stats.Text = Reactor.GetStatString();
+            stats.Text = Reactor.GetStatString(includeClustersInStats);
         }
 
         private void viewStyleSwitch_Click(object sender, EventArgs e)
@@ -425,7 +427,7 @@ namespace NC_Reactor_Planner
             using (SaveFileDialog fileDialog = new SaveFileDialog { Filter = "Image files (*.png)|*.png" })
             {
                 string autoFileName = "";
-                if(loadedSaveFileName == null)
+                if(loadedSaveFileInfo == null)
                 {
                     if (saveAll)
                         autoFileName = string.Format("{0} {1} x {2} x {3}", (fuelSelector.SelectedItem == null) ? "Custom" : fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
@@ -504,10 +506,6 @@ namespace NC_Reactor_Planner
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
             Palette.selectedFuel = selectedFuel; //[TODO]Change to a method you criminal
-
-            //Reactor.Update();
-            //Reactor.Redraw();//[TODO]Change redraw logic so it only does the active layer
-            //RefreshStats();
         }
 
         private void reactorWidth_Enter(object sender, EventArgs e)
@@ -543,7 +541,7 @@ namespace NC_Reactor_Planner
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
             UpdatePaletteTooltips();
             Reactor.Redraw();
-            RefreshStats();
+            RefreshStats(showClustersInStats);
         }
 
         private void UpdateWindowTitle()
@@ -584,7 +582,13 @@ namespace NC_Reactor_Planner
                     RunReactor.Text = "Run Reactor";
                     break;
             }
-            RefreshStats();
+            RefreshStats(showClustersInStats);
+        }
+
+        private void showClusterInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            showClustersInStats = showClusterInfo.Checked;
+            RefreshStats(showClustersInStats);
         }
     }
 }

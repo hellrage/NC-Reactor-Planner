@@ -14,6 +14,12 @@ namespace NC_Reactor_Planner
 
         public void Clicked(object sender, EventArgs e)
         {
+            if(Reactor.state == ReactorStates.Running)
+            {
+                MessageBox.Show("No changes to the layout allowed while reactor is running!");
+                return;
+            }
+
             MouseButtons button = ((MouseEventArgs)e).Button;
             int x = (int)block.Position.X;
             int y = (int)block.Position.Y;

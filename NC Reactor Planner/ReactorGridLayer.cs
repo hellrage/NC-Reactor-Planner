@@ -161,49 +161,72 @@ namespace NC_Reactor_Planner
             return layerImage;
         }
 
+        private bool ChangesAllowed()
+        {
+            if (Reactor.state == ReactorStates.Running)
+            {
+                MessageBox.Show("No changes to the layout allowed while reactor is running!");
+                return false;
+            }
+            else
+                return true;
+        }
+
         private void MenuClear(object sender, EventArgs e)
         {
-            Reactor.ClearLayer(this);
+            if(ChangesAllowed())
+                Reactor.ClearLayer(this);
         }
 
         private void MenuCopy(object sender, EventArgs e)
         {
-            Reactor.CopyLayer(this);
+            if (ChangesAllowed())
+                Reactor.CopyLayer(this);
         }
 
         private void MenuPaste(object sender, EventArgs e)
         {
-            Reactor.PasteLayer(this);
+            if (ChangesAllowed())
+                Reactor.PasteLayer(this);
         }
 
         private void MenuDelete(object sender, EventArgs e)
         {
-            if (Reactor.layers.Count <= 1)
-                return;
-            Reactor.DeleteLayer(Y);
-            ((PlannerUI)(Parent.Parent)).ResetLayout(true);//And another thing? THIS  U G L Y
+            if (ChangesAllowed())
+            {
+                if (Reactor.layers.Count <= 1)
+                    return;
+                Reactor.DeleteLayer(Y);
+                Reactor.plannerUI.ResetLayout(true);
+            }
         }
 
         private void MenuInsertBefore(object sender, EventArgs e)
         {
-            if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
+            if (ChangesAllowed())
             {
-                MessageBox.Show("Reactor at max size!");
-                return;
+                if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
+                {
+                    MessageBox.Show("Reactor at max size!");
+                    return;
+                }
+                Reactor.InsertLayer(Y);
+                Reactor.plannerUI.ResetLayout(true);
             }
-            Reactor.InsertLayer(Y);
-            ((PlannerUI)(Parent.Parent)).ResetLayout(true);//[TODO] And another thing? THIS  U G L Y
         }
 
         private void MenuInsertAfter(object sender, EventArgs e)
         {
-            if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
+            if (ChangesAllowed())
             {
-                MessageBox.Show("Reactor at max size!");
-                return;
+                if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
+                {
+                    MessageBox.Show("Reactor at max size!");
+                    return;
+                }
+                Reactor.InsertLayer(Y + 1);
+                Reactor.plannerUI.ResetLayout(true);
             }
-            Reactor.InsertLayer(Y+1);
-            ((PlannerUI)(Parent.Parent)).ResetLayout(true);//[TODO] And another thing? THIS  U G L Y
         }
     }
 }
