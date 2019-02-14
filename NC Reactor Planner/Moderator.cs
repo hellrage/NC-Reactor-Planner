@@ -8,18 +8,13 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class Moderator : Block
     {
-        private bool _active;
-        private ModeratorTypes _moderatorType;
-        private double _fluxFactor;
-        private double _efficiencyFactor;
 
-        public bool Active { get => _active; private set => _active = value; }
-        public ModeratorTypes ModeratorType { get => _moderatorType; private set => _moderatorType = value; }
-        public double FluxFactor { get => _fluxFactor; private set => _fluxFactor = value; }
-        public double EfficiencyFactor { get => _efficiencyFactor; private set => _efficiencyFactor = value; }
+        public bool Active { get; private set; }
+        public ModeratorTypes ModeratorType { get; private set; }
+        public double FluxFactor { get; private set; }
+        public double EfficiencyFactor { get; private set; }
 
         public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {
@@ -61,11 +56,6 @@ namespace NC_Reactor_Planner
             toolTip += string.Format("Flux Factor: {0}\r\n", FluxFactor);
             toolTip += string.Format("Efficiency Factor: {0}\r\n", EfficiencyFactor);
             return toolTip;
-        }
-
-        public override bool IsValid()
-        {
-            return Active;
         }
 
         public override Block Copy(Point3D newPosition)

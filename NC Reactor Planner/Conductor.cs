@@ -12,15 +12,11 @@ namespace NC_Reactor_Planner
     {
         public bool HasPathToCasing { get; set; }
         public int GroupID { get; set; }
+        public override bool Valid { get => HasPathToCasing; }
 
         public Conductor(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Conductor, texture, position)
         {
             GroupID = -1;
-        }
-
-        public override bool IsValid()
-        {
-            return HasPathToCasing;
         }
 
         public override void RevertToSetup()

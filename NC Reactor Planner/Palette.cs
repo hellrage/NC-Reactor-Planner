@@ -22,9 +22,7 @@ namespace NC_Reactor_Planner
 
         public static Dictionary<Block, BlockTypes> blocks;
         public static Dictionary<string, Block> blockPalette;
-        //public static List<Block> miscBlocks = new List<Block>();
-        public static List<HeatSink> coolers;
-        //public static List<Moderator> moderators = new List<Moderator>();
+        public static List<HeatSink> heatSinks;
         public static Dictionary<string, Bitmap> textures;
 
         public static Point3D dummyPosition = new Point3D(-1, -1, -1);
@@ -75,7 +73,7 @@ namespace NC_Reactor_Planner
         {
             blocks = new Dictionary<Block, BlockTypes>();
             blockPalette = new Dictionary<string, Block>();
-            coolers = new List<HeatSink>();
+            heatSinks = new List<HeatSink>();
 
             PopulateBlocks();
 
@@ -95,14 +93,14 @@ namespace NC_Reactor_Planner
 
         private static void PopulateBlockPalette()
         {
-            //PopulateCoolers();
+            //PopulateHeatSinks();
 
             blockPalette.Add("Air", new Block("Air", BlockTypes.Air, textures["Air"], dummyPosition));
             blockPalette.Add("FuelCell", new FuelCell("FuelCell", textures["FuelCell"], dummyPosition, new Fuel()));
 
-            foreach (HeatSink cooler in coolers)
+            foreach (HeatSink heatSink in heatSinks)
             {
-                blockPalette.Add(cooler.DisplayName, cooler);
+                blockPalette.Add(heatSink.DisplayName, heatSink);
             }
 
             blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2));
@@ -113,14 +111,14 @@ namespace NC_Reactor_Planner
 
         private static void PopulateBlocks()
         {
-            PopulateCoolers();
+            PopulateHeatSinks();
 
             blocks.Add(new Block("Air", BlockTypes.Air, textures["Air"], dummyPosition), BlockTypes.Air);
             blocks.Add(new FuelCell("FuelCell", textures["FuelCell"], dummyPosition, new Fuel()), BlockTypes.FuelCell);
 
-            foreach (HeatSink cooler in coolers)
+            foreach (HeatSink heatSink in heatSinks)
             {
-                blocks.Add(cooler, BlockTypes.HeatSink);
+                blocks.Add(heatSink, BlockTypes.HeatSink);
             }
 
             blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2), BlockTypes.Moderator);
@@ -129,16 +127,16 @@ namespace NC_Reactor_Planner
             blocks.Add(new Conductor("Conductor", textures["Conductor"], dummyPosition), BlockTypes.Conductor);
         }
 
-        private static void PopulateCoolers()
+        private static void PopulateHeatSinks()
         {
-            foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
+            foreach (KeyValuePair<string, HeatSinkValues> heatSinkEntry in Configuration.HeatSinks)
             {
-                CoolerValues cv = coolerEntry.Value;
+                HeatSinkValues cv = heatSinkEntry.Value;
                 HeatSinkTypes parsedType;
-                if (Enum.TryParse(coolerEntry.Key, out parsedType))
-                    coolers.Add(new HeatSink(coolerEntry.Key, textures[coolerEntry.Key], parsedType, cv.HeatPassive, cv.Requirements, dummyPosition));
+                if (Enum.TryParse(heatSinkEntry.Key, out parsedType))
+                    heatSinks.Add(new HeatSink(heatSinkEntry.Key, textures[heatSinkEntry.Key], parsedType, cv.HeatPassive, cv.Requirements, dummyPosition));
                 else
-                    throw new ArgumentException("Unexpected cooler type in config!");
+                    throw new ArgumentException("Unexpected heatsink type in config!");
             }
         }
 
@@ -200,13 +198,13 @@ namespace NC_Reactor_Planner
 
         public static HeatSink GetCooler(string displayName)
         {
-            foreach (HeatSink cooler in coolers)
+            foreach (HeatSink heatSink in heatSinks)
             {
-                if (cooler.DisplayName == displayName)
-                    return cooler;
+                if (heatSink.DisplayName == displayName)
+                    return heatSink;
             }
-            //return new HeatSink(coolers.First(), dummyPosition);
-            throw new ArgumentException("No such cooler! Looked for: " + displayName);
+            //return new HeatSink(heatSinks.First(), dummyPosition);
+            throw new ArgumentException("No such heatsink! Looked for: " + displayName);
         }
     }
 

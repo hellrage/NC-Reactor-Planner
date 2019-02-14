@@ -40,7 +40,6 @@ namespace NC_Reactor_Planner
                 default:
                     return;
             }
-            block = Reactor.blocks[x, y, z];
 
             Reactor.Update();
             
@@ -80,7 +79,7 @@ namespace NC_Reactor_Planner
                 Pen errorPen = new Pen(Color.Red, 1);
                 if (block is HeatSink | block is Conductor)
                 {
-                    if (!block.IsValid())
+                    if (!block.Valid)
                     { 
                         g.DrawRectangle(errorPen, 0, 0, Image.Size.Width - 1, Image.Size.Height - 1);
                     }

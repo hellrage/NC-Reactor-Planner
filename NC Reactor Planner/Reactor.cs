@@ -339,7 +339,7 @@ namespace NC_Reactor_Planner
                         //if (!((interiorDims.X+1 >= pos.X) & (interiorDims.Y+1 >= pos.Y) & (interiorDims.Z+1 >= pos.Z) & (pos.X >= 0) & (pos.Y >= 0) & (pos.Z >= 0)))
                         //    continue;
                         Block neighbour = BlockAt(pos);
-                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Casing) & root.IsValid())
+                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Casing) & root.Valid)
                         {
                             if(neighbour.Cluster == -1)
                                 queue.Add(neighbour);
@@ -421,8 +421,8 @@ namespace NC_Reactor_Planner
             foreach (string type in updateOrder)
             {
                 if (heatSinks.ContainsKey(type))
-                    foreach (HeatSink cooler in heatSinks[type])
-                        cooler.UpdateStats();
+                    foreach (HeatSink heatSink in heatSinks[type])
+                        heatSink.UpdateStats();
             }
         }
 
@@ -511,26 +511,12 @@ namespace NC_Reactor_Planner
         public static void Load(FileInfo saveFile)
         {
             LoadCompressedReactor(saveFile.FullName);
-
-            FinalizeLoading();
         }
 
         private static void FinalizeLoading()
         {
-            ReloadBlockTextures();
             ReloadValuesFromConfig();
-            //Update();
             ConstructLayers();
-        }
-
-        private static void ReloadBlockTextures()
-        {
-            foreach (Block block in blocks)
-            {
-                if (block is Casing)
-                    continue;
-                block.Texture = Palette.textures[block.DisplayName];
-            }
         }
 
         public static void ReloadValuesFromConfig()
@@ -610,7 +596,7 @@ namespace NC_Reactor_Planner
                         layerImage.Dispose();
                     }
                 //string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
-                //gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                gr.DrawString(GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             reactorImage.Save(fileName);
             reactorImage.Dispose();
@@ -646,9 +632,9 @@ namespace NC_Reactor_Planner
                     continue;
 
                 string btype;
-                if (block is HeatSink cooler)
+                if (block is HeatSink heatSink)
                 {
-                    btype = cooler.HeatSinkType.ToString();
+                    btype = heatSink.HeatSinkType.ToString();
                     if ((n = DLContainsType(btype, cr)) != -1)
                         cr[n][btype].Add(block.Position);
                     else
@@ -687,7 +673,12 @@ namespace NC_Reactor_Planner
             {
                 JsonSerializer js = new JsonSerializer();
                 csf = (CompressedSaveFile)js.Deserialize(sr, typeof(CompressedSaveFile));
-                //usedFuel = (Fuel)js.Deserialize(sr, typeof(Fuel));
+            }
+
+            if(csf.SaveVersion < new Version(2,0,0))
+            {
+                System.Windows.Forms.MessageBox.Show("Pre-overhaul saves aren't supported!");
+                return;
             }
 
             InitializeReactor(csf.InteriorDimensions);

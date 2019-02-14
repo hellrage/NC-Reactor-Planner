@@ -29,7 +29,7 @@ namespace NC_Reactor_Planner
     }
     public partial class ConfigurationUI : Form
     {
-        private Dictionary<string, List<Control>> cIFR; //cooler input field rows
+        private Dictionary<string, List<Control>> hsIFR; //heatsink input field rows
         private Dictionary<string, List<Control>> fIFR; //fuel input field rows
         private Dictionary<string, List<Control>> mIFR; //moderator input field rows
         private Dictionary<string, List<Control>> rDC; //resource Disposable Controls
@@ -63,28 +63,28 @@ namespace NC_Reactor_Planner
 
         private void ReloadCoolersTab()
         {
-            if(cIFR != null)
-                DisposeAndClear(cIFR);
-            cIFR = new Dictionary<string, List<Control>>(); //cooler input field rows
+            if(hsIFR != null)
+                DisposeAndClear(hsIFR);
+            hsIFR = new Dictionary<string, List<Control>>(); //heatsink input field rows
             int row = 0;
-            foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
+            foreach (KeyValuePair<string, HeatSinkValues> heatSinkEntry in Configuration.HeatSinks)
             {
-                CoolerValues cv = coolerEntry.Value;
+                HeatSinkValues cv = heatSinkEntry.Value;
                 row++;
                 int y = 3 + row * 20;
                 List<Control> fields = new List<Control>();
-                fields.Add(new Label { Text = coolerEntry.Key, Location = new Point(3, y), Size = new Size(70, 13), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new Label { Text = heatSinkEntry.Key, Location = new Point(3, y), Size = new Size(70, 13), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = cv.HeatPassive.ToString(), Location = new Point(85, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = cv.Requirements, Location = new Point(165, y), Size = new Size(350, 14) });
-                cIFR.Add(coolerEntry.Key, fields);
+                hsIFR.Add(heatSinkEntry.Key, fields);
                 //fields.Clear();
             }
 
-            foreach (KeyValuePair<string, List<Control>> slkvp in cIFR)
+            foreach (KeyValuePair<string, List<Control>> slkvp in hsIFR)
             {
                 foreach (Control c in slkvp.Value)
                 {
-                    settingTabs.TabPages["coolersPage"].Controls.Add(c);
+                    settingTabs.TabPages["heatSinksPage"].Controls.Add(c);
                 }
             }
         }
@@ -161,7 +161,7 @@ namespace NC_Reactor_Planner
             blockSelector.Items.Add(new ResourceCostComboboxItem("Fuel cell", Configuration.ResourceCosts.FuelCellCosts));
             blockSelector.Items.Add(new ResourceCostComboboxItem("Casing", Configuration.ResourceCosts.CasingCosts));
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.CoolerCosts)
+            foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.HeatSinkCosts)
             {
                 blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " HeatSink", kvp.Value));
             }
@@ -277,10 +277,10 @@ namespace NC_Reactor_Planner
             Configuration.Fission.MaxSize = Convert.ToInt32(maxSize.Text);
             Configuration.Fission.NeutronReach = Convert.ToInt32(neutronReach.Text);
 
-            foreach (KeyValuePair<string, List<Control>> kvp in cIFR)
+            foreach (KeyValuePair<string, List<Control>> kvp in hsIFR)
             {
-                CoolerValues cv = new CoolerValues(Convert.ToDouble(kvp.Value[1].Text), kvp.Value[2].Text);
-                Configuration.Coolers[kvp.Key] = cv;
+                HeatSinkValues cv = new HeatSinkValues(Convert.ToDouble(kvp.Value[1].Text), kvp.Value[2].Text);
+                Configuration.HeatSinks[kvp.Key] = cv;
             }
 
             foreach (KeyValuePair<string, List<Control>> kvp in fIFR)
@@ -366,10 +366,10 @@ namespace NC_Reactor_Planner
             var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
             for (int i = 0; i < items.Length; i++)
             {
-                var item = Configuration.Coolers[items[i]];
+                var item = Configuration.HeatSinks[items[i]];
                 item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
                 //item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
-                Configuration.Coolers[items[i]] = item;
+                Configuration.HeatSinks[items[i]] = item;
             }
         }
 

@@ -8,22 +8,15 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class Block
     {
-        private string _displayName;
-        [NonSerialized()]
-        private Bitmap _texture;
-        private Point3D _position;
-        private BlockTypes _type;
-        [NonSerialized()]
-        private int _cluster;
 
-        public string DisplayName { get => _displayName; private set => _displayName = value; }
-        public Bitmap Texture { get => _texture; set => _texture = value; }
-        public Point3D Position { get => _position; private set => _position = value; }
-        public BlockTypes BlockType { get => _type; private set => _type = value; }
-        public int Cluster { get => _cluster; private set => _cluster = value; }
+        public string DisplayName { get ; private set; }
+        public Bitmap Texture { get; set ; }
+        public Point3D Position { get; private set; }
+        public BlockTypes BlockType { get; private set; }
+        public int Cluster { get ; private set; }
+        public virtual bool Valid { get; protected set ; }
 
         public Block()
         {
@@ -68,11 +61,6 @@ namespace NC_Reactor_Planner
         public virtual Block Copy(Point3D newPosition)
         {
             return new Block(DisplayName, BlockType, Texture, newPosition);
-        }
-
-        public virtual bool IsValid()
-        {
-            return false;
         }
 
         public virtual Dictionary<string, int> GetResourceCosts()

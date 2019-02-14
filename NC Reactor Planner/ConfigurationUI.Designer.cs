@@ -44,7 +44,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.power = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.coolersPage = new System.Windows.Forms.TabPage();
+            this.heatSinksPage = new System.Windows.Forms.TabPage();
             this.label12 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.moderatorsPage = new System.Windows.Forms.TabPage();
@@ -65,7 +65,7 @@
             this.ttValidation = new System.Windows.Forms.ToolTip(this.components);
             this.settingTabs.SuspendLayout();
             this.fissionPage.SuspendLayout();
-            this.coolersPage.SuspendLayout();
+            this.heatSinksPage.SuspendLayout();
             this.moderatorsPage.SuspendLayout();
             this.fuelsPage.SuspendLayout();
             this.resourceCostsPage.SuspendLayout();
@@ -74,7 +74,7 @@
             // settingTabs
             // 
             this.settingTabs.Controls.Add(this.fissionPage);
-            this.settingTabs.Controls.Add(this.coolersPage);
+            this.settingTabs.Controls.Add(this.heatSinksPage);
             this.settingTabs.Controls.Add(this.moderatorsPage);
             this.settingTabs.Controls.Add(this.fuelsPage);
             this.settingTabs.Controls.Add(this.resourceCostsPage);
@@ -208,18 +208,18 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Fission power";
             // 
-            // coolersPage
+            // heatSinksPage
             // 
-            this.coolersPage.AutoScroll = true;
-            this.coolersPage.Controls.Add(this.label12);
-            this.coolersPage.Controls.Add(this.label7);
-            this.coolersPage.Location = new System.Drawing.Point(4, 22);
-            this.coolersPage.Name = "coolersPage";
-            this.coolersPage.Padding = new System.Windows.Forms.Padding(3);
-            this.coolersPage.Size = new System.Drawing.Size(638, 369);
-            this.coolersPage.TabIndex = 1;
-            this.coolersPage.Text = "Coolers";
-            this.coolersPage.UseVisualStyleBackColor = true;
+            this.heatSinksPage.AutoScroll = true;
+            this.heatSinksPage.Controls.Add(this.label12);
+            this.heatSinksPage.Controls.Add(this.label7);
+            this.heatSinksPage.Location = new System.Drawing.Point(4, 22);
+            this.heatSinksPage.Name = "heatSinksPage";
+            this.heatSinksPage.Padding = new System.Windows.Forms.Padding(3);
+            this.heatSinksPage.Size = new System.Drawing.Size(638, 369);
+            this.heatSinksPage.TabIndex = 1;
+            this.heatSinksPage.Text = "HeatSinks";
+            this.heatSinksPage.UseVisualStyleBackColor = true;
             // 
             // label12
             // 
@@ -416,8 +416,8 @@
             this.settingTabs.ResumeLayout(false);
             this.fissionPage.ResumeLayout(false);
             this.fissionPage.PerformLayout();
-            this.coolersPage.ResumeLayout(false);
-            this.coolersPage.PerformLayout();
+            this.heatSinksPage.ResumeLayout(false);
+            this.heatSinksPage.PerformLayout();
             this.moderatorsPage.ResumeLayout(false);
             this.moderatorsPage.PerformLayout();
             this.fuelsPage.ResumeLayout(false);
@@ -438,7 +438,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox power;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TabPage coolersPage;
+        private System.Windows.Forms.TabPage heatSinksPage;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TabPage fuelsPage;

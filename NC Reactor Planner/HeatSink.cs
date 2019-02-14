@@ -8,24 +8,15 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class HeatSink : Block
     {
-        private double _cooling;
-        private string _requirements;
-        private bool _oldValid;
-        private bool _valid;
-        private bool _active;
         private List<string> placementErrors;
-
-        private HeatSinkTypes _coolerType;
         
-        public double Cooling { get => _cooling; private set => _cooling = value; }
-        public string Requirements { get => _requirements; private set => _requirements = value; }
-        public bool Valid { get => _valid; private set { _oldValid = _valid; _valid = value; } }
-        public bool Active { get => _active; private set { _active = value; } }
+        public double Cooling { get ; private set; }
+        public string Requirements { get ; private set; }
+        public override bool Valid { get; protected set; }
 
-        public HeatSinkTypes HeatSinkType { get => _coolerType; private set => _coolerType = value; }
+        public HeatSinkTypes HeatSinkType { get ; private set ; }
 
 
         public HeatSink(string displayName, Bitmap texture, HeatSinkTypes type, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.HeatSink, texture, position)
@@ -78,7 +69,7 @@ namespace NC_Reactor_Planner
 
         public override void ReloadValuesFromConfig()
         {
-            CoolerValues cv = Configuration.Coolers[HeatSinkType.ToString()];
+            HeatSinkValues cv = Configuration.HeatSinks[HeatSinkType.ToString()];
             Cooling = cv.HeatPassive;
             Requirements = cv.Requirements;
         }
@@ -144,7 +135,7 @@ namespace NC_Reactor_Planner
                 BlockTypes nt = needed.BlockType;
 
                 //If checked block doesn't match at all: log errors
-                //Either cooler types are mismatched or the blocktype is mismatched
+                //Either heatsink types are mismatched or the blocktype is mismatched
                 if (((bt == BlockTypes.HeatSink & nt == BlockTypes.HeatSink) && ((HeatSink)block).HeatSinkType != ((HeatSink)needed).HeatSinkType) | bt != nt)
                 {
                     if (adjacent == 0)
@@ -161,7 +152,7 @@ namespace NC_Reactor_Planner
                 if (adjacent >= number)
                     while (placementErrors.Remove("Too few " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString())));
 
-                if (block.IsValid())
+                if (block.Valid)
                 {
                     activeAdjacent++;
                     if (activeAdjacent > number & exact)
@@ -240,11 +231,6 @@ namespace NC_Reactor_Planner
                 placementErrors.Add("Not in a corner!");
 
             return false;
-        }
-
-        public override bool IsValid()
-        {
-            return Valid;
         }
 
         public override Block Copy(Point3D newPosition)

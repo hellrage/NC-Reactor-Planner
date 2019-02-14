@@ -15,15 +15,15 @@ namespace NC_Reactor_Planner
         public FissionValues Fission;
         public CraftingMaterials ResourceCosts;
         public Dictionary<string, FuelValues> Fuels;
-        public Dictionary<string, CoolerValues> Coolers;
+        public Dictionary<string, HeatSinkValues> HeatSinks;
         public Dictionary<string, ModeratorValues> Moderators;
 
-        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, CoolerValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
+        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
         {
             saveVersion = sv;
             Fission = fs;
             Fuels = f;
-            Coolers = c;
+            HeatSinks = c;
             Moderators = m;
             ResourceCosts = cm;
         }
@@ -45,12 +45,12 @@ namespace NC_Reactor_Planner
         }
     }
 
-    public struct CoolerValues
+    public struct HeatSinkValues
     {
         public double HeatPassive;
         public string Requirements;
 
-        public CoolerValues(double hp, string req)
+        public HeatSinkValues(double hp, string req)
         {
             HeatPassive = hp;
             Requirements = req;
@@ -91,14 +91,14 @@ namespace NC_Reactor_Planner
 
     public struct CraftingMaterials
     {
-        public Dictionary<string, Dictionary<string, int>> CoolerCosts;
+        public Dictionary<string, Dictionary<string, int>> HeatSinkCosts;
         public Dictionary<string, Dictionary<string, int>> ModeratorCosts;
         public Dictionary<string, int> FuelCellCosts;
         public Dictionary<string, int> CasingCosts;
 
         public CraftingMaterials(Dictionary<string, Dictionary<string, int>> clc, Dictionary<string, Dictionary<string, int>> mc, Dictionary<string, int> fcc, Dictionary<string, int> csc)
         {
-            CoolerCosts = clc;
+            HeatSinkCosts = clc;
             ModeratorCosts = mc;
             FuelCellCosts = fcc;
             CasingCosts = csc;
@@ -111,7 +111,7 @@ namespace NC_Reactor_Planner
         public static FissionValues Fission;
         public static CraftingMaterials ResourceCosts;
         public static Dictionary<string, FuelValues> Fuels;
-        public static Dictionary<string, CoolerValues> Coolers;
+        public static Dictionary<string, HeatSinkValues> HeatSinks;
         public static Dictionary<string, ModeratorValues> Moderators;
 
         private static FileInfo configFileInfo;
@@ -133,7 +133,14 @@ namespace NC_Reactor_Planner
                     return false;
                 }
             }
-            if((cf.Fuels == null) | (cf.Coolers == null))
+
+            if(cf.saveVersion < new Version(2,0,0))
+            {
+                System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your DefaultConfig.json to regenerate a new one.");
+                return false;
+            }
+
+            if((cf.Fuels == null) | (cf.HeatSinks == null))
             {
                 System.Windows.Forms.MessageBox.Show("Invalid config file contents!");
                 return false;
@@ -151,7 +158,7 @@ namespace NC_Reactor_Planner
             if (ResourceCosts.CasingCosts == null)
                 SetDefaultResourceCosts();
             Fuels = cf.Fuels;
-            Coolers = cf.Coolers;
+            HeatSinks = cf.HeatSinks;
             if (cf.saveVersion >= new Version(2, 0, 0))
                 Moderators = cf.Moderators;
             else
@@ -172,7 +179,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, Coolers, Moderators, ResourceCosts);
+                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, HeatSinks, Moderators, ResourceCosts);
                 jss.Serialize(tw, cf);
             }
         }
@@ -181,7 +188,7 @@ namespace NC_Reactor_Planner
         {
             configFileInfo = null;
 
-            SetDefaultCoolers();
+            SetDefaultHeatSinks();
 
             SetDefaultFuels();
 
@@ -189,7 +196,7 @@ namespace NC_Reactor_Planner
 
             SetDefaultFission();
 
-            //SetDefaultResourceCosts();
+            SetDefaultResourceCosts();
         }
 
         private static void SetDefaultFuels()
@@ -249,29 +256,29 @@ namespace NC_Reactor_Planner
             Fuels.Add("HECf-251 Oxide", new FuelValues(1, 900, 58000, 1));
         }
 
-        private static void SetDefaultCoolers()
+        private static void SetDefaultHeatSinks()
         {
-            Coolers = new Dictionary<string, CoolerValues>();
-            Coolers.Add("Water", new CoolerValues(55, "One FuelCell"));
-            Coolers.Add("Iron", new CoolerValues(60, "One Moderator"));
-            Coolers.Add("Redstone", new CoolerValues(85, "One FuelCell and one Moderator"));
-            Coolers.Add("Quartz", new CoolerValues(90, "One Magnesium"));
-            Coolers.Add("Obsidian", new CoolerValues(80, "One Glowstone and one Casing"));
-            Coolers.Add("Glowstone", new CoolerValues(115, "Two Moderators"));
-            Coolers.Add("Lapis", new CoolerValues(100, "One FuelCell and one Casing"));
-            Coolers.Add("Gold", new CoolerValues(110, "Two Iron"));
-            Coolers.Add("Prismarine", new CoolerValues(125, "Two Water"));
-            Coolers.Add("Diamond", new CoolerValues(130, "One Gold and one FuelCell"));
-            Coolers.Add("Emerald", new CoolerValues(135, "One Prismarine and one Moderator"));
-            Coolers.Add("Copper", new CoolerValues(65, "One Water"));
-            Coolers.Add("Tin", new CoolerValues(75, "Two Lapis"));
-            Coolers.Add("Lead", new CoolerValues(70, "One Iron"));
-            Coolers.Add("Bronze", new CoolerValues(105, "One Copper and one Tin"));
-            Coolers.Add("Boron", new CoolerValues(95, "One Bronze"));
-            Coolers.Add("Magnesium", new CoolerValues(120, "One Lead and one Casing"));
-            Coolers.Add("Helium", new CoolerValues(150, "Two Redstone and one Casing"));
-            Coolers.Add("Enderium", new CoolerValues(140, "Three Moderators"));
-            Coolers.Add("Cryotheum", new CoolerValues(145, "Three FuelCells"));
+            HeatSinks = new Dictionary<string, HeatSinkValues>();
+            HeatSinks.Add("Water", new HeatSinkValues(55, "One FuelCell"));
+            HeatSinks.Add("Iron", new HeatSinkValues(60, "One Moderator"));
+            HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell and one Moderator"));
+            HeatSinks.Add("Quartz", new HeatSinkValues(90, "One Magnesium heatsink"));
+            HeatSinks.Add("Obsidian", new HeatSinkValues(80, "One Glowstone heatsink and one Casing"));
+            HeatSinks.Add("Glowstone", new HeatSinkValues(115, "Two Moderators"));
+            HeatSinks.Add("Lapis", new HeatSinkValues(100, "One FuelCell and one Casing"));
+            HeatSinks.Add("Gold", new HeatSinkValues(110, "Two Iron heatsinks"));
+            HeatSinks.Add("Prismarine", new HeatSinkValues(125, "Two Water heatsinks"));
+            HeatSinks.Add("Diamond", new HeatSinkValues(130, "One Gold and one FuelCell"));
+            HeatSinks.Add("Emerald", new HeatSinkValues(135, "One Prismarine heatsink and one Moderator"));
+            HeatSinks.Add("Copper", new HeatSinkValues(65, "One Water heatsink"));
+            HeatSinks.Add("Tin", new HeatSinkValues(75, "Two Lapis heatsinks"));
+            HeatSinks.Add("Lead", new HeatSinkValues(70, "One Iron heatsink"));
+            HeatSinks.Add("Bronze", new HeatSinkValues(105, "One Copper heatsink and one Tin heatsink"));
+            HeatSinks.Add("Boron", new HeatSinkValues(95, "One Bronze heatsink"));
+            HeatSinks.Add("Magnesium", new HeatSinkValues(120, "One Lead heatsink and one Casing"));
+            HeatSinks.Add("Helium", new HeatSinkValues(150, "Two Redstone heatsinks and one Casing"));
+            HeatSinks.Add("Enderium", new HeatSinkValues(140, "Three Moderators"));
+            HeatSinks.Add("Cryotheum", new HeatSinkValues(145, "Three FuelCells"));
 
         }
 
@@ -297,7 +304,7 @@ namespace NC_Reactor_Planner
             ResourceCosts.FuelCellCosts = DefaultFuelCellCosts();
             ResourceCosts.CasingCosts = DefaultCasingCosts();
             ResourceCosts.ModeratorCosts = DefaultModeratorCosts();
-            ResourceCosts.CoolerCosts = DefaultCoolerCosts();
+            ResourceCosts.HeatSinkCosts = DefaultHeatSinkCosts();
         }
 
         private static Dictionary<string, int> DefaultFuelCellCosts()
@@ -326,14 +333,15 @@ namespace NC_Reactor_Planner
             return dmc;
         }
 
-        private static Dictionary<string, Dictionary<string, int>> DefaultCoolerCosts()
+        private static Dictionary<string, Dictionary<string, int>> DefaultHeatSinkCosts()
         {
             Dictionary<string, Dictionary<string, int>> dcc = new Dictionary<string, Dictionary<string, int>>();
 
-            foreach (HeatSink cooler in Palette.coolers)
+            foreach (KeyValuePair<string, HeatSinkValues> kvp in HeatSinks)
             {
-                dcc.Add(cooler.DisplayName, new Dictionary<string, int>());
-                dcc[cooler.DisplayName].Add("Empty HeatSink", 1);
+                string heatSinkName = kvp.Key;
+                dcc.Add(heatSinkName, new Dictionary<string, int>());
+                dcc[heatSinkName].Add("Empty HeatSink", 1);
             }
 
             dcc["Water"].Add("Water Bucket", 1);
@@ -389,7 +397,7 @@ namespace NC_Reactor_Planner
             Dictionary<string, int> totals = new Dictionary<string, int>();
             foreach (KeyValuePair<string,List<HeatSink>> c in Reactor.heatSinks)
             {
-                foreach (KeyValuePair<string,int> resource in ResourceCosts.CoolerCosts[c.Key])
+                foreach (KeyValuePair<string,int> resource in ResourceCosts.HeatSinkCosts[c.Key])
                 {
                     if (!totals.ContainsKey(resource.Key))
                         totals.Add(resource.Key, 0);
