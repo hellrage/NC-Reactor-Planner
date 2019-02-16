@@ -83,6 +83,7 @@ namespace NC_Reactor_Planner
             using (Graphics g = Graphics.FromImage(Image))
             {
                 Pen errorPen = new Pen(Color.Red, 1);
+
                 if (block is HeatSink | block is Conductor)
                 {
                     if (!block.Valid)
@@ -94,7 +95,7 @@ namespace NC_Reactor_Planner
                 {
                     if(!moderator.Active)
                     {
-                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                            g.DrawRectangle(errorPen, 2, 2, Image.Size.Width - 5, Image.Size.Height - 5);
                     }
                 }
                 else if (block is FuelCell fuelCell)
@@ -105,12 +106,25 @@ namespace NC_Reactor_Planner
                     }
                     if (fuelCell.Primed)
                     {
-                            Pen primedPen = new Pen(Color.Orange, 2);
-                            g.DrawRectangle(primedPen, 2, 2, Image.Size.Width - 4, Image.Size.Height - 4);
+                        using (Pen primedPen = new Pen(Color.Orange, 1))
+                            g.DrawRectangle(primedPen, 3, 3, Image.Size.Width - 7, Image.Size.Height - 7);
                     }
                 }
-                //if(block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator)
-                //    g.DrawString(block.Cluster.ToString(), new Font(FontFamily.GenericSansSerif, 7, FontStyle.Bold), Brushes.Orange, 3, 3);
+
+
+                if (Reactor.state == ReactorStates.Running & block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator & block.BlockType != BlockTypes.Conductor)
+                    if (block.Cluster != -1)
+                    {
+                        if (!Reactor.clusters[block.Cluster].HasPathToCasing)
+                            using (Pen inactiveClusterPen = new Pen(Color.LightPink, 1))
+                                g.DrawRectangle(inactiveClusterPen, 1, 1, Image.Size.Width - 3, Image.Size.Height - 3);
+                    }
+                    else
+                    {
+                        g.DrawRectangle(errorPen, 1, 1, Image.Size.Width - 3, Image.Size.Height - 3);
+                    }
+
+                errorPen.Dispose();
             }
             ResetToolTip();
         }

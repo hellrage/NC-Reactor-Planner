@@ -171,6 +171,7 @@ namespace NC_Reactor_Planner
 
         public static void Redraw()
         {
+            System.Diagnostics.Debug.WriteLine("Called Redraw()");
             foreach (ReactorGridLayer layer in layers)
                 layer.Redraw();
         }
@@ -336,8 +337,6 @@ namespace NC_Reactor_Planner
                     foreach(Vector3D offset in sixAdjOffsets)
                     {
                         Point3D pos = root.Position + offset;
-                        //if (!((interiorDims.X+1 >= pos.X) & (interiorDims.Y+1 >= pos.Y) & (interiorDims.Z+1 >= pos.Z) & (pos.X >= 0) & (pos.Y >= 0) & (pos.Z >= 0)))
-                        //    continue;
                         Block neighbour = BlockAt(pos);
                         if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Casing) & root.Valid)
                         {
@@ -418,6 +417,7 @@ namespace NC_Reactor_Planner
 
         private static void OrderedUpdateHeatSinks()
         {
+            System.Diagnostics.Debug.WriteLine("Updated Heatsinks");
             foreach (string type in updateOrder)
             {
                 if (heatSinks.ContainsKey(type))
@@ -503,21 +503,100 @@ namespace NC_Reactor_Planner
                     Formatting = Formatting.Indented,
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
-                CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(out List<Tuple<Point3D, string, bool>> fuelCells), fuelCells, interiorDims);
-                jss.Serialize(tw, csf);
-                //jss.Serialize(tw, usedFuel);
+                //CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(out List<Tuple<Point3D, string, bool>> fuelCells), fuelCells, interiorDims);
+                jss.Serialize(tw, ComposeSaveData());
             }
         }
 
-        public static void Load(FileInfo saveFile)
+        private static SaveData ComposeSaveData()
         {
-            LoadCompressedReactor(saveFile.FullName);
+            Dictionary<string, List<Point3D>> saveHeatSinks = new Dictionary<string, List<Point3D>>();
+            Dictionary<string, List<Point3D>> saveModerators = new Dictionary<string, List<Point3D>>();
+            List<Point3D> saveConductors = new List<Point3D>();
+            Dictionary<string, List<Point3D>> saveFuelCells = new Dictionary<string, List<Point3D>>();
+
+            foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
+            {
+                if (!saveHeatSinks.ContainsKey(kvp.Key))
+                    saveHeatSinks.Add(kvp.Key, new List<Point3D>());
+                foreach (HeatSink hs in kvp.Value)
+                    saveHeatSinks[kvp.Key].Add(hs.Position);
+            }
+
+            foreach (KeyValuePair<string, List<Moderator>> kvp in moderators)
+            {
+                if (!saveModerators.ContainsKey(kvp.Key))
+                    saveModerators.Add(kvp.Key, new List<Point3D>());
+                foreach (Moderator md in kvp.Value)
+                    saveModerators[kvp.Key].Add(md.Position);
+            }
+
+            foreach (Conductor cd in conductors)
+                saveConductors.Add(cd.Position);
+
+            foreach (FuelCell fc in fuelCells)
+            {
+                if (!saveFuelCells.ContainsKey(fc.ToSaveString()))
+                    saveFuelCells.Add(fc.ToSaveString(), new List<Point3D>());
+                saveFuelCells[fc.ToSaveString()].Add(fc.Position);
+            }
+
+            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveFuelCells, interiorDims);
         }
 
-        private static void FinalizeLoading()
+        public static ValidationResult Load(FileInfo saveFile)
         {
+            SaveData save;
+            using (StreamReader sr = File.OpenText(saveFile.FullName))
+            {
+                JsonSerializer js = new JsonSerializer();
+                save = (SaveData)js.Deserialize(sr, typeof(SaveData));
+            }
+            ValidationResult vr = save.PerformValidation();
+            if(vr.Successful)
+                LoadFromSaveData(save);
+            return vr;
+        }
+
+        private static void LoadFromSaveData(SaveData save)
+        {
+            InitializeReactor(save.InteriorDimensions);
+
+            foreach (KeyValuePair<string, List<Point3D>> kvp in save.HeatSinks)
+                foreach (Point3D pos in kvp.Value)
+                    SetBlock(Palette.blockPalette[kvp.Key].Copy(pos), pos);
+
+            foreach (KeyValuePair<string, List<Point3D>> kvp in save.Moderators)
+                foreach (Point3D pos in kvp.Value)
+                    SetBlock(Palette.blockPalette[kvp.Key].Copy(pos), pos);
+
+            foreach (KeyValuePair<string, List<Point3D>> kvp in save.FuelCells)
+            {
+                FuelCell restoredFuelCell;
+                foreach (Point3D pos in kvp.Value)
+                {
+                    List<string> props = kvp.Key.Split(';').ToList();
+                    switch (props.Count)
+                    {
+                        case 0:
+                        case 1:
+                            throw new ArgumentException("Tried to load an invalid FuelCell: " + kvp.Key);
+                        case 2:
+                            restoredFuelCell = new FuelCell("FuelCell", Palette.textures["FuelCell"], pos, GetFuel(props[0]),Convert.ToBoolean(props[1]));
+                            break;
+                        default:
+                            throw new ArgumentException("Tried to load an unexpected FuelCell: " + kvp.Key);
+                    }
+                    SetBlock(restoredFuelCell, pos);
+                }
+            }
+
+            foreach (Point3D pos in save.Conductors)
+                SetBlock(new Conductor("Conductor", Palette.textures["Conductor"], pos), pos);
+
             ReloadValuesFromConfig();
             ConstructLayers();
+
         }
 
         public static void ReloadValuesFromConfig()
@@ -542,6 +621,16 @@ namespace NC_Reactor_Planner
             {
                 fuel.ReloadValuesFromConfig();
             }
+        }
+
+        public static Fuel GetFuel(string fuelName)
+        {
+            foreach (Fuel fuel in fuels)
+            {
+                if (fuel.Name == fuelName)
+                    return fuel;
+            }
+            throw new ArgumentException("Tried to get wrong fuel! Looked for: " + fuelName);
         }
 
         public static void SaveLayerAsImage(int layer, string fileName, int scale = 2)
@@ -608,97 +697,6 @@ namespace NC_Reactor_Planner
             return blocks[(int)position.X, (int)position.Y, (int)position.Z];
         }
 
-        private static List<Dictionary<string, List<Point3D>>> CompressReactor(out List<Tuple<Point3D, string, bool>> fuelCells)
-        {
-            int DLContainsType(string type, List<Dictionary<string, List<Point3D>>> dl)
-            {
-                Dictionary<string, List<Point3D>> d;
-                for(int i = 0; i < dl.Count; i++)
-                {
-                    d = dl[i];
-                    if (d.ContainsKey(type))
-                    {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-
-            List<Dictionary<string, List<Point3D>>> cr = new List<Dictionary<string, List<Point3D>>>();
-            fuelCells = new List<Tuple<Point3D, string, bool>>();
-            int n;
-            foreach (Block block in blocks)
-            {
-                if (block is Casing | block.BlockType == BlockTypes.Air)
-                    continue;
-
-                string btype;
-                if (block is HeatSink heatSink)
-                {
-                    btype = heatSink.HeatSinkType.ToString();
-                    if ((n = DLContainsType(btype, cr)) != -1)
-                        cr[n][btype].Add(block.Position);
-                    else
-                        cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
-                }
-                else if (block is Moderator moderator)
-                {
-                    btype = moderator.ModeratorType.ToString();
-                    if ((n = DLContainsType(btype, cr)) != -1)
-                        cr[n][btype].Add(block.Position);
-                    else
-                        cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
-                }
-                else if (block is FuelCell fuelCell)
-                {
-                    fuelCells.Add(Tuple.Create(block.Position, fuelCell.UsedFuel.Name, fuelCell.Primed));
-                }
-
-            }
-            return cr;
-        }
-
-        private static void LoadCompressedReactor(string fileName)
-        {
-            Block restoreBlock(string type, Point3D position)
-            {
-                if (type == "Beryllium" | type == "Graphite")
-                    return new Moderator((Moderator)Palette.blockPalette[type], position);
-                else
-                    return new HeatSink((HeatSink)Palette.blockPalette[type], position);
-                throw new ArgumentException("Tried to restore an invalid block");
-            }
-
-            CompressedSaveFile csf;
-            using (StreamReader sr = File.OpenText(fileName))
-            {
-                JsonSerializer js = new JsonSerializer();
-                csf = (CompressedSaveFile)js.Deserialize(sr, typeof(CompressedSaveFile));
-            }
-
-            if(csf.SaveVersion < new Version(2,0,0))
-            {
-                System.Windows.Forms.MessageBox.Show("Pre-overhaul saves aren't supported!");
-                return;
-            }
-
-            InitializeReactor(csf.InteriorDimensions);
-
-            foreach (Dictionary<string, List<Point3D>> d in csf.CompressedReactor)
-            {
-                foreach (KeyValuePair<string, List<Point3D>> kvp in d)
-                {
-                    foreach(Point3D pos in kvp.Value)
-                        SetBlock(restoreBlock(kvp.Key, pos), pos);
-                }
-            }
-            foreach (Tuple<Point3D, string, bool> fuelCell in csf.FuelCells)
-            {
-                SetBlock(new FuelCell("FuelCell", Palette.textures["FuelCell"], fuelCell.Item1, fuels.Find(f => f.Name == fuelCell.Item2), fuelCell.Item3), fuelCell.Item1);
-            }
-            FinalizeLoading();
-        }
-
         public static void SetBlock(Block block, Point3D position)
         {
             blocks[(int)position.X, (int)position.Y, (int)position.Z] = block.Copy(position);
@@ -709,8 +707,8 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < interiorDims.X; x++)
                 for (int z = 0; z < interiorDims.Z; z++)
                     SetBlock(new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
-            //Update();
-            layer.Redraw();
+            Update();
+            Redraw();
         }
 
         public static void CopyLayer(ReactorGridLayer layer)
@@ -738,8 +736,8 @@ namespace NC_Reactor_Planner
                 {
                     SetBlock(PlannerUI.layerBuffer[x, z], new Point3D(x + 1, layer.Y, z + 1));
                 }
-            //Update();
-            layer.Redraw();
+            Update();
+            Redraw();
         }
 
         public static void DeleteLayer(int y)

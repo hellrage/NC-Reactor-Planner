@@ -49,7 +49,10 @@ namespace NC_Reactor_Planner
             if (Position != Palette.dummyPosition)
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
-                toolTip += string.Format("Cluster: {0}\r\n", Cluster);
+                if (Cluster != -1)
+                    toolTip += string.Format("Cluster: {0}\r\n", Cluster);
+                else if (Reactor.state == ReactorStates.Running)
+                    toolTip += "No cluster!\r\n";
             }
             return toolTip;
         }

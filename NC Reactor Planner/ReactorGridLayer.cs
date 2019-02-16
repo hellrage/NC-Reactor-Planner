@@ -71,12 +71,7 @@ namespace NC_Reactor_Planner
 
         public void ReloadCells()
         {
-            if (cells != null)
-                foreach (ReactorGridCell c in cells)
-                {
-                    c.Dispose();
-                    Controls.Remove(c);
-                }
+            DisposeOfCells();
             cells = new ReactorGridCell[X, Z];
             Point location;
 
@@ -102,6 +97,16 @@ namespace NC_Reactor_Planner
                     Controls.Add(cells[x, z]);
                 }
 
+        }
+
+        private void DisposeOfCells()
+        {
+            if (cells != null)
+                foreach (ReactorGridCell c in cells)
+                {
+                    c.Dispose();
+                    Controls.Remove(c);
+                }
         }
 
         public void Rescale()

@@ -195,17 +195,6 @@ namespace NC_Reactor_Planner
 
             return false;
         }
-
-        public static HeatSink GetCooler(string displayName)
-        {
-            foreach (HeatSink heatSink in heatSinks)
-            {
-                if (heatSink.DisplayName == displayName)
-                    return heatSink;
-            }
-            //return new HeatSink(heatSinks.First(), dummyPosition);
-            throw new ArgumentException("No such heatsink! Looked for: " + displayName);
-        }
     }
 
     public enum BlockTypes

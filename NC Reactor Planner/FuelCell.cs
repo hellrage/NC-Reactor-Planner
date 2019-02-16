@@ -22,9 +22,8 @@ namespace NC_Reactor_Planner
         public double ModeratedNeutronFlux { get; private set; }
         public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1/(1 + Math.Exp(3*(PositionalEfficiency-UsedFuel.CriticalityFactor-3)))); }
         public double FuelDuration { get => UsedFuel.FuelTime * Reactor.clusters[Cluster].FuelDurationMultiplier / Configuration.Fission.FuelUse; }
-
-        public bool FirstPass;
-        public bool Primed;
+        public bool FirstPass { get; set; }
+        public bool Primed { get; set; }
 
         public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel, bool primed = false) : base(displayName, BlockTypes.FuelCell, texture, position)
         {
@@ -117,7 +116,7 @@ namespace NC_Reactor_Planner
                             fuelCell.FirstPass = false;
                             fuelCell.Activate();
                             fuelCell.AddAdjacentFuelCell(this);
-                            fuelCell.AddAdjacentModerator();
+                            fuelCell.AddAdjacentModeratorLine();
                             return fuelCell;
                         }
                         else
@@ -135,7 +134,7 @@ namespace NC_Reactor_Planner
             AdjacentCells.Add(fuelCell);
         }
 
-        public void AddAdjacentModerator()
+        public void AddAdjacentModeratorLine()
         {
             AdjacentModeratorLines++;
         }
@@ -150,11 +149,14 @@ namespace NC_Reactor_Planner
             Active = true;
         }
 
-        
-
         public override Block Copy(Point3D newPosition)
         {
             return new FuelCell(this, newPosition, this.UsedFuel, Primed);
+        }
+
+        public string ToSaveString()
+        {
+            return string.Join(";",UsedFuel.Name,Primed.ToString());
         }
     }
 }

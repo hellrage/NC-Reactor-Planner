@@ -362,7 +362,12 @@ namespace NC_Reactor_Planner
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     loadedSaveFileInfo = new FileInfo(fileDialog.FileName);
-                    Reactor.Load(loadedSaveFileInfo);
+                    ValidationResult vr = Reactor.Load(loadedSaveFileInfo);
+                    if (!vr.Successful)
+                    {
+                        MessageBox.Show(vr.Result);
+                        return;
+                    }
                 }
                 else
                     return;
@@ -559,7 +564,7 @@ namespace NC_Reactor_Planner
             {
                 ReactorGridCell oldSelected = Palette.selectedBlock;
                 SetUpPalette();
-                oldSelected.block = Palette.GetCooler(oldSelected.block.DisplayName);
+                oldSelected.block = Palette.blockPalette[oldSelected.block.DisplayName];
                 PaletteBlockClicked(oldSelected, new EventArgs());
             }
             else

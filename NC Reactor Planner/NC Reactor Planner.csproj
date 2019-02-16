@@ -126,6 +126,7 @@
     <Compile Include="ReactorGridLayer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SaveData.cs" />
     <Compile Include="Settings.cs" />
     <EmbeddedResource Include="ConfigurationUI.resx">
       <DependentUpon>ConfigurationUI.cs</DependentUpon>
