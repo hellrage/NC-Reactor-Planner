@@ -39,7 +39,7 @@ namespace NC_Reactor_Planner
             ConstructMenu();
             Height = Z * PlannerUI.blockSize + menu.Height;
 
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
             Refresh();
         }
@@ -104,8 +104,6 @@ namespace NC_Reactor_Planner
         protected override void OnPaint(PaintEventArgs e)
         {
             FullRedraw(e.Graphics);
-            base.OnPaint(e);
-            System.Diagnostics.Debug.WriteLine("Redrawn layer");
         }
 
         public void FullRedraw(Graphics g, bool forExport = false)
@@ -122,7 +120,7 @@ namespace NC_Reactor_Planner
                 }
         }
 
-        public void RedrawCell(int x, int z, Graphics g, bool forExport = false)
+        public void RedrawCell(int x, int z, Graphics g, bool noChecking = false, bool forExport = false)
         {
             int bs = PlannerUI.blockSize;
             Point location;
@@ -132,6 +130,9 @@ namespace NC_Reactor_Planner
             Block block = Reactor.BlockAt(new Point3D(x, Y, z));
 
             g.DrawImage(block.Texture, cellRect);
+
+            if (noChecking)
+                return;
 
             if (!block.Valid)
                 g.DrawRectangle(PlannerUI.ErrorPen, location.X + 2, location.Y + 2, bs - 3, bs - 3);
@@ -181,7 +182,7 @@ namespace NC_Reactor_Planner
             Reactor.UI.RefreshStats();
             Point3D position = new Point3D(cellX, Y, cellZ);
             PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
-            Invalidate();
+            Refresh();
             base.OnMouseUp(e);
         }
 
@@ -208,7 +209,8 @@ namespace NC_Reactor_Planner
                     return;
             }
             Graphics g = CreateGraphics();
-            RedrawCell(cellX, cellZ, g);
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            RedrawCell(cellX, cellZ, g, true);
         }
 
         private void PlaceBlock(int x, int z, Block block)
@@ -222,24 +224,7 @@ namespace NC_Reactor_Planner
             Bitmap layerImage = new Bitmap(X * bs, Z * bs);
             using (Graphics g = Graphics.FromImage(layerImage))
             {
-                g.CompositingMode = CompositingMode.SourceCopy;
-                g.CompositingQuality = CompositingQuality.HighSpeed;
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.SmoothingMode = SmoothingMode.HighSpeed;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                for (int x = 1; x <= X; x++)
-                {
-                    for (int z = 1; z <= Z; z++)
-                    {
-                        Point location;
-                        location = new Point(bs * (x - 1), bs * (z - 1));
-                        Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
-
-                        Block block = Reactor.BlockAt(new Point3D(x, Y, z));
-
-                        g.DrawImage(block.Texture, cellRect);
-                    }
-                }
+                FullRedraw(g, true);
             }
             return layerImage;
         }
