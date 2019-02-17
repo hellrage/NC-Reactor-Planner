@@ -157,7 +157,7 @@
             this.reactorHeight.Size = new System.Drawing.Size(40, 20);
             this.reactorHeight.TabIndex = 2;
             this.reactorHeight.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             0});
@@ -576,7 +576,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button resetLayout;
         private System.Windows.Forms.Label paletteLabel;
-        private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.VScrollBar layerScrollBar;
         private System.Windows.Forms.Label layerLabel;
         private System.Windows.Forms.Label statsLabel;
@@ -598,6 +597,7 @@
         private System.Windows.Forms.TextBox fuelCriticalityFactor;
         private System.Windows.Forms.Button RunReactor;
         private System.Windows.Forms.CheckBox showClusterInfo;
+        private System.Windows.Forms.Panel reactorGrid;
     }
 }
 

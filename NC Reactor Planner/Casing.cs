@@ -10,8 +10,6 @@ namespace NC_Reactor_Planner
 {
     public class Casing : Block
     {
-        public override bool Valid { get => true; }
-
         public Casing(string displayName, Bitmap texture, Point3D position): base(displayName, BlockTypes.Casing, texture, position)
         {
 

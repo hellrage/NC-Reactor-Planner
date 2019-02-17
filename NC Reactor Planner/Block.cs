@@ -10,18 +10,18 @@ namespace NC_Reactor_Planner
 {
     public class Block
     {
-
+        private bool _valid;
         public string DisplayName { get ; private set; }
         public Bitmap Texture { get; set ; }
         public Point3D Position { get; private set; }
         public BlockTypes BlockType { get; private set; }
         public int Cluster { get ; private set; }
-        public virtual bool Valid { get; protected set ; }
+        public virtual bool Valid { get => true; protected set => _valid = value; }
 
         public Block()
         {
             DisplayName = "Air";
-            Texture = new Bitmap(Palette.textures["Air"]);
+            Texture = Palette.textures["Air"];
             Position = Palette.dummyPosition;
         }
 

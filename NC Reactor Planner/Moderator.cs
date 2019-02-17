@@ -10,7 +10,6 @@ namespace NC_Reactor_Planner
 {
     public class Moderator : Block
     {
-
         public bool Active { get; private set; }
         public ModeratorTypes ModeratorType { get; private set; }
         public double FluxFactor { get; private set; }

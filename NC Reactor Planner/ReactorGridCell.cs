@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace NC_Reactor_Planner
 {
@@ -82,6 +83,11 @@ namespace NC_Reactor_Planner
 
             using (Graphics g = Graphics.FromImage(Image))
             {
+                g.CompositingMode = CompositingMode.SourceCopy;
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.SmoothingMode = SmoothingMode.HighSpeed;
+                g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
                 Pen errorPen = new Pen(Color.Red, 1);
 
                 if (block is HeatSink | block is Conductor)

@@ -5,21 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
+using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
     public class ReactorGridLayer : Panel
     {
-        private ReactorGridCell[,] cells;
         private MenuStrip menu;
-        private int _x;
-        private int _y;
-        private int _z;
+        private int cellX;
+        private int cellZ;
 
-        public int X { get => _x; private set => _x = value; }
-        public int Y { get => _y; private set => _y = value; }
-        public int Z { get => _z; private set => _z = value; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public int Z { get; private set; }
 
         public ReactorGridLayer(int y) : base()
         {
@@ -27,13 +27,21 @@ namespace NC_Reactor_Planner
             Y = y;
             Z = (int)Reactor.interiorDims.Z;
 
+            PlannerUI.gridToolTip.RemoveAll();
+            PlannerUI.gridToolTip.Hide(Reactor.UI.ReactorGrid);
+            cellX = -1;
+            cellZ = -1;
+
             Width = X * PlannerUI.blockSize;
             Visible = true;
             BorderStyle = BorderStyle.FixedSingle;
 
             ConstructMenu();
             Height = Z * PlannerUI.blockSize + menu.Height;
-            ReloadCells();
+
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
+            Refresh();
         }
 
         private void ConstructMenu()
@@ -69,60 +77,12 @@ namespace NC_Reactor_Planner
             Refresh();
         }
 
-        public void ReloadCells()
-        {
-            DisposeOfCells();
-            cells = new ReactorGridCell[X, Z];
-            Point location;
-
-            for (int x = 0; x < X; x++)
-                for (int z = 0; z < Z; z++)
-                {
-                    location = new Point(PlannerUI.blockSize * x, menu.Height + PlannerUI.blockSize * z);
-                    ReactorGridCell cell = (new ReactorGridCell
-                    {
-                        Size = new Size(PlannerUI.blockSize, PlannerUI.blockSize),
-                        Visible = true,
-                        SizeMode = PictureBoxSizeMode.Zoom,
-                        ClientSize = new Size(PlannerUI.blockSize, PlannerUI.blockSize),
-                        Location = location,
-                        block = Reactor.blocks[x + 1, Y, z + 1]
-                    });
-                    cell.Click += new EventHandler(cell.Clicked);
-                    cell.MouseDown += new MouseEventHandler(cell.Mouse_Down);
-                    cell.MouseMove += new MouseEventHandler(cell.Mouse_Move);
-                    cell.MouseUp += new MouseEventHandler(Reactor.CauseRedraw);
-                    cell.Image = new Bitmap(cell.block.Texture);
-                    cells[x, z] = cell;
-                    Controls.Add(cells[x, z]);
-                }
-
-        }
-
-        private void DisposeOfCells()
-        {
-            if (cells != null)
-                foreach (ReactorGridCell c in cells)
-                {
-                    c.Dispose();
-                    Controls.Remove(c);
-                }
-        }
-
         public void Rescale()
         {
             int bs = PlannerUI.blockSize;
             Size = new Size(bs * X, bs * Z + menu.Height);
-            Point location;
-
-            foreach (ReactorGridCell cell in cells)
-            {
-                location = new Point(bs * ((int)cell.block.Position.X - 1), menu.Height + bs * ((int)cell.block.Position.Z - 1));
-                cell.Location = location;
-                cell.Size = new Size(bs, bs);
-            }
-
             RescaleMenu();
+            Refresh();
         }
 
         private void RescaleMenu()
@@ -141,97 +101,194 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public void Redraw()
+        protected override void OnPaint(PaintEventArgs e)
         {
-            foreach (ReactorGridCell cell in cells)
-            {
-                cell.RedrawSelf();
-            }
+            FullRedraw(e.Graphics);
+            base.OnPaint(e);
+            System.Diagnostics.Debug.WriteLine("Redrawn layer");
         }
 
-        public Bitmap DrawToImage(int scale = 2)
+        public void FullRedraw(Graphics g, bool forExport = false)
         {
-            Redraw();
+            g.CompositingMode = CompositingMode.SourceCopy;
+            g.CompositingQuality = CompositingQuality.HighSpeed;
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.SmoothingMode = SmoothingMode.HighSpeed;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            for (int x = 1; x <= X; x++)
+                for (int z = 1; z <= Z; z++)
+                {
+                    RedrawCell(x, z, g, forExport);
+                }
+        }
+
+        public void RedrawCell(int x, int z, Graphics g, bool forExport = false)
+        {
+            int bs = PlannerUI.blockSize;
+            Point location;
+            location = new Point(bs * (x - 1), (forExport?0:menu.Height) + bs * (z - 1));
+            Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
+            
+            Block block = Reactor.BlockAt(new Point3D(x, Y, z));
+
+            g.DrawImage(block.Texture, cellRect);
+
+            if (!block.Valid)
+                g.DrawRectangle(PlannerUI.ErrorPen, location.X + 2, location.Y + 2, bs - 3, bs - 3);
+            if(Reactor.state == ReactorStates.Running && block.Cluster!=-1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
+                g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 4, location.Y + 4, bs - 6, bs - 6);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            cellX = ((e.X > Width) ? Width : e.X) / PlannerUI.blockSize;
+            cellZ = ((((e.Y - menu.Height) > Height) ? Height : e.Y) - menu.Height) / PlannerUI.blockSize;
+            Point3D position = new Point3D(++cellX, Y, ++cellZ);
+            HandleMouse(e.Button, position);
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            int newCellX = ((e.X > Width) ? Width : e.X) / PlannerUI.blockSize;
+            int newCellZ = ((((e.Y - menu.Height) > Height) ? Height : e.Y) - menu.Height) / PlannerUI.blockSize;
+
+
+            if (cellX != ++newCellX | cellZ != ++newCellZ)
+            {
+                cellX = newCellX;
+                cellZ = newCellZ;
+
+                if (cellX > X || cellZ > Z || cellX < 1 || cellZ < 1)
+                    return;
+                Point3D position = new Point3D(cellX, Y, cellZ);
+                HandleMouse(e.Button, position);
+                PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
+            }
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            PlannerUI.gridToolTip.RemoveAll();
+            PlannerUI.gridToolTip.Hide(Reactor.UI.ReactorGrid);
+            base.OnMouseLeave(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            Reactor.Update();
+            Reactor.UI.RefreshStats();
+            Point3D position = new Point3D(cellX, Y, cellZ);
+            PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
+            Invalidate();
+            base.OnMouseUp(e);
+        }
+
+        private void HandleMouse(MouseButtons button, Point3D position)
+        {
+            switch (button)
+            {
+                case MouseButtons.Left:
+                    if ((ModifierKeys & Keys.Shift) != 0 && Reactor.BlockAt(position) is FuelCell fuelCell)
+                        fuelCell.TogglePrimed();
+                    else
+                        PlaceBlock(cellX, cellZ, Palette.BlockToPlace(Reactor.BlockAt(position)));
+                    break;
+                case MouseButtons.Right:
+                    PlaceBlock(cellX, cellZ, new Block("Air", BlockTypes.Air, Palette.textures["Air"], position));
+                    break;
+                case MouseButtons.Middle:
+                    PlaceBlock(cellX, cellZ, Palette.blockPalette["FuelCell"].Copy(position));
+                    break;
+                case MouseButtons.XButton1:
+                case MouseButtons.XButton2:
+                case MouseButtons.None:
+                default:
+                    return;
+            }
+            Graphics g = CreateGraphics();
+            RedrawCell(cellX, cellZ, g);
+        }
+
+        private void PlaceBlock(int x, int z, Block block)
+        {
+            Reactor.SetBlock(block, new Point3D(x, Y, z));
+        }
+
+        public Bitmap DrawToImage()
+        {
             int bs = PlannerUI.blockSize;
             Bitmap layerImage = new Bitmap(X * bs, Z * bs);
             using (Graphics g = Graphics.FromImage(layerImage))
-                foreach (ReactorGridCell rgc in cells)
-                {
-                    System.Windows.Media.Media3D.Point3D pos = rgc.block.Position;
-                    g.DrawImage(rgc.Image,
-                                new Rectangle((int)(pos.X - 1) * bs, (int)(pos.Z - 1) * bs, bs, bs),
-                                new Rectangle(0, 0, bs / scale, bs / scale),
-                                GraphicsUnit.Pixel);
-                }
-            return layerImage;
-        }
-
-        private bool ChangesAllowed()
-        {
-            if (Reactor.state == ReactorStates.Running)
             {
-                MessageBox.Show("No changes to the layout allowed while reactor is running!");
-                return false;
+                g.CompositingMode = CompositingMode.SourceCopy;
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.SmoothingMode = SmoothingMode.HighSpeed;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                for (int x = 1; x <= X; x++)
+                {
+                    for (int z = 1; z <= Z; z++)
+                    {
+                        Point location;
+                        location = new Point(bs * (x - 1), bs * (z - 1));
+                        Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
+
+                        Block block = Reactor.BlockAt(new Point3D(x, Y, z));
+
+                        g.DrawImage(block.Texture, cellRect);
+                    }
+                }
             }
-            else
-                return true;
+            return layerImage;
         }
 
         private void MenuClear(object sender, EventArgs e)
         {
-            if(ChangesAllowed())
-                Reactor.ClearLayer(this);
+            Reactor.ClearLayer(this);
+            Reactor.UI.RefreshStats();
         }
 
         private void MenuCopy(object sender, EventArgs e)
         {
-            if (ChangesAllowed())
-                Reactor.CopyLayer(this);
+            Reactor.CopyLayer(this);
         }
 
         private void MenuPaste(object sender, EventArgs e)
         {
-            if (ChangesAllowed())
-                Reactor.PasteLayer(this);
+            Reactor.PasteLayer(this);
+            Reactor.UI.RefreshStats();
         }
 
         private void MenuDelete(object sender, EventArgs e)
         {
-            if (ChangesAllowed())
-            {
-                if (Reactor.layers.Count <= 1)
-                    return;
-                Reactor.DeleteLayer(Y);
-                Reactor.UI.ResetLayout(true);
-            }
+            if (Reactor.layers.Count <= 1)
+                return;
+            Reactor.DeleteLayer(Y);
+            Reactor.UI.ResetLayout(true);
         }
 
         private void MenuInsertBefore(object sender, EventArgs e)
         {
-            if (ChangesAllowed())
+            if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
             {
-                if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
-                {
-                    MessageBox.Show("Reactor at max size!");
-                    return;
-                }
-                Reactor.InsertLayer(Y);
-                Reactor.UI.ResetLayout(true);
+                MessageBox.Show("Reactor at max size!");
+                return;
             }
+            Reactor.InsertLayer(Y);
+            Reactor.UI.ResetLayout(true);
         }
 
         private void MenuInsertAfter(object sender, EventArgs e)
         {
-            if (ChangesAllowed())
+            if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
             {
-                if (Reactor.layers.Count >= Configuration.Fission.MaxSize)
-                {
-                    MessageBox.Show("Reactor at max size!");
-                    return;
-                }
-                Reactor.InsertLayer(Y + 1);
-                Reactor.UI.ResetLayout(true);
+                MessageBox.Show("Reactor at max size!");
+                return;
             }
+            Reactor.InsertLayer(Y + 1);
+            Reactor.UI.ResetLayout(true);
         }
     }
 }
