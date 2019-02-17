@@ -25,7 +25,7 @@ namespace NC_Reactor_Planner
         Graphics borderGraphics;
         Pen passiveHighlightPen;
         Pen activeHighlightPen;
-        public static bool drawAllLayers = false;
+        public static bool drawAllLayers = true;
         string appName;
         FileInfo loadedSaveFileInfo;
         public static Block[,] layerBuffer;

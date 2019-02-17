@@ -38,6 +38,7 @@ namespace NC_Reactor_Planner
             AdjacentCells = new List<FuelCell>();
             AdjacentModeratorLines = 0;
             PositionalEfficiency = 0;
+            ModeratedNeutronFlux = 0;
             FirstPass = true;
             Active = false;
         }
@@ -61,9 +62,10 @@ namespace NC_Reactor_Planner
                                     " Heat produced: {4} HU/t\r\n" +
                                     " Efficiency: {6} %\r\n" +
                                     " Positional Eff.: {7} %\r\n" +
+                                    " Total Neutron Flux: {8}\r\n" +
                                     (Primed?"Primed":""
                                     ),
-                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency*100), (int)(PositionalEfficiency*100));
+                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency*100), (int)(PositionalEfficiency*100), ModeratedNeutronFlux);
         }
 
         public void UpdateStats()

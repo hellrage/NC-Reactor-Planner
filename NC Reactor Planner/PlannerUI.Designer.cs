@@ -110,7 +110,7 @@
             this.reactorWidth.Size = new System.Drawing.Size(40, 20);
             this.reactorWidth.TabIndex = 1;
             this.reactorWidth.Value = new decimal(new int[] {
-            5,
+            9,
             0,
             0,
             0});
@@ -133,7 +133,7 @@
             this.reactorLength.Size = new System.Drawing.Size(40, 20);
             this.reactorLength.TabIndex = 3;
             this.reactorLength.Value = new decimal(new int[] {
-            5,
+            9,
             0,
             0,
             0});
