@@ -123,6 +123,7 @@ namespace NC_Reactor_Planner
         public void RedrawCell(int x, int z, Graphics g, bool noChecking = false, bool forExport = false)
         {
             int bs = PlannerUI.blockSize;
+            int ds = (int)Reactor.UI.DrawingScale;
             Point location;
             location = new Point(bs * (x - 1), (forExport?0:menu.Height) + bs * (z - 1));
             Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
@@ -135,9 +136,11 @@ namespace NC_Reactor_Planner
                 return;
 
             if (!block.Valid)
-                g.DrawRectangle(PlannerUI.ErrorPen, location.X + 2, location.Y + 2, bs - 3, bs - 3);
-            if(Reactor.state == ReactorStates.Running && block.Cluster!=-1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
-                g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 4, location.Y + 4, bs - 6, bs - 6);
+                g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
+            if (Reactor.state == ReactorStates.Running && block.Cluster != -1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
+                g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);
+            if (block is FuelCell fuelCell && fuelCell.Primed)
+                g.DrawEllipse(PlannerUI.PrimedFuelCellPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -200,7 +203,7 @@ namespace NC_Reactor_Planner
                     PlaceBlock(cellX, cellZ, new Block("Air", BlockTypes.Air, Palette.textures["Air"], position));
                     break;
                 case MouseButtons.Middle:
-                    PlaceBlock(cellX, cellZ, Palette.blockPalette["FuelCell"].Copy(position));
+                    PlaceBlock(cellX, cellZ, new FuelCell((FuelCell)Palette.blockPalette["FuelCell"], position, Palette.selectedFuel));
                     break;
                 case MouseButtons.XButton1:
                 case MouseButtons.XButton2:

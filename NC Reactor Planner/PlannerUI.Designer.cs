@@ -552,6 +552,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "NC Reactor Planner";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Leave += new System.EventHandler(this.PlannerUI_Leave);
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();

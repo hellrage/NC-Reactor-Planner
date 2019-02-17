@@ -16,6 +16,7 @@ namespace NC_Reactor_Planner
     public partial class PlannerUI : Form
     {
         public Panel ReactorGrid { get => reactorGrid; }
+        public decimal DrawingScale { get => imageScale.Value; }
 
         ToolTip paletteToolTip;
         public static ToolTip gridToolTip;
@@ -27,8 +28,8 @@ namespace NC_Reactor_Planner
         private static Graphics borderGraphics;
         private static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
-        public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 3);
-        public static readonly Pen InactiveClusterPen = new Pen(Brushes.LightPink, 3);
+        public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 4);
+        public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
 
         public static bool drawAllLayers = false;
         string appName;
@@ -95,9 +96,9 @@ namespace NC_Reactor_Planner
             paletteToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
             paletteToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
             paletteToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
-            paletteToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once. Laggy and crash-prone at extreme reactor sizes in \"All layers\" mode (you'll get a warning)");
+            paletteToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
             paletteToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
-            paletteToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Doubleclick to confirm (overwrites your current layout! Save if you want to keep it.)");
+            paletteToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
         }
 
         private void SetUpPalette()
@@ -144,7 +145,8 @@ namespace NC_Reactor_Planner
             ReactorGridCell selected = Palette.selectedBlock;
             paletteLabel.Text = selected.block.DisplayName;
             borderGraphics.DrawRectangle(PaletteHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-
+            //paletteToolTip.Hide(selected);
+            paletteToolTip.Active = false;
         }
 
         private void PaletteBlockHighlighted(object sender, EventArgs e)
@@ -153,7 +155,8 @@ namespace NC_Reactor_Planner
 
             ReactorGridCell paletteBox = (ReactorGridCell)sender;
             paletteLabel.Text = paletteBox.block.DisplayName;
-
+            paletteToolTip.Active = true;
+            paletteToolTip.Show(paletteBox.block.GetToolTip(), paletteBox, 45, 45);
             borderGraphics.DrawRectangle(PaletteHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
                 
         }
@@ -552,6 +555,12 @@ namespace NC_Reactor_Planner
         {
             showClustersInStats = showClusterInfo.Checked;
             RefreshStats(showClustersInStats);
+        }
+
+        private void PlannerUI_Leave(object sender, EventArgs e)
+        {
+            gridToolTip.Hide(reactorGrid);
+            paletteToolTip.Hide(Palette.selectedBlock);
         }
     }
 }

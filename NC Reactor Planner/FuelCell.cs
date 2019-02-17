@@ -53,9 +53,9 @@ namespace NC_Reactor_Planner
                 return base.GetToolTip();
             else 
                 return string.Format("{0}" +
-                                    ((Reactor.state == ReactorStates.Running)?(Reactor.clusters[Cluster].Valid?"Has casing connection\r\n":" Invalid cluster!\r\n"):"") +
+                                    ((Reactor.state == ReactorStates.Running)?(Reactor.clusters[Cluster].Valid?" Has casing connection\r\n":"--Invalid cluster!\r\n"):"") +
                                     " Fuel: {5}\r\n" +
-                                    (Active?" Active\r\n":" Inactive!\r\n") +
+                                    (Active?" Active\r\n":"--Inactive!\r\n") +
                                     " Adjacent cells: {1}\r\n" +
                                     " Adjacent moderator lines: {2}\r\n" +
                                     " Heat multiplier: {3} %\r\n" +
@@ -63,7 +63,7 @@ namespace NC_Reactor_Planner
                                     " Efficiency: {6} %\r\n" +
                                     " Positional Eff.: {7} %\r\n" +
                                     " Total Neutron Flux: {8}\r\n" +
-                                    (Primed?"Primed":""
+                                    (Primed?" Primed":""
                                     ),
                                     base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency*100), (int)(PositionalEfficiency*100), ModeratedNeutronFlux);
         }

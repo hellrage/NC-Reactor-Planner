@@ -51,7 +51,7 @@ namespace NC_Reactor_Planner
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 if (!Active)
-                    toolTip += "Inactive!\r\n";
+                    toolTip += "--Inactive!\r\n";
             }
             toolTip += string.Format("Flux Factor: {0}\r\n", FluxFactor);
             toolTip += string.Format("Efficiency Factor: {0}\r\n", EfficiencyFactor);
@@ -75,6 +75,7 @@ namespace NC_Reactor_Planner
     {
         Beryllium,
         Graphite,
+        HeavyWater,
         //NotAModerator,
     }
 }

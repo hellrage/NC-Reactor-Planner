@@ -203,6 +203,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap HeavyWater {
+            get {
+                object obj = ResourceManager.GetObject("HeavyWater", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Helium {
             get {
                 object obj = ResourceManager.GetObject("Helium", resourceCulture);

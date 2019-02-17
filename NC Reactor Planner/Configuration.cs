@@ -261,9 +261,9 @@ namespace NC_Reactor_Planner
             HeatSinks = new Dictionary<string, HeatSinkValues>();
             HeatSinks.Add("Water", new HeatSinkValues(50, "One FuelCell"));
             HeatSinks.Add("Iron", new HeatSinkValues(55, "One Moderator"));
-            HeatSinks.Add("Redstone", new HeatSinkValues(75, "One FuelCell and one Moderator"));
-            HeatSinks.Add("Quartz", new HeatSinkValues(85, "One Redstone heatsink"));
-            HeatSinks.Add("Obsidian", new HeatSinkValues(80, "One Glowstone heatsink and one Casing"));
+            HeatSinks.Add("Redstone", new HeatSinkValues(70, "One FuelCell and one Moderator"));
+            HeatSinks.Add("Quartz", new HeatSinkValues(75, "One Redstone heatsink"));
+            HeatSinks.Add("Obsidian", new HeatSinkValues(80, "Two Glowstone heatsinks on the same axis"));
             HeatSinks.Add("Glowstone", new HeatSinkValues(110, "Two Moderators"));
             HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell and one Casing"));
             HeatSinks.Add("Gold", new HeatSinkValues(105, "Two Iron heatsinks"));
@@ -272,7 +272,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Diamond", new HeatSinkValues(145, "One Gold and one FuelCell"));
             HeatSinks.Add("Emerald", new HeatSinkValues(150, "One Prismarine heatsink and one Moderator"));
             HeatSinks.Add("Copper", new HeatSinkValues(60, "One Water heatsink"));
-            HeatSinks.Add("Tin", new HeatSinkValues(70, "Two Lapis heatsinks"));
+            HeatSinks.Add("Tin", new HeatSinkValues(85, "Two Lapis heatsinks on the same axis"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
             HeatSinks.Add("Boron", new HeatSinkValues(120, "One Copper heatsink and one Tin heatsink"));
             HeatSinks.Add("Lithium", new HeatSinkValues(115, "One Lead heatsink and one Casing"));
@@ -280,9 +280,9 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Manganese", new HeatSinkValues(130, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(125, "One Quartz heatsink and one Casing"));
             HeatSinks.Add("Silver", new HeatSinkValues(140, "One Glowstone heatsink and one Lapis heatsink"));
-            HeatSinks.Add("Helium", new HeatSinkValues(165, "Two Redstone heatsinks and one Casing"));
-            HeatSinks.Add("Enderium", new HeatSinkValues(155, "Three Moderators"));
-            HeatSinks.Add("Cryotheum", new HeatSinkValues(160, "Three FuelCells"));
+            HeatSinks.Add("Helium", new HeatSinkValues(165, "Exactly two Redstone heatsinks and at least one Casing"));
+            HeatSinks.Add("Enderium", new HeatSinkValues(155, "Exactly three Moderators"));
+            HeatSinks.Add("Cryotheum", new HeatSinkValues(160, "Exactly three FuelCells"));
 
         }
 
@@ -291,6 +291,7 @@ namespace NC_Reactor_Planner
             Moderators = new Dictionary<string, ModeratorValues>();
             Moderators.Add("Beryllium", new ModeratorValues(1.0, 1.2));
             Moderators.Add("Graphite", new ModeratorValues(1.2, 1.0));
+            Moderators.Add("HeavyWater", new ModeratorValues(1.1, 1.1));
         }
 
         private static void SetDefaultFission()

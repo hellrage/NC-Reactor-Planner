@@ -66,6 +66,7 @@ namespace NC_Reactor_Planner
 
             textures.Add("Graphite", Resources.Graphite);
             textures.Add("Beryllium", Resources.Beryllium);
+            textures.Add("HeavyWater", Resources.HeavyWater);
 
             textures.Add("FuelCell", Resources.FuelCell);
 
@@ -109,6 +110,7 @@ namespace NC_Reactor_Planner
 
             blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2));
             blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2, 1.0));
+            blockPalette.Add("HeavyWater", new Moderator("HeavyWater", ModeratorTypes.HeavyWater, textures["HeavyWater"], dummyPosition, 1.1, 1.1));
 
             blockPalette.Add("Conductor", new Conductor("Conductor", textures["Conductor"], dummyPosition));
         }
@@ -127,6 +129,7 @@ namespace NC_Reactor_Planner
 
             blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2), BlockTypes.Moderator);
             blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2, 1.0), BlockTypes.Moderator);
+            blocks.Add(new Moderator("HeavyWater", ModeratorTypes.HeavyWater, textures["HeavyWater"], dummyPosition, 1.1, 1.1), BlockTypes.Moderator);
 
             blocks.Add(new Conductor("Conductor", textures["Conductor"], dummyPosition), BlockTypes.Conductor);
         }
@@ -195,7 +198,6 @@ namespace NC_Reactor_Planner
                         return false;
                 else
                     return true;
-
 
             return false;
         }

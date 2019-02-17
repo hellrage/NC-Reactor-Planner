@@ -38,15 +38,15 @@ namespace NC_Reactor_Planner
 
             if (Position != Palette.dummyPosition)
             {
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
+                //toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
 
                 if (Cluster != -1)
                     toolTip += string.Format("Cluster: {0}\r\n", Cluster);
                 else if(Reactor.state == ReactorStates.Running)
-                    toolTip += "No cluster!\r\n";
+                    toolTip += "--No cluster!\r\n";
 
                 if (Reactor.state == ReactorStates.Running && Cluster != -1)
-                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : " Invalid cluster!\r\n");
+                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n");
             }
 
             toolTip += string.Format(" Cooling: {0} HU/t\r\n" +
@@ -55,7 +55,7 @@ namespace NC_Reactor_Planner
             {
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
-                    toolTip += string.Format("    {0}\r\n", error);
+                    toolTip += string.Format("----{0}\r\n", error);
                 }
             }
             return toolTip;
@@ -101,9 +101,9 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Helium:
                     return Valid = HasAdjacent(Palette.blockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Enderium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 3);
+                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 3, true);
                 case HeatSinkTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 3);
+                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 3, true);
                 case HeatSinkTypes.Iron:
                     return Valid = HasAdjacent(Palette.blockPalette["Graphite"]);
                 case HeatSinkTypes.Emerald:
@@ -111,7 +111,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Copper:
                     return Valid = HasAdjacent(Palette.blockPalette["Water"]);
                 case HeatSinkTypes.Tin:
-                    return Valid = HasAdjacent(Palette.blockPalette["Lapis"], 2);
+                    return Valid = HasAxial(Palette.blockPalette["Lapis"]);
                 case HeatSinkTypes.Magnesium:
                     return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Boron:
@@ -119,7 +119,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Prismarine:
                     return Valid = HasAdjacent(Palette.blockPalette["Water"], 2);
                 case HeatSinkTypes.Obsidian:
-                    return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAxial(Palette.blockPalette["Glowstone"]);
                 case HeatSinkTypes.Lead:
                     return Valid = HasAdjacent(Palette.blockPalette["Iron"]);
                 case HeatSinkTypes.Aluminum:
@@ -181,39 +181,47 @@ namespace NC_Reactor_Planner
                 return activeAdjacent >= number;
         }
 
-        private bool CheckTin()
+        private bool HasAxial(Block needed)
         {
-            bool hasAxialLapis = false;
+            bool hasAxial = false;
+            BlockTypes bn = needed.BlockType;
 
             for (int i = 0; i < 3; i++)
             {
                 Block block1 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i]);
+                BlockTypes bt1 = block1.BlockType;
                 Block block2 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i + 1]);
-                if (block1 is HeatSink c1 && c1.HeatSinkType == HeatSinkTypes.Lapis)
+                BlockTypes bt2 = block2.BlockType;
+
+                if (bt1 == bn)
                 {
-                    if (block2 is HeatSink c2 && c2.HeatSinkType == HeatSinkTypes.Lapis)
+                    if (bt2 == bn)
                     {
-                        while (placementErrors.Remove("No axial Lapis")) ;
-                        hasAxialLapis = true;
-                        if (c1.Valid)
-                            if (c2.Valid)
+                        if ((needed is HeatSink hs && (((HeatSink)block1).HeatSinkType == ((HeatSink)block2).HeatSinkType)))
+                            if (((HeatSink)block1).HeatSinkType == hs.HeatSinkType)
                             {
-                                while (placementErrors.Remove("No axial Lapis")) ;
-                                return true;
+                                while (placementErrors.Remove("No axial " + needed.DisplayName)) ;
+                                hasAxial = true;
+                                if (block1.Valid)
+                                    if (block2.Valid)
+                                    {
+                                        while (placementErrors.Remove("No axial " + needed.DisplayName)) ;
+                                        return true;
+                                    }
+                                    else placementErrors.Add("Inactive " + needed.DisplayName);
+                                else placementErrors.Add("Inactive " + needed.DisplayName);
                             }
-                            else placementErrors.Add("Inactive Lapis");
-                        else placementErrors.Add("Inactive Lapis");
                     }
                     else
                     {
-                        placementErrors.Add("No axial Lapis");
+                        placementErrors.Add("No axial " + needed.DisplayName);
                         continue;
                     }
                 }
                 else
                 {
-                    if (!hasAxialLapis)
-                        placementErrors.Add("No axial Lapis");
+                    if (!hasAxial)
+                        placementErrors.Add("No axial " + needed.DisplayName);
                     continue;
                 }
             }

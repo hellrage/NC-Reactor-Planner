@@ -392,7 +392,6 @@ namespace NC_Reactor_Planner
 
         private static void OrderedUpdateHeatSinks()
         {
-            System.Diagnostics.Debug.WriteLine("Updated Heatsinks");
             foreach (string type in updateOrder)
             {
                 if (heatSinks.ContainsKey(type))

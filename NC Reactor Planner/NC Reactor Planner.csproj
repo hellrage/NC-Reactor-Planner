@@ -210,6 +210,7 @@
   <ItemGroup>
     <Content Include="Resources\Air.png" />
     <None Include="Resources\Aluminum.png" />
+    <Content Include="Resources\HeavyWater.png" />
     <Content Include="Resources\Lithium.png" />
     <Content Include="Resources\Manganese.png" />
     <Content Include="Resources\Purpur.png" />
