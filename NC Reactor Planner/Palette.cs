@@ -53,12 +53,16 @@ namespace NC_Reactor_Planner
             textures.Add("Copper", Resources.Copper);
             textures.Add("Tin", Resources.Tin);
             textures.Add("Lead", Resources.Lead);
-            textures.Add("Bronze", Resources.Bronze);
             textures.Add("Boron", Resources.Boron);
             textures.Add("Magnesium", Resources.Magnesium);
             textures.Add("Helium", Resources.Helium);
             textures.Add("Enderium", Resources.Enderium);
             textures.Add("Cryotheum", Resources.Cryotheum);
+            textures.Add("Lithium", Resources.Lithium);
+            textures.Add("Silver", Resources.Silver);
+            textures.Add("Purpur", Resources.Purpur);
+            textures.Add("Aluminum", Resources.Aluminum);
+            textures.Add("Manganese", Resources.Manganese);
 
             textures.Add("Graphite", Resources.Graphite);
             textures.Add("Beryllium", Resources.Beryllium);

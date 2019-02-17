@@ -202,7 +202,7 @@ namespace NC_Reactor_Planner
                 if (Reactor.layers.Count <= 1)
                     return;
                 Reactor.DeleteLayer(Y);
-                Reactor.plannerUI.ResetLayout(true);
+                Reactor.UI.ResetLayout(true);
             }
         }
 
@@ -216,7 +216,7 @@ namespace NC_Reactor_Planner
                     return;
                 }
                 Reactor.InsertLayer(Y);
-                Reactor.plannerUI.ResetLayout(true);
+                Reactor.UI.ResetLayout(true);
             }
         }
 
@@ -230,7 +230,7 @@ namespace NC_Reactor_Planner
                     return;
                 }
                 Reactor.InsertLayer(Y + 1);
-                Reactor.plannerUI.ResetLayout(true);
+                Reactor.UI.ResetLayout(true);
             }
         }
     }

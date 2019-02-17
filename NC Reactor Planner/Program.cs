@@ -20,7 +20,7 @@ namespace NC_Reactor_Planner
             Application.SetCompatibleTextRenderingDefault(false);
 
             PreStartUp();
-            Application.Run(Reactor.plannerUI);
+            Application.Run(Reactor.UI);
         }
 
         static void PreStartUp()

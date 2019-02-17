@@ -30,7 +30,7 @@ namespace NC_Reactor_Planner
 
         public override string ToString()
         {
-            return Name;
+            return string.Format("{0} : {1} : {2} : {3}", Name, BaseEfficiency, BaseHeat, CriticalityFactor);
         }
 
         public void ReloadValuesFromConfig()

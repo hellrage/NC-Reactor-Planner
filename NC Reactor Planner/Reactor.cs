@@ -35,7 +35,7 @@ namespace NC_Reactor_Planner
 
     public static class Reactor
     {
-        public static readonly PlannerUI plannerUI;
+        public static readonly PlannerUI UI;
 
         public static Block[,,] blocks;
         public static List<Cluster> clusters;
@@ -51,7 +51,7 @@ namespace NC_Reactor_Planner
         public static List<Conductor> conductors;
         public static int totalCasings;
 
-        public static List<string> updateOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Obsidian","Gold", "Prismarine", "Copper", "Tin", "Lead", "Helium", "Diamond", "Emerald", "Bronze", "Magnesium", "Quartz", "Boron" };
+        public static List<string> updateOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Magnesium", "Manganese", "Quartz", "Obsidian", "Gold", "Prismarine", "Copper", "Tin", "Lead", "Silver", "Helium", "Purpur", "Diamond", "Emerald", "Boron", "Lithium", "Aluminum"};
 
         public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
         public static List<Fuel> fuels;
@@ -70,7 +70,7 @@ namespace NC_Reactor_Planner
         static Reactor()
         {
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
-            plannerUI = new PlannerUI();
+            UI = new PlannerUI();
             PopulateFuels();
         }
 

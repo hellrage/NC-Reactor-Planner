@@ -259,26 +259,30 @@ namespace NC_Reactor_Planner
         private static void SetDefaultHeatSinks()
         {
             HeatSinks = new Dictionary<string, HeatSinkValues>();
-            HeatSinks.Add("Water", new HeatSinkValues(55, "One FuelCell"));
-            HeatSinks.Add("Iron", new HeatSinkValues(60, "One Moderator"));
-            HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell and one Moderator"));
-            HeatSinks.Add("Quartz", new HeatSinkValues(90, "One Magnesium heatsink"));
+            HeatSinks.Add("Water", new HeatSinkValues(50, "One FuelCell"));
+            HeatSinks.Add("Iron", new HeatSinkValues(55, "One Moderator"));
+            HeatSinks.Add("Redstone", new HeatSinkValues(75, "One FuelCell and one Moderator"));
+            HeatSinks.Add("Quartz", new HeatSinkValues(85, "One Redstone heatsink"));
             HeatSinks.Add("Obsidian", new HeatSinkValues(80, "One Glowstone heatsink and one Casing"));
-            HeatSinks.Add("Glowstone", new HeatSinkValues(115, "Two Moderators"));
-            HeatSinks.Add("Lapis", new HeatSinkValues(100, "One FuelCell and one Casing"));
-            HeatSinks.Add("Gold", new HeatSinkValues(110, "Two Iron heatsinks"));
-            HeatSinks.Add("Prismarine", new HeatSinkValues(125, "Two Water heatsinks"));
-            HeatSinks.Add("Diamond", new HeatSinkValues(130, "One Gold and one FuelCell"));
-            HeatSinks.Add("Emerald", new HeatSinkValues(135, "One Prismarine heatsink and one Moderator"));
-            HeatSinks.Add("Copper", new HeatSinkValues(65, "One Water heatsink"));
-            HeatSinks.Add("Tin", new HeatSinkValues(75, "Two Lapis heatsinks"));
-            HeatSinks.Add("Lead", new HeatSinkValues(70, "One Iron heatsink"));
-            HeatSinks.Add("Bronze", new HeatSinkValues(105, "One Copper heatsink and one Tin heatsink"));
-            HeatSinks.Add("Boron", new HeatSinkValues(95, "One Bronze heatsink"));
-            HeatSinks.Add("Magnesium", new HeatSinkValues(120, "One Lead heatsink and one Casing"));
-            HeatSinks.Add("Helium", new HeatSinkValues(150, "Two Redstone heatsinks and one Casing"));
-            HeatSinks.Add("Enderium", new HeatSinkValues(140, "Three Moderators"));
-            HeatSinks.Add("Cryotheum", new HeatSinkValues(145, "Three FuelCells"));
+            HeatSinks.Add("Glowstone", new HeatSinkValues(110, "Two Moderators"));
+            HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell and one Casing"));
+            HeatSinks.Add("Gold", new HeatSinkValues(105, "Two Iron heatsinks"));
+            HeatSinks.Add("Prismarine", new HeatSinkValues(100, "Two Water heatsinks"));
+            HeatSinks.Add("Purpur", new HeatSinkValues(90, "One Obsidian heatsink"));
+            HeatSinks.Add("Diamond", new HeatSinkValues(145, "One Gold and one FuelCell"));
+            HeatSinks.Add("Emerald", new HeatSinkValues(150, "One Prismarine heatsink and one Moderator"));
+            HeatSinks.Add("Copper", new HeatSinkValues(60, "One Water heatsink"));
+            HeatSinks.Add("Tin", new HeatSinkValues(70, "Two Lapis heatsinks"));
+            HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
+            HeatSinks.Add("Boron", new HeatSinkValues(120, "One Copper heatsink and one Tin heatsink"));
+            HeatSinks.Add("Lithium", new HeatSinkValues(115, "One Lead heatsink and one Casing"));
+            HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator and one Casing"));
+            HeatSinks.Add("Manganese", new HeatSinkValues(130, "Two FuelCells"));
+            HeatSinks.Add("Aluminum", new HeatSinkValues(125, "One Quartz heatsink and one Casing"));
+            HeatSinks.Add("Silver", new HeatSinkValues(140, "One Glowstone heatsink and one Lapis heatsink"));
+            HeatSinks.Add("Helium", new HeatSinkValues(165, "Two Redstone heatsinks and one Casing"));
+            HeatSinks.Add("Enderium", new HeatSinkValues(155, "Three Moderators"));
+            HeatSinks.Add("Cryotheum", new HeatSinkValues(160, "Three FuelCells"));
 
         }
 
@@ -380,8 +384,6 @@ namespace NC_Reactor_Planner
             dcc["Prismarine"].Add("Prismarine Shard", 8);
 
             dcc["Lead"].Add("Lead Ingot", 8);
-
-            dcc["Bronze"].Add("Bronze Ingot", 8);
 
             dcc["Enderium"].Add("Enderium Ingot", 8);
 
