@@ -182,7 +182,7 @@ namespace NC_Reactor_Planner
             Reactor.UI.RefreshStats();
             Point3D position = new Point3D(cellX, Y, cellZ);
             PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
-            Refresh();
+            Reactor.Redraw();
             base.OnMouseUp(e);
         }
 

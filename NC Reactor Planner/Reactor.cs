@@ -654,7 +654,7 @@ namespace NC_Reactor_Planner
 
         public static void SetBlock(Block block, Point3D position)
         {
-            blocks[(int)position.X, (int)position.Y, (int)position.Z] = block.Copy(position);
+            blocks[(int)position.X, (int)position.Y, (int)position.Z] = block;
         }
 
         public static void ClearLayer(ReactorGridLayer layer)

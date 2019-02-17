@@ -16,14 +16,16 @@ namespace NC_Reactor_Planner
     public partial class PlannerUI : Form
     {
         public Panel ReactorGrid { get => reactorGrid; }
+
         ToolTip paletteToolTip;
         public static ToolTip gridToolTip;
+
         public static int blockSize;
         public static int paletteBlockSize = 40;
         private static ConfigurationUI configurationUI;
 
         private static Graphics borderGraphics;
-        private static Pen PaletteHighlightPen;
+        private static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
         public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 3);
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.LightPink, 3);
@@ -52,7 +54,6 @@ namespace NC_Reactor_Planner
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
             borderGraphics = paletteTable.CreateGraphics();
-            PaletteHighlightPen = new Pen(Color.Blue, 4);
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);

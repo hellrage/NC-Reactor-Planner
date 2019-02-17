@@ -34,7 +34,7 @@ namespace NC_Reactor_Planner
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " HeatSink\r\n";
+            string toolTip = DisplayName + " heatsink\r\n";
 
             if (Position != Palette.dummyPosition)
             {
