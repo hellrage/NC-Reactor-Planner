@@ -15,11 +15,6 @@ namespace NC_Reactor_Planner
 
         public void Clicked(object sender, EventArgs e)
         {
-            if(Reactor.state == ReactorStates.Running)
-            {
-                MessageBox.Show("No changes to the layout allowed while reactor is running!");
-                return;
-            }
 
             MouseButtons button = ((MouseEventArgs)e).Button;
             int x = (int)block.Position.X;
@@ -118,7 +113,7 @@ namespace NC_Reactor_Planner
                 }
 
 
-                if (Reactor.state == ReactorStates.Running & block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator & block.BlockType != BlockTypes.Conductor)
+                if (block.BlockType != BlockTypes.Air & block.BlockType != BlockTypes.Moderator & block.BlockType != BlockTypes.Conductor)
                     if (block.Cluster != -1)
                     {
                         if (!Reactor.clusters[block.Cluster].HasPathToCasing)

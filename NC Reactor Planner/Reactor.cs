@@ -64,9 +64,6 @@ namespace NC_Reactor_Planner
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
 
-
-        public static ReactorStates state = ReactorStates.Setup;
-
         static Reactor()
         {
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
@@ -151,20 +148,6 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void Run()
-        {
-            state = ReactorStates.Running;
-            Update();
-            Redraw();
-        }
-
-        public static void RevertToSetup()
-        {
-            state = ReactorStates.Setup;
-            Update();
-            Redraw();
-        }
-
         public static void Update()
         {
             RegenerateTypedLists();
@@ -184,25 +167,12 @@ namespace NC_Reactor_Planner
             foreach (Conductor conductor in conductors)
                 conductor.RevertToSetup();
 
-            switch (state)
+            foreach (FuelCell fuelCell in fuelCells)
             {
-                case ReactorStates.Setup:
-                    foreach (FuelCell fuelCell in fuelCells)
-                    {
-                        fuelCell.Activate();
-                    }
-                    break;
-                case ReactorStates.Running:
-                    foreach (FuelCell fuelCell in fuelCells)
-                    {
-                        if (fuelCell.Primed)
-                            fuelCell.Activate();
-                    }
-                    RunFuelCellActivation();
-                    break;
-                default:
-                    break;
+                if (fuelCell.Primed)
+                    fuelCell.Activate();
             }
+            RunFuelCellActivation();
 
             UpdateModerators();
 
@@ -210,12 +180,9 @@ namespace NC_Reactor_Planner
 
             FormConductorGroups();
 
-            if (state == ReactorStates.Running)
-            {
-                FormClusters();
-                foreach (Cluster cluster in clusters)
-                    cluster.UpdateStats();
-            }
+            FormClusters();
+            foreach (Cluster cluster in clusters)
+                cluster.UpdateStats();
 
             UpdateStats();
             
@@ -446,9 +413,6 @@ namespace NC_Reactor_Planner
 
         public static string GetStatString(bool includeClusterInfo = true)
         {
-            if (state == ReactorStates.Setup)
-                return "Run the reactor to get stats";
-
             string report = string.Format("Overall reactor stats:\r\n" +
                                         "Total output: {5} mb/t\r\n" +
                                         "Total Heat: {0} HU/t\r\n" +
@@ -779,12 +743,6 @@ namespace NC_Reactor_Planner
                 }
             }
         }
-    }
-
-    public enum ReactorStates
-    {
-        Setup,
-        Running,
     }
 }
 

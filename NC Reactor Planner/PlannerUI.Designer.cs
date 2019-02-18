@@ -62,7 +62,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.fuelCriticalityFactorLabel = new System.Windows.Forms.Label();
             this.fuelCriticalityFactor = new System.Windows.Forms.TextBox();
-            this.RunReactor = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -505,18 +504,6 @@
             this.fuelCriticalityFactor.Size = new System.Drawing.Size(30, 20);
             this.fuelCriticalityFactor.TabIndex = 28;
             // 
-            // RunReactor
-            // 
-            this.RunReactor.BackColor = System.Drawing.Color.Chartreuse;
-            this.RunReactor.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.RunReactor.Location = new System.Drawing.Point(596, 4);
-            this.RunReactor.Name = "RunReactor";
-            this.RunReactor.Size = new System.Drawing.Size(198, 32);
-            this.RunReactor.TabIndex = 29;
-            this.RunReactor.Text = "Run Reactor";
-            this.RunReactor.UseVisualStyleBackColor = false;
-            this.RunReactor.Click += new System.EventHandler(this.RunReactor_Click);
-            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -524,7 +511,6 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(977, 716);
             this.Controls.Add(this.showClusterInfo);
-            this.Controls.Add(this.RunReactor);
             this.Controls.Add(this.fuelCriticalityFactor);
             this.Controls.Add(this.fuelCriticalityFactorLabel);
             this.Controls.Add(this.label5);
@@ -596,7 +582,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label fuelCriticalityFactorLabel;
         private System.Windows.Forms.TextBox fuelCriticalityFactor;
-        private System.Windows.Forms.Button RunReactor;
         private System.Windows.Forms.CheckBox showClusterInfo;
         private System.Windows.Forms.Panel reactorGrid;
     }

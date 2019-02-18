@@ -210,12 +210,6 @@ namespace NC_Reactor_Planner
             UpdateWindowTitle();
             fuelSelector.SelectedItem = fuelSelector.Items[0];
 
-            if (Reactor.state == ReactorStates.Running)
-            {
-                Reactor.RevertToSetup();
-                RunReactor.BackColor = Color.Chartreuse;
-                RunReactor.Text = "Run Reactor";
-            }
             Reactor.Update();
 
             RefreshStats(showClustersInStats);
@@ -531,24 +525,6 @@ namespace NC_Reactor_Planner
             else
                 SetUpPalette();
             paletteTable.Invalidate();
-        }
-
-        private void RunReactor_Click(object sender, EventArgs e)
-        {
-            switch(Reactor.state)
-            {
-                case ReactorStates.Setup:
-                    Reactor.Run();
-                    RunReactor.BackColor = Color.Red;
-                    RunReactor.Text = "Running";
-                    break;
-                case ReactorStates.Running:
-                    Reactor.RevertToSetup();
-                    RunReactor.BackColor = Color.Chartreuse;
-                    RunReactor.Text = "Run Reactor";
-                    break;
-            }
-            RefreshStats(showClustersInStats);
         }
 
         private void showClusterInfo_CheckedChanged(object sender, EventArgs e)

@@ -137,7 +137,7 @@ namespace NC_Reactor_Planner
 
             if (!block.Valid)
                 g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
-            if (Reactor.state == ReactorStates.Running && block.Cluster != -1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
+            if (block.Cluster != -1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
                 g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);
             if (block is FuelCell fuelCell && fuelCell.Primed)
                 g.DrawEllipse(PlannerUI.PrimedFuelCellPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
@@ -219,6 +219,8 @@ namespace NC_Reactor_Planner
         private void PlaceBlock(int x, int z, Block block)
         {
             Reactor.SetBlock(block, new Point3D(x, Y, z));
+            if (block is FuelCell)
+                Reactor.Update();
         }
 
         public Bitmap DrawToImage()
