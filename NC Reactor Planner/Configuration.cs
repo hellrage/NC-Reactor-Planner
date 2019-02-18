@@ -327,7 +327,7 @@ namespace NC_Reactor_Planner
         {
             Moderators = new Dictionary<string, ModeratorValues>();
             Moderators.Add("Beryllium", new ModeratorValues(1.4, 1.1));
-            Moderators.Add("Graphite", new ModeratorValues(10, 1.2));
+            Moderators.Add("Graphite", new ModeratorValues(1.0, 1.2));
             Moderators.Add("HeavyWater", new ModeratorValues(1.8, 1.0));
         }
 
