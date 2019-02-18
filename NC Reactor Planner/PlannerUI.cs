@@ -348,6 +348,7 @@ namespace NC_Reactor_Planner
                     if (!vr.Successful)
                     {
                         MessageBox.Show(vr.Result);
+                        loadedSaveFileInfo = null;
                         return;
                     }
                 }
