@@ -139,9 +139,9 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your DefaultConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion == new Version(2,0,0,0))
+            if(cf.saveVersion < Reactor.saveVersion)
             {
-                System.Windows.Forms.MessageBox.Show("Ignoring old config file, please delete BetaConfig.json");
+                System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
             }
 
@@ -298,27 +298,27 @@ namespace NC_Reactor_Planner
             HeatSinks = new Dictionary<string, HeatSinkValues>();
             HeatSinks.Add("Water", new HeatSinkValues(50, "One FuelCell"));
             HeatSinks.Add("Iron", new HeatSinkValues(55, "One Moderator"));
-            HeatSinks.Add("Redstone", new HeatSinkValues(70, "One FuelCell and one Moderator"));
-            HeatSinks.Add("Quartz", new HeatSinkValues(75, "One Redstone heatsink"));
-            HeatSinks.Add("Obsidian", new HeatSinkValues(80, "Two Glowstone heatsinks on the same axis"));
-            HeatSinks.Add("Glowstone", new HeatSinkValues(110, "Two Moderators"));
+            HeatSinks.Add("Redstone", new HeatSinkValues(90, "One FuelCell and one Moderator"));
+            HeatSinks.Add("Quartz", new HeatSinkValues(70, "One Redstone heatsink"));
+            HeatSinks.Add("Obsidian", new HeatSinkValues(75, "Two Glowstone heatsinks on the same axis"));
+            HeatSinks.Add("Glowstone", new HeatSinkValues(115, "Two Moderators"));
             HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell and one Casing"));
-            HeatSinks.Add("Gold", new HeatSinkValues(105, "Two Iron heatsinks"));
+            HeatSinks.Add("Gold", new HeatSinkValues(120, "Two Iron heatsinks"));
             HeatSinks.Add("Prismarine", new HeatSinkValues(100, "Two Water heatsinks"));
-            HeatSinks.Add("Purpur", new HeatSinkValues(90, "One Obsidian heatsink"));
-            HeatSinks.Add("Diamond", new HeatSinkValues(145, "One Gold and one FuelCell"));
-            HeatSinks.Add("Emerald", new HeatSinkValues(150, "One Prismarine heatsink and one Moderator"));
+            HeatSinks.Add("Purpur", new HeatSinkValues(80, "One Obsidian heatsink"));
+            HeatSinks.Add("Diamond", new HeatSinkValues(150, "One Gold and one FuelCell"));
+            HeatSinks.Add("Emerald", new HeatSinkValues(155, "One Prismarine heatsink and one Moderator"));
             HeatSinks.Add("Copper", new HeatSinkValues(60, "One Water heatsink"));
             HeatSinks.Add("Tin", new HeatSinkValues(85, "Two Lapis heatsinks on the same axis"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
-            HeatSinks.Add("Boron", new HeatSinkValues(120, "One Copper heatsink and one Tin heatsink"));
-            HeatSinks.Add("Lithium", new HeatSinkValues(115, "One Lead heatsink and one Casing"));
-            HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator and one Casing"));
-            HeatSinks.Add("Manganese", new HeatSinkValues(130, "Two FuelCells"));
-            HeatSinks.Add("Aluminum", new HeatSinkValues(125, "One Quartz heatsink and one Casing"));
-            HeatSinks.Add("Silver", new HeatSinkValues(140, "One Glowstone heatsink and one Lapis heatsink"));
+            HeatSinks.Add("Boron", new HeatSinkValues(130, "One Quartz heatsink and one Casing"));
+            HeatSinks.Add("Lithium", new HeatSinkValues(125, "One Lead heatsink and one Casing"));
+            HeatSinks.Add("Magnesium", new HeatSinkValues(105, "One Moderator and one Casing"));
+            HeatSinks.Add("Manganese", new HeatSinkValues(110, "Two FuelCells"));
+            HeatSinks.Add("Aluminum", new HeatSinkValues(140, "One Copper heatsink and one Tin heatsink"));
+            HeatSinks.Add("Silver", new HeatSinkValues(135, "One Glowstone heatsink and one Lapis heatsink"));
             HeatSinks.Add("Helium", new HeatSinkValues(165, "Exactly two Redstone heatsinks and at least one Casing"));
-            HeatSinks.Add("Enderium", new HeatSinkValues(155, "Exactly three Moderators"));
+            HeatSinks.Add("Enderium", new HeatSinkValues(145, "Exactly three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(160, "Exactly three FuelCells"));
 
         }

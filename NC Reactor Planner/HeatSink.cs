@@ -113,7 +113,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Magnesium:
                     return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Boron:
-                    return Valid = HasAdjacent(Palette.blockPalette["Copper"]) & HasAdjacent(Palette.blockPalette["Tin"]);
+                    return Valid = HasAdjacent(Palette.blockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Prismarine:
                     return Valid = HasAdjacent(Palette.blockPalette["Water"], 2);
                 case HeatSinkTypes.Obsidian:
@@ -121,7 +121,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Lead:
                     return Valid = HasAdjacent(Palette.blockPalette["Iron"]);
                 case HeatSinkTypes.Aluminum:
-                    return Valid = HasAdjacent(Palette.blockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.blockPalette["Copper"]) & HasAdjacent(Palette.blockPalette["Tin"]);
                 case HeatSinkTypes.Lithium:
                     return Valid = HasAdjacent(Palette.blockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Manganese:
