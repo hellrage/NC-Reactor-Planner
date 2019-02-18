@@ -20,9 +20,8 @@ namespace NC_Reactor_Planner
         public Fuel UsedFuel { get; private set; }
         public double PositionalEfficiency { get; private set; }
         public double ModeratedNeutronFlux { get; private set; }
-        public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1/(1 + Math.Exp(3*(PositionalEfficiency-UsedFuel.CriticalityFactor-3)))); }
+        public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1/(1 + Math.Exp(3*(ModeratedNeutronFlux-UsedFuel.CriticalityFactor-3)))); }
         public double FuelDuration { get => UsedFuel.FuelTime * Reactor.clusters[Cluster].FuelDurationMultiplier / Configuration.Fission.FuelUse; }
-        public bool FirstPass { get; set; }
         public bool Primed { get; set; }
 
         public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel, bool primed = false) : base(displayName, BlockTypes.FuelCell, texture, position)
@@ -39,7 +38,6 @@ namespace NC_Reactor_Planner
             AdjacentModeratorLines = 0;
             PositionalEfficiency = 0;
             ModeratedNeutronFlux = 0;
-            FirstPass = true;
             Active = false;
         }
 
@@ -51,12 +49,20 @@ namespace NC_Reactor_Planner
         {
             if (Position == Palette.dummyPosition)
                 return base.GetToolTip();
-            else 
+            else
+            {
+#if DEBUG
+                string adjCells = "";
+                foreach(FuelCell fc in AdjacentCells)
+                {
+                    adjCells += "   " + fc.Position.ToString() + "\r\n";
+                }
+#endif
                 return string.Format("{0}" +
-                                    (Reactor.clusters[Cluster].Valid?" Has casing connection\r\n":"--Invalid cluster!\r\n") +
+                                    (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n") +
                                     " Fuel: {5}\r\n" +
-                                    (Active?" Active\r\n":"--Inactive!\r\n") +
-                                    " Adjacent cells: {1}\r\n" +
+                                    (Active ? " Active\r\n" : "--Inactive!\r\n") +
+                                    " Adjacent cells: {1}\r\n" + adjCells +
                                     " Adjacent moderator lines: {2}\r\n" +
                                     " Heat multiplier: {3} %\r\n" +
                                     " Heat produced: {4} HU/t\r\n" +
@@ -64,24 +70,22 @@ namespace NC_Reactor_Planner
                                     " Positional Eff.: {7} %\r\n" +
                                     " Total Neutron Flux: {8}\r\n" +
                                     " Criticality factor: {9}\r\n" +
-                                    (Primed?" Primed":""
+                                    (Primed ? " Primed" : ""
                                     ),
-                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier*100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency*100), (int)(PositionalEfficiency*100), ModeratedNeutronFlux, UsedFuel.CriticalityFactor);
+                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier * 100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency * 100), (int)(PositionalEfficiency * 100), ModeratedNeutronFlux, UsedFuel.CriticalityFactor);
+            }
         }
 
         public List<FuelCell> FindModeratorsThenAdjacentCells()
         {
             List<FuelCell> moderatorAdjacentCells = new List<FuelCell>();
             FuelCell fuelCell;
+
             foreach (Vector3D offset in Reactor.sixAdjOffsets)
-            {
                 if ((fuelCell = FindModeratorThenAdjacentCell(offset)) != null)
-                {
-                    moderatorAdjacentCells.Add(fuelCell);
-                    AdjacentModeratorLines++;
-                }
-            }
-            AdjacentCells.AddRange(moderatorAdjacentCells);
+                    if (!moderatorAdjacentCells.Contains(fuelCell))
+                        moderatorAdjacentCells.Add(fuelCell);
+
             return moderatorAdjacentCells;
         }
 
@@ -103,21 +107,18 @@ namespace NC_Reactor_Planner
                     pos = Position + offset * i;
                     continue;
                 }
-                else if (Reactor.BlockAt(pos) is FuelCell fuelCell && i > 1)
+                else if (Reactor.BlockAt(pos) is FuelCell fuelCell && i > 1 && !fuelCell.AdjacentCells.Contains(this))
                 {
                     fuelCell.PositionalEfficiency += sumModeratorEfficiency / moderatorsInLine;
-                    fuelCell.ModeratedNeutronFlux += sumModeratorFlux / moderatorsInLine;
-                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor)
-                        if(fuelCell.FirstPass)
-                        {
-                            fuelCell.FirstPass = false;
-                            fuelCell.Activate();
-                            fuelCell.AddAdjacentFuelCell(this);
-                            fuelCell.AddAdjacentModeratorLine();
-                            return fuelCell;
-                        }
-                        else
-                            return null;
+                    fuelCell.ModeratedNeutronFlux += sumModeratorFlux * UsedFuel.FluxMultiplier;
+                    fuelCell.AddAdjacentFuelCell(this);
+                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor | fuelCell.Primed)
+                    {
+                        fuelCell.Activate();
+                        return fuelCell;
+                    }
+                    else
+                        return null;
                 }
                 else
                     return null;
@@ -134,6 +135,18 @@ namespace NC_Reactor_Planner
         public void AddAdjacentModeratorLine()
         {
             AdjacentModeratorLines++;
+        }
+
+        public void FilterAdjacentStuff()
+        {
+            if(!Active)
+            {
+                AdjacentCells.Clear();
+                AdjacentModeratorLines = 0;
+                return;
+            }
+            AdjacentCells = AdjacentCells.FindAll(fc => (fc.Active | fc.Primed));
+            AdjacentModeratorLines = AdjacentCells.Count;
         }
 
         public void TogglePrimed()

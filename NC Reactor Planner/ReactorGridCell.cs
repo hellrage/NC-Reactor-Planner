@@ -82,7 +82,7 @@ namespace NC_Reactor_Planner
                 g.CompositingQuality = CompositingQuality.HighSpeed;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
                 g.SmoothingMode = SmoothingMode.HighSpeed;
-                g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 Pen errorPen = new Pen(Color.Red, 1);
 
                 if (block is HeatSink | block is Conductor)

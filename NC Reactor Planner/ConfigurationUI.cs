@@ -105,7 +105,8 @@ namespace NC_Reactor_Planner
                 fields.Add(new TextBox { Text = fv.BaseEfficiency.ToString(), Location = new Point(160, y), Size = new Size(75, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = fv.BaseHeat.ToString(), Location = new Point(240, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fields.Add(new TextBox { Text = fv.FuelTime.ToString(), Location = new Point(312, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = fv.CriticalityFactor.ToString(), Location = new Point(382, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = fv.CriticalityFactor.ToString(), Location = new Point(392, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
+                fields.Add(new TextBox { Text = fv.FluxMultiplier.ToString(), Location = new Point(482, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
                 fIFR.Add(fuelEntry.Key, fields);
             }
 
@@ -285,7 +286,7 @@ namespace NC_Reactor_Planner
 
             foreach (KeyValuePair<string, List<Control>> kvp in fIFR)
             {
-                FuelValues fv = new FuelValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), Convert.ToDouble(kvp.Value[3].Text), Convert.ToDouble(kvp.Value[4].Text));
+                FuelValues fv = new FuelValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), Convert.ToDouble(kvp.Value[3].Text), Convert.ToDouble(kvp.Value[4].Text), Convert.ToDouble(kvp.Value[5].Text));
                 Configuration.Fuels[kvp.Key] = fv;
             }
 

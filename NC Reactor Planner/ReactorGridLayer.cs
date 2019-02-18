@@ -116,7 +116,7 @@ namespace NC_Reactor_Planner
             for (int x = 1; x <= X; x++)
                 for (int z = 1; z <= Z; z++)
                 {
-                    RedrawCell(x, z, g, forExport);
+                    RedrawCell(x, z, g, false, forExport);
                 }
         }
 
@@ -145,20 +145,23 @@ namespace NC_Reactor_Planner
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            cellX = ((e.X > Width) ? Width : e.X) / PlannerUI.blockSize;
-            cellZ = ((((e.Y - menu.Height) > Height) ? Height : e.Y) - menu.Height) / PlannerUI.blockSize;
-            Point3D position = new Point3D(++cellX, Y, ++cellZ);
+            Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
+            cellX = cellCoords.Item1;
+            cellZ = cellCoords.Item2;
+
+            Point3D position = new Point3D(cellX, Y, cellZ);
             HandleMouse(e.Button, position);
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            int newCellX = ((e.X > Width) ? Width : e.X) / PlannerUI.blockSize;
-            int newCellZ = ((((e.Y - menu.Height) > Height) ? Height : e.Y) - menu.Height) / PlannerUI.blockSize;
+            Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
+            int newCellX = cellCoords.Item1;
+            int newCellZ = cellCoords.Item2;
 
 
-            if (cellX != ++newCellX | cellZ != ++newCellZ)
+            if (cellX != newCellX | cellZ != newCellZ)
             {
                 cellX = newCellX;
                 cellZ = newCellZ;
@@ -181,12 +184,22 @@ namespace NC_Reactor_Planner
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
+            cellX = cellCoords.Item1;
+            cellZ = cellCoords.Item2;
+
             Reactor.Update();
             Reactor.UI.RefreshStats();
             Point3D position = new Point3D(cellX, Y, cellZ);
             PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
             Reactor.Redraw();
             base.OnMouseUp(e);
+        }
+
+        private Tuple<int,int> ConvertCellCoordinates(MouseEventArgs e)
+        {
+            return Tuple.Create((((e.X > Width) ? Width : e.X) / PlannerUI.blockSize)+1,
+                                (((((e.Y - menu.Height) > Height) ? Height : e.Y) - menu.Height) / PlannerUI.blockSize)+1);
         }
 
         private void HandleMouse(MouseButtons button, Point3D position)

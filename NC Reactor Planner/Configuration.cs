@@ -35,13 +35,15 @@ namespace NC_Reactor_Planner
         public double BaseHeat;
         public double FuelTime;
         public double CriticalityFactor;
+        public double FluxMultiplier;
 
-        public FuelValues(double be, double bh, double ft, double cf)
+        public FuelValues(double be, double bh, double ft, double cf, double fm)
         {
             BaseEfficiency = be;
             BaseHeat = bh;
             FuelTime = ft;
             CriticalityFactor = cf;
+            FluxMultiplier = fm;
         }
     }
 
@@ -202,59 +204,58 @@ namespace NC_Reactor_Planner
         private static void SetDefaultFuels()
         {
             Fuels = new Dictionary<string, FuelValues>();
-            Fuels.Add("TBU", new FuelValues(1, 18, 144000, 1));
-            Fuels.Add("TBU Oxide", new FuelValues(1.01, 22.5, 144000, 1));
-            Fuels.Add("LEU-233", new FuelValues(1.05, 60, 102000, 1.2));
-            Fuels.Add("LEU-233 Oxide", new FuelValues(1.06, 75, 102000, 1.2));
-            Fuels.Add("HEU-233", new FuelValues(1.38, 360, 102000, 2.5));
-            Fuels.Add("HEU-233 Oxide", new FuelValues(1.48, 450, 102000, 2.9));
-            Fuels.Add("LEU-235", new FuelValues(1.04, 50, 91920, 1.2));
-            Fuels.Add("LEU-235 Oxide", new FuelValues(1.05, 62.5, 91920, 1.2));
-            Fuels.Add("HEU-235", new FuelValues(1.32, 300, 91920, 2.3));
-            Fuels.Add("HEU-235 Oxide", new FuelValues(1.4, 375, 91920, 2.6));
-            Fuels.Add("LEN-236", new FuelValues(1.02, 36, 91920, 1.1));
-            Fuels.Add("LEN-236 Oxide", new FuelValues(1.03, 45, 91920, 1.1));
-            Fuels.Add("HEN-236", new FuelValues(1.22, 216, 91920, 1.9));
-            Fuels.Add("HEN-236 Oxide", new FuelValues(1.28, 270, 91920, 2.1));
-            Fuels.Add("LEP-239", new FuelValues(1.02, 40, 86040, 1.1));
-            Fuels.Add("LEP-239 Oxide", new FuelValues(1.04, 50, 86040, 1.2));
-            Fuels.Add("HEP-239", new FuelValues(1.25, 240, 86040, 2));
-            Fuels.Add("HEP-239 Oxide", new FuelValues(1.32, 300, 86040, 2.3));
-            Fuels.Add("LEP-241", new FuelValues(1.06, 70, 84000, 1.2));
-            Fuels.Add("LEP-241 Oxide", new FuelValues(1.08, 87.5, 78000, 1.3));
-            Fuels.Add("HEP-241", new FuelValues(1.45, 420, 78000, 2.8));
-            Fuels.Add("HEP-241 Oxide", new FuelValues(1.57, 525, 78000, 3.3));
-            Fuels.Add("MOX-239", new FuelValues(1.04, 57.5, 78000, 1.2));
-            Fuels.Add("MOX-241", new FuelValues(1.09, 97.5, 72000, 1.4));
-            Fuels.Add("LEA-242", new FuelValues(1.09, 94, 72000, 1.4));
-            Fuels.Add("LEA-242 Oxide", new FuelValues(1.11, 117.5, 72000, 1.4));
-            Fuels.Add("HEA-242", new FuelValues(1.61, 564, 72000, 3.4));
-            Fuels.Add("HEA-242 Oxide", new FuelValues(1.77, 705, 67920, 4.1));
-            Fuels.Add("LECm-243", new FuelValues(1.11, 112, 67920, 1.4));
-            Fuels.Add("LECm-243 Oxide", new FuelValues(1.14, 140, 67920, 1.6));
-            Fuels.Add("HECm-243", new FuelValues(1.73, 672, 67920, 3.9));
-            Fuels.Add("HECm-243 Oxide", new FuelValues(1.92, 840, 63960, 4.7));
-            Fuels.Add("LECm-245", new FuelValues(1.06, 68, 63960, 1.2));
-            Fuels.Add("LECm-245 Oxide", new FuelValues(1.08, 85, 63960, 1.3));
-            Fuels.Add("HECm-245", new FuelValues(1.44, 408, 63960, 2.8));
-            Fuels.Add("HECm-245 Oxide", new FuelValues(1.55, 510, 60000, 3.2));
-            Fuels.Add("LECm-247", new FuelValues(1.04, 54, 60000, 1.2));
-            Fuels.Add("LECm-247 Oxide", new FuelValues(1.06, 67.5, 60000, 1.2));
-            Fuels.Add("HECm-247", new FuelValues(1.34, 324, 60000, 2.4));
-            Fuels.Add("HECm-247 Oxide", new FuelValues(1.43, 405, 57960, 2.7));
-            Fuels.Add("LEB-248", new FuelValues(1.04, 52, 57960, 1.2));
-            Fuels.Add("LEB-248 Oxide", new FuelValues(1.05, 65, 57960, 1.2));
-            Fuels.Add("HEB-248", new FuelValues(1.33, 312, 57960, 2.3));
-            Fuels.Add("HEB-248 Oxide", new FuelValues(1.43, 398, 55920, 2.7));
-            Fuels.Add("LECf-249", new FuelValues(1.11, 116, 54000, 1.4));
-            Fuels.Add("LECf-249 Oxide", new FuelValues(1.14, 145, 54000, 1.6));
-            Fuels.Add("HECf-249", new FuelValues(1.76, 696, 54000, 4));
-            Fuels.Add("HECf-249 Oxide", new FuelValues(1.96, 870, 54000, 4.8));
-            Fuels.Add("LECf-251", new FuelValues(1.11, 120, 51960, 1.4));
-            Fuels.Add("LECf-251 Oxide", new FuelValues(1.15, 150, 51960, 1.6));
-            Fuels.Add("HECf-251", new FuelValues(1.79, 720, 51960, 4.2));
-            Fuels.Add("HECf-251 Oxide", new FuelValues(1.99, 900, 51960, 5));
-
+            Fuels.Add("TBU", new FuelValues(1, 18, 144000, 5, 2.91));
+            Fuels.Add("TBU Oxide", new FuelValues(1.01, 22.5, 144000, 5, 2.36));
+            Fuels.Add("LEU-233", new FuelValues(1.05, 60, 102000, 6, 2.4));
+            Fuels.Add("LEU-233 Oxide", new FuelValues(1.06, 75, 102000, 6, 2.02));
+            Fuels.Add("HEU-233", new FuelValues(1.38, 360, 102000, 12.5, 2.4));
+            Fuels.Add("HEU-233 Oxide", new FuelValues(1.48, 450, 102000, 14.5, 2.02));
+            Fuels.Add("LEU-235", new FuelValues(1.04, 50, 91920, 6, 2.16));
+            Fuels.Add("LEU-235 Oxide", new FuelValues(1.05, 62.5, 91920, 6, 2.01));
+            Fuels.Add("HEU-235", new FuelValues(1.32, 300, 91920, 11.5, 2.16));
+            Fuels.Add("HEU-235 Oxide", new FuelValues(1.4, 375, 91920, 13, 2.01));
+            Fuels.Add("LEN-236", new FuelValues(1.02, 36, 91920, 5.5, 2.9));
+            Fuels.Add("LEN-236 Oxide", new FuelValues(1.03, 45, 91920, 5.5, 2.48));
+            Fuels.Add("HEN-236", new FuelValues(1.22, 216, 91920, 9.5, 2.9));
+            Fuels.Add("HEN-236 Oxide", new FuelValues(1.28, 270, 91920, 10.5, 2.48));
+            Fuels.Add("LEP-239", new FuelValues(1.02, 40, 86040, 5.5, 2.13));
+            Fuels.Add("LEP-239 Oxide", new FuelValues(1.04, 50, 86040, 6, 2.94));
+            Fuels.Add("HEP-239", new FuelValues(1.25, 240, 86040, 10, 2.13));
+            Fuels.Add("HEP-239 Oxide", new FuelValues(1.32, 300, 86040, 11.5, 2.94));
+            Fuels.Add("LEP-241", new FuelValues(1.06, 70, 84000, 6, 2.96));
+            Fuels.Add("LEP-241 Oxide", new FuelValues(1.08, 87.5, 78000, 6.5, 2.05));
+            Fuels.Add("HEP-241", new FuelValues(1.45, 420, 78000, 14, 2.96));
+            Fuels.Add("HEP-241 Oxide", new FuelValues(1.57, 525, 78000, 16.5, 2.05));
+            Fuels.Add("MOX-239", new FuelValues(1.04, 57.5, 78000, 6, 2.27));
+            Fuels.Add("MOX-241", new FuelValues(1.09, 97.5, 72000, 7, 2.75));
+            Fuels.Add("LEA-242", new FuelValues(1.09, 94, 72000, 7, 2.7));
+            Fuels.Add("LEA-242 Oxide", new FuelValues(1.11, 117.5, 72000, 7, 2.29));
+            Fuels.Add("HEA-242", new FuelValues(1.61, 564, 72000, 17, 2.7));
+            Fuels.Add("HEA-242 Oxide", new FuelValues(1.77, 705, 67920, 20.5, 2.29));
+            Fuels.Add("LECm-243", new FuelValues(1.11, 112, 67920, 7, 2.58));
+            Fuels.Add("LECm-243 Oxide", new FuelValues(1.14, 140, 67920, 8, 2.03));
+            Fuels.Add("HECm-243", new FuelValues(1.73, 672, 67920, 19.5, 2.58));
+            Fuels.Add("HECm-243 Oxide", new FuelValues(1.92, 840, 63960, 23.5, 2.03));
+            Fuels.Add("LECm-245", new FuelValues(1.06, 68, 63960, 6, 2.9));
+            Fuels.Add("LECm-245 Oxide", new FuelValues(1.08, 85, 63960, 6.5, 2.98));
+            Fuels.Add("HECm-245", new FuelValues(1.44, 408, 63960, 14, 2.9));
+            Fuels.Add("HECm-245 Oxide", new FuelValues(1.55, 510, 60000, 16, 2.98));
+            Fuels.Add("LECm-247", new FuelValues(1.04, 54, 60000, 6, 2.67));
+            Fuels.Add("LECm-247 Oxide", new FuelValues(1.06, 67.5, 60000, 6, 2.75));
+            Fuels.Add("HECm-247", new FuelValues(1.34, 324, 60000, 12, 2.67));
+            Fuels.Add("HECm-247 Oxide", new FuelValues(1.43, 405, 57960, 13.5, 2.75));
+            Fuels.Add("LEB-248", new FuelValues(1.04, 52, 57960, 6, 2.32));
+            Fuels.Add("LEB-248 Oxide", new FuelValues(1.05, 65, 57960, 6, 2.66));
+            Fuels.Add("HEB-248", new FuelValues(1.33, 312, 57960, 11.5, 2.32));
+            Fuels.Add("HEB-248 Oxide", new FuelValues(1.43, 398, 55920, 13.5, 2.66));
+            Fuels.Add("LECf-249", new FuelValues(1.11, 116, 54000, 7, 2.04));
+            Fuels.Add("LECf-249 Oxide", new FuelValues(1.14, 145, 54000, 8, 2.33));
+            Fuels.Add("HECf-249", new FuelValues(1.76, 696, 54000, 20, 2.04));
+            Fuels.Add("HECf-249 Oxide", new FuelValues(1.96, 870, 54000, 24, 2.33));
+            Fuels.Add("LECf-251", new FuelValues(1.11, 120, 51960, 7, 2.13));
+            Fuels.Add("LECf-251 Oxide", new FuelValues(1.15, 150, 51960, 8, 2.8));
+            Fuels.Add("HECf-251", new FuelValues(1.79, 720, 51960, 21, 2.13));
+            Fuels.Add("HECf-251 Oxide", new FuelValues(1.99, 900, 51960, 25, 2.8));
         }
 
         private static void SetDefaultHeatSinks()

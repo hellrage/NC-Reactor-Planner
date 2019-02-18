@@ -77,7 +77,7 @@ namespace NC_Reactor_Planner
             foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
             {
                 FuelValues fev = fuelEntry.Value;
-                fuels.Add(new Fuel(fuelEntry.Key, fev.BaseEfficiency, fev.BaseHeat, fev.FuelTime, fev.CriticalityFactor));
+                fuels.Add(new Fuel(fuelEntry.Key, fev.BaseEfficiency, fev.BaseHeat, fev.FuelTime, fev.CriticalityFactor, fev.FluxMultiplier));
             }
         }
 
@@ -153,9 +153,6 @@ namespace NC_Reactor_Planner
             RegenerateTypedLists();
             clusters = new List<Cluster>();
 
-            foreach (FuelCell fuelCell in fuelCells)
-                fuelCell.RevertToSetup();
-
             foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
                 foreach (Moderator moderator in moderators.Value)
                 moderator.RevertToSetup();
@@ -169,10 +166,14 @@ namespace NC_Reactor_Planner
 
             foreach (FuelCell fuelCell in fuelCells)
             {
+                fuelCell.RevertToSetup();
                 if (fuelCell.Primed)
                     fuelCell.Activate();
             }
+
             RunFuelCellActivation();
+            foreach (FuelCell fuelCell in fuelCells)
+                fuelCell.FilterAdjacentStuff();
 
             UpdateModerators();
 
@@ -235,7 +236,6 @@ namespace NC_Reactor_Planner
             List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Active; });
             foreach (FuelCell activeFuelCell in activeFuelCells)
             {
-                activeFuelCell.FirstPass = false;
                 List<FuelCell> queue = new List<FuelCell>();
                 queue.Add(activeFuelCell);
                 FuelCell fuelCell;
@@ -397,15 +397,15 @@ namespace NC_Reactor_Planner
 
             foreach (FuelCell fuelCell in fuelCells)
             {
-                if (!fuelCell.Active)
+                if (!fuelCell.Active || !clusters[fuelCell.Cluster].Valid)
                     continue;
                 activeFuelCells++;
                 sumEfficiency += fuelCell.Efficiency;
                 sumHeatMultiplier += fuelCell.HeatMultiplier;
             }
 
-            efficiency = sumEfficiency / activeFuelCells;
-            heatMultiplier = sumHeatMultiplier / activeFuelCells;
+            efficiency = (activeFuelCells > 0) ? (sumEfficiency / activeFuelCells) : 0;
+            heatMultiplier = (activeFuelCells > 0) ? (sumHeatMultiplier / activeFuelCells) : 0;
 
             totalHeatPerTick *= Configuration.Fission.HeatGeneration;
             totalOutputPerTick *= Configuration.Fission.Power;
@@ -414,7 +414,7 @@ namespace NC_Reactor_Planner
         public static string GetStatString(bool includeClusterInfo = true)
         {
             string report = string.Format("Overall reactor stats:\r\n" +
-                                        "Total output: {5} mb/t\r\n" +
+                                        "Total output: {5} mb/t of high pressure steam\r\n" +
                                         "Total Heat: {0} HU/t\r\n" +
                                         "Total Cooling: {1} HU/t\r\n" +
                                         "Net Heat: {2} HU/t\r\n" +
@@ -652,7 +652,8 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < layer.X; x++)
                 for (int z = 0; z < layer.Z; z++)
                 {
-                    SetBlock(PlannerUI.layerBuffer[x, z], new Point3D(x + 1, layer.Y, z + 1));
+                    Point3D position = new Point3D(x + 1, layer.Y, z + 1);
+                    SetBlock(PlannerUI.layerBuffer[x, z].Copy(position), position);
                 }
             Update();
             Redraw();

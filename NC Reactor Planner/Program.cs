@@ -39,7 +39,7 @@ namespace NC_Reactor_Planner
 
             Palette.Load();
 
-            FileInfo defaultConfig = new FileInfo("DefaultConfig.json");
+            FileInfo defaultConfig = new FileInfo("BetaConfig.json");
             if (!defaultConfig.Exists)
                 Configuration.Save(defaultConfig);
             else

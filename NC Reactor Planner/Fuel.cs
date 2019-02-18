@@ -13,14 +13,16 @@ namespace NC_Reactor_Planner
         public double FuelTime { get; private set; }
         public double BaseEfficiency { get; private set; }
         public double CriticalityFactor { get; private set; }
+        public double FluxMultiplier { get; private set; }
 
-        public Fuel(string name, double baseEfficiency, double baseHeat, double fuelTime, double criticalityFactor)
+        public Fuel(string name, double baseEfficiency, double baseHeat, double fuelTime, double criticalityFactor, double fluxMultiplier)
         {
             Name = name;
             BaseHeat = baseHeat;
             FuelTime = fuelTime;
             CriticalityFactor = criticalityFactor;
             BaseEfficiency = baseEfficiency;
+            FluxMultiplier = fluxMultiplier;
         }
 
         public Fuel()
@@ -30,7 +32,7 @@ namespace NC_Reactor_Planner
 
         public override string ToString()
         {
-            return string.Format("{0} : {1} : {2} : {3}", Name, BaseEfficiency, BaseHeat, CriticalityFactor);
+            return string.Format("{0}/ {1}/ {2}/ {3}/ {4}", Name, BaseEfficiency, BaseHeat, CriticalityFactor, FluxMultiplier);
         }
 
         public void ReloadValuesFromConfig()

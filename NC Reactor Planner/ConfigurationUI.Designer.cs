@@ -63,6 +63,7 @@
             this.ApplyConfig = new System.Windows.Forms.Button();
             this.Import = new System.Windows.Forms.Button();
             this.ttValidation = new System.Windows.Forms.ToolTip(this.components);
+            this.label4 = new System.Windows.Forms.Label();
             this.settingTabs.SuspendLayout();
             this.fissionPage.SuspendLayout();
             this.heatSinksPage.SuspendLayout();
@@ -276,6 +277,7 @@
             // fuelsPage
             // 
             this.fuelsPage.AutoScroll = true;
+            this.fuelsPage.Controls.Add(this.label4);
             this.fuelsPage.Controls.Add(this.label15);
             this.fuelsPage.Controls.Add(this.label11);
             this.fuelsPage.Controls.Add(this.label10);
@@ -399,6 +401,16 @@
             this.Import.UseVisualStyleBackColor = true;
             this.Import.Click += new System.EventHandler(this.Import_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label4.Location = new System.Drawing.Point(485, 3);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(85, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Flux Multiplier";
+            // 
             // ConfigurationUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -462,5 +474,6 @@
         private System.Windows.Forms.TabPage moderatorsPage;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label4;
     }
 }

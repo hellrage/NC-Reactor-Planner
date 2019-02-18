@@ -19,11 +19,15 @@ namespace NC_Reactor_Planner
             GroupID = -1;
         }
 
+        public Conductor(Conductor parent, Point3D newPosition) : this(parent.DisplayName, parent.Texture, newPosition)
+        {
+
+        }
+
         public override void RevertToSetup()
         {
             GroupID = -1;
             HasPathToCasing = false;
-            SetCluster(-1);
         }
 
         public override string GetToolTip()
@@ -34,6 +38,11 @@ namespace NC_Reactor_Planner
             return string.Format("Conductor \r\n" +
                                 "Group: " + GroupID.ToString() +"\r\n" +
                                 (HasPathToCasing?"Has path to casing":"--Has no path to casing!"));
+        }
+
+        public override Block Copy(Point3D newPosition)
+        {
+            return new Conductor(this, newPosition);
         }
 
     }

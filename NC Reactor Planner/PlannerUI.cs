@@ -31,7 +31,7 @@ namespace NC_Reactor_Planner
         public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 4);
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
 
-        public static bool drawAllLayers = false;
+        public static bool drawAllLayers = true;
         string appName;
         FileInfo loadedSaveFileInfo;
         public static Block[,] layerBuffer;
@@ -327,7 +327,7 @@ namespace NC_Reactor_Planner
         private string ConstructSaveFileName()
         {
             return (loadedSaveFileInfo == null)
-                                      ? string.Format("{0} {1} x {2} x {3}", (fuelSelector.SelectedItem == null) ? "Custom" : fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z)
+                                      ? string.Format("{0} {1} x {2} x {3}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z)
                                       : loadedSaveFileInfo.Name;
         }
 
@@ -465,6 +465,7 @@ namespace NC_Reactor_Planner
             fuelBaseEfficiency.Text = selectedFuel.BaseEfficiency.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
+            fuelFluxMultiplier.Text = selectedFuel.FluxMultiplier.ToString();
             Palette.selectedFuel = selectedFuel; //[TODO]Change to a method you criminal
         }
 
