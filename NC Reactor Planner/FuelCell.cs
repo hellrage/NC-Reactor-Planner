@@ -59,7 +59,8 @@ namespace NC_Reactor_Planner
                 }
 #endif
                 return string.Format("{0}" +
-                                    (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n") +
+                                    ((Cluster!=-1)?
+                                    (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n"):"") +
                                     " Fuel: {5}\r\n" +
                                     (Active ? " Active\r\n" : "--Inactive!\r\n") +
                                     " Adjacent cells: {1}\r\n" +
@@ -115,7 +116,7 @@ namespace NC_Reactor_Planner
                     fuelCell.PositionalEfficiency += sumModeratorEfficiency / moderatorsInLine;
                     fuelCell.ModeratedNeutronFlux += sumModeratorFlux;
                     fuelCell.AddAdjacentFuelCell(this);
-                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor)
+                    if (Math.Round(fuelCell.ModeratedNeutronFlux,2) >= fuelCell.UsedFuel.CriticalityFactor)
                     {
                         ((Moderator)Reactor.BlockAt(Position + offset)).Active = true;
                         ((Moderator)Reactor.BlockAt(pos - offset)).Active = true;

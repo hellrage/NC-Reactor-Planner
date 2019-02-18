@@ -268,15 +268,21 @@ namespace NC_Reactor_Planner
                 while (queue.Count > 0)
                 {
                     root = queue.First();
-                    root.SetCluster(id);
+                    if (!root.Valid || (root is Moderator) || (root is Conductor) || (root.BlockType == BlockTypes.Air) || (root.BlockType == BlockTypes.Casing))
+                    {
+                        queue.Remove(root);
+                        continue;
+                    }
+
                     if(!clusters[id].blocks.Contains(root))
                         clusters[id].AddBlock(root);
+                    root.SetCluster(id);
 
                     foreach(Vector3D offset in sixAdjOffsets)
                     {
                         Point3D pos = root.Position + offset;
                         Block neighbour = BlockAt(pos);
-                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Casing) & root.Valid)
+                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air) & (neighbour.BlockType != BlockTypes.Casing) & root.Valid)
                         {
                             if(neighbour.Cluster == -1)
                                 queue.Add(neighbour);
@@ -297,7 +303,7 @@ namespace NC_Reactor_Planner
             }
 
             int clusterID = 0;
-            foreach (FuelCell fuelCell in fuelCells)
+            foreach (FuelCell fuelCell in fuelCells.FindAll(fc => fc.Valid))
             {
                 if (FormCluster(fuelCell, clusterID))
                     clusterID++;
