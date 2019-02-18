@@ -62,7 +62,10 @@ namespace NC_Reactor_Planner
                                     (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n") +
                                     " Fuel: {5}\r\n" +
                                     (Active ? " Active\r\n" : "--Inactive!\r\n") +
-                                    " Adjacent cells: {1}\r\n" + adjCells +
+                                    " Adjacent cells: {1}\r\n" +
+#if DEBUG
+                                    adjCells +
+#endif
                                     " Adjacent moderator lines: {2}\r\n" +
                                     " Heat multiplier: {3} %\r\n" +
                                     " Heat produced: {4} HU/t\r\n" +
