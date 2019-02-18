@@ -77,7 +77,7 @@ namespace NC_Reactor_Planner
             foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
             {
                 FuelValues fev = fuelEntry.Value;
-                fuels.Add(new Fuel(fuelEntry.Key, fev.BaseEfficiency, fev.BaseHeat, fev.FuelTime, fev.CriticalityFactor, fev.FluxMultiplier));
+                fuels.Add(new Fuel(fuelEntry.Key, fev.BaseEfficiency, fev.BaseHeat, fev.FuelTime, fev.CriticalityFactor));
             }
         }
 
@@ -155,7 +155,7 @@ namespace NC_Reactor_Planner
 
             foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
                 foreach (Moderator moderator in moderators.Value)
-                moderator.RevertToSetup();
+                    moderator.RevertToSetup();
 
             foreach (KeyValuePair<string, List<HeatSink>> heatSinks in heatSinks)
                 foreach (HeatSink heatSink in heatSinks.Value)
@@ -165,11 +165,7 @@ namespace NC_Reactor_Planner
                 conductor.RevertToSetup();
 
             foreach (FuelCell fuelCell in fuelCells)
-            {
                 fuelCell.RevertToSetup();
-                if (fuelCell.Primed)
-                    fuelCell.Activate();
-            }
 
             RunFuelCellActivation();
             foreach (FuelCell fuelCell in fuelCells)
@@ -233,7 +229,7 @@ namespace NC_Reactor_Planner
         private static void RunFuelCellActivation()
         {
             List<FuelCell> visited = new List<FuelCell>();
-            List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Active; });
+            List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Primed; });
             foreach (FuelCell activeFuelCell in activeFuelCells)
             {
                 List<FuelCell> queue = new List<FuelCell>();
@@ -568,7 +564,8 @@ namespace NC_Reactor_Planner
                 if (fuel.Name == fuelName)
                     return fuel;
             }
-            throw new ArgumentException("Tried to get wrong fuel! Looked for: " + fuelName);
+            System.Windows.Forms.MessageBox.Show("Tried to get wrong fuel! Looked for: " + fuelName);
+            return null;
         }
 
         public static void SaveLayerAsImage(int layer, string fileName)

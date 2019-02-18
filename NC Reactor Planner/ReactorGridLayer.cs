@@ -135,12 +135,19 @@ namespace NC_Reactor_Planner
             if (noChecking)
                 return;
 
-            if (!block.Valid)
+            if (!(block is Moderator) && !block.Valid)
                 g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
             if (block.Cluster != -1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
                 g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);
             if (block is FuelCell fuelCell && fuelCell.Primed)
                 g.DrawEllipse(PlannerUI.PrimedFuelCellPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
+            if (block is Moderator moderator)
+            {
+                if(!moderator.Active & !moderator.HasAdjacentValidFuelCell)
+                    g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
+                if(moderator.Valid)
+                    g.DrawRectangle(PlannerUI.ValidModeratorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
+            }
         }
 
         protected override void OnMouseDown(MouseEventArgs e)

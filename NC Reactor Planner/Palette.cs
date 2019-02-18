@@ -108,9 +108,9 @@ namespace NC_Reactor_Planner
                 blockPalette.Add(heatSink.DisplayName, heatSink);
             }
 
-            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2));
-            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2, 1.0));
-            blockPalette.Add("HeavyWater", new Moderator("HeavyWater", ModeratorTypes.HeavyWater, textures["HeavyWater"], dummyPosition, 1.1, 1.1));
+            blockPalette.Add("Beryllium", new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.4, 1.1));
+            blockPalette.Add("Graphite", new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.0, 1.2));
+            blockPalette.Add("HeavyWater", new Moderator("HeavyWater", ModeratorTypes.HeavyWater, textures["HeavyWater"], dummyPosition, 1.8, 1.0));
 
             blockPalette.Add("Conductor", new Conductor("Conductor", textures["Conductor"], dummyPosition));
         }
@@ -127,9 +127,9 @@ namespace NC_Reactor_Planner
                 blocks.Add(heatSink, BlockTypes.HeatSink);
             }
 
-            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.0, 1.2), BlockTypes.Moderator);
-            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.2, 1.0), BlockTypes.Moderator);
-            blocks.Add(new Moderator("HeavyWater", ModeratorTypes.HeavyWater, textures["HeavyWater"], dummyPosition, 1.1, 1.1), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Beryllium", ModeratorTypes.Beryllium, textures["Beryllium"], dummyPosition, 1.4, 1.1), BlockTypes.Moderator);
+            blocks.Add(new Moderator("Graphite", ModeratorTypes.Graphite, textures["Graphite"], dummyPosition, 1.0, 1.2), BlockTypes.Moderator);
+            blocks.Add(new Moderator("HeavyWater", ModeratorTypes.HeavyWater, textures["HeavyWater"], dummyPosition, 1.8, 1.0), BlockTypes.Moderator);
 
             blocks.Add(new Conductor("Conductor", textures["Conductor"], dummyPosition), BlockTypes.Conductor);
         }

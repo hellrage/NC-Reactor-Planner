@@ -62,8 +62,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.fuelCriticalityFactorLabel = new System.Windows.Forms.Label();
             this.fuelCriticalityFactor = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.fuelFluxMultiplier = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -399,17 +397,17 @@
             this.fuelBaseRFLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseRFLabel.AutoSize = true;
             this.fuelBaseRFLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fuelBaseRFLabel.Location = new System.Drawing.Point(596, 688);
+            this.fuelBaseRFLabel.Location = new System.Drawing.Point(619, 688);
             this.fuelBaseRFLabel.Name = "fuelBaseRFLabel";
-            this.fuelBaseRFLabel.Size = new System.Drawing.Size(47, 16);
+            this.fuelBaseRFLabel.Size = new System.Drawing.Size(75, 16);
             this.fuelBaseRFLabel.TabIndex = 21;
-            this.fuelBaseRFLabel.Text = "Eff-cy";
+            this.fuelBaseRFLabel.Text = "Efficiency";
             // 
             // fuelBaseEfficiency
             // 
             this.fuelBaseEfficiency.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseEfficiency.Enabled = false;
-            this.fuelBaseEfficiency.Location = new System.Drawing.Point(649, 687);
+            this.fuelBaseEfficiency.Location = new System.Drawing.Point(700, 687);
             this.fuelBaseEfficiency.Name = "fuelBaseEfficiency";
             this.fuelBaseEfficiency.ReadOnly = true;
             this.fuelBaseEfficiency.Size = new System.Drawing.Size(30, 20);
@@ -420,7 +418,7 @@
             this.fuelBaseHeatLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseHeatLabel.AutoSize = true;
             this.fuelBaseHeatLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fuelBaseHeatLabel.Location = new System.Drawing.Point(685, 688);
+            this.fuelBaseHeatLabel.Location = new System.Drawing.Point(736, 688);
             this.fuelBaseHeatLabel.Name = "fuelBaseHeatLabel";
             this.fuelBaseHeatLabel.Size = new System.Drawing.Size(41, 16);
             this.fuelBaseHeatLabel.TabIndex = 23;
@@ -430,7 +428,7 @@
             // 
             this.fuelBaseHeat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseHeat.Enabled = false;
-            this.fuelBaseHeat.Location = new System.Drawing.Point(732, 688);
+            this.fuelBaseHeat.Location = new System.Drawing.Point(783, 688);
             this.fuelBaseHeat.Name = "fuelBaseHeat";
             this.fuelBaseHeat.ReadOnly = true;
             this.fuelBaseHeat.Size = new System.Drawing.Size(35, 20);
@@ -443,7 +441,7 @@
             this.fuelSelector.FormattingEnabled = true;
             this.fuelSelector.Location = new System.Drawing.Point(376, 688);
             this.fuelSelector.Name = "fuelSelector";
-            this.fuelSelector.Size = new System.Drawing.Size(214, 21);
+            this.fuelSelector.Size = new System.Drawing.Size(237, 21);
             this.fuelSelector.TabIndex = 6;
             this.fuelSelector.SelectedIndexChanged += new System.EventHandler(this.fuelSelector_SelectedIndexChanged);
             // 
@@ -490,7 +488,7 @@
             this.fuelCriticalityFactorLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelCriticalityFactorLabel.AutoSize = true;
             this.fuelCriticalityFactorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fuelCriticalityFactorLabel.Location = new System.Drawing.Point(773, 689);
+            this.fuelCriticalityFactorLabel.Location = new System.Drawing.Point(824, 689);
             this.fuelCriticalityFactorLabel.Name = "fuelCriticalityFactorLabel";
             this.fuelCriticalityFactorLabel.Size = new System.Drawing.Size(72, 16);
             this.fuelCriticalityFactorLabel.TabIndex = 27;
@@ -499,31 +497,11 @@
             // fuelCriticalityFactor
             // 
             this.fuelCriticalityFactor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.fuelCriticalityFactor.Location = new System.Drawing.Point(851, 688);
+            this.fuelCriticalityFactor.Location = new System.Drawing.Point(902, 688);
             this.fuelCriticalityFactor.Name = "fuelCriticalityFactor";
             this.fuelCriticalityFactor.ReadOnly = true;
             this.fuelCriticalityFactor.Size = new System.Drawing.Size(30, 20);
             this.fuelCriticalityFactor.TabIndex = 28;
-            // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(887, 688);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(40, 16);
-            this.label6.TabIndex = 31;
-            this.label6.Text = "Multi";
-            // 
-            // fuelFluxMultiplier
-            // 
-            this.fuelFluxMultiplier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.fuelFluxMultiplier.Location = new System.Drawing.Point(933, 687);
-            this.fuelFluxMultiplier.Name = "fuelFluxMultiplier";
-            this.fuelFluxMultiplier.ReadOnly = true;
-            this.fuelFluxMultiplier.Size = new System.Drawing.Size(37, 20);
-            this.fuelFluxMultiplier.TabIndex = 32;
             // 
             // PlannerUI
             // 
@@ -531,8 +509,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
-            this.Controls.Add(this.fuelFluxMultiplier);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.showClusterInfo);
             this.Controls.Add(this.fuelCriticalityFactor);
             this.Controls.Add(this.fuelCriticalityFactorLabel);
@@ -606,8 +582,6 @@
         private System.Windows.Forms.TextBox fuelCriticalityFactor;
         private System.Windows.Forms.CheckBox showClusterInfo;
         private System.Windows.Forms.Panel reactorGrid;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox fuelFluxMultiplier;
     }
 }
 

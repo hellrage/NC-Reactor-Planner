@@ -30,6 +30,7 @@ namespace NC_Reactor_Planner
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
         public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 4);
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
+        public static readonly Pen ValidModeratorPen = new Pen(Brushes.Green, 3);
 
         public static bool drawAllLayers = true;
         string appName;
@@ -398,19 +399,19 @@ namespace NC_Reactor_Planner
             using (SaveFileDialog fileDialog = new SaveFileDialog { Filter = "Image files (*.png)|*.png" })
             {
                 string autoFileName = "";
-                if(loadedSaveFileInfo == null)
+                if (loadedSaveFileInfo == null)
                 {
                     if (saveAll)
-                        autoFileName = string.Format("{0} {1} x {2} x {3}", (fuelSelector.SelectedItem == null) ? "Custom" : fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
+                        autoFileName = string.Format("{0} {1} x {2} x {3}.png", fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
                     else
-                        autoFileName = string.Format("{0} {1} x {2} x {3} layer {4}", (fuelSelector.SelectedItem == null) ? "Custom" : fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z, layerScrollBar.Value);
+                        autoFileName = string.Format("{0} {1} x {2} x {3} layer {4}.png", fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z, layerScrollBar.Value);
                 }
                 else
                 {
-                    if(saveAll)
-                        autoFileName = loadedSaveFileInfo.Name;
+                    if (saveAll)
+                        autoFileName = loadedSaveFileInfo.Name.Replace(".json", "") + ".png";
                     else
-                        autoFileName = loadedSaveFileInfo.Name + " layer " + layerScrollBar.Value;
+                        autoFileName = loadedSaveFileInfo.Name.Replace(".json", "") + " layer " + layerScrollBar.Value + ".png";
                 }
                 fileDialog.FileName = autoFileName;
 
@@ -466,7 +467,6 @@ namespace NC_Reactor_Planner
             fuelBaseEfficiency.Text = selectedFuel.BaseEfficiency.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
-            fuelFluxMultiplier.Text = selectedFuel.FluxMultiplier.ToString();
             Palette.selectedFuel = selectedFuel; //[TODO]Change to a method you criminal
         }
 

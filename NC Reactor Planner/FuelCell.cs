@@ -20,7 +20,7 @@ namespace NC_Reactor_Planner
         public Fuel UsedFuel { get; private set; }
         public double PositionalEfficiency { get; private set; }
         public double ModeratedNeutronFlux { get; private set; }
-        public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1/(1 + Math.Exp(3*(ModeratedNeutronFlux-UsedFuel.CriticalityFactor-3)))); }
+        public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1 / (1 + Math.Exp(2 * (ModeratedNeutronFlux - 2 * UsedFuel.CriticalityFactor)))); }
         public double FuelDuration { get => UsedFuel.FuelTime * Reactor.clusters[Cluster].FuelDurationMultiplier / Configuration.Fission.FuelUse; }
         public bool Primed { get; set; }
 
@@ -113,10 +113,12 @@ namespace NC_Reactor_Planner
                 else if (Reactor.BlockAt(pos) is FuelCell fuelCell && i > 1 && !fuelCell.AdjacentCells.Contains(this))
                 {
                     fuelCell.PositionalEfficiency += sumModeratorEfficiency / moderatorsInLine;
-                    fuelCell.ModeratedNeutronFlux += sumModeratorFlux * UsedFuel.FluxMultiplier;
+                    fuelCell.ModeratedNeutronFlux += sumModeratorFlux;
                     fuelCell.AddAdjacentFuelCell(this);
-                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor | fuelCell.Primed)
+                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor)
                     {
+                        ((Moderator)Reactor.BlockAt(Position + offset)).Active = true;
+                        ((Moderator)Reactor.BlockAt(pos - offset)).Active = true;
                         fuelCell.Activate();
                         return fuelCell;
                     }
@@ -148,7 +150,7 @@ namespace NC_Reactor_Planner
                 AdjacentModeratorLines = 0;
                 return;
             }
-            AdjacentCells = AdjacentCells.FindAll(fc => (fc.Active | fc.Primed));
+            AdjacentCells = AdjacentCells.FindAll(fc => fc.Active);
             AdjacentModeratorLines = AdjacentCells.Count;
         }
 

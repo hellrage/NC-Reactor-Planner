@@ -40,8 +40,33 @@ namespace NC_Reactor_Planner
 
         public ValidationResult PerformValidation()
         {
-            if (SaveVersion < new Version(2, 0, 0))
+            if (SaveVersion < new Version(2, 0, 0, 0))
                 return new ValidationResult(false, "Pre-overhaul savefiles not supported!");
+            if (SaveVersion == new Version(2, 0, 0, 0))
+            {
+                Dictionary<string, List<Point3D>> ValidatedFuelCells = new Dictionary<string, List<Point3D>>();
+                foreach (KeyValuePair<string, List<Point3D>> fuelCellGroup in FuelCells)
+                {
+                    List<string> props = fuelCellGroup.Key.Split(';').ToList();
+
+                    switch (props.Count)
+                    {
+                        case 0:
+                        case 1:
+                            return new ValidationResult(false, "Tried to load an invalid FuelCell: " + fuelCellGroup.Key);
+                        case 2:
+                            string newFuelName = "[OX]"+props[0].Replace(" Oxide", "");
+                            if (Reactor.GetFuel(newFuelName) != null)
+                                ValidatedFuelCells.Add(string.Join(";", newFuelName, props[1]), fuelCellGroup.Value);
+                            else
+                                ValidatedFuelCells.Add(string.Join(";", Reactor.fuels.First().Name, props[1]), fuelCellGroup.Value);
+                            break;
+                        default:
+                            return new ValidationResult(false, "Tried to load an unexpected FuelCell: " + fuelCellGroup.Key);
+                    }
+                }
+                FuelCells = ValidatedFuelCells;
+            }
 
             return new ValidationResult(true, "Valid savefile.");
         }
