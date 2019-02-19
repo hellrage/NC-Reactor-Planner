@@ -23,7 +23,7 @@ namespace NC_Reactor_Planner
             }
 
             Tuple<Version,string> release = await FindLatest(responseJSON, 2);
-            if (release.Item1 >= Reactor.saveVersion)
+            if (release.Item1 > Reactor.saveVersion)
                 return Tuple.Create(true, release.Item1,release.Item2);
             else
                 return Tuple.Create(false, Reactor.saveVersion, "");

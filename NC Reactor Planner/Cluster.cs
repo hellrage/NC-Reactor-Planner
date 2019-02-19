@@ -77,7 +77,6 @@ namespace NC_Reactor_Planner
             double coolingPenaltyMultiplier = 0;
             if(TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
                 coolingPenaltyMultiplier = Math.Min(1, TotalHeatPerTick / TotalCoolingPerTick);
-                //coolingPenaltyMultiplier = Math.Min(TotalCoolingPerTick / TotalHeatPerTick, TotalHeatPerTick / TotalCoolingPerTick);
 
             Efficiency = rawEfficiency * coolingPenaltyMultiplier;
             TotalOutput *= coolingPenaltyMultiplier;

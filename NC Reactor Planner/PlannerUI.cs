@@ -543,7 +543,7 @@ namespace NC_Reactor_Planner
             Tuple<bool,Version,string> updateInfo = await Updater.CheckForUpdateAsync();
             if(updateInfo.Item1)
             {
-                DialogResult updatePropmpt = MessageBox.Show("Download " + Updater.ShortVersionString(updateInfo.Item2) + "?\r\n" + updateInfo.Item3, "Update available!", MessageBoxButtons.YesNo);
+                DialogResult updatePropmpt = MessageBox.Show("Download " + Updater.ShortVersionString(updateInfo.Item2) + "? Last commit message:\r\n\r\n" + updateInfo.Item3, "Update available!", MessageBoxButtons.YesNo);
                 if (updatePropmpt == DialogResult.Yes)
                 {
                     SaveFileDialog saveDialog = new SaveFileDialog();

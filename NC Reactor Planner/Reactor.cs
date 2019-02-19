@@ -280,11 +280,11 @@ namespace NC_Reactor_Planner
                         {
                                 clusters[id].HasPathToCasing |= conductorGroups[conductor.GroupID].HasPathToCasing;
                         }
-                        else if (neighbour is Casing casing)
+                        else if (neighbour.BlockType == BlockTypes.Casing)
                         {
                                 clusters[id].HasPathToCasing = true;
                         }
-                        else if(!(neighbour.BlockType == BlockTypes.Moderator) && (neighbour.BlockType != BlockTypes.Air))
+                        else if((neighbour.BlockType != BlockTypes.Moderator) & (neighbour.BlockType != BlockTypes.Air))
                         {
                             if(neighbour.Cluster == -1)
                                 queue.Add(neighbour);
