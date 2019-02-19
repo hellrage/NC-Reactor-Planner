@@ -39,6 +39,13 @@ namespace NC_Reactor_Planner
             BaseHeat = bh;
             FuelTime = ft;
         }
+
+        public FuelValues(List<object> values)
+        {
+            BasePower = Convert.ToDouble(values[0]);
+            BaseHeat = Convert.ToDouble(values[1]);
+            FuelTime = Convert.ToDouble(values[2]);
+        }
     }
 
     public struct CoolerValues
@@ -52,6 +59,13 @@ namespace NC_Reactor_Planner
             HeatPassive = hp;
             HeatActive = ha;
             Requirements = req;
+        }
+
+        public CoolerValues(List<object> values)
+        {
+            HeatPassive = Convert.ToDouble(values[0]);
+            HeatActive = Convert.ToDouble(values[1]);
+            Requirements = Convert.ToString(values[2]);
         }
     }
 
@@ -76,6 +90,18 @@ namespace NC_Reactor_Planner
             NeutronReach = nr;
             ModeratorExtraPower = mep;
             ModeratorExtraHeat = meh;
+        }
+
+        public FissionValues(List<object> values)
+        {
+            Power = Convert.ToDouble(values[0]);
+            FuelUse = Convert.ToDouble(values[1]);
+            HeatGeneration = Convert.ToDouble(values[2]);
+            MinSize = Convert.ToInt32(values[3]);
+            MaxSize = Convert.ToInt32(values[4]);
+            NeutronReach = Convert.ToInt32(values[5]);
+            ModeratorExtraPower = Convert.ToDouble(values[6]);
+            ModeratorExtraHeat = Convert.ToDouble(values[7]);
         }
     }
 

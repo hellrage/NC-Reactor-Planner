@@ -345,29 +345,29 @@ namespace NC_Reactor_Planner
             //}
         }
 
-        private static void SetCoolingRates(NuclearcraftConfigImport config)
-        {
-            var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
-            for (int i = 0; i < items.Length; i++)
-            {
-                var item = Configuration.HeatSinks[items[i]];
-                item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
-                //item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
-                Configuration.HeatSinks[items[i]] = item;
-            }
-        }
+        //private static void SetCoolingRates(NuclearcraftConfigImport config)
+        //{
+        //    var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
+        //    for (int i = 0; i < items.Length; i++)
+        //    {
+        //        var item = Configuration.HeatSinks[items[i]];
+        //        item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
+        //        //item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
+        //        Configuration.HeatSinks[items[i]] = item;
+        //    }
+        //}
 
-        private static void SetFuelValues(NuclearcraftConfigImport config, string[] items, string element)
-        {
-            for (int i = 0; i < items.Length; i++)
-            {
-                var item = Configuration.Fuels[items[i]];
-                item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
-                //item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
-                item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
-                Configuration.Fuels[items[i]] = item;
-            }
-        }
+        //private static void SetFuelValues(NuclearcraftConfigImport config, string[] items, string element)
+        //{
+        //    for (int i = 0; i < items.Length; i++)
+        //    {
+        //        var item = Configuration.Fuels[items[i]];
+        //        item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
+        //        //item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
+        //        item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
+        //        Configuration.Fuels[items[i]] = item;
+        //    }
+        //}
 
         private void ValidateValue(object sender, EventArgs args)
         {
