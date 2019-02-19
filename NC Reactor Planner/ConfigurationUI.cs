@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Reflection;
 
 namespace NC_Reactor_Planner
 {
@@ -29,162 +30,159 @@ namespace NC_Reactor_Planner
     }
     public partial class ConfigurationUI : Form
     {
-        private Dictionary<string, List<Control>> cIFR; //cooler input field rows
-        private Dictionary<string, List<Control>> fIFR; //fuel input field rows
-        private Dictionary<string, List<Control>> rDC; //resource Disposable Controls
+        //private Dictionary<string, List<Control>> hsIFR; //heatsink input field rows
+        //private Dictionary<string, List<Control>> fIFR; //fuel input field rows
+        //private Dictionary<string, List<Control>> mIFR; //moderator input field rows
+        //private Dictionary<string, List<Control>> rDC; //resource Disposable Controls
+        private Dictionary<string, Dictionary<string, List<Control>>> IFRs;
+        private List<Control> fissionInputs;
+        private static readonly FieldInfo[] configurationPages = typeof(Configuration).GetFields();
 
         public ConfigurationUI()
         {
             InitializeComponent();
-
-            power.Validating += CheckDoubleValue;
-            fuelUse.Validating += CheckDoubleValue;
-            heatGeneration.Validating += CheckDoubleValue;
-            moderatorExtraPower.Validating += CheckDoubleValue;
-            moderatorExtraHeat.Validating += CheckDoubleValue;
-            neutronReach.Validating += CheckIntValue;
-            minSize.Validating += CheckIntValue;
-            maxSize.Validating += CheckIntValue;
+            IFRs = new Dictionary<string, Dictionary<string, List<Control>>>();
+            foreach (FieldInfo page in configurationPages)
+                if (page.Name != "ResourceCosts")
+                    if (page.Name != "Fission")
+                        IFRs.Add(page.Name, new Dictionary<string, List<Control>>());
+            fissionInputs = new List<Control>();
+            ReloadTabs();
         }
 
         private void ConfigurationUI_Load(object sender, EventArgs e)
         {
-            ReloadTabs();
         }
 
         private void ReloadTabs()
         {
-            ReloadCoolersTab();
-            ReloadFuelsTab();
+            settingTabs.TabPages.Clear();
+            foreach (FieldInfo page in configurationPages)
+            {
+                if (page.Name != "ResourceCosts")
+                {
+                    settingTabs.TabPages.Add(page.Name, page.Name);
+                    if (page.Name != "Fission")
+                        ReloadTab(page, IFRs[page.Name]);
+                }
+            }
             ReloadFissionTab();
-            ReloadResourceCostTab();
-            blockSelector.SelectedIndexChanged += new EventHandler(SelectedBlockChanged);
-        }
-
-        private void ReloadCoolersTab()
-        {
-            if(cIFR != null)
-                DisposeAndClear(cIFR);
-            cIFR = new Dictionary<string, List<Control>>(); //cooler input field rows
-            int row = 0;
-            foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
-            {
-                CoolerValues cv = coolerEntry.Value;
-                row++;
-                int y = 3 + row * 20;
-                List<Control> fields = new List<Control>();
-                fields.Add(new Label { Text = coolerEntry.Key, Location = new Point(3, y), Size = new Size(70, 13), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = cv.HeatPassive.ToString(), Location = new Point(85, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = cv.HeatActive.ToString(), Location = new Point(165, y), Size = new Size(110, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = cv.Requirements, Location = new Point(285, y), Size = new Size(350, 14) });
-                cIFR.Add(coolerEntry.Key, fields);
-                //fields.Clear();
-            }
-
-            foreach (KeyValuePair<string, List<Control>> slkvp in cIFR)
-            {
-                foreach (Control c in slkvp.Value)
-                {
-                    settingTabs.TabPages["coolersPage"].Controls.Add(c);
-                }
-            }
-        }
-
-        private void ReloadFuelsTab()
-        {
-            if (fIFR != null)
-                DisposeAndClear(fIFR);
-            fIFR = new Dictionary<string, List<Control>>(); //Fuel input field rows
-            int row = 0;
-            foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
-            {
-                FuelValues fv = fuelEntry.Value;
-                row++;
-                int y = 3 + row * 20;
-                List<Control> fields = new List<Control>();
-                fields.Add(new Label { Text = fuelEntry.Key, Location = new Point(3, y), Size = new Size(150, 13) });
-                fields.Add(new TextBox { Text = fv.BasePower.ToString(), Location = new Point(160, y), Size = new Size(75, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = fv.BaseHeat.ToString(), Location = new Point(240, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fields.Add(new TextBox { Text = fv.FuelTime.ToString(), Location = new Point(312, y), Size = new Size(70, 14), CausesValidation = true }.Set(x => { x.Validating += CheckDoubleValue; }));
-                fIFR.Add(fuelEntry.Key, fields);
-            }
-
-            foreach (KeyValuePair<string, List<Control>> slkvp in fIFR)
-            {
-                foreach (Control c in slkvp.Value)
-                {
-                    settingTabs.TabPages["fuelsPage"].Controls.Add(c);
-                }
-            }
+            //ReloadResourceCostTab();
+            //blockSelector.SelectedIndexChanged += new EventHandler(SelectedBlockChanged);
         }
 
         private void ReloadFissionTab()
         {
-            power.Text = Configuration.Fission.Power.ToString();
-            fuelUse.Text = Configuration.Fission.FuelUse.ToString();
-            heatGeneration.Text = Configuration.Fission.HeatGeneration.ToString();
-            moderatorExtraPower.Text = Configuration.Fission.ModeratorExtraPower.ToString();
-            moderatorExtraHeat.Text = Configuration.Fission.ModeratorExtraHeat.ToString();
-            neutronReach.Text = Configuration.Fission.NeutronReach.ToString();
-            minSize.Text = Configuration.Fission.MinSize.ToString();
-            maxSize.Text = Configuration.Fission.MaxSize.ToString();
+            settingTabs.TabPages["Fission"].Controls.Clear();
+            FieldInfo[] fieldInfos = typeof(FissionValues).GetFields();
+            fissionInputs.Clear();
+            int row = 0;
+            foreach (FieldInfo fi in fieldInfos)
+            {
+                settingTabs.TabPages["Fission"].Controls.Add(new Label { Text = fi.Name, Location = new Point(3, row++ * 20), Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold) });
+                fissionInputs.Add(new TextBox { Text = fi.GetValue(Configuration.Fission).ToString(), Location = new Point(3, row++*20), Size = new Size(80, 14), CausesValidation = true, Tag = fi.FieldType }.Set(val => { val.Validating += ValidateValue; }));
+            }
+            foreach (Control c in fissionInputs)
+                settingTabs.TabPages["Fission"].Controls.Add(c);
         }
 
-        private void ReloadResourceCostTab()
+        private void ReloadTab(FieldInfo tabInfo, Dictionary<string, List<Control>> IFR)
         {
-            blockSelector.Items.Add(new ResourceCostComboboxItem("Fuel cell", Configuration.ResourceCosts.FuelCellCosts));
-            blockSelector.Items.Add(new ResourceCostComboboxItem("Casing", Configuration.ResourceCosts.CasingCosts));
+            settingTabs.TabPages[tabInfo.Name].Controls.Clear();
+            IFR.Clear();
+            FieldInfo[] fieldsInfo;
+            int row = 0;
+            int x = 150;
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.CoolerCosts)
+            MethodInfo castMethod = this.GetType().GetMethod("Cast").MakeGenericMethod(tabInfo.FieldType);
+            dynamic configurationPage = castMethod.Invoke(null, new object[] { tabInfo.GetValue(null) });
+            fieldsInfo = configurationPage.GetType().GetGenericArguments()[1].GetFields();
+
+            AddLabels();
+            foreach (var entry in configurationPage)
             {
-                blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Cooler", kvp.Value));
+                dynamic v = entry.Value;
+                FillInputRow(row++, entry.Key, v);
+            }
+            
+            void AddLabels()
+            {
+                foreach (FieldInfo fi in fieldsInfo)
+                {
+                    settingTabs.TabPages[tabInfo.Name].Controls.Add(new Label { Text = fi.Name, Location = new Point(x, 3), Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold) });
+                    int lastIndex = settingTabs.TabPages[tabInfo.Name].Controls.Count - 1;
+                    x += settingTabs.TabPages[tabInfo.Name].Controls[lastIndex].Size.Width;
+                }
             }
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.ModeratorCosts)
+
+            void FillInputRow(int rowNum, string entry, object ob)
             {
-                blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Moderator", kvp.Value));
+                int y = 8 + row * 20;
+                x = 150;
+                List<Control> fields = new List<Control>();
+                settingTabs.TabPages[tabInfo.Name].Controls.Add(new Label { Text = entry, Location = new Point(3, y), Size = new Size(x, 14) });
+                int index = 0;
+                foreach (FieldInfo property in fieldsInfo)
+                {
+                    fields.Add(new TextBox { Text = property.GetValue(ob).ToString(), Location = new Point(x, y), Size = new Size(property.Name=="Requirements"?300:80, 14), CausesValidation = true, Tag = property.FieldType }.Set(val => { val.Validating += ValidateValue; }));
+                    x += settingTabs.TabPages[tabInfo.Name].Controls[index].Size.Width;
+                }
+                IFR.Add(entry, fields);
             }
 
+            foreach (KeyValuePair<string, List<Control>> controlRow in IFR)
+            {
+                foreach (Control c in controlRow.Value)
+                {
+                    settingTabs.TabPages[tabInfo.Name].Controls.Add(c);
+                }
+            }
         }
 
-        private void SelectedBlockChanged(object sender, EventArgs e)
-        {
-            if (rDC != null)
-            {
-                foreach (KeyValuePair<string, List<Control>> kvp in rDC)
-                    foreach (Control c in kvp.Value)
-                    { 
-                        c.Dispose();
-                        resourceCostsTab.Controls.Remove(c);
-                    }
-            }
-            rDC = new Dictionary<string, List<Control>>();
+        //private void ReloadResourceCostTab()
+        //{
+        //    blockSelector.Items.Add(new ResourceCostComboboxItem("Fuel cell", Configuration.ResourceCosts.FuelCellCosts));
+        //    blockSelector.Items.Add(new ResourceCostComboboxItem("Casing", Configuration.ResourceCosts.CasingCosts));
 
-            int row = 1;
-            foreach(KeyValuePair<string, int> resource in ((ResourceCostComboboxItem)blockSelector.SelectedItem).Resources)
-            {
-                rDC[resource.Key] = new List<Control>();
-                rDC[resource.Key].Add(new TextBox { Text = resource.Key, Location = new Point(10, row * 30) });
-                rDC[resource.Key].Add(new NumericUpDown { Value = resource.Value, Location = new Point(130, row * 30) });
-                row++;
-                //rDC.Add(new Button { Text = resource.Key, Location = new Point(10, row++ * 20) });
-                resourceCostsTab.Controls.AddRange(rDC[resource.Key].ToArray());
-            }
+        //    foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.HeatSinkCosts)
+        //    {
+        //        blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " HeatSink", kvp.Value));
+        //    }
+
+        //    foreach (KeyValuePair<string, Dictionary<string, int>> kvp in Configuration.ResourceCosts.ModeratorCosts)
+        //    {
+        //        blockSelector.Items.Add(new ResourceCostComboboxItem(kvp.Key + " Moderator", kvp.Value));
+        //    }
+
+        //}
+
+        //private void SelectedBlockChanged(object sender, EventArgs e)
+        //{
+        //    if (rDC != null)
+        //    {
+        //        foreach (KeyValuePair<string, List<Control>> kvp in rDC)
+        //            foreach (Control c in kvp.Value)
+        //            { 
+        //                c.Dispose();
+        //                resourceCostsPage.Controls.Remove(c);
+        //            }
+        //    }
+        //    rDC = new Dictionary<string, List<Control>>();
+
+        //    int row = 1;
+        //    foreach(KeyValuePair<string, int> resource in ((ResourceCostComboboxItem)blockSelector.SelectedItem).Resources)
+        //    {
+        //        rDC[resource.Key] = new List<Control>();
+        //        rDC[resource.Key].Add(new TextBox { Text = resource.Key, Location = new Point(10, row * 30) });
+        //        rDC[resource.Key].Add(new NumericUpDown { Value = resource.Value, Location = new Point(130, row * 30) });
+        //        row++;
+        //        //rDC.Add(new Button { Text = resource.Key, Location = new Point(10, row++ * 20) });
+        //        resourceCostsPage.Controls.AddRange(rDC[resource.Key].ToArray());
+        //    }
 
             
-        }
-        
-        private void DisposeAndClear(Dictionary<string, List<Control>> cl)
-        {
-            foreach (KeyValuePair<string, List<Control>> cle in cl)
-            {
-                foreach (Control c in cle.Value)
-                {
-                    c.Dispose();
-                }
-                cle.Value.Clear();
-            }
-        }
+        //}
 
         private void Load_Click(object sender, EventArgs e)
         {
@@ -196,7 +194,6 @@ namespace NC_Reactor_Planner
                     {
                         ReloadTabs();
                         Reactor.ReloadValuesFromConfig();
-                        Reactor.UpdateStats();
                         MessageBox.Show("Loaded and applied!");
                         Close();
                     }
@@ -228,42 +225,59 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
-                Reactor.UpdateStats();
                 return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\r\nThere were invalid values in the config, validation is NYI so i had to reset to defaults, sorry!");
+                MessageBox.Show(ex.Message + "\r\nCould not apply configuration, resetting to defaults!");
                 Configuration.ResetToDefaults();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
-                Reactor.UpdateStats();
                 return false;
             }
         }
 
         private void ApplyConfiguration()
         {
-            Configuration.Fission.Power = Convert.ToDouble(power.Text);
-            Configuration.Fission.HeatGeneration = Convert.ToDouble(heatGeneration.Text);
-            Configuration.Fission.FuelUse = Convert.ToDouble(fuelUse.Text);
-            Configuration.Fission.MinSize = Convert.ToInt32(minSize.Text);
-            Configuration.Fission.MaxSize = Convert.ToInt32(maxSize.Text);
-            Configuration.Fission.ModeratorExtraHeat = Convert.ToDouble(moderatorExtraHeat.Text);
-            Configuration.Fission.ModeratorExtraPower = Convert.ToDouble(moderatorExtraPower.Text);
-            Configuration.Fission.NeutronReach = Convert.ToInt32(neutronReach.Text);
+            ApplyFission();
+            ApplyValues();
+        }
 
-            foreach (KeyValuePair<string, List<Control>> kvp in cIFR)
+        private void ApplyFission()
+        {
+            List<object> values = new List<object>();
+            foreach (Control value in fissionInputs)
             {
-                CoolerValues cv = new CoolerValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), kvp.Value[3].Text);
-                Configuration.Coolers[kvp.Key] = cv;
+                values.Add(value.Text);
             }
+            Configuration.Fission = new FissionValues(values);
+        }
 
-            foreach (KeyValuePair<string, List<Control>> kvp in fIFR)
+        private void ApplyValues()
+        {
+            foreach (FieldInfo field in configurationPages)
             {
-                FuelValues fv = new FuelValues(Convert.ToDouble(kvp.Value[1].Text), Convert.ToDouble(kvp.Value[2].Text), Convert.ToDouble(kvp.Value[3].Text));
-                Configuration.Fuels[kvp.Key] = fv;
+                MethodInfo castMethod = this.GetType().GetMethod("Cast").MakeGenericMethod(field.FieldType);
+
+                if (field.Name == "ResourceCosts" | field.Name == "Fission")
+                    continue;
+                List<object> values;
+                dynamic configurationPage = castMethod.Invoke(null, new object[] { field.GetValue(null) });
+                foreach (KeyValuePair<string, List<Control>> valueRow in IFRs[field.Name])
+                {
+                    values = new List<object>();
+                    foreach (Control c in valueRow.Value)
+                        values.Add(c.Text);
+
+                    dynamic val = Activator.CreateInstance(configurationPage[valueRow.Key].GetType(), new object[] { values });
+                    configurationPage[valueRow.Key] = val;
+                }
             }
+        }
+
+        public static T Cast<T>(object o)
+        {
+            return (T)o;
         }
 
         private void ApplyConfig_Click(object sender, EventArgs e)
@@ -277,60 +291,58 @@ namespace NC_Reactor_Planner
 
         private void Import_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Nuclear craft config|nuclearcraft.cfg|Any config file|*.cfg|All Files|*.*" })
-            {
-                if (fileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    var config = NuclearcraftConfigImport.ImportConfig(new FileInfo(fileDialog.FileName));
-                    if (config == null || !config.HasBlock("fission"))
-                    {
-                        MessageBox.Show("Configuration could not be imported, check the file can be loaded by minecraft, or has come from the modpack you want to load");
-                        return;
-                    }
+            //using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Nuclear craft config|nuclearcraft.cfg|Any config file|*.cfg|All Files|*.*" })
+            //{
+            //    if (fileDialog.ShowDialog() == DialogResult.OK)
+            //    {
+            //        var config = NuclearcraftConfigImport.ImportConfig(new FileInfo(fileDialog.FileName));
+            //        if (config == null || !config.HasBlock("fission"))
+            //        {
+            //            MessageBox.Show("Configuration could not be imported, check the file can be loaded by minecraft, or has come from the modpack you want to load");
+            //            return;
+            //        }
 
-                    if (!string.IsNullOrWhiteSpace(config.LastError))
-                    {
-                        MessageBox.Show("We had the following errors while parsing the config file, please check that it's correct (not all values may import)");
-                    }
+            //        if (!string.IsNullOrWhiteSpace(config.LastError))
+            //        {
+            //            MessageBox.Show("We had the following errors while parsing the config file, please check that it's correct (not all values may import)");
+            //        }
 
-                    Configuration.Fission.Power = config.Get<double>("fission", "fission_power");
-                    Configuration.Fission.HeatGeneration = config.Get<double>("fission", "fission_heat_generation");
-                    Configuration.Fission.FuelUse = config.Get<double>("fission", "fission_fuel_use");
-                    Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
-                    Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
-                    Configuration.Fission.ModeratorExtraHeat = config.Get<double>("fission", "fission_moderator_extra_heat");
-                    Configuration.Fission.ModeratorExtraPower = config.Get<double>("fission", "fission_moderator_extra_power");
-                    Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
+            //        Configuration.Fission.Power = config.Get<double>("fission", "fission_power");
+            //        Configuration.Fission.HeatGeneration = config.Get<double>("fission", "fission_heat_generation");
+            //        Configuration.Fission.FuelUse = config.Get<double>("fission", "fission_fuel_use");
+            //        Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
+            //        Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
+            //        Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
 
-                    SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
-                    SetFuelValues(config,
-                        new[] { "LEU-233", "LEU-233 Oxide", "HEU-233", "HEU-233 Oxide", "LEU-235", "LEU-235 Oxide", "HEU-235", "HEU-235 Oxide" },
-                        "uranium");
-                    SetFuelValues(config, new[] { "LEN-236", "LEN-236 Oxide", "HEN-236", "HEN-236 Oxide" },
-                        "neptunium");
-                    SetFuelValues(config, new[] { "LEP-239", "LEP-239 Oxide", "HEP-239", "HEP-239 Oxide", "LEP-241", "LEP-241 Oxide", "HEP-241", "HEP-241 Oxide" },
-                        "plutonium");
-                    SetFuelValues(config, new[] { "MOX-239", "MOX-241" },
-                        "mox");
-                    SetFuelValues(config, new[] { "LEA-242", "LEA-242 Oxide", "HEA-242", "HEA-242 Oxide" },
-                        "americium");
-                    SetFuelValues(config, new[] { "LECm-243", "LECm-243 Oxide", "HECm-243", "HECm-243 Oxide", "LECm-245", "LECm-245 Oxide", "HECm-245", "HECm-245 Oxide", "LECm-247", "LECm-247 Oxide", "HECm-247", "HECm-247 Oxide" },
-                        "curium");
-                    SetFuelValues(config, new[] { "LEB-248", "LEB-248 Oxide", "HEB-248", "HEB-248 Oxide" },
-                        "berkelium");
-                    SetFuelValues(config, new[] { "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide" },
-                        "californium");
+            //        SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
+            //        SetFuelValues(config,
+            //            new[] { "LEU-233", "LEU-233 Oxide", "HEU-233", "HEU-233 Oxide", "LEU-235", "LEU-235 Oxide", "HEU-235", "HEU-235 Oxide" },
+            //            "uranium");
+            //        SetFuelValues(config, new[] { "LEN-236", "LEN-236 Oxide", "HEN-236", "HEN-236 Oxide" },
+            //            "neptunium");
+            //        SetFuelValues(config, new[] { "LEP-239", "LEP-239 Oxide", "HEP-239", "HEP-239 Oxide", "LEP-241", "LEP-241 Oxide", "HEP-241", "HEP-241 Oxide" },
+            //            "plutonium");
+            //        SetFuelValues(config, new[] { "MOX-239", "MOX-241" },
+            //            "mox");
+            //        SetFuelValues(config, new[] { "LEA-242", "LEA-242 Oxide", "HEA-242", "HEA-242 Oxide" },
+            //            "americium");
+            //        SetFuelValues(config, new[] { "LECm-243", "LECm-243 Oxide", "HECm-243", "HECm-243 Oxide", "LECm-245", "LECm-245 Oxide", "HECm-245", "HECm-245 Oxide", "LECm-247", "LECm-247 Oxide", "HECm-247", "HECm-247 Oxide" },
+            //            "curium");
+            //        SetFuelValues(config, new[] { "LEB-248", "LEB-248 Oxide", "HEB-248", "HEB-248 Oxide" },
+            //            "berkelium");
+            //        SetFuelValues(config, new[] { "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide" },
+            //            "californium");
 
-                    SetCoolingRates(config);
+            //        SetCoolingRates(config);
 
-                    ReloadTabs();
-                    Reactor.ReloadValuesFromConfig();
-                    Reactor.UpdateStats();
-                    MessageBox.Show("Loaded and applied, please save as a json file");
-                }
-                else
-                    return;
-            }
+            //        ReloadTabs();
+            //        Reactor.ReloadValuesFromConfig();
+            //        //Reactor.Update();
+            //        MessageBox.Show("Loaded and applied, please save as a json file");
+            //    }
+            //    else
+            //        return;
+            //}
         }
 
         private static void SetCoolingRates(NuclearcraftConfigImport config)
@@ -338,10 +350,10 @@ namespace NC_Reactor_Planner
             var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
             for (int i = 0; i < items.Length; i++)
             {
-                var item = Configuration.Coolers[items[i]];
+                var item = Configuration.HeatSinks[items[i]];
                 item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
-                item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
-                Configuration.Coolers[items[i]] = item;
+                //item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
+                Configuration.HeatSinks[items[i]] = item;
             }
         }
 
@@ -351,9 +363,24 @@ namespace NC_Reactor_Planner
             {
                 var item = Configuration.Fuels[items[i]];
                 item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
-                item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
+                //item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
                 item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
                 Configuration.Fuels[items[i]] = item;
+            }
+        }
+
+        private void ValidateValue(object sender, EventArgs args)
+        {
+            switch (((Type)((TextBox)sender).Tag).Name)
+            {
+                case "Double":
+                    CheckDoubleValue(sender, args);
+                    break;
+                case "Int":
+                    CheckIntValue(sender, args);
+                    break;
+                default:
+                    break;
             }
         }
 
