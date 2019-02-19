@@ -43,6 +43,14 @@ namespace NC_Reactor_Planner
             FuelTime = ft;
             CriticalityFactor = cf;
         }
+
+        public FuelValues(List<object> values)
+        {
+            BaseEfficiency = Convert.ToDouble(values[0]);
+            BaseHeat = Convert.ToDouble(values[1]);
+            FuelTime = Convert.ToDouble(values[2]);
+            CriticalityFactor = Convert.ToDouble(values[3]);
+        }
     }
 
     public struct HeatSinkValues
@@ -55,6 +63,12 @@ namespace NC_Reactor_Planner
             HeatPassive = hp;
             Requirements = req;
         }
+
+        public HeatSinkValues(List<object> values)
+        {
+            HeatPassive = Convert.ToDouble(values[0]);
+            Requirements = Convert.ToString(values[1]);
+        }
     }
 
     public struct ModeratorValues
@@ -66,6 +80,12 @@ namespace NC_Reactor_Planner
         {
             FluxFactor = ff;
             EfficiencyFactor = ef;
+        }
+
+        public ModeratorValues(List<object> fieldValues)
+        {
+            FluxFactor = Convert.ToDouble(fieldValues[0]);
+            EfficiencyFactor = Convert.ToDouble(fieldValues[1]);
         }
     }
 
@@ -86,6 +106,16 @@ namespace NC_Reactor_Planner
             MinSize = ms;
             MaxSize = mxs;
             NeutronReach = nr;
+        }
+
+        public FissionValues(List<object> values)
+        {
+            Power = Convert.ToDouble(values[0]);
+            FuelUse = Convert.ToDouble(values[1]);
+            HeatGeneration = Convert.ToDouble(values[2]);
+            MinSize = Convert.ToInt32(values[3]);
+            MaxSize = Convert.ToInt32(values[4]);
+            NeutronReach = Convert.ToInt32(values[5]);
         }
     }
 

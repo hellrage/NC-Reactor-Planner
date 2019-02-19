@@ -15,7 +15,6 @@ namespace NC_Reactor_Planner
         public List<Dictionary<string, List<Point3D>>> CompressedReactor;
         public List<Tuple<Point3D, string, bool>> FuelCells;
         public Size3D InteriorDimensions;
-        //public Fuel UsedFuel;
 
         public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, List<Tuple<Point3D, string, bool>> fc, Size3D id)
         {
@@ -23,7 +22,6 @@ namespace NC_Reactor_Planner
             CompressedReactor = cr;
             FuelCells = fc;
             InteriorDimensions = id;
-           // UsedFuel = uf;
         }
     }
 
@@ -186,7 +184,8 @@ namespace NC_Reactor_Planner
             moderators = new Dictionary<string, List<Moderator>>
             {
                 { "Graphite", new List<Moderator>() },
-                { "Beryllium", new List<Moderator>() }
+                { "Beryllium", new List<Moderator>() },
+                { "HeavyWater", new List<Moderator>() }
             };
             conductors = new List<Conductor>();
 
@@ -535,6 +534,7 @@ namespace NC_Reactor_Planner
         {
             ReloadBlockValues();
             ReloadFuelValues();
+            //Update();
         }
 
         private static void ReloadBlockValues()

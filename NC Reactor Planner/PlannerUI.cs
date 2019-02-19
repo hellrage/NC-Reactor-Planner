@@ -45,8 +45,9 @@ namespace NC_Reactor_Planner
 
         private void Form1_Load(object sender, EventArgs e)
         {
+#if !DEBUG
             SetUpdateAvailableTextAsync();
-
+#endif
             blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
             showClustersInStats = true;
 
