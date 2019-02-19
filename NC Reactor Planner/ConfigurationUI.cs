@@ -62,6 +62,7 @@ namespace NC_Reactor_Planner
                 if (page.Name != "ResourceCosts")
                 {
                     settingTabs.TabPages.Add(page.Name, page.Name);
+                    settingTabs.TabPages[page.Name].AutoScroll = true;
                     if (page.Name != "Fission")
                         ReloadTab(page, IFRs[page.Name]);
                 }
