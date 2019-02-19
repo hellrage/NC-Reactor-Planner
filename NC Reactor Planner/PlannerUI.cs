@@ -540,10 +540,10 @@ namespace NC_Reactor_Planner
 
         private async void checkForUpdates_Click(object sender, EventArgs e)
         {
-            Tuple<bool,Version> updateInfo = await Updater.CheckForUpdateAsync();
+            Tuple<bool,Version,string> updateInfo = await Updater.CheckForUpdateAsync();
             if(updateInfo.Item1)
             {
-                DialogResult updatePropmpt = MessageBox.Show("Download " + Updater.ShortVersionString(updateInfo.Item2) + "?", "Update available!", MessageBoxButtons.YesNo);
+                DialogResult updatePropmpt = MessageBox.Show("Download " + Updater.ShortVersionString(updateInfo.Item2) + "?\r\n" + updateInfo.Item3, "Update available!", MessageBoxButtons.YesNo);
                 if (updatePropmpt == DialogResult.Yes)
                 {
                     SaveFileDialog saveDialog = new SaveFileDialog();
@@ -555,13 +555,13 @@ namespace NC_Reactor_Planner
             }
             else
             {
-                MessageBox.Show("You are using the latest version: " + Updater.ShortVersionString(Reactor.saveVersion));
+                MessageBox.Show("You are using the latest version: " + Updater.ShortVersionString(Reactor.saveVersion), "No updates");
             }
         }
 
         private async void SetUpdateAvailableTextAsync()
         {
-            Tuple<bool, Version> updateInfo = await Updater.CheckForUpdateAsync();
+            Tuple<bool, Version,string> updateInfo = await Updater.CheckForUpdateAsync();
             if (updateInfo.Item1)
             {
                 checkForUpdates.Font = new Font(checkForUpdates.Font, FontStyle.Bold);

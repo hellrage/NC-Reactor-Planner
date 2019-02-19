@@ -10,7 +10,7 @@ namespace NC_Reactor_Planner
 {
     public static class Updater
     {
-        public static async Task<Tuple<bool,Version>> CheckForUpdateAsync()
+        public static async Task<Tuple<bool,Version,string>> CheckForUpdateAsync()
         {
             string GitAPI = "https://api.github.com/repos/hellrage/NC-Reactor-Planner/git/refs/tags";
             
@@ -22,26 +22,31 @@ namespace NC_Reactor_Planner
                 responseJSON = r.ReadToEnd();
             }
 
-            List<string> versionTags = new List<string>();
+            Tuple<Version,string> release = await FindLatest(responseJSON, 2);
+            if (release.Item1 >= Reactor.saveVersion)
+                return Tuple.Create(true, release.Item1,release.Item2);
+            else
+                return Tuple.Create(false, Reactor.saveVersion, "");
+        }
+
+        private static async Task<string> GetCommitMessage(string url)
+        {
+            WebResponse response = await GetWebResponseAsync(url);
+            string responseJSON;
+            using (StreamReader r = new StreamReader(response.GetResponseStream()))
+            {
+                responseJSON = r.ReadToEnd();
+            }
             using (JsonTextReader reader = new JsonTextReader(new StringReader(responseJSON)))
             {
-                
                 while (reader.Read())
-                {
-                    if (reader.TokenType == JsonToken.PropertyName && reader.Value.ToString() == "ref")
+                    if (reader.TokenType == JsonToken.PropertyName && reader.Value.ToString() == "message")
                     {
                         reader.Read();
-                        string str = reader.Value.ToString();
-                        versionTags.Add(str.Split('v')[1]);
+                        return reader.Value.ToString();
                     }
-                }
-
             }
-            Version releaseVersion = FindLatest(versionTags, 2);
-            if (releaseVersion > Reactor.saveVersion)
-                return Tuple.Create(true, releaseVersion);
-            else
-                return Tuple.Create(false, Reactor.saveVersion);
+            return "";
         }
 
         public static async void DownloadVersionAsync(Version version, string fileName)
@@ -67,16 +72,35 @@ namespace NC_Reactor_Planner
             return await webRequest.GetResponseAsync();
         }
 
-        private static Version FindLatest(List<string> versionTags, int major)
+        private static async Task<Tuple<Version,string>> FindLatest(string json, int major)
         {
-            Version latest = new Version(major, 0, 0, 0);
-            foreach (string tag in versionTags)
+            Tuple<Version,string> latest = Tuple.Create(new Version(major, 0, 0, 0), "");
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
             {
-                string[] numbers = tag.Split('.');
-                Version version = new Version(Convert.ToInt32(numbers[0]), Convert.ToInt32(numbers[1]), Convert.ToInt32(numbers[2]), 0);
-                if (version.Major == major && version > latest)
-                    latest = version;
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.PropertyName && reader.Value.ToString() == "ref")
+                    {
+                        reader.Read();
+                        string vstr = reader.Value.ToString().Split('v')[1];
+                        string[] numbers = vstr.Split('.');
+                        Version version = new Version(Convert.ToInt32(numbers[0]), Convert.ToInt32(numbers[1]), Convert.ToInt32(numbers[2]), 0);
+                        if(version.Major == major && version > latest.Item1)
+                        {
+                            do
+                            {
+                                reader.Read();
+                            } while(reader.TokenType != JsonToken.StartObject);
+                            do
+                            {
+                                reader.Read();
+                            } while (reader.Value.ToString() != "url");
+                            reader.Read();
+                            string message = await GetCommitMessage(reader.Value.ToString());
+                            latest = Tuple.Create(version, message);
+                        }
+                    }
             }
+
             return latest;
         }
 
