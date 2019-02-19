@@ -38,7 +38,7 @@ namespace NC_Reactor_Planner
 
             }
             Version releaseVersion = FindLatest(versionTags, 2);
-            if (releaseVersion >= Reactor.saveVersion)
+            if (releaseVersion > Reactor.saveVersion)
                 return Tuple.Create(true, releaseVersion);
             else
                 return Tuple.Create(false, Reactor.saveVersion);
