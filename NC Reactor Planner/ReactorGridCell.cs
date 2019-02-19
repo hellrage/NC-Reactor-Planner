@@ -130,6 +130,13 @@ namespace NC_Reactor_Planner
             ResetToolTip();
         }
 
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            PlannerUI.gridToolTip.RemoveAll();
+            PlannerUI.gridToolTip.Hide(this);
+            base.OnMouseLeave(e);
+        }
+
         public void ResetToolTip()
         {
             PlannerUI.gridToolTip.SetToolTip(this, block.GetToolTip());

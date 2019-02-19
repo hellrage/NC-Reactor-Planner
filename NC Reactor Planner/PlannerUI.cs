@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Windows.Media.Media3D;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
@@ -50,6 +45,8 @@ namespace NC_Reactor_Planner
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            SetUpdateAvailableTextAsync();
+
             blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
             showClustersInStats = true;
 
@@ -118,7 +115,7 @@ namespace NC_Reactor_Planner
                 paletteBlock.MouseEnter += new EventHandler(PaletteBlockHighlighted);
             }
 
-            UpdatePaletteTooltips();
+            //UpdatePaletteTooltips();
 
             Palette.selectedBlock = (ReactorGridCell)paletteTable.Controls[0];
             Palette.selectedType = Palette.selectedBlock.block.BlockType;
@@ -501,7 +498,7 @@ namespace NC_Reactor_Planner
         {
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
-            UpdatePaletteTooltips();
+            //UpdatePaletteTooltips();
             Reactor.Redraw();
             RefreshStats(showClustersInStats);
         }
@@ -541,9 +538,35 @@ namespace NC_Reactor_Planner
             paletteToolTip.Hide(Palette.selectedBlock);
         }
 
-        private void checkForUpdates_Click(object sender, EventArgs e)
+        private async void checkForUpdates_Click(object sender, EventArgs e)
         {
-            Updater.CheckForUpdate();
+            Tuple<bool,Version> updateInfo = await Updater.CheckForUpdateAsync();
+            if(updateInfo.Item1)
+            {
+                DialogResult updatePropmpt = MessageBox.Show("Download " + Updater.ShortVersionString(updateInfo.Item2) + "?", "Update available!", MessageBoxButtons.YesNo);
+                if (updatePropmpt == DialogResult.Yes)
+                {
+                    SaveFileDialog saveDialog = new SaveFileDialog();
+                    saveDialog.FileName = Updater.ExecutableName(updateInfo.Item2);
+                    DialogResult saveResult = saveDialog.ShowDialog();
+                    if(saveResult == DialogResult.OK)
+                        Updater.DownloadVersionAsync(updateInfo.Item2, saveDialog.FileName);
+                }
+            }
+            else
+            {
+                MessageBox.Show("You are using the latest version: " + Updater.ShortVersionString(Reactor.saveVersion));
+            }
+        }
+
+        private async void SetUpdateAvailableTextAsync()
+        {
+            Tuple<bool, Version> updateInfo = await Updater.CheckForUpdateAsync();
+            if (updateInfo.Item1)
+            {
+                checkForUpdates.Font = new Font(checkForUpdates.Font, FontStyle.Bold);
+                checkForUpdates.Text = Updater.ShortVersionString(updateInfo.Item2) + " Available!";
+            }
         }
     }
 }
