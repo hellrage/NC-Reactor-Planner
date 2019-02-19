@@ -81,53 +81,53 @@ namespace NC_Reactor_Planner
             switch (HeatSinkType)
             {
                 case HeatSinkTypes.Water:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case HeatSinkTypes.Redstone:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Quartz:
-                    return Valid = HasAdjacent(Palette.blockPalette["Redstone"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"]);
                 case HeatSinkTypes.Gold:
-                    return Valid = HasAdjacent(Palette.blockPalette["Iron"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"], 2);
                 case HeatSinkTypes.Glowstone:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 2);
                 case HeatSinkTypes.Lapis:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Diamond:
-                    return Valid = HasAdjacent(Palette.blockPalette["Gold"]) & HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Gold"]) & HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case HeatSinkTypes.Helium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Enderium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 3, true);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 3, true);
                 case HeatSinkTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 3, true);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 3, true);
                 case HeatSinkTypes.Iron:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Emerald:
-                    return Valid = HasAdjacent(Palette.blockPalette["Prismarine"]) & HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Prismarine"]) & HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Copper:
-                    return Valid = HasAdjacent(Palette.blockPalette["Water"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Water"]);
                 case HeatSinkTypes.Tin:
-                    return Valid = HasAxial(Palette.blockPalette["Lapis"]);
+                    return Valid = HasAxial(Palette.BlockPalette["Lapis"]);
                 case HeatSinkTypes.Magnesium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Boron:
-                    return Valid = HasAdjacent(Palette.blockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Prismarine:
-                    return Valid = HasAdjacent(Palette.blockPalette["Water"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Water"], 2);
                 case HeatSinkTypes.Obsidian:
-                    return Valid = HasAxial(Palette.blockPalette["Glowstone"]);
+                    return Valid = HasAxial(Palette.BlockPalette["Glowstone"]);
                 case HeatSinkTypes.Lead:
-                    return Valid = HasAdjacent(Palette.blockPalette["Iron"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"]);
                 case HeatSinkTypes.Aluminum:
-                    return Valid = HasAdjacent(Palette.blockPalette["Copper"]) & HasAdjacent(Palette.blockPalette["Tin"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Copper"]) & HasAdjacent(Palette.BlockPalette["Tin"]);
                 case HeatSinkTypes.Lithium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Manganese:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 2);
                 case HeatSinkTypes.Silver:
-                    return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]) & HasAdjacent(Palette.blockPalette["Lapis"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Glowstone"]) & HasAdjacent(Palette.BlockPalette["Lapis"]);
                 case HeatSinkTypes.Purpur:
-                    return Valid = HasAdjacent(Palette.blockPalette["Obsidian"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Obsidian"]);
                 default:
                     throw new ArgumentException("Unexpected HeatSink type");
             }

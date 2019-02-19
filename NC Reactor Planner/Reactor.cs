@@ -60,6 +60,7 @@ namespace NC_Reactor_Planner
         {
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
             UI = new PlannerUI();
+            UI.Controls.Add(Palette.PaletteControl);
             PopulateFuels();
         }
 
@@ -81,7 +82,7 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < interiorX + 2; x++)
                 for (int y = 0; y < interiorY + 2; y++)
                     for (int z = 0; z < interiorZ + 2; z++)
-                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
+                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
 
             for (int y = 1; y < interiorY + 1; y++)
                 for (int z = 1; z < interiorZ + 1; z++)
@@ -495,11 +496,11 @@ namespace NC_Reactor_Planner
 
             foreach (KeyValuePair<string, List<Point3D>> kvp in save.HeatSinks)
                 foreach (Point3D pos in kvp.Value)
-                    SetBlock(Palette.blockPalette[kvp.Key].Copy(pos), pos);
+                    SetBlock(Palette.BlockPalette[kvp.Key].Copy(pos), pos);
 
             foreach (KeyValuePair<string, List<Point3D>> kvp in save.Moderators)
                 foreach (Point3D pos in kvp.Value)
-                    SetBlock(Palette.blockPalette[kvp.Key].Copy(pos), pos);
+                    SetBlock(Palette.BlockPalette[kvp.Key].Copy(pos), pos);
 
             foreach (KeyValuePair<string, List<Point3D>> kvp in save.FuelCells)
             {
@@ -513,7 +514,7 @@ namespace NC_Reactor_Planner
                         case 1:
                             throw new ArgumentException("Tried to load an invalid FuelCell: " + kvp.Key);
                         case 2:
-                            restoredFuelCell = new FuelCell("FuelCell", Palette.textures["FuelCell"], pos, GetFuel(props[0]),Convert.ToBoolean(props[1]));
+                            restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, GetFuel(props[0]),Convert.ToBoolean(props[1]));
                             break;
                         default:
                             throw new ArgumentException("Tried to load an unexpected FuelCell: " + kvp.Key);
@@ -523,7 +524,7 @@ namespace NC_Reactor_Planner
             }
 
             foreach (Point3D pos in save.Conductors)
-                SetBlock(new Conductor("Conductor", Palette.textures["Conductor"], pos), pos);
+                SetBlock(new Conductor("Conductor", Palette.Textures["Conductor"], pos), pos);
 
             ReloadValuesFromConfig();
             ConstructLayers();
@@ -539,8 +540,7 @@ namespace NC_Reactor_Planner
 
         private static void ReloadBlockValues()
         {
-            foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
-                    kvp.Key.ReloadValuesFromConfig();
+            Palette.ReloadValuesFromConfig();
 
             if (blocks == null) return;
             foreach (Block block in blocks)
@@ -619,7 +619,7 @@ namespace NC_Reactor_Planner
         {
             for (int x = 0; x < interiorDims.X; x++)
                 for (int z = 0; z < interiorDims.Z; z++)
-                    SetBlock(new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
+                    SetBlock(new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
             Update();
             Redraw();
         }
@@ -707,7 +707,7 @@ namespace NC_Reactor_Planner
                     if(((x == 0 | x == interiorDims.X + 1)&(z > 0 & z < interiorDims.Z + 1)) || ((z == 0 | z == interiorDims.Z + 1) & (x > 0 & x < interiorDims.X + 1)))
                         newReactor[x, y, z] = new Casing("Casing", null, new Point3D(x, y, z));
                     else
-                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
+                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
                 }
             }
 

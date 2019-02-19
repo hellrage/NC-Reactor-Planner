@@ -13,8 +13,16 @@ namespace NC_Reactor_Planner
         public static async Task<Tuple<bool,Version,string>> CheckForUpdateAsync()
         {
             string GitAPI = "https://api.github.com/repos/hellrage/NC-Reactor-Planner/git/refs/tags";
-            
-            WebResponse webResponse = await GetWebResponseAsync(GitAPI);
+            WebResponse webResponse;
+            try
+            {
+                webResponse = await GetWebResponseAsync(GitAPI);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("An exception occured when checking for updates:\r\n" + e.Message);
+                return Tuple.Create(false, Reactor.saveVersion, "");
+            }
             
             string responseJSON;
             using (StreamReader r = new StreamReader(webResponse.GetResponseStream()))

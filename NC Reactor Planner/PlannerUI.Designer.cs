@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlannerUI));
-            this.paletteTable = new System.Windows.Forms.TableLayoutPanel();
             this.reactorWidth = new System.Windows.Forms.NumericUpDown();
             this.reactorLength = new System.Windows.Forms.NumericUpDown();
             this.reactorHeight = new System.Windows.Forms.NumericUpDown();
@@ -40,14 +39,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.resetLayout = new System.Windows.Forms.Button();
-            this.paletteLabel = new System.Windows.Forms.Label();
             this.reactorGrid = new System.Windows.Forms.Panel();
             this.layerScrollBar = new System.Windows.Forms.VScrollBar();
             this.layerLabel = new System.Windows.Forms.Label();
             this.statsLabel = new System.Windows.Forms.Label();
             this.saveReactor = new System.Windows.Forms.Button();
             this.loadReactor = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.showClusterInfo = new System.Windows.Forms.CheckBox();
             this.viewStyleSwitch = new System.Windows.Forms.Button();
             this.saveAsImage = new System.Windows.Forms.Button();
@@ -66,37 +63,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
-            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).BeginInit();
             this.SuspendLayout();
             // 
-            // paletteTable
-            // 
-            this.paletteTable.AutoSize = true;
-            this.paletteTable.ColumnCount = 4;
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 41F));
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 39F));
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.Location = new System.Drawing.Point(6, 145);
-            this.paletteTable.Margin = new System.Windows.Forms.Padding(5);
-            this.paletteTable.Name = "paletteTable";
-            this.paletteTable.Padding = new System.Windows.Forms.Padding(4);
-            this.paletteTable.RowCount = 8;
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.paletteTable.Size = new System.Drawing.Size(168, 330);
-            this.paletteTable.TabIndex = 2;
-            // 
             // reactorWidth
             // 
-            this.reactorWidth.Location = new System.Drawing.Point(6, 61);
+            this.reactorWidth.Location = new System.Drawing.Point(150, 59);
             this.reactorWidth.Maximum = new decimal(new int[] {
             24,
             0,
@@ -119,7 +91,7 @@
             // 
             // reactorLength
             // 
-            this.reactorLength.Location = new System.Drawing.Point(136, 61);
+            this.reactorLength.Location = new System.Drawing.Point(280, 59);
             this.reactorLength.Maximum = new decimal(new int[] {
             24,
             0,
@@ -142,7 +114,7 @@
             // 
             // reactorHeight
             // 
-            this.reactorHeight.Location = new System.Drawing.Point(72, 61);
+            this.reactorHeight.Location = new System.Drawing.Point(216, 59);
             this.reactorHeight.Maximum = new decimal(new int[] {
             24,
             0,
@@ -167,7 +139,7 @@
             // 
             this.sizeLabel.AutoSize = true;
             this.sizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sizeLabel.Location = new System.Drawing.Point(6, 16);
+            this.sizeLabel.Location = new System.Drawing.Point(150, 14);
             this.sizeLabel.Name = "sizeLabel";
             this.sizeLabel.Size = new System.Drawing.Size(168, 20);
             this.sizeLabel.TabIndex = 7;
@@ -176,7 +148,7 @@
             // x1
             // 
             this.x1.AutoSize = true;
-            this.x1.Location = new System.Drawing.Point(52, 63);
+            this.x1.Location = new System.Drawing.Point(196, 61);
             this.x1.Name = "x1";
             this.x1.Size = new System.Drawing.Size(14, 13);
             this.x1.TabIndex = 8;
@@ -185,7 +157,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(116, 63);
+            this.label1.Location = new System.Drawing.Point(260, 61);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(14, 13);
             this.label1.TabIndex = 9;
@@ -195,7 +167,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(69, 42);
+            this.label2.Location = new System.Drawing.Point(213, 40);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(18, 16);
             this.label2.TabIndex = 10;
@@ -205,7 +177,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(7, 42);
+            this.label3.Location = new System.Drawing.Point(151, 40);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(17, 16);
             this.label3.TabIndex = 11;
@@ -215,7 +187,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(133, 42);
+            this.label4.Location = new System.Drawing.Point(277, 40);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(17, 16);
             this.label4.TabIndex = 12;
@@ -224,23 +196,13 @@
             // resetLayout
             // 
             this.resetLayout.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.resetLayout.Location = new System.Drawing.Point(4, 87);
+            this.resetLayout.Location = new System.Drawing.Point(148, 85);
             this.resetLayout.Name = "resetLayout";
             this.resetLayout.Size = new System.Drawing.Size(170, 34);
             this.resetLayout.TabIndex = 4;
             this.resetLayout.Text = "Reset layout";
             this.resetLayout.UseVisualStyleBackColor = true;
             this.resetLayout.Click += new System.EventHandler(this.resetLayout_Click);
-            // 
-            // paletteLabel
-            // 
-            this.paletteLabel.AutoSize = true;
-            this.paletteLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.paletteLabel.Location = new System.Drawing.Point(7, 124);
-            this.paletteLabel.Name = "paletteLabel";
-            this.paletteLabel.Size = new System.Drawing.Size(57, 16);
-            this.paletteLabel.TabIndex = 14;
-            this.paletteLabel.Text = "Palette";
             // 
             // reactorGrid
             // 
@@ -284,7 +246,7 @@
             // 
             this.statsLabel.AutoSize = true;
             this.statsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.statsLabel.Location = new System.Drawing.Point(12, 499);
+            this.statsLabel.Location = new System.Drawing.Point(16, 398);
             this.statsLabel.Name = "statsLabel";
             this.statsLabel.Size = new System.Drawing.Size(52, 20);
             this.statsLabel.TabIndex = 19;
@@ -311,34 +273,13 @@
             this.loadReactor.UseVisualStyleBackColor = true;
             this.loadReactor.Click += new System.EventHandler(this.loadReactor_Click);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.AutoSize = true;
-            this.groupBox1.Controls.Add(this.sizeLabel);
-            this.groupBox1.Controls.Add(this.reactorWidth);
-            this.groupBox1.Controls.Add(this.reactorHeight);
-            this.groupBox1.Controls.Add(this.x1);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.paletteLabel);
-            this.groupBox1.Controls.Add(this.resetLayout);
-            this.groupBox1.Controls.Add(this.paletteTable);
-            this.groupBox1.Controls.Add(this.reactorLength);
-            this.groupBox1.Location = new System.Drawing.Point(137, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(182, 496);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            // 
             // showClusterInfo
             // 
             this.showClusterInfo.AutoSize = true;
             this.showClusterInfo.Checked = true;
             this.showClusterInfo.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showClusterInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.showClusterInfo.Location = new System.Drawing.Point(192, 501);
+            this.showClusterInfo.Location = new System.Drawing.Point(196, 400);
             this.showClusterInfo.Name = "showClusterInfo";
             this.showClusterInfo.Size = new System.Drawing.Size(136, 19);
             this.showClusterInfo.TabIndex = 30;
@@ -452,12 +393,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.stats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.stats.Location = new System.Drawing.Point(7, 525);
+            this.stats.Location = new System.Drawing.Point(7, 425);
             this.stats.MaximumSize = new System.Drawing.Size(325, 607);
             this.stats.MinimumSize = new System.Drawing.Size(325, 100);
             this.stats.Name = "stats";
             this.stats.ReadOnly = true;
-            this.stats.Size = new System.Drawing.Size(325, 178);
+            this.stats.Size = new System.Drawing.Size(325, 278);
             this.stats.TabIndex = 24;
             this.stats.TabStop = false;
             this.stats.Text = "";
@@ -520,14 +461,24 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.sizeLabel);
+            this.Controls.Add(this.reactorWidth);
             this.Controls.Add(this.checkForUpdates);
+            this.Controls.Add(this.reactorHeight);
             this.Controls.Add(this.showClusterInfo);
+            this.Controls.Add(this.x1);
             this.Controls.Add(this.fuelCriticalityFactor);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.fuelCriticalityFactorLabel);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.label5);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.OpenConfig);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.stats);
+            this.Controls.Add(this.resetLayout);
             this.Controls.Add(this.fuelSelector);
+            this.Controls.Add(this.reactorLength);
             this.Controls.Add(this.fuelBaseHeat);
             this.Controls.Add(this.fuelBaseHeatLabel);
             this.Controls.Add(this.fuelBaseEfficiency);
@@ -536,7 +487,6 @@
             this.Controls.Add(this.saveAsImage);
             this.Controls.Add(this.viewStyleSwitch);
             this.Controls.Add(this.layerScrollBar);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.loadReactor);
             this.Controls.Add(this.saveReactor);
             this.Controls.Add(this.statsLabel);
@@ -552,8 +502,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -561,7 +509,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.TableLayoutPanel paletteTable;
         private System.Windows.Forms.NumericUpDown reactorWidth;
         private System.Windows.Forms.NumericUpDown reactorLength;
         private System.Windows.Forms.NumericUpDown reactorHeight;
@@ -572,13 +519,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button resetLayout;
-        private System.Windows.Forms.Label paletteLabel;
         private System.Windows.Forms.VScrollBar layerScrollBar;
         private System.Windows.Forms.Label layerLabel;
         private System.Windows.Forms.Label statsLabel;
         private System.Windows.Forms.Button saveReactor;
         private System.Windows.Forms.Button loadReactor;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button viewStyleSwitch;
         private System.Windows.Forms.Button saveAsImage;
         private System.Windows.Forms.NumericUpDown imageScale;

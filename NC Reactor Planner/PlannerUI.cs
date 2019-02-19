@@ -13,14 +13,12 @@ namespace NC_Reactor_Planner
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
 
-        ToolTip paletteToolTip;
+        ToolTip uiToolTip;
         public static ToolTip gridToolTip;
 
         public static int blockSize;
-        public static int paletteBlockSize = 40;
         private static ConfigurationUI configurationUI;
-
-        private static Graphics borderGraphics;
+        
         private static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
         public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 4);
@@ -48,21 +46,15 @@ namespace NC_Reactor_Planner
 #if !DEBUG
             SetUpdateAvailableTextAsync();
 #endif
-            blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
+            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
             showClustersInStats = true;
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-
-            borderGraphics = paletteTable.CreateGraphics();
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
 
             SetUpToolTips();
-
-            SetUpPalette();
-
-            this.MouseMove += new MouseEventHandler(PaletteBlockLostFocus);
 
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
 
@@ -73,7 +65,7 @@ namespace NC_Reactor_Planner
 
         private void SetUpToolTips()
         {
-            paletteToolTip = new ToolTip
+            uiToolTip = new ToolTip
             {
                 AutoPopDelay = 10000,
                 InitialDelay = 0,
@@ -90,85 +82,19 @@ namespace NC_Reactor_Planner
 
         private void SetUIToolTips()
         {
-            paletteToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
-            paletteToolTip.SetToolTip(reactorHeight, "Reactor hight (number of internal layers)");
-            paletteToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
-            paletteToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
-            paletteToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
-            paletteToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
-            paletteToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
-            paletteToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
-        }
-
-        private void SetUpPalette()
-        {
-            paletteLabel.Text = "Palette";
-            paletteTable.Controls.Clear();
-
-            foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
-            {
-                paletteTable.Controls.Add(new ReactorGridCell { block = kvp.Key, Image = kvp.Key.Texture, SizeMode = PictureBoxSizeMode.Zoom });
-            }
-
-            foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
-            {
-                paletteBlock.Click += new EventHandler(PaletteBlockClicked);
-                paletteBlock.MouseEnter += new EventHandler(PaletteBlockHighlighted);
-            }
-
-            //UpdatePaletteTooltips();
-
-            Palette.selectedBlock = (ReactorGridCell)paletteTable.Controls[0];
-            Palette.selectedType = Palette.selectedBlock.block.BlockType;
-
-            paletteTable.MouseLeave += new EventHandler(PaletteBlockLostFocus);
-        }
-
-        private void UpdatePaletteTooltips()
-        {
-            foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
-            {
-                paletteToolTip.SetToolTip(paletteBlock, paletteBlock.block.GetToolTip());
-            }
+            uiToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
+            uiToolTip.SetToolTip(reactorHeight, "Reactor hight (number of internal layers)");
+            uiToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
+            uiToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
+            uiToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
+            uiToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
+            uiToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
+            uiToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
         }
 
         private void ResetButtonFocusLost(object sender, EventArgs e)
         {
             resetLayout.Text = "Reset layout";
-        }
-
-        private void PaletteBlockLostFocus(object sender, EventArgs e)
-        {
-            borderGraphics.Clear(SystemColors.Control);
-
-            ReactorGridCell selected = Palette.selectedBlock;
-            paletteLabel.Text = selected.block.DisplayName;
-            borderGraphics.DrawRectangle(PaletteHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            //paletteToolTip.Hide(selected);
-            paletteToolTip.Active = false;
-        }
-
-        private void PaletteBlockHighlighted(object sender, EventArgs e)
-        {
-            borderGraphics.Clear(SystemColors.Control);
-
-            ReactorGridCell paletteBox = (ReactorGridCell)sender;
-            paletteLabel.Text = paletteBox.block.DisplayName;
-            paletteToolTip.Active = true;
-            paletteToolTip.Show(paletteBox.block.GetToolTip(), paletteBox, 45, 45);
-            borderGraphics.DrawRectangle(PaletteHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-                
-        }
-
-        private void PaletteBlockClicked(object sender, EventArgs e)
-        {
-            borderGraphics.Clear(SystemColors.Control);
-
-            ReactorGridCell paletteBox = (ReactorGridCell)sender;
-
-            Palette.selectedBlock = paletteBox;
-            Palette.selectedType = (Palette.blocks[paletteBox.block]);
-            borderGraphics.DrawRectangle(PaletteHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);         
         }
 
         private void resetLayout_Click(object sender, EventArgs e)
@@ -427,7 +353,7 @@ namespace NC_Reactor_Planner
 
         private void imageScale_ValueChanged(object sender, EventArgs e)
         {
-            blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
+            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
             
             foreach (ReactorGridLayer layer in Reactor.layers)
             {
@@ -465,7 +391,7 @@ namespace NC_Reactor_Planner
             fuelBaseEfficiency.Text = selectedFuel.BaseEfficiency.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
-            Palette.selectedFuel = selectedFuel; //[TODO]Change to a method you criminal
+            Palette.SelectedFuel = selectedFuel; //[TODO]Change to a method you criminal
         }
 
         private void reactorWidth_Enter(object sender, EventArgs e)
@@ -499,7 +425,6 @@ namespace NC_Reactor_Planner
         {
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
-            //UpdatePaletteTooltips();
             Reactor.Redraw();
             RefreshStats(showClustersInStats);
         }
@@ -512,21 +437,6 @@ namespace NC_Reactor_Planner
                 this.Text = appName;
         }
 
-        private void PaletteActive_CheckedChanged(object sender, EventArgs e)
-        {
-            Palette.LoadPalette();
-            if (Palette.selectedBlock.block is HeatSink)
-            {
-                ReactorGridCell oldSelected = Palette.selectedBlock;
-                SetUpPalette();
-                oldSelected.block = Palette.blockPalette[oldSelected.block.DisplayName];
-                PaletteBlockClicked(oldSelected, new EventArgs());
-            }
-            else
-                SetUpPalette();
-            paletteTable.Invalidate();
-        }
-
         private void showClusterInfo_CheckedChanged(object sender, EventArgs e)
         {
             showClustersInStats = showClusterInfo.Checked;
@@ -536,7 +446,6 @@ namespace NC_Reactor_Planner
         private void PlannerUI_Leave(object sender, EventArgs e)
         {
             gridToolTip.Hide(reactorGrid);
-            paletteToolTip.Hide(Palette.selectedBlock);
         }
 
         private async void checkForUpdates_Click(object sender, EventArgs e)

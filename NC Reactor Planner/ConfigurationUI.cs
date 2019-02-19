@@ -30,10 +30,6 @@ namespace NC_Reactor_Planner
     }
     public partial class ConfigurationUI : Form
     {
-        //private Dictionary<string, List<Control>> hsIFR; //heatsink input field rows
-        //private Dictionary<string, List<Control>> fIFR; //fuel input field rows
-        //private Dictionary<string, List<Control>> mIFR; //moderator input field rows
-        //private Dictionary<string, List<Control>> rDC; //resource Disposable Controls
         private Dictionary<string, Dictionary<string, List<Control>>> IFRs;
         private List<Control> fissionInputs;
         private static readonly FieldInfo[] configurationPages = typeof(Configuration).GetFields();

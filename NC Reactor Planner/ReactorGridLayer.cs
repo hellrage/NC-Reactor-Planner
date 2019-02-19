@@ -220,10 +220,10 @@ namespace NC_Reactor_Planner
                         PlaceBlock(cellX, cellZ, Palette.BlockToPlace(Reactor.BlockAt(position)));
                     break;
                 case MouseButtons.Right:
-                    PlaceBlock(cellX, cellZ, new Block("Air", BlockTypes.Air, Palette.textures["Air"], position));
+                    PlaceBlock(cellX, cellZ, new Block("Air", BlockTypes.Air, Palette.Textures["Air"], position));
                     break;
                 case MouseButtons.Middle:
-                    PlaceBlock(cellX, cellZ, new FuelCell((FuelCell)Palette.blockPalette["FuelCell"], position, Palette.selectedFuel));
+                    PlaceBlock(cellX, cellZ, new FuelCell((FuelCell)Palette.BlockPalette["FuelCell"], position, Palette.SelectedFuel));
                     break;
                 case MouseButtons.XButton1:
                 case MouseButtons.XButton2:

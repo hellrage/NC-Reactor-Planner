@@ -356,9 +356,9 @@ namespace NC_Reactor_Planner
         private static void SetDefaultModerators()
         {
             Moderators = new Dictionary<string, ModeratorValues>();
-            Moderators.Add("Beryllium", new ModeratorValues(1.4, 1.1));
+            Moderators.Add("Beryllium", new ModeratorValues(2.2, 1.1));
             Moderators.Add("Graphite", new ModeratorValues(1.0, 1.2));
-            Moderators.Add("HeavyWater", new ModeratorValues(1.8, 1.0));
+            Moderators.Add("HeavyWater", new ModeratorValues(3.6, 1.0));
         }
 
         private static void SetDefaultFission()

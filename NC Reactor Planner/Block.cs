@@ -18,7 +18,7 @@ namespace NC_Reactor_Planner
         public Block()
         {
             DisplayName = "Air";
-            Texture = Palette.textures["Air"];
+            Texture = Palette.Textures["Air"];
             Position = Palette.dummyPosition;
         }
 
