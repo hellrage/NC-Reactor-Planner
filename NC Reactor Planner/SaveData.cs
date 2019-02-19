@@ -56,10 +56,11 @@ namespace NC_Reactor_Planner
                             return new ValidationResult(false, "Tried to load an invalid FuelCell: " + fuelCellGroup.Key);
                         case 2:
                             string newFuelName = "[OX]"+props[0].Replace(" Oxide", "");
-                            if (Reactor.GetFuel(newFuelName) != null)
+                            Fuel usedFuel;
+                            if (Palette.FuelPalette.TryGetValue(newFuelName, out usedFuel))
                                 ValidatedFuelCells.Add(string.Join(";", newFuelName, props[1]), fuelCellGroup.Value);
                             else
-                                ValidatedFuelCells.Add(string.Join(";", Reactor.fuels.First().Name, props[1]), fuelCellGroup.Value);
+                                ValidatedFuelCells.Add(string.Join(";", Palette.FuelPalette.First().Value.Name, props[1]), fuelCellGroup.Value);
                             break;
                         default:
                             return new ValidationResult(false, "Tried to load an unexpected FuelCell: " + fuelCellGroup.Key);

@@ -46,7 +46,6 @@ namespace NC_Reactor_Planner
         public static List<string> updateOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Magnesium", "Manganese", "Quartz", "Obsidian", "Gold", "Prismarine", "Copper", "Tin", "Lead", "Silver", "Helium", "Purpur", "Diamond", "Emerald", "Boron", "Lithium", "Aluminum"};
 
         public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
-        public static List<Fuel> fuels;
 
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalCoolingPerType;
@@ -61,17 +60,6 @@ namespace NC_Reactor_Planner
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
             UI = new PlannerUI();
             UI.Controls.Add(Palette.PaletteControl);
-            PopulateFuels();
-        }
-
-        public static void PopulateFuels()
-        {
-            fuels = new List<Fuel>();
-            foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
-            {
-                FuelValues fev = fuelEntry.Value;
-                fuels.Add(new Fuel(fuelEntry.Key, fev.BaseEfficiency, fev.BaseHeat, fev.FuelTime, fev.CriticalityFactor));
-            }
         }
 
         public static void InitializeReactor(int interiorX, int interiorY, int interiorZ)
@@ -514,7 +502,7 @@ namespace NC_Reactor_Planner
                         case 1:
                             throw new ArgumentException("Tried to load an invalid FuelCell: " + kvp.Key);
                         case 2:
-                            restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, GetFuel(props[0]),Convert.ToBoolean(props[1]));
+                            restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, Palette.FuelPalette[props[0]],Convert.ToBoolean(props[1]));
                             break;
                         default:
                             throw new ArgumentException("Tried to load an unexpected FuelCell: " + kvp.Key);
@@ -533,37 +521,16 @@ namespace NC_Reactor_Planner
 
         public static void ReloadValuesFromConfig()
         {
+            Palette.ReloadValuesFromConfig();
             ReloadBlockValues();
-            ReloadFuelValues();
             //Update();
         }
 
         private static void ReloadBlockValues()
         {
-            Palette.ReloadValuesFromConfig();
-
             if (blocks == null) return;
             foreach (Block block in blocks)
                     block.ReloadValuesFromConfig();
-        }
-
-        private static void ReloadFuelValues()
-        {
-            foreach (Fuel fuel in fuels)
-            {
-                fuel.ReloadValuesFromConfig();
-            }
-        }
-
-        public static Fuel GetFuel(string fuelName)
-        {
-            foreach (Fuel fuel in fuels)
-            {
-                if (fuel.Name == fuelName)
-                    return fuel;
-            }
-            System.Windows.Forms.MessageBox.Show("Tried to get wrong fuel! Looked for: " + fuelName);
-            return null;
         }
 
         public static void SaveLayerAsImage(int layer, string fileName)

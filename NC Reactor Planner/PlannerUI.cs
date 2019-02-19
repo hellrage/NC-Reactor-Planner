@@ -56,7 +56,7 @@ namespace NC_Reactor_Planner
 
             SetUpToolTips();
 
-            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
+            fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
 
             SetUIToolTips();
 
@@ -424,7 +424,7 @@ namespace NC_Reactor_Planner
         private void ConfigurationClosed(object sender, FormClosedEventArgs e)
         {
             fuelSelector.Items.Clear();
-            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
+            fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
             Reactor.Redraw();
             RefreshStats(showClustersInStats);
         }

@@ -192,6 +192,9 @@ namespace NC_Reactor_Planner
 
             foreach (KeyValuePair<string, Block> blockEntry in BlockPalette)
                 blockEntry.Value.ReloadValuesFromConfig();
+
+            foreach(KeyValuePair<string, Fuel> fuelEntry in FuelPalette)
+                fuelEntry.Value.ReloadValuesFromConfig();
         }
 
         private static void PopulateBlockPalette()

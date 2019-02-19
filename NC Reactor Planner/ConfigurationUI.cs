@@ -191,6 +191,7 @@ namespace NC_Reactor_Planner
                     {
                         ReloadTabs();
                         Reactor.ReloadValuesFromConfig();
+                        Reactor.Update();
                         MessageBox.Show("Loaded and applied!");
                         Close();
                     }
@@ -222,6 +223,7 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.Update();
                 return true;
             }
             catch (Exception ex)
@@ -230,6 +232,7 @@ namespace NC_Reactor_Planner
                 Configuration.ResetToDefaults();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.Update();
                 return false;
             }
         }
