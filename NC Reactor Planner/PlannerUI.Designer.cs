@@ -62,6 +62,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.fuelCriticalityFactorLabel = new System.Windows.Forms.Label();
             this.fuelCriticalityFactor = new System.Windows.Forms.TextBox();
+            this.checkForUpdates = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -503,12 +504,23 @@
             this.fuelCriticalityFactor.Size = new System.Drawing.Size(30, 20);
             this.fuelCriticalityFactor.TabIndex = 28;
             // 
+            // checkForUpdates
+            // 
+            this.checkForUpdates.Location = new System.Drawing.Point(7, 176);
+            this.checkForUpdates.Name = "checkForUpdates";
+            this.checkForUpdates.Size = new System.Drawing.Size(124, 23);
+            this.checkForUpdates.TabIndex = 31;
+            this.checkForUpdates.Text = "Check for Updates";
+            this.checkForUpdates.UseVisualStyleBackColor = true;
+            this.checkForUpdates.Click += new System.EventHandler(this.checkForUpdates_Click);
+            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.checkForUpdates);
             this.Controls.Add(this.showClusterInfo);
             this.Controls.Add(this.fuelCriticalityFactor);
             this.Controls.Add(this.fuelCriticalityFactorLabel);
@@ -582,6 +594,7 @@
         private System.Windows.Forms.TextBox fuelCriticalityFactor;
         private System.Windows.Forms.CheckBox showClusterInfo;
         private System.Windows.Forms.Panel reactorGrid;
+        private System.Windows.Forms.Button checkForUpdates;
     }
 }
 

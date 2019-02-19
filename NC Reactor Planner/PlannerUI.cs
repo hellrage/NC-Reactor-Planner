@@ -540,5 +540,10 @@ namespace NC_Reactor_Planner
             gridToolTip.Hide(reactorGrid);
             paletteToolTip.Hide(Palette.selectedBlock);
         }
+
+        private void checkForUpdates_Click(object sender, EventArgs e)
+        {
+            Updater.CheckForUpdate();
+        }
     }
 }

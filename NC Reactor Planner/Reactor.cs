@@ -232,11 +232,11 @@ namespace NC_Reactor_Planner
             List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Primed; });
             foreach (FuelCell activeFuelCell in activeFuelCells)
             {
-                List<FuelCell> queue = new List<FuelCell>();
-                queue.Add(activeFuelCell);
+                List<FuelCell> queue = new List<FuelCell>{activeFuelCell};
                 FuelCell fuelCell;
-                while (queue.Count > 0 && (fuelCell = queue.First()) != null)
+                while (queue.Count > 0)
                 {
+                    fuelCell = queue.First();
                     queue.Remove(fuelCell);
                     visited.Add(fuelCell);
                     foreach (FuelCell fc in fuelCell.FindModeratorsThenAdjacentCells())
@@ -268,7 +268,7 @@ namespace NC_Reactor_Planner
                 while (queue.Count > 0)
                 {
                     root = queue.First();
-                    if (!root.Valid || (root is Moderator) || (root is Conductor) || (root.BlockType == BlockTypes.Air) || (root.BlockType == BlockTypes.Casing))
+                    if (!root.Valid || root.Cluster != -1 || (root.BlockType == BlockTypes.Moderator) || (root.BlockType == BlockTypes.Air))
                     {
                         queue.Remove(root);
                         continue;
@@ -282,26 +282,25 @@ namespace NC_Reactor_Planner
                     {
                         Point3D pos = root.Position + offset;
                         Block neighbour = BlockAt(pos);
-                        if(!(neighbour is Moderator) & !(neighbour is Conductor) & (neighbour.BlockType != BlockTypes.Air) & (neighbour.BlockType != BlockTypes.Casing) & root.Valid)
+                        if(neighbour is Conductor conductor)
                         {
-                            if(neighbour.Cluster == -1)
-                                queue.Add(neighbour);
-                        }
-                        else if(neighbour is Conductor conductor)
-                        {
-                            if (conductorGroups[conductor.GroupID].HasPathToCasing)
-                                clusters[id].HasPathToCasing = true;
+                                clusters[id].HasPathToCasing |= conductorGroups[conductor.GroupID].HasPathToCasing;
                         }
                         else if (neighbour is Casing casing)
                         {
                                 clusters[id].HasPathToCasing = true;
+                        }
+                        else if(!(neighbour.BlockType == BlockTypes.Moderator) && (neighbour.BlockType != BlockTypes.Air))
+                        {
+                            if(neighbour.Cluster == -1)
+                                queue.Add(neighbour);
                         }
                     }
                     queue.Remove(root);
                 }
                 return true;
             }
-
+            
             int clusterID = 0;
             foreach (FuelCell fuelCell in fuelCells.FindAll(fc => fc.Valid))
             {
@@ -316,8 +315,7 @@ namespace NC_Reactor_Planner
             {
                 if (root.GroupID != -1)
                     return false;
-                List<Conductor> queue = new List<Conductor>();
-                queue.Add(root);
+                List<Conductor> queue = new List<Conductor>{root};
                 conductorGroups.Add(new ConductorGroup(id));
                 while (queue.Count > 0)
                 {
