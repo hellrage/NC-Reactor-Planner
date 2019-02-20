@@ -226,6 +226,7 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                 Reactor.UpdateStats();
                 return true;
             }
@@ -235,6 +236,7 @@ namespace NC_Reactor_Planner
                 Configuration.ResetToDefaults();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                 Reactor.UpdateStats();
                 return false;
             }

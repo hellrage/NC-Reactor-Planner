@@ -71,17 +71,6 @@ namespace NC_Reactor_Planner
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
             UI = new PlannerUI();
             UI.Controls.Add(Palette.PaletteControl);
-            PopulateFuels();
-        }
-
-        public static void PopulateFuels()
-        {
-            fuels = new List<Fuel>();
-            foreach (KeyValuePair<string, FuelValues> fuelEntry in Configuration.Fuels)
-            {
-                FuelValues fev = fuelEntry.Value;
-                fuels.Add(new Fuel(fuelEntry.Key, fev.BasePower, fev.BaseHeat, fev.FuelTime));
-            }
         }
 
         public static void InitializeReactor(int interiorX, int interiorY, int interiorZ)
@@ -113,7 +102,7 @@ namespace NC_Reactor_Planner
                     blocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
                 }
 
-            usedFuel = fuels.First();
+            usedFuel = Palette.FuelPalette.Values.First();
             UpdateStats();
             ConstructLayers();
         }
@@ -396,15 +385,14 @@ namespace NC_Reactor_Planner
         public static void ReloadValuesFromConfig()
         {
             Palette.ReloadValuesFromConfig();
-            ReloadCoolerValues();
+            ReloadBlockValues();
         }
 
-        private static void ReloadCoolerValues()
+        private static void ReloadBlockValues()
         {
             if (blocks == null) return;
             foreach (Block block in blocks)
-                if (block is Cooler cooler)
-                    cooler.ReloadValuesFromConfig();
+                block.ReloadValuesFromConfig();
         }
 
         public static void SaveLayerAsImage(int layer, string fileName, int scale = 2)

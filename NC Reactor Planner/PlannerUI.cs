@@ -24,7 +24,7 @@ namespace NC_Reactor_Planner
         public static ToolTip gridToolTip;
         public static int blockSize;
         private static ConfigurationUI configurationUI;
-        public static bool drawAllLayers = false;
+        public static bool drawAllLayers = true;
         string appName;
         string loadedSaveFileName = null;
         FileInfo loadedSaveFileInfo = null;
@@ -44,6 +44,7 @@ namespace NC_Reactor_Planner
 #if !DEBUG
             SetUpdateAvailableTextAsync();
 #endif
+            fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
 
             blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
 
@@ -51,8 +52,6 @@ namespace NC_Reactor_Planner
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
 
             SetUpToolTips();
-
-            fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
 
             SetUIToolTips();
 
@@ -386,7 +385,7 @@ namespace NC_Reactor_Planner
             layer.Location = origin;
         }
 
-        private void fuelSelector_SelectedIndexChanged(object sender, EventArgs e)
+        public void fuelSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             Fuel selectedFuel = (Fuel)fuelSelector.SelectedItem;
             if(selectedFuel == null)
@@ -399,7 +398,7 @@ namespace NC_Reactor_Planner
             Reactor.usedFuel = selectedFuel; //[TODO]Change to a method you criminal
 
             Reactor.UpdateStats();
-            Reactor.Redraw();//[TODO]Change redraw logic so it only does the active layer
+            Reactor.Redraw();
             RefreshStats();
         }
 
@@ -423,20 +422,10 @@ namespace NC_Reactor_Planner
             if (configurationUI == null || configurationUI.IsDisposed)
             {
                 configurationUI = new ConfigurationUI();
-                configurationUI.FormClosed += new FormClosedEventHandler(ConfigurationClosed);
                 configurationUI.Show();
             }
             else
                 configurationUI.Focus();
-        }
-
-        private void ConfigurationClosed(object sender, FormClosedEventArgs e)
-        {
-            fuelSelector.Items.Clear();
-            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
-            UpdateSelectedFuel();
-            Reactor.Redraw();
-            RefreshStats();
         }
 
         private void UpdateWindowTitle()
