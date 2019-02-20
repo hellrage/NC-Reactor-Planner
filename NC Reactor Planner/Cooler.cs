@@ -18,7 +18,7 @@ namespace NC_Reactor_Planner
 
         public double HeatActive { get; private set; }
         public double HeatPassive { get; private set; }
-        public double Cooling { get => Active ? HeatActive : HeatPassive; }
+        public double Cooling { get => Active ? HeatActive * Configuration.Fission.ActiveCoolerMaxRate / 20 : HeatPassive; }
         public string Requirements { get; private set; }
         public override bool Valid { get => _valid; protected set { _oldValid = _valid; _valid = value; } }
         public bool Active { get; private set; }
@@ -54,7 +54,7 @@ namespace NC_Reactor_Planner
 
             toolTip += string.Format(" Passive cooling: {0} HU/t\r\n" +
                                     " Active cooling: {1} HU/t\r\n" +
-                                    " Requires: {2}\r\n", HeatPassive, HeatActive, Requirements);
+                                    " Requires: {2}\r\n", HeatPassive, HeatActive * Configuration.Fission.ActiveCoolerMaxRate / 20, Requirements);
             if (Position != Palette.dummyPosition & !Valid)
             {
                 foreach (string error in new HashSet<string>(placementErrors))

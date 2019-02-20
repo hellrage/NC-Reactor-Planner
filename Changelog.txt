@@ -120,3 +120,10 @@
 	Backported the tooltip behaviour, much more convenient now.
 	Prevented the planner from attempting to load 2.0.x saves and crashing.
 	Added an icon to the application :P
+20.02.19 v1.2.14
+	Fixes for git API rate limit.
+	Fixes for 125% DPI rendering.
+	Fixes for Active cooler cooling calculations, thanks Aedda!
+	Updated cooler tooltips to reflect actual cooling values.
+	Fixes for Cooler configuration import \ load.
+	Added fission_active_cooler_max_rate to .cfg import and saves

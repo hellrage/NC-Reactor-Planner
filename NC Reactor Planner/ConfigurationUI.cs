@@ -80,7 +80,7 @@ namespace NC_Reactor_Planner
             int row = 0;
             foreach (FieldInfo fi in fieldInfos)
             {
-                settingTabs.TabPages["Fission"].Controls.Add(new Label { Text = fi.Name, Location = new Point(3, row++ * 20), Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold) });
+                settingTabs.TabPages["Fission"].Controls.Add(new Label { Text = fi.Name, Location = new Point(3, row++ * 20), Size = new Size(200, 14), Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold) });
                 fissionInputs.Add(new TextBox { Text = fi.GetValue(Configuration.Fission).ToString(), Location = new Point(3, row++*20), Size = new Size(80, 14), CausesValidation = true, Tag = fi.FieldType }.Set(val => { val.Validating += ValidateValue; }));
             }
             foreach (Control c in fissionInputs)
@@ -318,6 +318,7 @@ namespace NC_Reactor_Planner
                     Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
                     Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
                     Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
+                    Configuration.Fission.ActiveCoolerMaxRate = config.Get<int>("fission", "fission_active_cooler_max_rate");
 
                     SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
                     SetFuelValues(config,

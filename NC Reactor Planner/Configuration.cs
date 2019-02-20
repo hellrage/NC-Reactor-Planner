@@ -50,8 +50,8 @@ namespace NC_Reactor_Planner
 
     public struct CoolerValues
     {
-        public double HeatActive;
         public double HeatPassive;
+        public double HeatActive;
         public string Requirements;
 
         public CoolerValues(double hp, double ha, string req)
@@ -79,8 +79,9 @@ namespace NC_Reactor_Planner
         public int NeutronReach;
         public double ModeratorExtraPower;
         public double ModeratorExtraHeat;
+        public int ActiveCoolerMaxRate;
 
-        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double mep, double meh)
+        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double mep, double meh, int acmr)
         {
             Power = p;
             FuelUse = fu;
@@ -90,6 +91,7 @@ namespace NC_Reactor_Planner
             NeutronReach = nr;
             ModeratorExtraPower = mep;
             ModeratorExtraHeat = meh;
+            ActiveCoolerMaxRate = acmr;
         }
 
         public FissionValues(List<object> values)
@@ -102,6 +104,7 @@ namespace NC_Reactor_Planner
             NeutronReach = Convert.ToInt32(values[5]);
             ModeratorExtraPower = Convert.ToDouble(values[6]);
             ModeratorExtraHeat = Convert.ToDouble(values[7]);
+            ActiveCoolerMaxRate = Convert.ToInt32(values[8]);
         }
     }
 
@@ -162,6 +165,8 @@ namespace NC_Reactor_Planner
             }
 
             Fission = cf.Fission;
+            if (cf.saveVersion < new Version(1, 2, 14))
+                Fission.ActiveCoolerMaxRate = 5;
             //ResourceCosts = cf.ResourceCosts;
             //if (ResourceCosts.CasingCosts == null)
             //    SetDefaultResourceCosts();
@@ -288,6 +293,7 @@ namespace NC_Reactor_Planner
             Fission.ModeratorExtraPower = 1.0;
             Fission.ModeratorExtraHeat = 2.0;
             Fission.NeutronReach = 4;
+            Fission.ActiveCoolerMaxRate = 5;
         }
 
         //private static void SetDefaultResourceCosts()

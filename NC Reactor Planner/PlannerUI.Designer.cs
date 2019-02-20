@@ -39,7 +39,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.resetLayout = new System.Windows.Forms.Button();
-            this.paletteLabel = new System.Windows.Forms.Label();
             this.reactorGrid = new System.Windows.Forms.Panel();
             this.layerScrollBar = new System.Windows.Forms.VScrollBar();
             this.layerLabel = new System.Windows.Forms.Label();
@@ -203,16 +202,6 @@
             this.resetLayout.Text = "Reset layout";
             this.resetLayout.UseVisualStyleBackColor = true;
             this.resetLayout.Click += new System.EventHandler(this.resetLayout_Click);
-            // 
-            // paletteLabel
-            // 
-            this.paletteLabel.AutoSize = true;
-            this.paletteLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.paletteLabel.Location = new System.Drawing.Point(153, 120);
-            this.paletteLabel.Name = "paletteLabel";
-            this.paletteLabel.Size = new System.Drawing.Size(57, 16);
-            this.paletteLabel.TabIndex = 14;
-            this.paletteLabel.Text = "Palette";
             // 
             // reactorGrid
             // 
@@ -477,7 +466,6 @@
             this.Controls.Add(this.fuelBaseRFLabel);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.imageScale);
-            this.Controls.Add(this.paletteLabel);
             this.Controls.Add(this.saveAsImage);
             this.Controls.Add(this.resetLayout);
             this.Controls.Add(this.viewStyleSwitch);
@@ -515,7 +503,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button resetLayout;
-        private System.Windows.Forms.Label paletteLabel;
         private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.VScrollBar layerScrollBar;
         private System.Windows.Forms.Label layerLabel;
