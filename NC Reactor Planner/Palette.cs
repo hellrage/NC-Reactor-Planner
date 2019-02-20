@@ -155,6 +155,7 @@ namespace NC_Reactor_Planner
             if (Textures == null)
                 LoadTextures();
             PaletteControl = new PalettePanel();
+            PaletteControl.Parent = Reactor.UI;
             paletteToolTip = new ToolTip();
             LoadPalette();
         }
