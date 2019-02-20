@@ -73,9 +73,8 @@ namespace NC_Reactor_Planner
         private static async Task<WebResponse> GetWebResponseAsync(string url)
         {
             ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
-            ServicePointManager.ServerCertificateValidationCallback = (s, cert, chain, ssl) => true;
             webRequest.UserAgent = "NC-Reactor-Planner-App";
             return await webRequest.GetResponseAsync();
         }
