@@ -397,14 +397,15 @@ namespace NC_Reactor_Planner
                 block.ReloadValuesFromConfig();
         }
 
-        public static void SaveLayerAsImage(int layer, string fileName, int scale = 2)
+        public static void SaveLayerAsImage(int layer, string fileName)
         {
             Bitmap layerImage = layers[layer - 1].DrawToImage();
-            layerImage.Save(fileName);
+            using (FileStream fs = File.OpenWrite(fileName))
+                layerImage.Save(fs, System.Drawing.Imaging.ImageFormat.Png);
             layerImage.Dispose();
         }
 
-        public static void SaveReactorAsImage(string fileName, int statStringLines, int scale = 2, int fontSize = 24)
+        public static void SaveReactorAsImage(string fileName, int statStringLines, int fontSize = 24)
         {
             int layersPerRow = (int)Math.Ceiling(Math.Sqrt(interiorDims.Y));
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
@@ -430,10 +431,12 @@ namespace NC_Reactor_Planner
                                     GraphicsUnit.Pixel);
                     layerImage.Dispose();
                 }
-                string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
-                gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                gr.DrawString(GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
-            reactorImage.Save(fileName);
+            using (FileStream fs = File.OpenWrite(fileName))
+            {
+                reactorImage.Save(fs, System.Drawing.Imaging.ImageFormat.Png);
+            }
             reactorImage.Dispose();
         }
 

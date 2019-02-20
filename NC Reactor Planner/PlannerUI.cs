@@ -318,27 +318,23 @@ namespace NC_Reactor_Planner
 
         private void saveAsImage_Click(object sender, EventArgs e)
         {
-            DialogResult res = MessageBox.Show("Save the entire reactor? Selecting \"No\" will save the currently displayed (or first) layer", "Save entire structure?", MessageBoxButtons.YesNoCancel);
-            if (res == DialogResult.Cancel)
-                return;
-            bool saveAll = (res == DialogResult.Yes) ? true : false;
             string fileName = null;
             using (SaveFileDialog fileDialog = new SaveFileDialog { Filter = "Image files (*.png)|*.png" })
             {
                 string autoFileName = "";
-                if(loadedSaveFileName == null)
+                if (loadedSaveFileInfo == null)
                 {
-                    if (saveAll)
-                        autoFileName = string.Format("{0} {1} x {2} x {3}", (fuelSelector.SelectedItem == null) ? "Custom" : fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
+                    if (drawAllLayers)
+                        autoFileName = string.Format("{0} {1} x {2} x {3}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
                     else
-                        autoFileName = string.Format("{0} {1} x {2} x {3} layer {4}", (fuelSelector.SelectedItem == null) ? "Custom" : fuelSelector.SelectedItem.ToString(), Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z, layerScrollBar.Value);
+                        autoFileName = string.Format("{0} {1} x {2} x {3} layer {4}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z, layerScrollBar.Value);
                 }
                 else
                 {
-                    if(saveAll)
-                        autoFileName = loadedSaveFileInfo.Name;
+                    if (drawAllLayers)
+                        autoFileName = loadedSaveFileInfo.Name.Replace(".json", "");
                     else
-                        autoFileName = loadedSaveFileInfo.Name + " layer " + layerScrollBar.Value;
+                        autoFileName = (loadedSaveFileInfo.Name + " layer " + layerScrollBar.Value).Replace(".json", "");
                 }
                 fileDialog.FileName = autoFileName;
 
@@ -347,12 +343,10 @@ namespace NC_Reactor_Planner
             }
             if (fileName != null)
             {
-                if (saveAll)
-                {
-                    Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value);
-                }
+                if (drawAllLayers)
+                    Reactor.SaveReactorAsImage(fileName, stats.Lines.Length);
                 else
-                    Reactor.SaveLayerAsImage(layerScrollBar.Value, fileName, (int)imageScale.Value);
+                    Reactor.SaveLayerAsImage(layerScrollBar.Value, fileName);
             }
         }
 
