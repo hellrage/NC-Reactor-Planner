@@ -23,13 +23,12 @@ namespace NC_Reactor_Planner
             private int cellZ;
             private int Xhighlight;
             private int Zhighlight;
-            private static int blockSide = 32;
-            private static int spacing = 3;
-            private static int namestripHeight = 23;
+            public static readonly int blockSide = 32;
+            public static readonly int spacing = 3;
+            public static readonly int namestripHeight = 23;
 
             public PalettePanel()
             {
-                Location = new Point(137, 120);
                 Size = new Size(200, 252);
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
                 cellX = -1;
@@ -68,7 +67,7 @@ namespace NC_Reactor_Planner
             private void DrawNamestring(Graphics g, string name)
             {
                 g.FillRectangle(new SolidBrush(DefaultBackColor), new Rectangle(0, 0, Width, namestripHeight));
-                g.DrawString(name, new Font(Font.FontFamily, 10, FontStyle.Bold), Brushes.Black, new PointF(spacing, spacing));
+                g.DrawString(name, new Font(Font, FontStyle.Bold), Brushes.Black, new PointF(spacing, spacing));
             }
 
             private void DrawHighlightRectangle(Graphics g, int cellX, int cellZ)

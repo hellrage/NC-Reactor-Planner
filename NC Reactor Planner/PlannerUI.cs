@@ -12,6 +12,7 @@ namespace NC_Reactor_Planner
     {
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
+        public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
 
         ToolTip uiToolTip;
         public static ToolTip gridToolTip;
@@ -35,7 +36,6 @@ namespace NC_Reactor_Planner
         public PlannerUI()
         {
             InitializeComponent();
-
             Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
             appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
             this.Text = appName;

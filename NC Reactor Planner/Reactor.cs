@@ -60,6 +60,8 @@ namespace NC_Reactor_Planner
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
             UI = new PlannerUI();
             UI.Controls.Add(Palette.PaletteControl);
+            Palette.PaletteControl.Parent = UI;
+            Palette.PaletteControl.Location = UI.PalettePanelLocation;
         }
 
         public static void InitializeReactor(int interiorX, int interiorY, int interiorZ)

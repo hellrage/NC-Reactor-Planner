@@ -12,7 +12,7 @@ namespace NC_Reactor_Planner
     {
         public static async Task<Tuple<bool,Version,string>> CheckForUpdateAsync()
         {
-            string GitAPI = "https://api.github.com/repos/hellrage/NC-Reactor-Planner/git/refs/tags";
+            string GitAPI = "https://api.github.com/repos/hellrage/NC-Reactor-Planner/git/refs/tags?access_token=f83a69064bb51dd50b5b78cafdfa5433910710a2";
             WebResponse webResponse;
             try
             {
@@ -103,7 +103,7 @@ namespace NC_Reactor_Planner
                                 reader.Read();
                             } while (reader.Value.ToString() != "url");
                             reader.Read();
-                            string message = await GetCommitMessage(reader.Value.ToString());
+                            string message = await GetCommitMessage(reader.Value.ToString()+"?access_token=f83a69064bb51dd50b5b78cafdfa5433910710a2");
                             latest = Tuple.Create(version, message);
                         }
                     }
