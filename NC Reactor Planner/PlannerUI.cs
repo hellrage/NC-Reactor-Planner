@@ -23,11 +23,7 @@ namespace NC_Reactor_Planner
         ToolTip paletteToolTip;
         public static ToolTip gridToolTip;
         public static int blockSize;
-        public static int paletteBlockSize = 40;
-        private static int totalBlocks;
         private static ConfigurationUI configurationUI;
-        Pen passiveHighlightPen;
-        Pen activeHighlightPen;
         public static bool drawAllLayers = false;
         string appName;
         string loadedSaveFileName = null;
@@ -45,17 +41,18 @@ namespace NC_Reactor_Planner
 
         private void Form1_Load(object sender, EventArgs e)
         {
+#if !DEBUG
+            SetUpdateAvailableTextAsync();
+#endif
+
             blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
-            
-            passiveHighlightPen = new Pen(Color.Blue, 4);
-            activeHighlightPen = new Pen(Color.Green, 4);
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
 
             SetUpToolTips();
 
-            fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
+            fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
 
             SetUIToolTips();
 
@@ -453,6 +450,37 @@ namespace NC_Reactor_Planner
         private void PaletteActive_CheckedChanged(object sender, EventArgs e)
         {
             Palette.LoadPalette(PaletteActive.Checked);
+        }
+
+        private async void checkForUpdates_Click(object sender, EventArgs e)
+        {
+            Tuple<bool, Version, string> updateInfo = await Updater.CheckForUpdateAsync();
+            if (updateInfo.Item1)
+            {
+                DialogResult updatePropmpt = MessageBox.Show("Download " + Updater.ShortVersionString(updateInfo.Item2) + "? Last commit message:\r\n\r\n" + updateInfo.Item3, "Update available!", MessageBoxButtons.YesNo);
+                if (updatePropmpt == DialogResult.Yes)
+                {
+                    SaveFileDialog saveDialog = new SaveFileDialog();
+                    saveDialog.FileName = Updater.ExecutableName(updateInfo.Item2);
+                    DialogResult saveResult = saveDialog.ShowDialog();
+                    if (saveResult == DialogResult.OK)
+                        Updater.DownloadVersionAsync(updateInfo.Item2, saveDialog.FileName);
+                }
+            }
+            else
+            {
+                MessageBox.Show("You are using the latest version: " + Updater.ShortVersionString(Reactor.saveVersion), "No updates");
+            }
+        }
+
+        private async void SetUpdateAvailableTextAsync()
+        {
+            Tuple<bool, Version, string> updateInfo = await Updater.CheckForUpdateAsync();
+            if (updateInfo.Item1)
+            {
+                checkForUpdates.Font = new Font(checkForUpdates.Font, FontStyle.Bold);
+                checkForUpdates.Text = Updater.ShortVersionString(updateInfo.Item2) + " Available!";
+            }
         }
     }
 }

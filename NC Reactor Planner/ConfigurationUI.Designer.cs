@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationUI));
             this.settingTabs = new System.Windows.Forms.TabControl();
             this.Save = new System.Windows.Forms.Button();
             this.LoadConfig = new System.Windows.Forms.Button();
@@ -85,7 +84,6 @@
             // Import
             // 
             this.Import.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Import.Enabled = false;
             this.Import.Location = new System.Drawing.Point(255, 415);
             this.Import.Name = "Import";
             this.Import.Size = new System.Drawing.Size(75, 23);
@@ -104,7 +102,6 @@
             this.Controls.Add(this.LoadConfig);
             this.Controls.Add(this.Save);
             this.Controls.Add(this.settingTabs);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigurationUI";
             this.Text = "Configuration";
             this.Load += new System.EventHandler(this.ConfigurationUI_Load);

@@ -58,7 +58,7 @@
             this.stats = new System.Windows.Forms.RichTextBox();
             this.OpenConfig = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.checkForUpdates = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -440,14 +440,15 @@
             this.label5.TabIndex = 26;
             this.label5.Text = "Scale:";
             // 
-            // button1
+            // checkForUpdates
             // 
-            this.button1.Location = new System.Drawing.Point(7, 180);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(124, 23);
-            this.button1.TabIndex = 27;
-            this.button1.Text = "Load Reactor";
-            this.button1.UseVisualStyleBackColor = true;
+            this.checkForUpdates.Location = new System.Drawing.Point(7, 180);
+            this.checkForUpdates.Name = "checkForUpdates";
+            this.checkForUpdates.Size = new System.Drawing.Size(124, 23);
+            this.checkForUpdates.TabIndex = 27;
+            this.checkForUpdates.Text = "Check for Updates";
+            this.checkForUpdates.UseVisualStyleBackColor = true;
+            this.checkForUpdates.Click += new System.EventHandler(this.checkForUpdates_Click);
             // 
             // PlannerUI
             // 
@@ -455,7 +456,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(902, 664);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.checkForUpdates);
             this.Controls.Add(this.PaletteActive);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.sizeLabel);
@@ -532,7 +533,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox PaletteActive;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button checkForUpdates;
     }
 }
 

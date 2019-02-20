@@ -528,6 +528,12 @@ namespace NC_Reactor_Planner
                 //usedFuel = (Fuel)js.Deserialize(sr, typeof(Fuel));
             }
 
+            if(csf.SaveVersion.Major == 2)
+            {
+                System.Windows.Forms.MessageBox.Show("Can't load post-overhaul savefiles!");
+                return;
+            }
+
             InitializeReactor(csf.InteriorDimensions);
 
             foreach (Dictionary<string, List<Point3D>> d in csf.CompressedReactor)

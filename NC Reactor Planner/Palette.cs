@@ -50,7 +50,7 @@ namespace NC_Reactor_Planner
 
             public void Redraw(Graphics g)
             {
-                DrawNamestring(g, selectedBlock.DisplayName);
+                DrawNamestring(g, (selectedBlock is Cooler cooler && cooler.Active)?"Active "+selectedBlock.DisplayName : selectedBlock.DisplayName);
                 DrawHighlightRectangle(g, Xhighlight, Zhighlight);
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighSpeed;
@@ -74,7 +74,7 @@ namespace NC_Reactor_Planner
             private void DrawNamestring(Graphics g, string name)
             {
                 g.FillRectangle(new SolidBrush(DefaultBackColor), new Rectangle(0, 0, Width, namestripHeight));
-                g.DrawString(name, new Font(Font.FontFamily, 10, FontStyle.Bold), Brushes.Black, new PointF(spacing, spacing));
+                g.DrawString(name, new Font(Font.FontFamily, 9, FontStyle.Bold), Brushes.Black, new PointF(spacing, spacing));
             }
 
             private void DrawHighlightRectangle(Graphics g, int cellX, int cellZ)

@@ -226,6 +226,7 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.UpdateStats();
                 return true;
             }
             catch (Exception ex)
@@ -234,6 +235,7 @@ namespace NC_Reactor_Planner
                 Configuration.ResetToDefaults();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.UpdateStats();
                 return false;
             }
         }
@@ -292,83 +294,83 @@ namespace NC_Reactor_Planner
 
         private void Import_Click(object sender, EventArgs e)
         {
-            //using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Nuclear craft config|nuclearcraft.cfg|Any config file|*.cfg|All Files|*.*" })
-            //{
-            //    if (fileDialog.ShowDialog() == DialogResult.OK)
-            //    {
-            //        var config = NuclearcraftConfigImport.ImportConfig(new FileInfo(fileDialog.FileName));
-            //        if (config == null || !config.HasBlock("fission"))
-            //        {
-            //            MessageBox.Show("Configuration could not be imported, check the file can be loaded by minecraft, or has come from the modpack you want to load");
-            //            return;
-            //        }
+            using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Nuclear craft config|nuclearcraft.cfg|Any config file|*.cfg|All Files|*.*" })
+            {
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var config = NuclearcraftConfigImport.ImportConfig(new FileInfo(fileDialog.FileName));
+                    if (config == null || !config.HasBlock("fission"))
+                    {
+                        MessageBox.Show("Configuration could not be imported, check the file can be loaded by minecraft, or has come from the modpack you want to load");
+                        return;
+                    }
 
-            //        if (!string.IsNullOrWhiteSpace(config.LastError))
-            //        {
-            //            MessageBox.Show("We had the following errors while parsing the config file, please check that it's correct (not all values may import)");
-            //        }
+                    if (!string.IsNullOrWhiteSpace(config.LastError))
+                    {
+                        MessageBox.Show("We had the following errors while parsing the config file, please check that it's correct (not all values may import)");
+                    }
 
-            //        Configuration.Fission.Power = config.Get<double>("fission", "fission_power");
-            //        Configuration.Fission.HeatGeneration = config.Get<double>("fission", "fission_heat_generation");
-            //        Configuration.Fission.FuelUse = config.Get<double>("fission", "fission_fuel_use");
-            //        Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
-            //        Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
-            //        Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
+                    Configuration.Fission.Power = config.Get<double>("fission", "fission_power");
+                    Configuration.Fission.HeatGeneration = config.Get<double>("fission", "fission_heat_generation");
+                    Configuration.Fission.FuelUse = config.Get<double>("fission", "fission_fuel_use");
+                    Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
+                    Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
+                    Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
 
-            //        SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
-            //        SetFuelValues(config,
-            //            new[] { "LEU-233", "LEU-233 Oxide", "HEU-233", "HEU-233 Oxide", "LEU-235", "LEU-235 Oxide", "HEU-235", "HEU-235 Oxide" },
-            //            "uranium");
-            //        SetFuelValues(config, new[] { "LEN-236", "LEN-236 Oxide", "HEN-236", "HEN-236 Oxide" },
-            //            "neptunium");
-            //        SetFuelValues(config, new[] { "LEP-239", "LEP-239 Oxide", "HEP-239", "HEP-239 Oxide", "LEP-241", "LEP-241 Oxide", "HEP-241", "HEP-241 Oxide" },
-            //            "plutonium");
-            //        SetFuelValues(config, new[] { "MOX-239", "MOX-241" },
-            //            "mox");
-            //        SetFuelValues(config, new[] { "LEA-242", "LEA-242 Oxide", "HEA-242", "HEA-242 Oxide" },
-            //            "americium");
-            //        SetFuelValues(config, new[] { "LECm-243", "LECm-243 Oxide", "HECm-243", "HECm-243 Oxide", "LECm-245", "LECm-245 Oxide", "HECm-245", "HECm-245 Oxide", "LECm-247", "LECm-247 Oxide", "HECm-247", "HECm-247 Oxide" },
-            //            "curium");
-            //        SetFuelValues(config, new[] { "LEB-248", "LEB-248 Oxide", "HEB-248", "HEB-248 Oxide" },
-            //            "berkelium");
-            //        SetFuelValues(config, new[] { "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide" },
-            //            "californium");
+                    SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
+                    SetFuelValues(config,
+                        new[] { "LEU-233", "LEU-233 Oxide", "HEU-233", "HEU-233 Oxide", "LEU-235", "LEU-235 Oxide", "HEU-235", "HEU-235 Oxide" },
+                        "uranium");
+                    SetFuelValues(config, new[] { "LEN-236", "LEN-236 Oxide", "HEN-236", "HEN-236 Oxide" },
+                        "neptunium");
+                    SetFuelValues(config, new[] { "LEP-239", "LEP-239 Oxide", "HEP-239", "HEP-239 Oxide", "LEP-241", "LEP-241 Oxide", "HEP-241", "HEP-241 Oxide" },
+                        "plutonium");
+                    SetFuelValues(config, new[] { "MOX-239", "MOX-241" },
+                        "mox");
+                    SetFuelValues(config, new[] { "LEA-242", "LEA-242 Oxide", "HEA-242", "HEA-242 Oxide" },
+                        "americium");
+                    SetFuelValues(config, new[] { "LECm-243", "LECm-243 Oxide", "HECm-243", "HECm-243 Oxide", "LECm-245", "LECm-245 Oxide", "HECm-245", "HECm-245 Oxide", "LECm-247", "LECm-247 Oxide", "HECm-247", "HECm-247 Oxide" },
+                        "curium");
+                    SetFuelValues(config, new[] { "LEB-248", "LEB-248 Oxide", "HEB-248", "HEB-248 Oxide" },
+                        "berkelium");
+                    SetFuelValues(config, new[] { "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide" },
+                        "californium");
 
-            //        SetCoolingRates(config);
+                    SetCoolingRates(config);
 
-            //        ReloadTabs();
-            //        Reactor.ReloadValuesFromConfig();
-            //        //Reactor.Update();
-            //        MessageBox.Show("Loaded and applied, please save as a json file");
-            //    }
-            //    else
-            //        return;
-            //}
+                    ReloadTabs();
+                    Reactor.ReloadValuesFromConfig();
+                    Reactor.UpdateStats();
+                    MessageBox.Show("Loaded and applied, please save as a json file");
+                }
+                else
+                    return;
+            }
         }
 
-        //private static void SetCoolingRates(NuclearcraftConfigImport config)
-        //{
-        //    var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
-        //    for (int i = 0; i < items.Length; i++)
-        //    {
-        //        var item = Configuration.HeatSinks[items[i]];
-        //        item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
-        //        //item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
-        //        Configuration.HeatSinks[items[i]] = item;
-        //    }
-        //}
+        private static void SetCoolingRates(NuclearcraftConfigImport config)
+        {
+            var items = new[] { "Water", "Redstone", "Quartz", "Gold", "Glowstone", "Lapis", "Diamond", "Helium", "Enderium", "Cryotheum", "Iron", "Emerald", "Copper", "Tin", "Magnesium" };
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = Configuration.Coolers[items[i]];
+                item.HeatPassive = config.GetItem<double>("fission", "fission_cooling_rate", i);
+                item.HeatActive = config.GetItem<double>("fission", "fission_active_cooling_rate", i);
+                Configuration.Coolers[items[i]] = item;
+            }
+        }
 
-        //private static void SetFuelValues(NuclearcraftConfigImport config, string[] items, string element)
-        //{
-        //    for (int i = 0; i < items.Length; i++)
-        //    {
-        //        var item = Configuration.Fuels[items[i]];
-        //        item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
-        //        //item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
-        //        item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
-        //        Configuration.Fuels[items[i]] = item;
-        //    }
-        //}
+        private static void SetFuelValues(NuclearcraftConfigImport config, string[] items, string element)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = Configuration.Fuels[items[i]];
+                item.FuelTime = config.GetItem<double>("fission", "fission_" + element + "_fuel_time", i);
+                item.BasePower = config.GetItem<double>("fission", "fission_" + element + "_power", i);
+                item.BaseHeat = config.GetItem<double>("fission", "fission_" + element + "_heat_generation", i);
+                Configuration.Fuels[items[i]] = item;
+            }
+        }
 
         private void ValidateValue(object sender, EventArgs args)
         {
