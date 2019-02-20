@@ -162,9 +162,9 @@ namespace NC_Reactor_Planner
             }
 
             Fission = cf.Fission;
-            ResourceCosts = cf.ResourceCosts;
-            if (ResourceCosts.CasingCosts == null)
-                SetDefaultResourceCosts();
+            //ResourceCosts = cf.ResourceCosts;
+            //if (ResourceCosts.CasingCosts == null)
+            //    SetDefaultResourceCosts();
             Fuels = cf.Fuels;
             Coolers = cf.Coolers;
             Reactor.ReloadValuesFromConfig();
@@ -200,7 +200,7 @@ namespace NC_Reactor_Planner
 
             SetDefaultFission();
 
-            SetDefaultResourceCosts();
+            //SetDefaultResourceCosts();
         }
 
         private static void SetDefaultFuels()
@@ -290,128 +290,128 @@ namespace NC_Reactor_Planner
             Fission.NeutronReach = 4;
         }
 
-        private static void SetDefaultResourceCosts()
-        {
-            ResourceCosts.FuelCellCosts = DefaultFuelCellCosts();
-            ResourceCosts.CasingCosts = DefaultCasingCosts();
-            ResourceCosts.ModeratorCosts = DefaultModeratorCosts();
-            ResourceCosts.CoolerCosts = DefaultCoolerCosts();
-        }
+        //private static void SetDefaultResourceCosts()
+        //{
+        //    ResourceCosts.FuelCellCosts = DefaultFuelCellCosts();
+        //    ResourceCosts.CasingCosts = DefaultCasingCosts();
+        //    ResourceCosts.ModeratorCosts = DefaultModeratorCosts();
+        //    ResourceCosts.CoolerCosts = DefaultCoolerCosts();
+        //}
 
-        private static Dictionary<string, int> DefaultFuelCellCosts()
-        {
-            Dictionary<string, int> dfcc = new Dictionary<string, int>();
-            dfcc.Add("Glass", 4);
-            dfcc.Add("Tough Alloy", 4);
-            return dfcc;
-        }
+        //private static Dictionary<string, int> DefaultFuelCellCosts()
+        //{
+        //    Dictionary<string, int> dfcc = new Dictionary<string, int>();
+        //    dfcc.Add("Glass", 4);
+        //    dfcc.Add("Tough Alloy", 4);
+        //    return dfcc;
+        //}
 
-        private static Dictionary<string, int> DefaultCasingCosts()
-        {
-            Dictionary<string, int> dcc = new Dictionary<string, int>();
-            dcc.Add("Tough Alloy", 1);
-            dcc.Add("Basic Plating", 4);
-            return dcc;
-        }
+        //private static Dictionary<string, int> DefaultCasingCosts()
+        //{
+        //    Dictionary<string, int> dcc = new Dictionary<string, int>();
+        //    dcc.Add("Tough Alloy", 1);
+        //    dcc.Add("Basic Plating", 4);
+        //    return dcc;
+        //}
 
-        private static Dictionary<string, Dictionary<string, int>> DefaultModeratorCosts()
-        {
-            Dictionary<string, Dictionary<string, int>> dmc = new Dictionary<string, Dictionary<string, int>>();
-            dmc.Add("Graphite", new Dictionary<string, int>());
-            dmc["Graphite"].Add("Graphite Ingot", 9);
-            dmc.Add("Beryllium", new Dictionary<string, int>());
-            dmc["Beryllium"].Add("Beryllium Ingot", 9);
-            return dmc;
-        }
+        //private static Dictionary<string, Dictionary<string, int>> DefaultModeratorCosts()
+        //{
+        //    Dictionary<string, Dictionary<string, int>> dmc = new Dictionary<string, Dictionary<string, int>>();
+        //    dmc.Add("Graphite", new Dictionary<string, int>());
+        //    dmc["Graphite"].Add("Graphite Ingot", 9);
+        //    dmc.Add("Beryllium", new Dictionary<string, int>());
+        //    dmc["Beryllium"].Add("Beryllium Ingot", 9);
+        //    return dmc;
+        //}
 
-        private static Dictionary<string, Dictionary<string, int>> DefaultCoolerCosts()
-        {
-            Dictionary<string, Dictionary<string, int>> dcc = new Dictionary<string, Dictionary<string, int>>();
+        //private static Dictionary<string, Dictionary<string, int>> DefaultCoolerCosts()
+        //{
+        //    Dictionary<string, Dictionary<string, int>> dcc = new Dictionary<string, Dictionary<string, int>>();
 
-            foreach (Cooler cooler in Palette.coolers)
-            {
-                dcc.Add(cooler.DisplayName, new Dictionary<string, int>());
-                dcc[cooler.DisplayName].Add("Empty Cooler", 1);
-            }
+        //    foreach (Cooler cooler in Palette.coolers)
+        //    {
+        //        dcc.Add(cooler.DisplayName, new Dictionary<string, int>());
+        //        dcc[cooler.DisplayName].Add("Empty Cooler", 1);
+        //    }
 
-            dcc["Water"].Add("Water Bucket", 1);
+        //    dcc["Water"].Add("Water Bucket", 1);
 
-            dcc["Redstone"].Add("Redstone", 2);
-            dcc["Redstone"].Add("Block of Redstone", 2);
+        //    dcc["Redstone"].Add("Redstone", 2);
+        //    dcc["Redstone"].Add("Block of Redstone", 2);
 
-            dcc["Quartz"].Add("Block of Quartz", 2);
-            dcc["Quartz"].Add("Crushed Quartz", 2);
+        //    dcc["Quartz"].Add("Block of Quartz", 2);
+        //    dcc["Quartz"].Add("Crushed Quartz", 2);
 
-            dcc["Gold"].Add("Gold Ingot", 8);
+        //    dcc["Gold"].Add("Gold Ingot", 8);
 
-            dcc["Glowstone"].Add("Glowstone", 2);
-            dcc["Glowstone"].Add("Glowstone Dust", 6);
+        //    dcc["Glowstone"].Add("Glowstone", 2);
+        //    dcc["Glowstone"].Add("Glowstone Dust", 6);
 
-            dcc["Lapis"].Add("Lapis Lazuli Block", 2);
+        //    dcc["Lapis"].Add("Lapis Lazuli Block", 2);
 
-            dcc["Diamond"].Add("Diamond", 8);
+        //    dcc["Diamond"].Add("Diamond", 8);
 
-            dcc["Helium"].Add("Liquid Helium Bucket", 1);
+        //    dcc["Helium"].Add("Liquid Helium Bucket", 1);
 
-            dcc["Iron"].Add("Iron Ingot", 8);
+        //    dcc["Iron"].Add("Iron Ingot", 8);
 
-            dcc["Emerald"].Add("Emerald", 6);
+        //    dcc["Emerald"].Add("Emerald", 6);
 
-            dcc["Copper"].Add("Copper Ingot", 8);
+        //    dcc["Copper"].Add("Copper Ingot", 8);
 
-            dcc["Tin"].Add("Tin Ingot", 8);
+        //    dcc["Tin"].Add("Tin Ingot", 8);
 
-            dcc["Magnesium"].Add("Magnesium Ingot", 8);
+        //    dcc["Magnesium"].Add("Magnesium Ingot", 8);
 
-            return dcc;
-        }
+        //    return dcc;
+        //}
 
-        public static Dictionary<string, int> CalculateTotalResourceCosts()
-        {
-            Dictionary<string, int> totals = new Dictionary<string, int>();
-            foreach (KeyValuePair<string,List<Cooler>> c in Reactor.passiveCoolers)
-            {
-                foreach (KeyValuePair<string,int> resource in ResourceCosts.CoolerCosts[c.Key])
-                {
-                    if (!totals.ContainsKey(resource.Key))
-                        totals.Add(resource.Key, 0);
-                    totals[resource.Key] += resource.Value * c.Value.Count();
-                }
-            }
+        //public static Dictionary<string, int> CalculateTotalResourceCosts()
+        //{
+        //    Dictionary<string, int> totals = new Dictionary<string, int>();
+        //    foreach (KeyValuePair<string,List<Cooler>> c in Reactor.passiveCoolers)
+        //    {
+        //        foreach (KeyValuePair<string,int> resource in ResourceCosts.CoolerCosts[c.Key])
+        //        {
+        //            if (!totals.ContainsKey(resource.Key))
+        //                totals.Add(resource.Key, 0);
+        //            totals[resource.Key] += resource.Value * c.Value.Count();
+        //        }
+        //    }
 
-            foreach (KeyValuePair<string, List<Cooler>> c in Reactor.activeCoolers)
-            {
-                totals.Add("Active " + c.Key +" Cooler", c.Value.Count);
-            }
+        //    foreach (KeyValuePair<string, List<Cooler>> c in Reactor.activeCoolers)
+        //    {
+        //        totals.Add("Active " + c.Key +" Cooler", c.Value.Count);
+        //    }
 
-            if(Reactor.fuelCells.Count >0)
-                foreach (KeyValuePair<string, int> resource in ResourceCosts.FuelCellCosts)
-                {
-                    if (!totals.ContainsKey(resource.Key))
-                        totals.Add(resource.Key, 0);
-                    totals[resource.Key] += resource.Value * Reactor.fuelCells.Count;
-                }
+        //    if(Reactor.fuelCells.Count >0)
+        //        foreach (KeyValuePair<string, int> resource in ResourceCosts.FuelCellCosts)
+        //        {
+        //            if (!totals.ContainsKey(resource.Key))
+        //                totals.Add(resource.Key, 0);
+        //            totals[resource.Key] += resource.Value * Reactor.fuelCells.Count;
+        //        }
 
-            foreach (KeyValuePair<string, int> resource in ResourceCosts.CasingCosts)
-            {
-                if (!totals.ContainsKey(resource.Key))
-                    totals.Add(resource.Key, 0);
-                totals[resource.Key] += resource.Value * Reactor.totalCasings;
-            }
+        //    foreach (KeyValuePair<string, int> resource in ResourceCosts.CasingCosts)
+        //    {
+        //        if (!totals.ContainsKey(resource.Key))
+        //            totals.Add(resource.Key, 0);
+        //        totals[resource.Key] += resource.Value * Reactor.totalCasings;
+        //    }
 
 
-            foreach (KeyValuePair<string, List<Moderator>> m in Reactor.moderators)
-            {
-                if(m.Value.Count > 0)
-                    foreach (KeyValuePair<string, int> resource in ResourceCosts.ModeratorCosts[m.Key])
-                    {
-                        if (!totals.ContainsKey(resource.Key))
-                            totals.Add(resource.Key, 0);
-                        totals[resource.Key] += resource.Value * m.Value.Count;
-                    }
-            }
+        //    foreach (KeyValuePair<string, List<Moderator>> m in Reactor.moderators)
+        //    {
+        //        if(m.Value.Count > 0)
+        //            foreach (KeyValuePair<string, int> resource in ResourceCosts.ModeratorCosts[m.Key])
+        //            {
+        //                if (!totals.ContainsKey(resource.Key))
+        //                    totals.Add(resource.Key, 0);
+        //                totals[resource.Key] += resource.Value * m.Value.Count;
+        //            }
+        //    }
 
-            return totals;
-        }
+        //    return totals;
+        //}
     }
 }

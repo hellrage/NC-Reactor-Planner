@@ -20,7 +20,7 @@ namespace NC_Reactor_Planner
             Application.SetCompatibleTextRenderingDefault(false);
 
             PreStartUp();
-            Application.Run(new PlannerUI());
+            Application.Run(Reactor.UI);
         }
 
         static void PreStartUp()
@@ -34,6 +34,8 @@ namespace NC_Reactor_Planner
                 }
             }
             Configuration.ResetToDefaults();
+
+            Palette.Load();
 
             FileInfo defaultConfig = new FileInfo("DefaultConfig.json");
             if (!defaultConfig.Exists)

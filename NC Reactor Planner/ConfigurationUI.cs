@@ -441,12 +441,12 @@ namespace NC_Reactor_Planner
 
         private void CalculateTotals_Click(object sender, EventArgs e)
         {
-            string totals = "";
-            foreach(KeyValuePair<string, int> resource in Configuration.CalculateTotalResourceCosts())
-            {
-                totals += String.Format("{0,-30}\t{1,-30}\r\n", resource.Key, resource.Value);
-            }
-            MessageBox.Show(totals);
+            //string totals = "";
+            //foreach(KeyValuePair<string, int> resource in Configuration.CalculateTotalResourceCosts())
+            //{
+            //    totals += String.Format("{0,-30}\t{1,-30}\r\n", resource.Key, resource.Value);
+            //}
+            //MessageBox.Show(totals);
         }
     }
 

@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.paletteTable = new System.Windows.Forms.TableLayoutPanel();
             this.reactorWidth = new System.Windows.Forms.NumericUpDown();
             this.reactorLength = new System.Windows.Forms.NumericUpDown();
             this.reactorHeight = new System.Windows.Forms.NumericUpDown();
@@ -46,7 +45,6 @@
             this.statsLabel = new System.Windows.Forms.Label();
             this.saveReactor = new System.Windows.Forms.Button();
             this.loadReactor = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.PaletteActive = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.viewStyleSwitch = new System.Windows.Forms.Button();
@@ -60,37 +58,16 @@
             this.stats = new System.Windows.Forms.RichTextBox();
             this.OpenConfig = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
-            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).BeginInit();
             this.SuspendLayout();
             // 
-            // paletteTable
-            // 
-            this.paletteTable.ColumnCount = 4;
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
-            this.paletteTable.Location = new System.Drawing.Point(6, 145);
-            this.paletteTable.Margin = new System.Windows.Forms.Padding(5);
-            this.paletteTable.Name = "paletteTable";
-            this.paletteTable.Padding = new System.Windows.Forms.Padding(4);
-            this.paletteTable.RowCount = 5;
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.paletteTable.Size = new System.Drawing.Size(168, 208);
-            this.paletteTable.TabIndex = 2;
-            // 
             // reactorWidth
             // 
-            this.reactorWidth.Location = new System.Drawing.Point(6, 61);
+            this.reactorWidth.Location = new System.Drawing.Point(152, 57);
             this.reactorWidth.Maximum = new decimal(new int[] {
             24,
             0,
@@ -113,7 +90,7 @@
             // 
             // reactorLength
             // 
-            this.reactorLength.Location = new System.Drawing.Point(136, 61);
+            this.reactorLength.Location = new System.Drawing.Point(282, 57);
             this.reactorLength.Maximum = new decimal(new int[] {
             24,
             0,
@@ -136,7 +113,7 @@
             // 
             // reactorHeight
             // 
-            this.reactorHeight.Location = new System.Drawing.Point(72, 61);
+            this.reactorHeight.Location = new System.Drawing.Point(218, 57);
             this.reactorHeight.Maximum = new decimal(new int[] {
             24,
             0,
@@ -161,7 +138,7 @@
             // 
             this.sizeLabel.AutoSize = true;
             this.sizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sizeLabel.Location = new System.Drawing.Point(6, 16);
+            this.sizeLabel.Location = new System.Drawing.Point(152, 12);
             this.sizeLabel.Name = "sizeLabel";
             this.sizeLabel.Size = new System.Drawing.Size(168, 20);
             this.sizeLabel.TabIndex = 7;
@@ -170,7 +147,7 @@
             // x1
             // 
             this.x1.AutoSize = true;
-            this.x1.Location = new System.Drawing.Point(52, 63);
+            this.x1.Location = new System.Drawing.Point(198, 59);
             this.x1.Name = "x1";
             this.x1.Size = new System.Drawing.Size(14, 13);
             this.x1.TabIndex = 8;
@@ -179,7 +156,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(116, 63);
+            this.label1.Location = new System.Drawing.Point(262, 59);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(14, 13);
             this.label1.TabIndex = 9;
@@ -189,7 +166,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(69, 42);
+            this.label2.Location = new System.Drawing.Point(215, 38);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(18, 16);
             this.label2.TabIndex = 10;
@@ -199,7 +176,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(7, 42);
+            this.label3.Location = new System.Drawing.Point(153, 38);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(17, 16);
             this.label3.TabIndex = 11;
@@ -209,7 +186,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(133, 42);
+            this.label4.Location = new System.Drawing.Point(279, 38);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(17, 16);
             this.label4.TabIndex = 12;
@@ -218,7 +195,7 @@
             // resetLayout
             // 
             this.resetLayout.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.resetLayout.Location = new System.Drawing.Point(4, 87);
+            this.resetLayout.Location = new System.Drawing.Point(150, 83);
             this.resetLayout.Name = "resetLayout";
             this.resetLayout.Size = new System.Drawing.Size(170, 34);
             this.resetLayout.TabIndex = 4;
@@ -230,7 +207,7 @@
             // 
             this.paletteLabel.AutoSize = true;
             this.paletteLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.paletteLabel.Location = new System.Drawing.Point(7, 124);
+            this.paletteLabel.Location = new System.Drawing.Point(153, 120);
             this.paletteLabel.Name = "paletteLabel";
             this.paletteLabel.Size = new System.Drawing.Size(57, 16);
             this.paletteLabel.TabIndex = 14;
@@ -305,32 +282,10 @@
             this.loadReactor.UseVisualStyleBackColor = true;
             this.loadReactor.Click += new System.EventHandler(this.loadReactor_Click);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.PaletteActive);
-            this.groupBox1.Controls.Add(this.sizeLabel);
-            this.groupBox1.Controls.Add(this.reactorWidth);
-            this.groupBox1.Controls.Add(this.reactorHeight);
-            this.groupBox1.Controls.Add(this.x1);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.paletteLabel);
-            this.groupBox1.Controls.Add(this.resetLayout);
-            this.groupBox1.Controls.Add(this.paletteTable);
-            this.groupBox1.Controls.Add(this.reactorLength);
-            this.groupBox1.Location = new System.Drawing.Point(137, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(178, 358);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            // 
             // PaletteActive
             // 
             this.PaletteActive.AutoSize = true;
-            this.PaletteActive.Location = new System.Drawing.Point(157, 126);
+            this.PaletteActive.Location = new System.Drawing.Point(303, 122);
             this.PaletteActive.Name = "PaletteActive";
             this.PaletteActive.Size = new System.Drawing.Size(15, 14);
             this.PaletteActive.TabIndex = 15;
@@ -341,7 +296,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(104, 124);
+            this.label6.Location = new System.Drawing.Point(250, 120);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(51, 16);
             this.label6.TabIndex = 14;
@@ -485,25 +440,47 @@
             this.label5.TabIndex = 26;
             this.label5.Text = "Scale:";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(7, 180);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(124, 23);
+            this.button1.TabIndex = 27;
+            this.button1.Text = "Load Reactor";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(902, 664);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.PaletteActive);
             this.Controls.Add(this.label5);
+            this.Controls.Add(this.sizeLabel);
+            this.Controls.Add(this.reactorWidth);
             this.Controls.Add(this.OpenConfig);
+            this.Controls.Add(this.reactorHeight);
             this.Controls.Add(this.stats);
+            this.Controls.Add(this.x1);
             this.Controls.Add(this.fuelSelector);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.fuelBaseHeat);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.fuelBaseHeatLabel);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.fuelBasePower);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.fuelBaseRFLabel);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.imageScale);
+            this.Controls.Add(this.paletteLabel);
             this.Controls.Add(this.saveAsImage);
+            this.Controls.Add(this.resetLayout);
             this.Controls.Add(this.viewStyleSwitch);
+            this.Controls.Add(this.reactorLength);
             this.Controls.Add(this.layerScrollBar);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.loadReactor);
             this.Controls.Add(this.saveReactor);
             this.Controls.Add(this.statsLabel);
@@ -518,8 +495,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -527,7 +502,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.TableLayoutPanel paletteTable;
         private System.Windows.Forms.NumericUpDown reactorWidth;
         private System.Windows.Forms.NumericUpDown reactorLength;
         private System.Windows.Forms.NumericUpDown reactorHeight;
@@ -545,7 +519,6 @@
         private System.Windows.Forms.Label statsLabel;
         private System.Windows.Forms.Button saveReactor;
         private System.Windows.Forms.Button loadReactor;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button viewStyleSwitch;
         private System.Windows.Forms.Button saveAsImage;
         private System.Windows.Forms.NumericUpDown imageScale;
@@ -559,6 +532,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox PaletteActive;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button1;
     }
 }
 

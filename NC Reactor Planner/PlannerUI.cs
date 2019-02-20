@@ -15,6 +15,10 @@ namespace NC_Reactor_Planner
 {
     public partial class PlannerUI : Form
     {
+        public Panel ReactorGrid { get => reactorGrid; }
+        public decimal DrawingScale { get => imageScale.Value; }
+
+        public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
 
         ToolTip paletteToolTip;
         public static ToolTip gridToolTip;
@@ -22,7 +26,6 @@ namespace NC_Reactor_Planner
         public static int paletteBlockSize = 40;
         private static int totalBlocks;
         private static ConfigurationUI configurationUI;
-        Graphics borderGraphics;
         Pen passiveHighlightPen;
         Pen activeHighlightPen;
         public static bool drawAllLayers = false;
@@ -42,9 +45,8 @@ namespace NC_Reactor_Planner
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            blockSize = (int)(Palette.textures.First().Value.Size.Height * imageScale.Value);
-
-            borderGraphics = paletteTable.CreateGraphics();
+            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
+            
             passiveHighlightPen = new Pen(Color.Blue, 4);
             activeHighlightPen = new Pen(Color.Green, 4);
 
@@ -53,17 +55,11 @@ namespace NC_Reactor_Planner
 
             SetUpToolTips();
 
-            SetUpPalette();
-
-            this.MouseMove += new MouseEventHandler(PaletteBlockLostFocus);
-
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
 
             SetUIToolTips();
 
-            NewResetLayout(false); // [TODO] I don't even know anymore okay?
-            NewResetLayout(false); // This makes tooltips work right away but it's still inconsistent
-            //wasted hours on this
+            ResetLayout(false);
         }
 
         private void SetUpToolTips()
@@ -95,108 +91,25 @@ namespace NC_Reactor_Planner
             paletteToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Doubleclick to confirm (overwrites your current layout! Save if you want to keep it.)");
         }
 
-        private void SetUpPalette()
-        {
-            paletteLabel.Text = "Palette";
-            paletteTable.Controls.Clear();
-
-            foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
-            {
-                paletteTable.Controls.Add(new ReactorGridCell { block = kvp.Key, Image = kvp.Key.Texture, SizeMode = PictureBoxSizeMode.Zoom });
-            }
-
-            foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
-            {
-                paletteBlock.Click += new EventHandler(PaletteBlockClicked);
-                paletteBlock.MouseEnter += new EventHandler(PaletteBlockHighlighted);
-            }
-
-            UpdatePaletteTooltips();
-
-            Palette.selectedBlock = (ReactorGridCell)paletteTable.Controls[0];
-            Palette.selectedType = Palette.selectedBlock.block.BlockType;
-
-            paletteTable.MouseLeave += new EventHandler(PaletteBlockLostFocus);
-        }
-
-        private void UpdatePaletteTooltips()
-        {
-            foreach (ReactorGridCell paletteBlock in paletteTable.Controls)
-            {
-                paletteToolTip.SetToolTip(paletteBlock, paletteBlock.block.GetToolTip());
-            }
-        }
-
         private void ResetButtonFocusLost(object sender, EventArgs e)
         {
             resetLayout.Text = "Reset layout";
-        }
-
-        private void PaletteBlockLostFocus(object sender, EventArgs e)
-        {
-            borderGraphics.Clear(SystemColors.Control);
-
-            ReactorGridCell selected = Palette.selectedBlock;
-            paletteLabel.Text = selected.block.DisplayName;
-            if(PaletteActive.Checked)
-                borderGraphics.DrawRectangle(activeHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            else
-                borderGraphics.DrawRectangle(passiveHighlightPen, selected.Location.X - 3, selected.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-
-        }
-
-        private void PaletteBlockHighlighted(object sender, EventArgs e)
-        {
-            borderGraphics.Clear(SystemColors.Control);
-
-            ReactorGridCell paletteBox = (ReactorGridCell)sender;
-            paletteLabel.Text = paletteBox.block.DisplayName;
-
-            if(PaletteActive.Checked)
-                borderGraphics.DrawRectangle(activeHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            else
-                borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-                
-        }
-
-        private void PaletteBlockClicked(object sender, EventArgs e)
-        {
-            borderGraphics.Clear(SystemColors.Control);
-
-            ReactorGridCell paletteBox = (ReactorGridCell)sender;
-
-            Palette.selectedBlock = paletteBox;
-            Palette.selectedType = (Palette.blocks[paletteBox.block]);
-            if(PaletteActive.Checked)
-                borderGraphics.DrawRectangle(activeHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);
-            else
-                borderGraphics.DrawRectangle(passiveHighlightPen, paletteBox.Location.X - 3, paletteBox.Location.Y - 3, paletteBlockSize, paletteBlockSize);         
         }
 
         private void resetLayout_Click(object sender, EventArgs e)
         {
             if (resetLayout.Text == "Confirm reset?")
             {
-                if (!IsCrashRobust())
-                {
-                    resetLayout.Text = "Reset layout";
-                    return;
-                }
                 resetLayout.Text = "RESETTING...";
-                NewResetLayout(false);
+                ResetLayout(false);
                 resetLayout.Text = "Reset layout";
             }
             else
                 resetLayout.Text = "Confirm reset?";
         }
 
-        public void NewResetLayout(bool loading)
+        public void ResetLayout(bool loading)
         {
-            totalBlocks = (int)(reactorLength.Value * reactorWidth.Value * reactorHeight.Value);
-
-            if (drawAllLayers && !IsCrashRobust())
-                SwitchToPerLayer();
-
             EnableUIElements();
 
             gridToolTip.RemoveAll();
@@ -223,7 +136,7 @@ namespace NC_Reactor_Planner
 
             if (drawAllLayers)
             {
-                Reactor.RedrawAllLayers();
+                Reactor.Redraw();
                 foreach (ReactorGridLayer layer in Reactor.layers)
                     UpdateLocation(layer);
                 reactorGrid.Controls.AddRange(Reactor.layers.ToArray());
@@ -232,7 +145,7 @@ namespace NC_Reactor_Planner
             {
                 ReactorGridLayer layer = Reactor.layers[layerScrollBar.Value - 1];
                 UpdateLocation(layer);
-                layer.Redraw();
+                layer.Refresh();
                 reactorGrid.Controls.Add(layer);
                 layerScrollBar.Maximum = (int)Reactor.interiorDims.Y;
             }
@@ -271,7 +184,7 @@ namespace NC_Reactor_Planner
         private void SwitchToPerLayer()
         {
             drawAllLayers = false;
-            NewResetLayout(true);
+            ResetLayout(true);
             viewStyleSwitch.Text = "Per layer";
             layerScrollBar.Enabled = true;
             layerLabel.Show();
@@ -281,25 +194,17 @@ namespace NC_Reactor_Planner
         {
             //gridToolTip.RemoveAll();
             if (drawAllLayers)
-                Reactor.RedrawAllLayers();
+                Reactor.Redraw();
             else
             {
                 ReactorGridLayer layer;
-                if (totalBlocks > 9500)
-                {
-                    ClearDisposeLayers();
-                    Reactor.ConstructLayer(layerScrollBar.Value);
-                    layer = Reactor.layers.First();
-                }
-                else
-                {
-                    reactorGrid.Controls.Clear();
-                    layer = Reactor.layers[layerScrollBar.Value - 1];
-                }
+
+                reactorGrid.Controls.Clear();
+                layer = Reactor.layers[layerScrollBar.Value - 1];
 
                 UpdateLocation(layer);
                 reactorGrid.Controls.Add(layer);
-                layer.Redraw();
+                layer.Refresh();
             }
         }
 
@@ -374,7 +279,7 @@ namespace NC_Reactor_Planner
 
             UpdateSelectedFuel();
 
-            NewResetLayout(true);
+            ResetLayout(true);
         }
 
         private void UpdateSelectedFuel()
@@ -405,30 +310,12 @@ namespace NC_Reactor_Planner
         private void SwitchToDrawAllLayers()
         {
             drawAllLayers = true;
-            if (!IsCrashRobust())
-            {
-                drawAllLayers = false;
-                return;
-            }
             viewStyleSwitch.Text = "All layers";
 
-            NewResetLayout(true);
+            ResetLayout(true);
 
             layerScrollBar.Enabled = false;
             layerLabel.Hide();
-        }
-
-        private bool IsCrashRobust()
-        {
-            if (!drawAllLayers)
-                return true;
-
-            if (totalBlocks >= 9500)
-            {
-                MessageBox.Show("Unfortunately my choice of platform was poor for this type of a task so there can only exist 10k Control objects in a Form before it blows up. You've reached this limit! Switching to per-layer. Sorry.");
-                return false;
-            }
-            return true;
         }
 
         private void saveAsImage_Click(object sender, EventArgs e)
@@ -464,13 +351,7 @@ namespace NC_Reactor_Planner
             {
                 if (saveAll)
                 {
-                    if(drawAllLayers | totalBlocks <= 9500)
-                        Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value);
-                    else
-                    {
-                        Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value, true);
-                        NewResetLayout(true);
-                    }
+                    Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, (int)imageScale.Value);
                 }
                 else
                     Reactor.SaveLayerAsImage(layerScrollBar.Value, fileName, (int)imageScale.Value);
@@ -479,7 +360,7 @@ namespace NC_Reactor_Planner
 
         private void imageScale_ValueChanged(object sender, EventArgs e)
         {
-            blockSize = (int)(Palette.textures["Air"].Size.Height * imageScale.Value);
+            blockSize = (int)(Palette.Textures["Air"].Size.Height * imageScale.Value);
 
             reactorGrid.Hide();
             foreach (ReactorGridLayer layer in Reactor.layers)
@@ -521,7 +402,7 @@ namespace NC_Reactor_Planner
             Reactor.usedFuel = selectedFuel; //[TODO]Change to a method you criminal
 
             Reactor.UpdateStats();
-            Reactor.RedrawAllLayers();//[TODO]Change redraw logic so it only does the active layer
+            Reactor.Redraw();//[TODO]Change redraw logic so it only does the active layer
             RefreshStats();
         }
 
@@ -557,8 +438,7 @@ namespace NC_Reactor_Planner
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Reactor.fuels.ToArray());
             UpdateSelectedFuel();
-            UpdatePaletteTooltips();
-            Reactor.RedrawAllLayers();
+            Reactor.Redraw();
             RefreshStats();
         }
 
@@ -573,16 +453,6 @@ namespace NC_Reactor_Planner
         private void PaletteActive_CheckedChanged(object sender, EventArgs e)
         {
             Palette.LoadPalette(PaletteActive.Checked);
-            if (Palette.selectedBlock.block is Cooler)
-            {
-                ReactorGridCell oldSelected = Palette.selectedBlock;
-                SetUpPalette();
-                oldSelected.block = Palette.GetCooler(oldSelected.block.DisplayName);
-                PaletteBlockClicked(oldSelected, new EventArgs());
-            }
-            else
-                SetUpPalette();
-            paletteTable.Invalidate();
         }
     }
 }

@@ -8,25 +8,16 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class Moderator : Block
     {
-        //[field: NonSerialized()]
-        //public double powerMulti = (double)1 / (double)6;
-        //[field: NonSerialized()]
-        //public double heatMulti = (double)1 / (double)3;
-        private bool _active;
-        private double _heatGenerationPerTick;
-        private ModeratorTypes _moderatorType;
-
-        public bool Active { get => _active; private set => _active = value; }
-        public double HeatGenerationPerTick { get => _heatGenerationPerTick; private set => _heatGenerationPerTick = value; }
-        public ModeratorTypes ModeratorType { get => _moderatorType; private set => _moderatorType = value; }
+        public override bool Valid { get; protected set; }
+        public double HeatGenerationPerTick { get; private set; }
+        public ModeratorTypes ModeratorType { get; private set; }
 
         public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             HeatGenerationPerTick = 0;
-            Active = false;
+            Valid = false;
             ModeratorType = type;
         }
 
@@ -41,12 +32,12 @@ namespace NC_Reactor_Planner
             {
                 HeatGenerationPerTick = Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration;
                 Reactor.totalHeatPerTick += HeatGenerationPerTick;
-                Active = false;
+                Valid = false;
             }
             else
             {
                 HeatGenerationPerTick = 0;
-                Active = true;
+                Valid = true;
             }
         }
 
@@ -67,15 +58,10 @@ namespace NC_Reactor_Planner
             if (Position != Palette.dummyPosition)
             {
                 toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
-                if (!Active)
+                if (!Valid)
                     toolTip += "INACTIVE!!!";
             }
             return toolTip;
-        }
-
-        public override bool IsValid()
-        {
-            return Active;
         }
 
         public override Block Copy(Point3D newPosition)

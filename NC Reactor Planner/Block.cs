@@ -8,24 +8,19 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class Block
     {
-        private string _displayName;
-        [NonSerialized()]
-        private Bitmap _texture;
-        private Point3D _position;
-        private BlockTypes _type;
-
-        public string DisplayName { get => _displayName; private set => _displayName = value; }
-        public Bitmap Texture { get => _texture; set => _texture = value; }
-        public Point3D Position { get => _position; private set => _position = value; }
-        public BlockTypes BlockType { get => _type; private set => _type = value; }
+        private bool _valid;
+        public string DisplayName { get; private set; }
+        public Bitmap Texture { get; set; }
+        public Point3D Position { get; private set; }
+        public BlockTypes BlockType { get; private set; }
+        public virtual bool Valid { get => true; protected set => _valid = value; }
 
         public Block()
         {
             DisplayName = "Air";
-            Texture = new Bitmap(Palette.textures["Air"]);
+            Texture = new Bitmap(Palette.Textures["Air"]);
             Position = Palette.dummyPosition;
         }
 

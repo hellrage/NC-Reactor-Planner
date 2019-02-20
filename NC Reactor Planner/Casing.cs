@@ -8,10 +8,9 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class Casing : Block
     {
-        public static readonly bool Active = true;
+        public override bool Valid { get => true; }
 
         public Casing(string displayName, Bitmap texture, Point3D position): base(displayName, BlockTypes.Casing, texture, position)
         {

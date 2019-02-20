@@ -8,29 +8,15 @@ using System.Drawing;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class FuelCell : Block
     {
-        [field: NonSerialized()]
-        private double _energyProducedPerTick;
-        [field: NonSerialized()]
-        private double _heatProducedPerTick;
-        [field: NonSerialized()]
-        private double _energyMultiplier;
-        [field: NonSerialized()]
-        private double _heatMultiplier;
-        [field: NonSerialized()]
-        private int _adjacentCells;
-        [field: NonSerialized()]
-        private int _adjacentModerators;
-
-        public double EnergyProducedPerTick { get => _energyProducedPerTick; private set => _energyProducedPerTick = value; }
-        public double HeatProducedPerTick { get => _heatProducedPerTick; private set => _heatProducedPerTick = value; }
-        public double EnergyMultiplier { get => _energyMultiplier; private set => _energyMultiplier = value; }
-        public double HeatMultiplier { get => _heatMultiplier; private set => _heatMultiplier = value; }
-        public int AdjacentCells { get => _adjacentCells; private set => _adjacentCells = value; }
-        public int AdjacentModerators { get => _adjacentModerators; private set => _adjacentModerators = value; }
-        public static readonly bool Active = true;
+        public double EnergyProducedPerTick { get; private set; }
+        public double HeatProducedPerTick { get; private set; }
+        public double EnergyMultiplier { get; private set; }
+        public double HeatMultiplier { get; private set; }
+        public int AdjacentCells { get; private set; }
+        public int AdjacentModerators { get; private set; }
+        public override bool Valid { get => true; }
 
 
         public FuelCell(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.FuelCell, texture, position)

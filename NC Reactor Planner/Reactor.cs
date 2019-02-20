@@ -38,6 +38,7 @@ namespace NC_Reactor_Planner
         public static Size3D interiorDims;
         public static readonly Version saveVersion;
 
+        public static PlannerUI UI { get; private set; }
 
         public static Dictionary<string, List<Cooler>> passiveCoolers;
         public static Dictionary<string, List<Cooler>> activeCoolers;
@@ -68,6 +69,8 @@ namespace NC_Reactor_Planner
         static Reactor()
         {
             saveVersion = Assembly.GetEntryAssembly().GetName().Version;
+            UI = new PlannerUI();
+            UI.Controls.Add(Palette.PaletteControl);
             PopulateFuels();
         }
 
@@ -89,7 +92,7 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < interiorX + 2; x++)
                 for (int y = 0; y < interiorY + 2; y++)
                     for (int z = 0; z < interiorZ + 2; z++)
-                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
+                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
 
             for (int y = 1; y < interiorY + 1; y++)
                 for (int z = 1; z < interiorZ + 1; z++)
@@ -131,12 +134,6 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void ConstructLayer(int layer)
-        {
-            DisposeClearLayers();
-            layers = new List<ReactorGridLayer>{new ReactorGridLayer(layer)};
-        }
-
         private static void DisposeClearLayers()
         {
             if (layers != null)
@@ -147,37 +144,10 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public static void CauseRedraw(object sender, EventArgs e)
-        {
-            if (PlannerUI.drawAllLayers)
-                RedrawAllLayers();
-            else
-            {
-                if (sender is ReactorGridLayer layer)
-                    layer.Redraw();
-                else if (sender is ReactorGridCell cell)
-                {
-                    //[TODO] properly handle 24x24x15+ layouts
-                    int yLayer = (int)cell.block.Position.Y - 1;
-                    if (yLayer >= layers.Count)
-                        layers.First().Redraw();
-                    else
-                        layers[yLayer].Redraw();
-                }
-            }
-        }
-
-        public static void RecursiveRedraw(Point3D origin)
-        {
-            //layers[(int)origin.Y][(int)origin.X, (int)origin.Z].
-        }
-
-        public static void RedrawAllLayers()
+        public static void Redraw()
         {
             foreach (ReactorGridLayer layer in layers)
-            {
-                layer.Redraw();
-            }
+                layer.Refresh();
         }
 
         public static void UpdateStats()
@@ -419,44 +389,32 @@ namespace NC_Reactor_Planner
             {
                 if (block is Casing)
                     continue;
-                block.Texture = Palette.textures[block.DisplayName];
+                block.Texture = Palette.Textures[block.DisplayName];
             }
         }
 
         public static void ReloadValuesFromConfig()
         {
+            Palette.ReloadValuesFromConfig();
             ReloadCoolerValues();
-            ReloadFuelValues();
         }
 
         private static void ReloadCoolerValues()
         {
-            foreach (KeyValuePair<Block, BlockTypes> kvp in Palette.blocks)
-                if (kvp.Key is Cooler cooler)
-                    cooler.ReloadValuesFromConfig();
-
             if (blocks == null) return;
             foreach (Block block in blocks)
                 if (block is Cooler cooler)
                     cooler.ReloadValuesFromConfig();
         }
 
-        private static void ReloadFuelValues()
-        {
-            foreach (Fuel fuel in fuels)
-            {
-                fuel.ReloadValuesFromConfig();
-            }
-        }
-
         public static void SaveLayerAsImage(int layer, string fileName, int scale = 2)
         {
-            Bitmap layerImage = layers[layer - 1].DrawToImage(scale);
+            Bitmap layerImage = layers[layer - 1].DrawToImage();
             layerImage.Save(fileName);
             layerImage.Dispose();
         }
 
-        public static void SaveReactorAsImage(string fileName, int statStringLines, int scale = 2, bool large = false, int fontSize = 24)
+        public static void SaveReactorAsImage(string fileName, int statStringLines, int scale = 2, int fontSize = 24)
         {
             int layersPerRow = (int)Math.Ceiling(Math.Sqrt(interiorDims.Y));
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
@@ -470,37 +428,18 @@ namespace NC_Reactor_Planner
             {
                 gr.Clear(Color.LightGray);
 
-                //[TODO] deduplicate code
-                if(large)
+                foreach (ReactorGridLayer layer in layers)
                 {
-                    for (int i = 1; i <= interiorDims.Y; i++)
-                    {
-                        ConstructLayer(i);
-                        ReactorGridLayer layer = layers.First();
-                        Bitmap layerImage = layer.DrawToImage(scale);
-                        int y = layer.Y - 1;
-                        gr.DrawImage(layerImage,
-                                        new Rectangle((int)((y % layersPerRow) * interiorDims.X * bs + (y % layersPerRow) * bs),
-                                                    StatsRectSize.Y + bs + (int)((y / layersPerRow) * interiorDims.Z * bs + (y / layersPerRow) * bs),
-                                                    (int)(interiorDims.X * bs), (int)(interiorDims.Z * bs)),
-                                        new Rectangle(0, 0, layerImage.Size.Width, layerImage.Size.Height),
-                                        GraphicsUnit.Pixel);
-                        layerImage.Dispose();
-                    }
+                    Bitmap layerImage = layer.DrawToImage();
+                    int y = layer.Y - 1;
+                    gr.DrawImage(layerImage,
+                                    new Rectangle((int)((y % layersPerRow) * interiorDims.X * bs + (y % layersPerRow) * bs),
+                                                StatsRectSize.Y + bs + (int)((y / layersPerRow) * interiorDims.Z * bs + (y / layersPerRow) * bs),
+                                                (int)(interiorDims.X * bs), (int)(interiorDims.Z * bs)),
+                                    new Rectangle(0, 0, layerImage.Size.Width, layerImage.Size.Height),
+                                    GraphicsUnit.Pixel);
+                    layerImage.Dispose();
                 }
-                else
-                    foreach (ReactorGridLayer layer in layers)
-                    {
-                        Bitmap layerImage = layer.DrawToImage(scale);
-                        int y = layer.Y - 1;
-                        gr.DrawImage(layerImage,
-                                        new Rectangle((int)((y % layersPerRow) * interiorDims.X * bs + (y % layersPerRow) * bs),
-                                                    StatsRectSize.Y + bs + (int)((y / layersPerRow) * interiorDims.Z * bs + (y / layersPerRow) * bs),
-                                                    (int)(interiorDims.X * bs), (int)(interiorDims.Z * bs)),
-                                        new Rectangle(0, 0, layerImage.Size.Width, layerImage.Size.Height),
-                                        GraphicsUnit.Pixel);
-                        layerImage.Dispose();
-                    }
                 string usedFuel = string.Format("Fuel used:\t{0}\r\nBase Power:\t{1} RF/t\r\nBase Heat:\t{2} HU/t\r\n", Reactor.usedFuel.Name, Reactor.usedFuel.BasePower.ToString(), Reactor.usedFuel.BaseHeat.ToString());
                 gr.DrawString(usedFuel + "\r\n" + GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
@@ -571,13 +510,13 @@ namespace NC_Reactor_Planner
             Block restoreBlock(string type, Point3D position)
             {
                 if (type == "FuelCell")
-                    return new FuelCell("FuelCell", Palette.textures["FuelCell"], position);
+                    return new FuelCell("FuelCell", Palette.Textures["FuelCell"], position);
                 else if (type == "Beryllium" | type == "Graphite")
-                    return new Moderator((Moderator)Palette.blockPalette[type], position);
+                    return new Moderator((Moderator)Palette.BlockPalette[type], position);
                 else if(type.Contains("Active"))
-                    return new Cooler((Cooler)Palette.blockPalette[type.Split(' ')[1]], position, true);
+                    return new Cooler((Cooler)Palette.BlockPalette[type.Split(' ')[1]], position, true);
                 else
-                    return new Cooler((Cooler)Palette.blockPalette[type], position, false);
+                    return new Cooler((Cooler)Palette.BlockPalette[type], position, false);
                 throw new ArgumentException("Tried to restore an invalid block");
             }
 
@@ -624,9 +563,9 @@ namespace NC_Reactor_Planner
         {
             for (int x = 0; x < interiorDims.X; x++)
                 for (int z = 0; z < interiorDims.Z; z++)
-                    SetBlock(new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
+                    SetBlock(new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
             UpdateStats();
-            layer.Redraw();
+            layer.Refresh();
         }
 
         public static void CopyLayer(ReactorGridLayer layer)
@@ -655,7 +594,7 @@ namespace NC_Reactor_Planner
                     SetBlock(PlannerUI.layerBuffer[x, z], new Point3D(x + 1, layer.Y, z + 1));
                 }
             UpdateStats();
-            layer.Redraw();
+            layer.Refresh();
         }
 
         public static void DeleteLayer(int y)
@@ -711,7 +650,7 @@ namespace NC_Reactor_Planner
                     if(((x == 0 | x == interiorDims.X + 1)&(z > 0 & z < interiorDims.Z + 1)) || ((z == 0 | z == interiorDims.Z + 1) & (x > 0 & x < interiorDims.X + 1)))
                         newReactor[x, y, z] = new Casing("Casing", null, new Point3D(x, y, z));
                     else
-                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.textures["Air"], new Point3D(x, y, z));
+                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
                 }
             }
 

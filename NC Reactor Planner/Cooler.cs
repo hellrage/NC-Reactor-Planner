@@ -8,25 +8,20 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
-    [Serializable()]
     public class Cooler : Block
     {
-        private double _heatActive;
-        private double _heatPassive;
-        private string _requirements;
         private bool _oldValid;
         private bool _valid;
-        private bool _active;
         private List<string> placementErrors;
 
         private CoolerTypes _coolerType;
 
-        public double HeatActive { get => _heatActive; private set => _heatActive = value; }
-        public double HeatPassive { get => _heatPassive; private set => _heatPassive = value; }
+        public double HeatActive { get; private set; }
+        public double HeatPassive { get; private set; }
         public double Cooling { get => Active ? HeatActive : HeatPassive; }
-        public string Requirements { get => _requirements; private set => _requirements = value; }
-        public bool Valid { get => _valid; private set { _oldValid = _valid; _valid = value; } }
-        public bool Active { get => _active; private set { _active = value; } }
+        public string Requirements { get; private set; }
+        public override bool Valid { get => _valid; protected set { _oldValid = _valid; _valid = value; } }
+        public bool Active { get; private set; }
 
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
@@ -90,35 +85,35 @@ namespace NC_Reactor_Planner
             switch (CoolerType)
             {
                 case CoolerTypes.Water:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) | HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) | HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case CoolerTypes.Redstone:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case CoolerTypes.Quartz:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case CoolerTypes.Gold:
-                    return Valid = HasAdjacent(Palette.blockPalette["Water"]) & HasAdjacent(Palette.blockPalette["Redstone"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Water"]) & HasAdjacent(Palette.BlockPalette["Redstone"]);
                 case CoolerTypes.Glowstone:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 2);
                 case CoolerTypes.Lapis:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case CoolerTypes.Diamond:
-                    return Valid = HasAdjacent(Palette.blockPalette["Water"]) & HasAdjacent(Palette.blockPalette["Quartz"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Water"]) & HasAdjacent(Palette.BlockPalette["Quartz"]);
                 case CoolerTypes.Helium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case CoolerTypes.Enderium:
                     return Valid = CheckEnderium();
                 case CoolerTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 2);
                 case CoolerTypes.Iron:
-                    return Valid = HasAdjacent(Palette.blockPalette["Gold"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Gold"]);
                 case CoolerTypes.Emerald:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case CoolerTypes.Copper:
-                    return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Glowstone"]);
                 case CoolerTypes.Tin:
                     return Valid = CheckTin();
                 case CoolerTypes.Magnesium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 default:
                     throw new ArgumentException("Unexpected cooler type");
             }
@@ -152,7 +147,7 @@ namespace NC_Reactor_Planner
                 if (adjacent >= number)
                     while (placementErrors.Remove("Too few " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
 
-                if (block.IsValid())
+                if (block.Valid)
                 {
                     activeAdjacent++;
                     if (activeAdjacent > number & exact)
