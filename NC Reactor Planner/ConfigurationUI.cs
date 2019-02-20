@@ -192,6 +192,7 @@ namespace NC_Reactor_Planner
                         ReloadTabs();
                         Reactor.ReloadValuesFromConfig();
                         Reactor.Update();
+                        Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                         MessageBox.Show("Loaded and applied!");
                         Close();
                     }
@@ -223,6 +224,7 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                 Reactor.Update();
                 return true;
             }
@@ -232,6 +234,7 @@ namespace NC_Reactor_Planner
                 Configuration.ResetToDefaults();
                 ReloadTabs();
                 Reactor.ReloadValuesFromConfig();
+                Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                 Reactor.Update();
                 return false;
             }

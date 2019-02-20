@@ -380,7 +380,7 @@ namespace NC_Reactor_Planner
             layer.Location = origin;
         }
 
-        private void fuelSelector_SelectedIndexChanged(object sender, EventArgs e)
+        public void fuelSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             Fuel selectedFuel = (Fuel)fuelSelector.SelectedItem;
             if(selectedFuel == null)
