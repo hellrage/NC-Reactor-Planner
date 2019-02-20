@@ -17,6 +17,8 @@ namespace NC_Reactor_Planner
     {
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
+        public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
+
 
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
 
