@@ -205,8 +205,23 @@ namespace NC_Reactor_Planner
 
         private Tuple<int,int> ConvertCellCoordinates(MouseEventArgs e)
         {
-            return Tuple.Create((((e.X > Width) ? Width : e.X) / PlannerUI.blockSize)+1,
-                                (((((e.Y - menu.Height) > Height) ? Height : e.Y) - menu.Height) / PlannerUI.blockSize)+1);
+            int newX;
+            int newZ;
+            if (e.X > Width)
+                newX = Width;
+            else if (e.X < 0)
+                newX = 0;
+            else
+                newX = e.X;
+
+            if (e.Y - menu.Height > Height)
+                newZ = Height - menu.Height;
+            else if (e.Y - menu.Height < 0)
+                newZ = 0;
+            else
+                newZ = e.Y - menu.Height;
+
+            return Tuple.Create((newX / PlannerUI.blockSize)+1, (newZ / PlannerUI.blockSize)+1);
         }
 
         private void HandleMouse(MouseButtons button, Point3D position)
