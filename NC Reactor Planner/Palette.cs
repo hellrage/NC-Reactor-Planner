@@ -29,7 +29,8 @@ namespace NC_Reactor_Planner
 
             public PalettePanel()
             {
-                Size = new Size(200, 252);
+                int height = (int)Math.Ceiling(((double)(BlockPalette.Keys.Count ) / (Width / (blockSide + 2 * spacing)))) * (blockSide + 2 * spacing);
+                Size = new Size(200, height + namestripHeight);
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
                 cellX = -1;
                 cellZ = -1;
@@ -207,6 +208,7 @@ namespace NC_Reactor_Planner
                 BlockPalette.Add(moderator.DisplayName, moderator);
 
             BlockPalette.Add("Conductor", new Conductor("Conductor", Textures["Conductor"], dummyPosition));
+            BlockPalette.Add("Reflector", new Reflector("Reflector", Textures["Reflector"], dummyPosition));
         }
 
         private static void PopulateBlocks()
@@ -220,6 +222,7 @@ namespace NC_Reactor_Planner
                 blocks.Add(moderator, BlockTypes.Moderator);
 
             blocks.Add(new Conductor("Conductor", Textures["Conductor"], dummyPosition), BlockTypes.Conductor);
+            blocks.Add(new Reflector("Reflector", Textures["Reflector"], dummyPosition), BlockTypes.Reflector);
         }
 
         private static void PopulateHeatSinks()
@@ -268,6 +271,8 @@ namespace NC_Reactor_Planner
                     return new FuelCell((FuelCell)selectedBlock, previousBlock.Position, SelectedFuel);
                 case BlockTypes.Conductor:
                     return new Conductor("Conductor", Textures["Conductor"], previousBlock.Position);
+                case BlockTypes.Reflector:
+                    return new Reflector("Reflector", Textures["Reflector"], previousBlock.Position);
                 default:
                     return new Block("Air", BlockTypes.Air, Textures["Air"], previousBlock.Position);
             }
@@ -317,5 +322,6 @@ namespace NC_Reactor_Planner
         FuelCell,
         Casing,
         Conductor,
+        Reflector,
     }
 }

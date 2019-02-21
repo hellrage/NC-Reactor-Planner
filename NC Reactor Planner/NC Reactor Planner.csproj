@@ -123,6 +123,7 @@
     <Compile Include="ReactorGridLayer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Reflector.cs" />
     <Compile Include="SaveData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Updater.cs" />
@@ -212,6 +213,7 @@
     <Content Include="Resources\Lithium.png" />
     <Content Include="Resources\Manganese.png" />
     <Content Include="Resources\Purpur.png" />
+    <Content Include="Resources\Reflector.png" />
     <Content Include="Resources\Silver.png" />
     <None Include="Resources\Prismarine.png" />
     <None Include="Resources\Lead.png" />

@@ -13,14 +13,15 @@ namespace NC_Reactor_Planner
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
         public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
+        public FileInfo LoadedSaveFile { get; set; }
 
-        ToolTip uiToolTip;
+        public static ToolTip uiToolTip;
         public static ToolTip gridToolTip;
 
         public static int blockSize;
         private static ConfigurationUI configurationUI;
         
-        private static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
+        public static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
         public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 4);
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
@@ -28,7 +29,6 @@ namespace NC_Reactor_Planner
 
         public static bool drawAllLayers = true;
         string appName;
-        FileInfo loadedSaveFileInfo;
         public static Block[,] layerBuffer;
 
         private bool showClustersInStats;
@@ -39,6 +39,13 @@ namespace NC_Reactor_Planner
             Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
             appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
             this.Text = appName;
+            SetUpToolTips();
+            SetUIToolTips();
+            resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
+            resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
+            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
+            showClustersInStats = true;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -46,21 +53,13 @@ namespace NC_Reactor_Planner
 #if !DEBUG
             SetUpdateAvailableTextAsync();
 #endif
-            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
-            showClustersInStats = true;
-
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-
-            resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
-            resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
-
-            SetUpToolTips();
-
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+            statsLabel.Location = new Point(statsLabel.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
+            stats.Location = new Point(stats.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + statsLabel.Size.Height);
+            stats.Size = new Size(stats.Size.Width, this.ClientSize.Height - stats.Location.Y - 5);
+            showClusterInfo.Location = new Point(showClusterInfo.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
 
-            SetUIToolTips();
-
-            ResetLayout(false);
+            ResetLayout(LoadedSaveFile != null);
         }
 
         private void SetUpToolTips()
@@ -103,6 +102,7 @@ namespace NC_Reactor_Planner
             {
 
                 resetLayout.Text = "RESETTING...";
+                LoadedSaveFile = null;
                 ResetLayout(false);
                 resetLayout.Text = "Reset layout";
             }
@@ -112,16 +112,14 @@ namespace NC_Reactor_Planner
 
         public void ResetLayout(bool loading)
         {
-
             EnableUIElements();
 
             gridToolTip.RemoveAll();
             
             reactorGrid.Controls.Clear();
 
-            if (!loading)
+            if (LoadedSaveFile == null && !loading)
             {
-                loadedSaveFileInfo = null;
                 Reactor.InitializeReactor((int)reactorWidth.Value, (int)reactorHeight.Value, (int)reactorLength.Value);
             }
             else
@@ -133,7 +131,8 @@ namespace NC_Reactor_Planner
             }
 
             UpdateWindowTitle();
-            fuelSelector.SelectedItem = fuelSelector.Items[0];
+            if(fuelSelector.SelectedIndex == -1)
+                fuelSelector.SelectedItem = fuelSelector.Items[0];
 
             Reactor.Update();
 
@@ -243,17 +242,17 @@ namespace NC_Reactor_Planner
                 fileDialog.AddExtension = false;
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    loadedSaveFileInfo = new FileInfo(fileDialog.FileName);
-                    Reactor.Save(loadedSaveFileInfo);
+                    LoadedSaveFile = new FileInfo(fileDialog.FileName);
+                    Reactor.Save(LoadedSaveFile);
                 }
             }
         }
 
         private string ConstructSaveFileName()
         {
-            return (loadedSaveFileInfo == null)
+            return (LoadedSaveFile == null)
                                       ? string.Format("{0} {1} x {2} x {3}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z)
-                                      : loadedSaveFileInfo.Name;
+                                      : LoadedSaveFile.Name;
         }
 
         private void loadReactor_Click(object sender, EventArgs e)
@@ -268,22 +267,18 @@ namespace NC_Reactor_Planner
                 fileDialog.FilterIndex = 2;
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    loadedSaveFileInfo = new FileInfo(fileDialog.FileName);
-                    ValidationResult vr = Reactor.Load(loadedSaveFileInfo);
+                    LoadedSaveFile = new FileInfo(fileDialog.FileName);
+                    ValidationResult vr = Reactor.Load(LoadedSaveFile);
                     if (!vr.Successful)
                     {
                         MessageBox.Show(vr.Result);
-                        loadedSaveFileInfo = null;
+                        LoadedSaveFile = null;
                         return;
                     }
                 }
                 else
                     return;
             }
-
-            reactorHeight.Value = (decimal)Reactor.interiorDims.Y;
-            reactorLength.Value = (decimal)Reactor.interiorDims.Z;
-            reactorWidth.Value = (decimal)Reactor.interiorDims.X;
 
             ResetLayout(true);
         }
@@ -319,7 +314,7 @@ namespace NC_Reactor_Planner
             using (SaveFileDialog fileDialog = new SaveFileDialog { Filter = "Image files (*.png)|*.png" })
             {
                 string autoFileName = "";
-                if (loadedSaveFileInfo == null)
+                if (LoadedSaveFile == null)
                 {
                     if (drawAllLayers)
                         autoFileName = string.Format("{0} {1} x {2} x {3}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
@@ -329,9 +324,9 @@ namespace NC_Reactor_Planner
                 else
                 {
                     if (drawAllLayers)
-                        autoFileName = loadedSaveFileInfo.Name.Replace(".json", "");
+                        autoFileName = LoadedSaveFile.Name.Replace(".json", "");
                     else
-                        autoFileName = (loadedSaveFileInfo.Name + " layer " + layerScrollBar.Value).Replace(".json", "");
+                        autoFileName = (LoadedSaveFile.Name + " layer " + layerScrollBar.Value).Replace(".json", "");
                 }
                 fileDialog.FileName = autoFileName;
 
@@ -427,8 +422,8 @@ namespace NC_Reactor_Planner
 
         private void UpdateWindowTitle()
         {
-            if (loadedSaveFileInfo != null)
-                this.Text = appName + "   " + loadedSaveFileInfo.FullName;
+            if (LoadedSaveFile != null)
+                this.Text = appName + "   " + LoadedSaveFile.FullName;
             else
                 this.Text = appName;
         }
@@ -455,8 +450,8 @@ namespace NC_Reactor_Planner
                     SaveFileDialog saveDialog = new SaveFileDialog();
                     saveDialog.FileName = Updater.ExecutableName(updateInfo.Item2);
                     DialogResult saveResult = saveDialog.ShowDialog();
-                    if(saveResult == DialogResult.OK)
-                        Updater.DownloadVersionAsync(updateInfo.Item2, saveDialog.FileName);
+                    if (saveResult == DialogResult.OK)
+                        Updater.PerformFullUpdate(updateInfo.Item2, saveDialog.FileName);
                 }
             }
             else

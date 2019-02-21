@@ -45,10 +45,9 @@ namespace NC_Reactor_Planner
             string toolTip = DisplayName + "\r\n";
             if (Position != Palette.dummyPosition)
             {
-                //toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 if (Cluster != -1)
                     toolTip += string.Format("Cluster: {0}\r\n", Cluster);
-                else if (BlockType != BlockTypes.Air)
+                else if (BlockType != BlockTypes.Air && BlockType != BlockTypes.Reflector)
                     toolTip += "--No cluster!\r\n";
             }
             return toolTip;

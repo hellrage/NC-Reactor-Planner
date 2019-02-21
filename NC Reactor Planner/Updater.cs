@@ -57,7 +57,19 @@ namespace NC_Reactor_Planner
             return "";
         }
 
-        public static async void DownloadVersionAsync(Version version, string fileName)
+        public static async void PerformFullUpdate(Version version, string fileName)
+        {
+            await DownloadVersionAsync(version, fileName);
+            FileInfo updatedExe = new FileInfo(fileName);
+            FileInfo tempSave = new FileInfo(updatedExe.DirectoryName + ((Reactor.UI.LoadedSaveFile != null) ? "\\" + Reactor.UI.LoadedSaveFile.Name : "\\temp.json"));
+            Reactor.Save(tempSave);
+            string oldFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            System.Diagnostics.Process.Start(new FileInfo(fileName).FullName, string.Format("\"{0}\" \"{1}\"",tempSave.FullName, oldFile));
+            Reactor.UI.Close();
+            Application.Exit();
+        }
+
+        public static async Task<bool> DownloadVersionAsync(Version version, string fileName)
         {
             string DLLink = FormDLLLink(version);
             WebResponse response = await GetWebResponseAsync(DLLink);
@@ -67,7 +79,7 @@ namespace NC_Reactor_Planner
             {
                 await response.GetResponseStream().CopyToAsync(writer);
             }
-            MessageBox.Show(string.Format("Downloaded {0}", updatedPlanner.FullName));
+            return true;
         }
 
         private static async Task<WebResponse> GetWebResponseAsync(string url)

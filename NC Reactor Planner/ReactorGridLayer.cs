@@ -16,6 +16,7 @@ namespace NC_Reactor_Planner
         private MenuStrip menu;
         private int cellX;
         private int cellZ;
+        public int HighlightedCluster { get; set; }
 
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -28,9 +29,9 @@ namespace NC_Reactor_Planner
             Z = (int)Reactor.interiorDims.Z;
 
             PlannerUI.gridToolTip.RemoveAll();
-            PlannerUI.gridToolTip.Hide(Reactor.UI.ReactorGrid);
             cellX = -1;
             cellZ = -1;
+            HighlightedCluster = -1;
 
             Width = X * PlannerUI.blockSize;
             Visible = true;
@@ -118,6 +119,8 @@ namespace NC_Reactor_Planner
                 {
                     RedrawCell(x, z, g, false, forExport);
                 }
+            if(HighlightedCluster != -1)
+                HighlightCluster(g, HighlightedCluster);
         }
 
         public void RedrawCell(int x, int z, Graphics g, bool noChecking = false, bool forExport = false)
@@ -125,9 +128,9 @@ namespace NC_Reactor_Planner
             int bs = PlannerUI.blockSize;
             int ds = (int)Reactor.UI.DrawingScale;
             Point location;
-            location = new Point(bs * (x - 1), (forExport?0:menu.Height) + bs * (z - 1));
+            location = new Point(bs * (x - 1), (forExport ? 0 : menu.Height) + bs * (z - 1));
             Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
-            
+
             Block block = Reactor.BlockAt(new Point3D(x, Y, z));
 
             g.DrawImage(block.Texture, cellRect);
@@ -143,18 +146,54 @@ namespace NC_Reactor_Planner
                 g.DrawEllipse(PlannerUI.PrimedFuelCellPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
             if (block is Moderator moderator)
             {
-                if(!moderator.Active & !moderator.HasAdjacentValidFuelCell)
+                if (!moderator.Active & !moderator.HasAdjacentValidFuelCell)
                     g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
-                if(moderator.Valid)
+                if (moderator.Valid)
                     g.DrawRectangle(PlannerUI.ValidModeratorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
+            }
+        }
+
+        public void HighlightCluster(Graphics g, int clusterID)
+        {
+            if (clusterID == -1 | Reactor.clusters.Count <= clusterID)
+                return;
+
+            Tuple<Point, Point> Line(Point3D position, Vector3D offset)
+            {
+                int bs = PlannerUI.blockSize;
+                position = new Point3D(position.X - 1, position.Y, position.Z - 1);
+                if (offset == new Vector3D(1, 0, 0))
+                    return Tuple.Create(new Point((int)(position.X + 1)*bs - 3, (int)position.Z * bs + menu.Height), new Point((int)(position.X + 1) * bs - 3, (int)(position.Z + 1) * bs + menu.Height));
+                if (offset == new Vector3D(-1, 0, 0))
+                    return Tuple.Create(new Point((int)position.X * bs + 3, (int)position.Z * bs + menu.Height), new Point((int)position.X * bs + 3, (int)(position.Z + 1) * bs + menu.Height));
+                if (offset == new Vector3D(0, 0, 1))
+                    return Tuple.Create(new Point((int)position.X * bs, (int)(position.Z + 1) * bs + menu.Height - 3), new Point((int)(position.X + 1) * bs, (int)(position.Z + 1) * bs + menu.Height - 3));
+                if (offset == new Vector3D(0, 0, -1))
+                    return Tuple.Create(new Point((int)(position.X + 1) * bs, (int)position.Z * bs + menu.Height + 3), new Point((int)position.X * bs, (int)position.Z * bs + menu.Height + 3));
+                throw new ArgumentException();
+            }
+
+            foreach (Block block in Reactor.clusters[clusterID].blocks)
+            {
+                if (block.Position.Y != Y)
+                    continue;
+                foreach (Vector3D offset in new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) })
+                {
+                    int neighbourCluster = Reactor.BlockAt(block.Position + offset).Cluster;
+                    if (neighbourCluster != clusterID)
+                    {
+                        Tuple<Point, Point> points = Line(block.Position, offset);
+                        g.DrawLine(PlannerUI.PrimedFuelCellPen, points.Item1, points.Item2);
+                    }
+                }
             }
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
-            cellX = cellCoords.Item1;
-            cellZ = cellCoords.Item2;
+            Point cellCoords = ConvertCellCoordinates(e);
+            cellX = cellCoords.X;
+            cellZ = cellCoords.Y;
 
             Point3D position = new Point3D(cellX, Y, cellZ);
             HandleMouse(e.Button, position);
@@ -163,10 +202,9 @@ namespace NC_Reactor_Planner
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
-            int newCellX = cellCoords.Item1;
-            int newCellZ = cellCoords.Item2;
-
+            Point cellCoords = ConvertCellCoordinates(e);
+            int newCellX = cellCoords.X;
+            int newCellZ = cellCoords.Y;
 
             if (cellX != newCellX | cellZ != newCellZ)
             {
@@ -177,7 +215,22 @@ namespace NC_Reactor_Planner
                     return;
                 Point3D position = new Point3D(cellX, Y, cellZ);
                 HandleMouse(e.Button, position);
-                PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
+                Block block = Reactor.BlockAt(position);
+                if (HighlightedCluster != block.Cluster)
+                {
+                    if(PlannerUI.drawAllLayers)
+                        foreach (ReactorGridLayer layer in Reactor.layers)
+                        {
+                            layer.HighlightedCluster = block.Cluster;
+                            layer.Refresh();
+                        }
+                    else
+                    {
+                        HighlightedCluster = block.Cluster;
+                        Refresh();
+                    }
+                }
+                PlannerUI.gridToolTip.Show(block.GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
             }
             base.OnMouseMove(e);
         }
@@ -185,15 +238,27 @@ namespace NC_Reactor_Planner
         protected override void OnMouseLeave(EventArgs e)
         {
             PlannerUI.gridToolTip.RemoveAll();
-            PlannerUI.gridToolTip.Hide(Reactor.UI.ReactorGrid);
+
+            if (PlannerUI.drawAllLayers)
+                foreach (ReactorGridLayer layer in Reactor.layers)
+                {
+                    layer.HighlightedCluster = -1;
+                    layer.Refresh();
+                }
+            else
+            {
+                HighlightedCluster = -1;
+                Refresh();
+            }
+
             base.OnMouseLeave(e);
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
-            cellX = cellCoords.Item1;
-            cellZ = cellCoords.Item2;
+            Point cellCoords = ConvertCellCoordinates(e);
+            cellX = cellCoords.X;
+            cellZ = cellCoords.Y;
 
             Reactor.Update();
             Reactor.UI.RefreshStats();
@@ -203,7 +268,7 @@ namespace NC_Reactor_Planner
             base.OnMouseUp(e);
         }
 
-        private Tuple<int,int> ConvertCellCoordinates(MouseEventArgs e)
+        private Point ConvertCellCoordinates(MouseEventArgs e)
         {
             int newX;
             int newZ;
@@ -221,7 +286,7 @@ namespace NC_Reactor_Planner
             else
                 newZ = e.Y - menu.Height;
 
-            return Tuple.Create((newX / PlannerUI.blockSize)+1, (newZ / PlannerUI.blockSize)+1);
+            return new Point((newX / PlannerUI.blockSize) + 1, (newZ / PlannerUI.blockSize) + 1);
         }
 
         private void HandleMouse(MouseButtons button, Point3D position)
@@ -230,7 +295,12 @@ namespace NC_Reactor_Planner
             {
                 case MouseButtons.Left:
                     if ((ModifierKeys & Keys.Shift) != 0 && Reactor.BlockAt(position) is FuelCell fuelCell)
-                        fuelCell.TogglePrimed();
+                    {
+                        if (fuelCell.CanBePrimed())
+                            fuelCell.TogglePrimed();
+                        else
+                            PlannerUI.uiToolTip.Show("This FuelCell can't be primed! Has no LOS to a casing.", Reactor.UI.ReactorGrid, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16, 1500);
+                    }
                     else
                         PlaceBlock(cellX, cellZ, Palette.BlockToPlace(Reactor.BlockAt(position)));
                     break;

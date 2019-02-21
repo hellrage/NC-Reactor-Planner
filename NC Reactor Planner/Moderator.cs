@@ -38,12 +38,12 @@ namespace NC_Reactor_Planner
         {
             foreach (Vector3D offset in Reactor.sixAdjOffsets)
             {
-                int toOffset = WalkLineToValidFuelCell(offset);
-                int oppositeOffset = WalkLineToValidFuelCell(-offset);
-                if (toOffset > 0 & oppositeOffset > 0)
+                Tuple<int, BlockTypes> toOffset = WalkLineToValidSource(offset);
+                Tuple<int, BlockTypes> oppositeOffset = WalkLineToValidSource(-offset);
+                if (toOffset.Item1 > 0 & oppositeOffset.Item1 > 0)
                 {
                     Active = true;
-                    if (toOffset == 1 || oppositeOffset == 1)
+                    if (toOffset.Item1 == 1 & toOffset.Item2 == BlockTypes.FuelCell || oppositeOffset.Item1 == 1 & oppositeOffset.Item2 == BlockTypes.FuelCell)
                     {
                         HasAdjacentValidFuelCell = true;
                         return;
@@ -52,32 +52,35 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public int WalkLineToValidFuelCell(Vector3D offset)
+        public Tuple<int, BlockTypes> WalkLineToValidSource(Vector3D offset)
         {
             int i = 0;
             while (++i <= Configuration.Fission.NeutronReach)
             {
                 Point3D pos = Position + i * offset;
+                Block block = Reactor.BlockAt(pos);
                 if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach)
                 {
-                    if (Reactor.BlockAt(pos) is FuelCell fuelCell)
-                        if (fuelCell.Valid)
-                            return i;
-                    if (!(Reactor.BlockAt(pos) is Moderator))
-                        return -1;
+                    if (block.BlockType == BlockTypes.FuelCell)
+                        if (block.Valid)
+                            return Tuple.Create(i, BlockTypes.FuelCell);
+                    if(block.BlockType == BlockTypes.Reflector)
+                        if(block.Valid & i < Configuration.Fission.NeutronReach / 2 + 1)
+                            return Tuple.Create(i, BlockTypes.Reflector);
+                    if (block.BlockType != BlockTypes.Moderator)
+                        return Tuple.Create(-1, BlockTypes.Air);
                 }
                 else
-                    return -1;
+                    return Tuple.Create(-1, BlockTypes.Air);
             }
-            return -1;
+            return Tuple.Create(-1, BlockTypes.Air);
         }
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " Moderator\r\n";
+            string toolTip = DisplayName + " moderator\r\n";
             if (Position != Palette.dummyPosition)
             {
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 if(!Active)
                     toolTip += "--Inactive!\r\n";
                 if(Active)

@@ -29,23 +29,23 @@ namespace NC_Reactor_Planner
     {
         public static readonly PlannerUI UI;
 
-        public static Block[,,] blocks;
+        private static Block[,,] blocks;
         public static List<Cluster> clusters;
         public static List<ConductorGroup> conductorGroups;
         public static List<ReactorGridLayer> layers;
         public static Size3D interiorDims;
         public static readonly Version saveVersion;
-
-
+        
         public static Dictionary<string, List<HeatSink>> heatSinks;
         public static List<FuelCell> fuelCells;
         public static Dictionary<string, List<Moderator>> moderators;
         public static List<Conductor> conductors;
+        public static List<Reflector> reflectors;
         public static int totalCasings;
 
         public static List<string> updateOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Magnesium", "Manganese", "Quartz", "Obsidian", "Gold", "Prismarine", "Copper", "Tin", "Lead", "Silver", "Helium", "Purpur", "Diamond", "Emerald", "Boron", "Lithium", "Aluminum"};
 
-        public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
+        public static readonly List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
 
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalCoolingPerType;
@@ -148,13 +148,24 @@ namespace NC_Reactor_Planner
                 conductor.RevertToSetup();
 
             foreach (FuelCell fuelCell in fuelCells)
+            {
                 fuelCell.RevertToSetup();
+                if (fuelCell.Primed && !fuelCell.CanBePrimed())
+                    fuelCell.Primed = false;
+            }
+
+            foreach (Reflector reflector in reflectors)
+                reflector.RevertToSetup();
 
             RunFuelCellActivation();
             foreach (FuelCell fuelCell in fuelCells)
                 fuelCell.FilterAdjacentStuff();
 
+            foreach (Reflector reflector in reflectors)
+                reflector.UpdateStats();
+
             UpdateModerators();
+
 
             OrderedUpdateHeatSinks();
 
@@ -179,22 +190,19 @@ namespace NC_Reactor_Planner
                 { "HeavyWater", new List<Moderator>() }
             };
             conductors = new List<Conductor>();
-
+            reflectors = new List<Reflector>();
 
             foreach (Block block in blocks)
             {
                 if (block is HeatSink heatSink)
                 {
-
                     if (heatSinks.ContainsKey(heatSink.DisplayName))
                         heatSinks[heatSink.DisplayName].Add(heatSink);
                     else
                         heatSinks.Add(heatSink.DisplayName, new List<HeatSink> { heatSink });
                 }
                 else if (block is FuelCell fuelCell)
-                {
                     fuelCells.Add(fuelCell);
-                }
                 else if (block is Moderator moderator)
                 {
                     if (moderators.ContainsKey(moderator.DisplayName))
@@ -203,9 +211,9 @@ namespace NC_Reactor_Planner
                         moderators.Add(moderator.DisplayName, new List<Moderator> { moderator });
                 }
                 else if (block is Conductor conductor)
-                {
-                        conductors.Add(conductor);
-                }
+                    conductors.Add(conductor);
+                else if (block is Reflector reflector)
+                    reflectors.Add(reflector);
 
             }
         }
@@ -252,7 +260,7 @@ namespace NC_Reactor_Planner
                 while (queue.Count > 0)
                 {
                     root = queue.First();
-                    if (!root.Valid || root.Cluster != -1 || (root.BlockType == BlockTypes.Moderator) || (root.BlockType == BlockTypes.Air))
+                    if (!root.Valid || root.Cluster != -1 || (root.BlockType == BlockTypes.Moderator) || (root.BlockType == BlockTypes.Air) || (root.BlockType == BlockTypes.Reflector))
                     {
                         queue.Remove(root);
                         continue;
@@ -274,7 +282,7 @@ namespace NC_Reactor_Planner
                         {
                                 clusters[id].HasPathToCasing = true;
                         }
-                        else if((neighbour.BlockType != BlockTypes.Moderator) & (neighbour.BlockType != BlockTypes.Air))
+                        else if((neighbour.BlockType != BlockTypes.Moderator) & (neighbour.BlockType != BlockTypes.Air)& (neighbour.BlockType != BlockTypes.Reflector))
                         {
                             if(neighbour.Cluster == -1)
                                 queue.Add(neighbour);
@@ -475,8 +483,11 @@ namespace NC_Reactor_Planner
                 save = (SaveData)js.Deserialize(sr, typeof(SaveData));
             }
             ValidationResult vr = save.PerformValidation();
-            if(vr.Successful)
+            if (vr.Successful)
+            {
+                UI.LoadedSaveFile = saveFile;
                 LoadFromSaveData(save);
+            }
             return vr;
         }
 
@@ -518,7 +529,6 @@ namespace NC_Reactor_Planner
 
             ReloadValuesFromConfig();
             ConstructLayers();
-
         }
 
         public static void ReloadValuesFromConfig()
