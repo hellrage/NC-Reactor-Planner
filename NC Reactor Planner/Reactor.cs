@@ -136,9 +136,6 @@ namespace NC_Reactor_Planner
             RegenerateTypedLists();
             clusters = new List<Cluster>();
 
-            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
-                foreach (Moderator moderator in moderators.Value)
-                    moderator.RevertToSetup();
 
             foreach (KeyValuePair<string, List<HeatSink>> heatSinks in heatSinks)
                 foreach (HeatSink heatSink in heatSinks.Value)
@@ -164,8 +161,10 @@ namespace NC_Reactor_Planner
             foreach (Reflector reflector in reflectors)
                 reflector.UpdateStats();
 
+            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
+                foreach (Moderator moderator in moderators.Value)
+                    moderator.RevertToSetup();
             UpdateModerators();
-
 
             OrderedUpdateHeatSinks();
 

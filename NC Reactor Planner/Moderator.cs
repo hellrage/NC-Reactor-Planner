@@ -36,8 +36,9 @@ namespace NC_Reactor_Planner
 
         public void UpdateStats()
         {
-            foreach (Vector3D offset in Reactor.sixAdjOffsets)
+            for(int p = 1; p < 5; p *= 2)
             {
+                Vector3D offset = Reactor.sixAdjOffsets[p];
                 Tuple<int, BlockTypes> toOffset = WalkLineToValidSource(offset);
                 Tuple<int, BlockTypes> oppositeOffset = WalkLineToValidSource(-offset);
                 if (toOffset.Item1 > 0 & oppositeOffset.Item1 > 0)
