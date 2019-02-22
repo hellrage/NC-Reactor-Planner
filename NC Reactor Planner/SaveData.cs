@@ -25,15 +25,17 @@ namespace NC_Reactor_Planner
         public Dictionary<string, List<Point3D>> HeatSinks { get; private set; }
         public Dictionary<string, List<Point3D>> Moderators { get; private set; }
         public List<Point3D> Conductors { get; private set; }
+        public List<Point3D> Reflectors { get; private set; }
         public Dictionary<string, List<Point3D>> FuelCells { get; private set; }
         public Size3D InteriorDimensions { get; private set; }
 
-        public SaveData(Version saveVersion, Dictionary<string, List<Point3D>> heatSinks, Dictionary<string, List<Point3D>> moderators, List<Point3D> conductors, Dictionary<string, List<Point3D>> fuelCells, Size3D interiorDimensions)
+        public SaveData(Version saveVersion, Dictionary<string, List<Point3D>> heatSinks, Dictionary<string, List<Point3D>> moderators, List<Point3D> conductors, List<Point3D> reflectors, Dictionary<string, List<Point3D>> fuelCells, Size3D interiorDimensions)
         {
             SaveVersion = saveVersion;
             HeatSinks = heatSinks;
             Moderators = moderators;
             Conductors = conductors;
+            Reflectors = reflectors;
             FuelCells = fuelCells;
             InteriorDimensions = interiorDimensions;
         }
@@ -55,7 +57,7 @@ namespace NC_Reactor_Planner
                         case 1:
                             return new ValidationResult(false, "Tried to load an invalid FuelCell: " + fuelCellGroup.Key);
                         case 2:
-                            string newFuelName = "[OX]"+props[0].Replace(" Oxide", "");
+                            string newFuelName = "[OX]" + props[0].Replace(" Oxide", "");
                             Fuel usedFuel;
                             if (Palette.FuelPalette.TryGetValue(newFuelName, out usedFuel))
                                 ValidatedFuelCells.Add(string.Join(";", newFuelName, props[1]), fuelCellGroup.Value);
@@ -67,6 +69,10 @@ namespace NC_Reactor_Planner
                     }
                 }
                 FuelCells = ValidatedFuelCells;
+            }
+            if(SaveVersion < new Version(2, 0, 6, 0))
+            {
+                Reflectors = new List<Point3D>();
             }
 
             return new ValidationResult(true, "Valid savefile.");

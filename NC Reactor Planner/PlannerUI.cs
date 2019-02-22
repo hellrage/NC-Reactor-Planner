@@ -27,11 +27,14 @@ namespace NC_Reactor_Planner
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
         public static readonly Pen ValidModeratorPen = new Pen(Brushes.Green, 3);
 
-        public static bool drawAllLayers = true;
+        public static bool drawAllLayers;
         string appName;
         public static Block[,] layerBuffer;
 
         private bool showClustersInStats;
+        private decimal defaultReactorX;
+        private decimal defaultReactorY;
+        private decimal defaultReactorZ;
 
         public PlannerUI()
         {
@@ -39,12 +42,22 @@ namespace NC_Reactor_Planner
             Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
             appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
             this.Text = appName;
+
             SetUpToolTips();
             SetUIToolTips();
+
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
+
             blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
+
+            drawAllLayers = true;
             showClustersInStats = true;
+            defaultReactorX = 9;
+            defaultReactorY = 5;
+            defaultReactorZ = 9;
+            SetupReactorSizeControls(defaultReactorX, defaultReactorY, defaultReactorZ);
+
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
@@ -89,6 +102,39 @@ namespace NC_Reactor_Planner
             uiToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
             uiToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
             uiToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
+        }
+
+        private void SetupReactorSizeControls(decimal X, decimal Y, decimal Z)
+        {
+            int minSize = Configuration.Fission.MinSize;
+            int maxSize = Configuration.Fission.MaxSize;
+
+            reactorHeight.Maximum = maxSize;
+            reactorHeight.Minimum = minSize;
+            if (Y < minSize)
+                reactorHeight.Value = minSize;
+            else if(Y > maxSize)
+                reactorHeight.Value = maxSize;
+            else
+                reactorHeight.Value = Y;
+
+            reactorWidth.Maximum = maxSize;
+            reactorWidth.Minimum = minSize;
+            if (X < minSize)
+                reactorWidth.Value = minSize;
+            else if (X > maxSize)
+                reactorWidth.Value = maxSize;
+            else
+                reactorWidth.Value = X;
+
+            reactorLength.Maximum = maxSize;
+            reactorLength.Minimum = minSize;
+            if (Z < minSize)
+                reactorLength.Value = minSize;
+            else if (Z > maxSize)
+                reactorLength.Value = maxSize;
+            else
+                reactorLength.Value = Z;
         }
 
         private void ResetButtonFocusLost(object sender, EventArgs e)
@@ -360,8 +406,8 @@ namespace NC_Reactor_Planner
             if (drawAllLayers)
             {
                 int layersPerRow = (int)Math.Ceiling(Math.Sqrt(Reactor.interiorDims.Y));
-                origin = new Point((layer.Y - 1) % layersPerRow * layer.Size.Width + (layer.Y - 1) % layersPerRow * blockSize,
-                                    (layer.Y - 1) / layersPerRow * layer.Size.Height + (layer.Y - 1) / layersPerRow * blockSize);
+                origin = new Point((layer.Y - 1) % layersPerRow * layer.Size.Width + (layer.Y - 1) % layersPerRow * 16,
+                                    (layer.Y - 1) / layersPerRow * layer.Size.Height + (layer.Y - 1) / layersPerRow * 16);
             }
             else
             {
@@ -406,16 +452,15 @@ namespace NC_Reactor_Planner
             {
                 configurationUI = new ConfigurationUI();
                 configurationUI.FormClosed += new FormClosedEventHandler(ConfigurationClosed);
-                configurationUI.Show();
             }
-            else
-                configurationUI.Focus();
+                configurationUI.ShowDialog(this);
         }
 
         private void ConfigurationClosed(object sender, FormClosedEventArgs e)
         {
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+            SetupReactorSizeControls(reactorWidth.Value, reactorHeight.Value, reactorLength.Value);
             Reactor.Redraw();
             RefreshStats(showClustersInStats);
         }

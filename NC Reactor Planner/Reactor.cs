@@ -442,6 +442,7 @@ namespace NC_Reactor_Planner
             Dictionary<string, List<Point3D>> saveHeatSinks = new Dictionary<string, List<Point3D>>();
             Dictionary<string, List<Point3D>> saveModerators = new Dictionary<string, List<Point3D>>();
             List<Point3D> saveConductors = new List<Point3D>();
+            List<Point3D> saveReflectors = new List<Point3D>();
             Dictionary<string, List<Point3D>> saveFuelCells = new Dictionary<string, List<Point3D>>();
 
             foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
@@ -462,6 +463,8 @@ namespace NC_Reactor_Planner
 
             foreach (Conductor cd in conductors)
                 saveConductors.Add(cd.Position);
+            foreach (Reflector rf in reflectors)
+                saveReflectors.Add(rf.Position);
 
             foreach (FuelCell fc in fuelCells)
             {
@@ -470,7 +473,7 @@ namespace NC_Reactor_Planner
                 saveFuelCells[fc.ToSaveString()].Add(fc.Position);
             }
 
-            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveFuelCells, interiorDims);
+            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims);
         }
 
         public static ValidationResult Load(FileInfo saveFile)
@@ -525,6 +528,9 @@ namespace NC_Reactor_Planner
 
             foreach (Point3D pos in save.Conductors)
                 SetBlock(new Conductor("Conductor", Palette.Textures["Conductor"], pos), pos);
+
+            foreach (Point3D pos in save.Reflectors)
+                SetBlock(new Reflector("Reflector", Palette.Textures["Reflector"], pos), pos);
 
             ReloadValuesFromConfig();
             ConstructLayers();
