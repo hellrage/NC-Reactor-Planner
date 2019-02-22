@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 
@@ -20,7 +17,7 @@ namespace NC_Reactor_Planner
         public Block()
         {
             DisplayName = "Air";
-            Texture = new Bitmap(Palette.Textures["Air"]);
+            Texture = Palette.Textures["Air"];
             Position = Palette.dummyPosition;
         }
 
@@ -47,16 +44,6 @@ namespace NC_Reactor_Planner
         public virtual Block Copy(Point3D newPosition)
         {
             return new Block(DisplayName, BlockType, Texture, newPosition);
-        }
-
-        public virtual bool NeedsRedraw()
-        {
-            return false;
-        }
-
-        public virtual bool IsValid()
-        {
-            return false;
         }
 
         public virtual Dictionary<string, int> GetResourceCosts()

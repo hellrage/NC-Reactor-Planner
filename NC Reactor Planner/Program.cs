@@ -14,12 +14,13 @@ namespace NC_Reactor_Planner
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
             PreStartUp();
+            if (args.Length > 1)
+                AfterUpdate(args);
             Application.Run(Reactor.UI);
         }
 
@@ -46,6 +47,12 @@ namespace NC_Reactor_Planner
                     MessageBox.Show("Unable to load default configuration, resetting to hardcoded defaults...");
                     Configuration.ResetToDefaults();
                 }
+        }
+
+        static void AfterUpdate(string[] args)
+        {
+            Reactor.Load(new FileInfo(args[0]));
+            File.Delete(args[1]);
         }
     }
 }

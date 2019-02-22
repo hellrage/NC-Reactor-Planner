@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using System.Drawing;
 
@@ -134,11 +131,6 @@ namespace NC_Reactor_Planner
                     adjModerators++;
             }
             return adjModerators;
-        }
-
-        public override bool IsValid()
-        {
-            return true;
         }
 
         public override Block Copy(Point3D newPosition)

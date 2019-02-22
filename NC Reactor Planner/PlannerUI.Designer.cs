@@ -67,7 +67,7 @@
             // 
             // reactorWidth
             // 
-            this.reactorWidth.Location = new System.Drawing.Point(152, 57);
+            this.reactorWidth.Location = new System.Drawing.Point(154, 59);
             this.reactorWidth.Maximum = new decimal(new int[] {
             24,
             0,
@@ -82,7 +82,7 @@
             this.reactorWidth.Size = new System.Drawing.Size(40, 20);
             this.reactorWidth.TabIndex = 1;
             this.reactorWidth.Value = new decimal(new int[] {
-            5,
+            9,
             0,
             0,
             0});
@@ -90,7 +90,7 @@
             // 
             // reactorLength
             // 
-            this.reactorLength.Location = new System.Drawing.Point(282, 57);
+            this.reactorLength.Location = new System.Drawing.Point(284, 59);
             this.reactorLength.Maximum = new decimal(new int[] {
             24,
             0,
@@ -105,7 +105,7 @@
             this.reactorLength.Size = new System.Drawing.Size(40, 20);
             this.reactorLength.TabIndex = 3;
             this.reactorLength.Value = new decimal(new int[] {
-            5,
+            9,
             0,
             0,
             0});
@@ -113,7 +113,7 @@
             // 
             // reactorHeight
             // 
-            this.reactorHeight.Location = new System.Drawing.Point(218, 57);
+            this.reactorHeight.Location = new System.Drawing.Point(220, 59);
             this.reactorHeight.Maximum = new decimal(new int[] {
             24,
             0,
@@ -137,28 +137,28 @@
             // sizeLabel
             // 
             this.sizeLabel.AutoSize = true;
-            this.sizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sizeLabel.Location = new System.Drawing.Point(152, 12);
+            this.sizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.sizeLabel.Location = new System.Drawing.Point(163, 16);
             this.sizeLabel.Name = "sizeLabel";
-            this.sizeLabel.Size = new System.Drawing.Size(168, 20);
+            this.sizeLabel.Size = new System.Drawing.Size(159, 18);
             this.sizeLabel.TabIndex = 7;
             this.sizeLabel.Text = "Reactor dimensions";
             // 
             // x1
             // 
             this.x1.AutoSize = true;
-            this.x1.Location = new System.Drawing.Point(198, 59);
+            this.x1.Location = new System.Drawing.Point(200, 61);
             this.x1.Name = "x1";
-            this.x1.Size = new System.Drawing.Size(14, 13);
+            this.x1.Size = new System.Drawing.Size(15, 15);
             this.x1.TabIndex = 8;
             this.x1.Text = "X";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(262, 59);
+            this.label1.Location = new System.Drawing.Point(264, 61);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(14, 13);
+            this.label1.Size = new System.Drawing.Size(15, 15);
             this.label1.TabIndex = 9;
             this.label1.Text = "X";
             // 
@@ -166,9 +166,9 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(215, 38);
+            this.label2.Location = new System.Drawing.Point(217, 40);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(18, 16);
+            this.label2.Size = new System.Drawing.Size(18, 18);
             this.label2.TabIndex = 10;
             this.label2.Text = "Y";
             // 
@@ -176,9 +176,9 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(153, 38);
+            this.label3.Location = new System.Drawing.Point(155, 40);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(17, 16);
+            this.label3.Size = new System.Drawing.Size(19, 18);
             this.label3.TabIndex = 11;
             this.label3.Text = "X";
             // 
@@ -186,18 +186,18 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(279, 38);
+            this.label4.Location = new System.Drawing.Point(281, 40);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 16);
+            this.label4.Size = new System.Drawing.Size(18, 18);
             this.label4.TabIndex = 12;
             this.label4.Text = "Z";
             // 
             // resetLayout
             // 
             this.resetLayout.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.resetLayout.Location = new System.Drawing.Point(150, 83);
+            this.resetLayout.Location = new System.Drawing.Point(148, 85);
             this.resetLayout.Name = "resetLayout";
-            this.resetLayout.Size = new System.Drawing.Size(170, 34);
+            this.resetLayout.Size = new System.Drawing.Size(184, 34);
             this.resetLayout.TabIndex = 4;
             this.resetLayout.Text = "Reset layout";
             this.resetLayout.UseVisualStyleBackColor = true;
@@ -212,7 +212,7 @@
             this.reactorGrid.Location = new System.Drawing.Point(376, 37);
             this.reactorGrid.MinimumSize = new System.Drawing.Size(200, 200);
             this.reactorGrid.Name = "reactorGrid";
-            this.reactorGrid.Size = new System.Drawing.Size(518, 592);
+            this.reactorGrid.Size = new System.Drawing.Size(595, 644);
             this.reactorGrid.TabIndex = 16;
             this.reactorGrid.MouseEnter += new System.EventHandler(this.reactorGrid_MouseEnter);
             // 
@@ -226,7 +226,7 @@
             this.layerScrollBar.Maximum = 1;
             this.layerScrollBar.Minimum = 1;
             this.layerScrollBar.Name = "layerScrollBar";
-            this.layerScrollBar.Size = new System.Drawing.Size(30, 644);
+            this.layerScrollBar.Size = new System.Drawing.Size(30, 696);
             this.layerScrollBar.TabIndex = 0;
             this.layerScrollBar.Value = 1;
             this.layerScrollBar.ValueChanged += new System.EventHandler(this.layerScrollBar_ValueChanged);
@@ -237,7 +237,7 @@
             this.layerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.layerLabel.Location = new System.Drawing.Point(457, 8);
             this.layerLabel.Name = "layerLabel";
-            this.layerLabel.Size = new System.Drawing.Size(61, 24);
+            this.layerLabel.Size = new System.Drawing.Size(71, 25);
             this.layerLabel.TabIndex = 17;
             this.layerLabel.Text = "Layer";
             // 
@@ -245,9 +245,9 @@
             // 
             this.statsLabel.AutoSize = true;
             this.statsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.statsLabel.Location = new System.Drawing.Point(12, 369);
+            this.statsLabel.Location = new System.Drawing.Point(16, 398);
             this.statsLabel.Name = "statsLabel";
-            this.statsLabel.Size = new System.Drawing.Size(52, 20);
+            this.statsLabel.Size = new System.Drawing.Size(56, 22);
             this.statsLabel.TabIndex = 19;
             this.statsLabel.Text = "Stats";
             // 
@@ -256,7 +256,7 @@
             this.saveReactor.Enabled = false;
             this.saveReactor.Location = new System.Drawing.Point(7, 99);
             this.saveReactor.Name = "saveReactor";
-            this.saveReactor.Size = new System.Drawing.Size(124, 23);
+            this.saveReactor.Size = new System.Drawing.Size(136, 23);
             this.saveReactor.TabIndex = 11;
             this.saveReactor.Text = "Save Reactor";
             this.saveReactor.UseVisualStyleBackColor = true;
@@ -266,7 +266,7 @@
             // 
             this.loadReactor.Location = new System.Drawing.Point(7, 129);
             this.loadReactor.Name = "loadReactor";
-            this.loadReactor.Size = new System.Drawing.Size(124, 23);
+            this.loadReactor.Size = new System.Drawing.Size(136, 23);
             this.loadReactor.TabIndex = 12;
             this.loadReactor.Text = "Load Reactor";
             this.loadReactor.UseVisualStyleBackColor = true;
@@ -308,7 +308,7 @@
             this.saveAsImage.Enabled = false;
             this.saveAsImage.Location = new System.Drawing.Point(7, 70);
             this.saveAsImage.Name = "saveAsImage";
-            this.saveAsImage.Size = new System.Drawing.Size(124, 23);
+            this.saveAsImage.Size = new System.Drawing.Size(136, 23);
             this.saveAsImage.TabIndex = 10;
             this.saveAsImage.Text = "Save PNG";
             this.saveAsImage.UseVisualStyleBackColor = true;
@@ -318,7 +318,7 @@
             // 
             this.imageScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.imageScale.Enabled = false;
-            this.imageScale.Location = new System.Drawing.Point(843, 12);
+            this.imageScale.Location = new System.Drawing.Point(920, 12);
             this.imageScale.Maximum = new decimal(new int[] {
             10,
             0,
@@ -365,20 +365,20 @@
             this.fuelBaseHeatLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseHeatLabel.AutoSize = true;
             this.fuelBaseHeatLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fuelBaseHeatLabel.Location = new System.Drawing.Point(703, 636);
+            this.fuelBaseHeatLabel.Location = new System.Drawing.Point(736, 688);
             this.fuelBaseHeatLabel.Name = "fuelBaseHeatLabel";
-            this.fuelBaseHeatLabel.Size = new System.Drawing.Size(114, 16);
+            this.fuelBaseHeatLabel.Size = new System.Drawing.Size(43, 18);
             this.fuelBaseHeatLabel.TabIndex = 23;
-            this.fuelBaseHeatLabel.Text = "Fuel base Heat";
+            this.fuelBaseHeatLabel.Text = "Heat";
             // 
             // fuelBaseHeat
             // 
             this.fuelBaseHeat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseHeat.Enabled = false;
-            this.fuelBaseHeat.Location = new System.Drawing.Point(823, 635);
+            this.fuelBaseHeat.Location = new System.Drawing.Point(783, 688);
             this.fuelBaseHeat.Name = "fuelBaseHeat";
             this.fuelBaseHeat.ReadOnly = true;
-            this.fuelBaseHeat.Size = new System.Drawing.Size(74, 20);
+            this.fuelBaseHeat.Size = new System.Drawing.Size(35, 20);
             this.fuelBaseHeat.TabIndex = 8;
             // 
             // fuelSelector
@@ -386,9 +386,9 @@
             this.fuelSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelSelector.Enabled = false;
             this.fuelSelector.FormattingEnabled = true;
-            this.fuelSelector.Location = new System.Drawing.Point(376, 635);
+            this.fuelSelector.Location = new System.Drawing.Point(376, 688);
             this.fuelSelector.Name = "fuelSelector";
-            this.fuelSelector.Size = new System.Drawing.Size(111, 21);
+            this.fuelSelector.Size = new System.Drawing.Size(237, 21);
             this.fuelSelector.TabIndex = 6;
             this.fuelSelector.SelectedIndexChanged += new System.EventHandler(this.fuelSelector_SelectedIndexChanged);
             // 
@@ -398,12 +398,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.stats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.stats.Location = new System.Drawing.Point(7, 392);
+            this.stats.Location = new System.Drawing.Point(7, 425);
             this.stats.MaximumSize = new System.Drawing.Size(325, 607);
             this.stats.MinimumSize = new System.Drawing.Size(325, 100);
             this.stats.Name = "stats";
             this.stats.ReadOnly = true;
-            this.stats.Size = new System.Drawing.Size(325, 259);
+            this.stats.Size = new System.Drawing.Size(325, 278);
             this.stats.TabIndex = 24;
             this.stats.TabStop = false;
             this.stats.Text = "";
@@ -413,7 +413,7 @@
             this.OpenConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.OpenConfig.Location = new System.Drawing.Point(7, 24);
             this.OpenConfig.Name = "OpenConfig";
-            this.OpenConfig.Size = new System.Drawing.Size(124, 23);
+            this.OpenConfig.Size = new System.Drawing.Size(136, 23);
             this.OpenConfig.TabIndex = 25;
             this.OpenConfig.Text = "Open configuration";
             this.OpenConfig.UseVisualStyleBackColor = true;
@@ -424,9 +424,9 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label5.Location = new System.Drawing.Point(783, 14);
+            this.label5.Location = new System.Drawing.Point(860, 14);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(52, 16);
+            this.label5.Size = new System.Drawing.Size(55, 18);
             this.label5.TabIndex = 26;
             this.label5.Text = "Scale:";
             // 
@@ -477,12 +477,12 @@
             this.Controls.Add(this.layerLabel);
             this.Controls.Add(this.reactorGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(1920, 1080);
-            this.MinimumSize = new System.Drawing.Size(918, 542);
+            this.MinimumSize = new System.Drawing.Size(995, 601);
             this.Name = "PlannerUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "NC Reactor Planner";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Leave += new System.EventHandler(this.PlannerUI_Leave);
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("BMSTU")]
 [assembly: AssemblyProduct("NC Reactor Planner")]
-[assembly: AssemblyCopyright("Copyright © Hellrage#5076 2018")]
+[assembly: AssemblyCopyright("Copyright © Hellrage#5076 2018-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

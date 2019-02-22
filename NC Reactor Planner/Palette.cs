@@ -29,7 +29,8 @@ namespace NC_Reactor_Planner
 
             public PalettePanel()
             {
-                Size = new Size(200, 252);
+                int height = (int)Math.Ceiling(((double)(BlockPalette.Keys.Count ) / (Width / (blockSide + 2 * spacing)))) * (blockSide + 2 * spacing);
+                Size = new Size(200, height + namestripHeight);
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
                 cellX = -1;
                 cellZ = -1;
@@ -41,15 +42,9 @@ namespace NC_Reactor_Planner
                 Redraw(e.Graphics);
             }
 
-            internal void ResetHighlight()
-            {
-                Xhighlight = 0;
-                Zhighlight = 0;
-            }
-
             public void Redraw(Graphics g)
             {
-                DrawNamestring(g, (selectedBlock is Cooler cooler && cooler.Active)?"Active "+selectedBlock.DisplayName : selectedBlock.DisplayName);
+                DrawNamestring(g, selectedBlock.DisplayName);
                 DrawHighlightRectangle(g, Xhighlight, Zhighlight);
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighSpeed;
@@ -62,12 +57,17 @@ namespace NC_Reactor_Planner
                 {
                     g.DrawImage(block.Key.Texture, x, y, blockSide, blockSide);
                     x += blockSide + 2 * spacing;
-                    if (x + blockSide + spacing > Width)
+                    if(x+blockSide+spacing > Width)
                     {
                         x = spacing;
                         y += blockSide + 2 * spacing;
                     }
                 }
+            }
+            internal void ResetHighlight()
+            {
+                Xhighlight = 0;
+                Zhighlight = 0;
             }
 
             private void DrawNamestring(Graphics g, string name)
@@ -113,8 +113,8 @@ namespace NC_Reactor_Planner
 
             private Tuple<int, int> ConvertCellCoordinates(MouseEventArgs e)
             {
-                return Tuple.Create(((e.X > Width - spacing - Width % (blockSide + 2 * spacing)) ? Width - (blockSide + 2 * spacing) : e.X) / (blockSide + 2 * spacing),
-                                    ((e.Y - namestripHeight > Height) ? Height : e.Y - namestripHeight) / (blockSide + 2 * spacing));
+                return Tuple.Create(((e.X > Width - spacing - Width % (blockSide+2*spacing)) ? Width - (blockSide + 2 * spacing) : e.X) / (blockSide + 2*spacing),
+                                    ((e.Y - namestripHeight > Height) ? Height : e.Y - namestripHeight) / (blockSide + 2*spacing));
             }
 
             protected override void OnMouseClick(MouseEventArgs e)
@@ -143,7 +143,7 @@ namespace NC_Reactor_Planner
         public static PalettePanel PaletteControl { get; private set; }
 
         private static Dictionary<Block, BlockTypes> blocks;
-        private static List<Cooler> coolers;
+        private static List<HeatSink> heatSinks;
         private static List<Moderator> moderators;
         private static ToolTip paletteToolTip;
         private static Block selectedBlock;
@@ -151,12 +151,12 @@ namespace NC_Reactor_Planner
 
         public static void Load()
         {
-            if (Textures == null)
+            if(Textures == null)
                 LoadTextures();
-            PaletteControl = new PalettePanel();
-            PaletteControl.Parent = Reactor.UI;
-            paletteToolTip = new ToolTip();
             LoadPalette();
+            selectedBlock = BlockPalette["Air"];
+            PaletteControl = new PalettePanel();
+            paletteToolTip = new ToolTip();
         }
 
         private static void LoadTextures()
@@ -180,7 +180,7 @@ namespace NC_Reactor_Planner
             coolers = new List<Cooler>();
             moderators = new List<Moderator>();
 
-            PopulateHeatSinks(active);
+            PopulateCoolers(active);
             PopulateModerators();
             PopulateBlocks();
 
@@ -202,7 +202,7 @@ namespace NC_Reactor_Planner
             foreach (KeyValuePair<string, Block> blockEntry in BlockPalette)
                 blockEntry.Value.ReloadValuesFromConfig();
 
-            foreach (KeyValuePair<string, Fuel> fuelEntry in FuelPalette)
+            foreach(KeyValuePair<string, Fuel> fuelEntry in FuelPalette)
                 fuelEntry.Value.ReloadValuesFromConfig();
         }
 
@@ -211,8 +211,8 @@ namespace NC_Reactor_Planner
             BlockPalette.Add("Air", new Block("Air", BlockTypes.Air, Textures["Air"], dummyPosition));
             BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition));
 
-            foreach (Cooler heatSink in coolers)
-                BlockPalette.Add(heatSink.DisplayName, heatSink);
+            foreach (Cooler cooler in coolers)
+                BlockPalette.Add(cooler.DisplayName, cooler);
             foreach (Moderator moderator in moderators)
                 BlockPalette.Add(moderator.DisplayName, moderator);
         }
@@ -222,22 +222,22 @@ namespace NC_Reactor_Planner
             blocks.Add(new Block("Air", BlockTypes.Air, Textures["Air"], dummyPosition), BlockTypes.Air);
             blocks.Add(new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition), BlockTypes.FuelCell);
 
-            foreach (Cooler heatSink in coolers)
-                blocks.Add(heatSink, BlockTypes.Cooler);
+            foreach (Cooler cooler in coolers)
+                blocks.Add(cooler, BlockTypes.Cooler);
             foreach (Moderator moderator in moderators)
                 blocks.Add(moderator, BlockTypes.Moderator);
         }
 
-        private static void PopulateHeatSinks(bool active = false)
+        private static void PopulateCoolers(bool active = false)
         {
-            foreach (KeyValuePair<string, CoolerValues> heatSinkEntry in Configuration.Coolers)
+            foreach (KeyValuePair<string, CoolerValues> coolerEntry in Configuration.Coolers)
             {
-                CoolerValues cv = heatSinkEntry.Value;
+                CoolerValues cv = coolerEntry.Value;
                 CoolerTypes parsedType;
-                if (Enum.TryParse(heatSinkEntry.Key, out parsedType))
-                    coolers.Add(new Cooler(heatSinkEntry.Key, Textures[heatSinkEntry.Key], parsedType, cv.HeatActive, cv.HeatPassive, cv.Requirements, dummyPosition, active));
+                if (Enum.TryParse(coolerEntry.Key, out parsedType))
+                    coolers.Add(new Cooler(coolerEntry.Key, Textures[coolerEntry.Key], parsedType, cv.HeatActive, cv.HeatPassive, cv.Requirements, dummyPosition, active));
                 else
-                    throw new ArgumentException("Unexpected heatsink type in config!");
+                    throw new ArgumentException("Unexpected cooler type in config!");
             }
         }
 

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationUI));
             this.settingTabs = new System.Windows.Forms.TabControl();
             this.Save = new System.Windows.Forms.Button();
             this.LoadConfig = new System.Windows.Forms.Button();
@@ -102,6 +103,7 @@
             this.Controls.Add(this.LoadConfig);
             this.Controls.Add(this.Save);
             this.Controls.Add(this.settingTabs);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigurationUI";
             this.Text = "Configuration";
             this.Load += new System.EventHandler(this.ConfigurationUI_Load);

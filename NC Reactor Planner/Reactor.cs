@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System.IO;
 using System.Drawing;
-using System.Web.Script.Serialization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace NC_Reactor_Planner
 {
@@ -20,14 +14,12 @@ namespace NC_Reactor_Planner
         public Version SaveVersion;
         public List<Dictionary<string, List<Point3D>>> CompressedReactor;
         public Size3D InteriorDimensions;
-        public Fuel UsedFuel;
 
-        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, Size3D id, Fuel uf)
+        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, List<Tuple<Point3D, string, bool>> fc, Size3D id)
         {
             SaveVersion = sv;
             CompressedReactor = cr;
             InteriorDimensions = id;
-            UsedFuel = uf;
         }
     }
 
@@ -60,11 +52,6 @@ namespace NC_Reactor_Planner
         public static double energyMultiplier = 0;
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
-        public static double heatMulti = 0;
-
-        public static Fuel usedFuel;
-        public static double maxBaseHeat = 0;
-        public static double fuelDuration = 0;
 
         static Reactor()
         {
@@ -151,21 +138,6 @@ namespace NC_Reactor_Planner
                 { "Graphite", new List<Moderator>() },
                 { "Beryllium", new List<Moderator>() }
             };
-
-            totalCoolingPerTick = 0;
-            totalPassiveCoolingPerType = new Dictionary<string, double>();
-            totalActiveCoolingPerType = new Dictionary<string, double>();
-            totalHeatPerTick = 0;
-            totalEnergyPerTick = 0;
-
-            totalCasings = 0;
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
-            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
-            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
-
-            efficiency = 0;
-            energyMultiplier = 0;
-            heatMultiplier = 0;
 
             foreach (Block block in blocks)
             {
@@ -374,16 +346,6 @@ namespace NC_Reactor_Planner
             ConstructLayers();
         }
 
-        private static void ReloadBlockTextures()
-        {
-            foreach (Block block in blocks)
-            {
-                if (block is Casing)
-                    continue;
-                block.Texture = Palette.Textures[block.DisplayName];
-            }
-        }
-
         public static void ReloadValuesFromConfig()
         {
             Palette.ReloadValuesFromConfig();
@@ -394,7 +356,7 @@ namespace NC_Reactor_Planner
         {
             if (blocks == null) return;
             foreach (Block block in blocks)
-                block.ReloadValuesFromConfig();
+                    block.ReloadValuesFromConfig();
         }
 
         public static void SaveLayerAsImage(int layer, string fileName)
@@ -555,7 +517,7 @@ namespace NC_Reactor_Planner
 
         public static void SetBlock(Block block, Point3D position)
         {
-            blocks[(int)position.X, (int)position.Y, (int)position.Z] = block.Copy(position);
+            blocks[(int)position.X, (int)position.Y, (int)position.Z] = block;
         }
 
         public static void ClearLayer(ReactorGridLayer layer)
@@ -564,7 +526,7 @@ namespace NC_Reactor_Planner
                 for (int z = 0; z < interiorDims.Z; z++)
                     SetBlock(new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
             UpdateStats();
-            layer.Refresh();
+            Redraw();
         }
 
         public static void CopyLayer(ReactorGridLayer layer)
@@ -590,10 +552,11 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < layer.X; x++)
                 for (int z = 0; z < layer.Z; z++)
                 {
-                    SetBlock(PlannerUI.layerBuffer[x, z], new Point3D(x + 1, layer.Y, z + 1));
+                    Point3D position = new Point3D(x + 1, layer.Y, z + 1);
+                    SetBlock(PlannerUI.layerBuffer[x, z].Copy(position), position);
                 }
             UpdateStats();
-            layer.Refresh();
+            Redraw();
         }
 
         public static void DeleteLayer(int y)

@@ -69,36 +69,41 @@ namespace NC_Reactor_Planner
             ToolStripMenuItem layerLabel = new ToolStripMenuItem { Name = "LayerLabel", Text = "Layer " + Y.ToString() };
             menu.Items.Add(layerLabel);
 
-            RescaleMenu();
+            ResetRescaleMenu();
 
             menu.Location = new Point(0, 0);
             menu.Visible = true;
             Controls.Add(menu);
-            Refresh();
         }
 
         public void Rescale()
         {
             int bs = PlannerUI.blockSize;
             Size = new Size(bs * X, bs * Z + menu.Height);
-            RescaleMenu();
+            ResetRescaleMenu();
             Refresh();
         }
 
-        private void RescaleMenu()
+        private void ResetRescaleMenu()
         {
-            if (this.Width < 130)
+            foreach (ToolStripMenuItem item in menu.Items)
+                item.AutoSize = true;
+            menu.Items["Edit"].Text = "Edit";
+            menu.Items["Manage"].Text = "Manage";
+            menu.Items["LayerLabel"].Text = "Layer " + Y.ToString();
+            if (this.Width < menu.Width)
             {
+                menu.Items["Edit"].AutoSize = false;
                 menu.Items["Edit"].Text = "E";
+                menu.Items["Edit"].Size = new Size(Width / 4, menu.Items["Edit"].Size.Height);
+                menu.Items["Manage"].AutoSize = false;
                 menu.Items["Manage"].Text = "M";
+                menu.Items["Manage"].Size = new Size(Width / 4, menu.Items["Manage"].Size.Height);
+                menu.Items["LayerLabel"].AutoSize = false;
                 menu.Items["LayerLabel"].Text = "L " + Y.ToString();
+                menu.Items["LayerLabel"].Size = new Size(Width / 2, menu.Items["LayerLabel"].Size.Height);
             }
-            else
-            {
-                menu.Items["Edit"].Text = "Edit";
-                menu.Items["Manage"].Text = "Manage";
-                menu.Items["LayerLabel"].Text = "Layer " + Y.ToString();
-            }
+
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -135,11 +140,22 @@ namespace NC_Reactor_Planner
             if (noChecking)
                 return;
 
-
-
             if (!block.Valid)
                 g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
         }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            Point cellCoords = ConvertCellCoordinates(e);
+            cellX = cellCoords.X;
+            cellZ = cellCoords.Y;
+
+            Point3D position = new Point3D(cellX, Y, cellZ);
+            HandleMouse(e.Button, position);
+            base.OnMouseDown(e);
+        }
+
+
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
@@ -242,8 +258,6 @@ namespace NC_Reactor_Planner
         private void PlaceBlock(int x, int z, Block block)
         {
             Reactor.SetBlock(block, new Point3D(x, Y, z));
-            if (block is FuelCell)
-                Reactor.UpdateStats();
         }
 
         public Bitmap DrawToImage()

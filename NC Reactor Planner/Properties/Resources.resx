@@ -121,8 +121,17 @@
   <data name="Air" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Air.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Aluminum" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Aluminum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Beryllium" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Beryllium.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Boron" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Boron.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Conductor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Conductor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Copper" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Copper.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -151,6 +160,9 @@
   <data name="Graphite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Graphite.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="HeavyWater" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HeavyWater.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Helium" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Helium.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -160,17 +172,41 @@
   <data name="Lapis" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Lapis.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Lead" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Lead.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Lithium" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Lithium.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Magnesium" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Magnesium.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Manganese" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Manganese.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Newtonsoft_Json" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\Newtonsoft.Json.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Obsidian" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Obsidian.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Prismarine" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Prismarine.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Purpur" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Purpur.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Quartz" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Quartz.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Redstone" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Redstone.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Reflector" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reflector.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Silver" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Silver.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Tin" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Tin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

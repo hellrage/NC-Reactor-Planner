@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 
@@ -20,11 +17,6 @@ namespace NC_Reactor_Planner
         public Casing(Casing parent, Point3D position) : base(parent.DisplayName, BlockTypes.Casing, parent.Texture, position)
         {
 
-        }
-
-        public override bool IsValid()
-        {
-            return true;
         }
 
         public override Block Copy(Point3D newPosition)
