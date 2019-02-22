@@ -168,29 +168,29 @@ namespace NC_Reactor_Planner
                 {
                     if (cooler.Active)
                     {
-                        if (activeCoolers.ContainsKey(block.DisplayName))
-                            activeCoolers[block.DisplayName].Add(cooler);
+                        if (activeCoolers.ContainsKey(cooler.CoolerType.ToString()))
+                            activeCoolers[cooler.CoolerType.ToString()].Add(cooler);
                         else
-                            activeCoolers.Add(block.DisplayName, new List<Cooler> { cooler });
+                            activeCoolers.Add(cooler.CoolerType.ToString(), new List<Cooler> { cooler });
                     }
                     else
-                        if (passiveCoolers.ContainsKey(block.DisplayName))
-                            passiveCoolers[block.DisplayName].Add(cooler);
+                        if (passiveCoolers.ContainsKey(cooler.CoolerType.ToString()))
+                            passiveCoolers[cooler.CoolerType.ToString()].Add(cooler);
                         else
-                            passiveCoolers.Add(block.DisplayName, new List<Cooler> { cooler });
+                            passiveCoolers.Add(cooler.CoolerType.ToString(), new List<Cooler> { cooler });
                 }
-                else if (block is FuelCell)
+                else if (block is FuelCell fuelcell)
                 {
-                    fuelCells.Add((FuelCell)block);
-                    ((FuelCell)block).UpdateStats();
+                    fuelCells.Add(fuelcell);
+                    (fuelcell).UpdateStats();
                 }
-                else if (block is Moderator)
+                else if (block is Moderator moderator)
                 {
-                    if (moderators.ContainsKey(block.DisplayName))
-                        moderators[block.DisplayName].Add((Moderator)block);
+                    if (moderators.ContainsKey(moderator.ModeratorType.ToString()))
+                        moderators[moderator.ModeratorType.ToString()].Add(moderator);
                     else
-                        moderators.Add(block.DisplayName, new List<Moderator> { (Moderator)block });
-                    ((Moderator)block).UpdateStats();
+                        moderators.Add(moderator.ModeratorType.ToString(), new List<Moderator> { moderator });
+                    moderator.UpdateStats();
                 }
             }
 

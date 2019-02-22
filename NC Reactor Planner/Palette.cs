@@ -23,15 +23,25 @@ namespace NC_Reactor_Planner
             private int cellZ;
             private int Xhighlight;
             private int Zhighlight;
+            private CheckBox activeCooler;
             public static readonly int blockSide = 32;
             public static readonly int spacing = 3;
-            public static readonly int namestripHeight = 23;
+            public static readonly int namestripHeight = 30;
+            private static readonly Font nameStringFont = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
 
             public PalettePanel()
             {
                 int height = (int)Math.Ceiling(((double)(BlockPalette.Keys.Count ) / (Width / (blockSide + 2 * spacing)))) * (blockSide + 2 * spacing);
                 Size = new Size(200, height + namestripHeight);
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+
+                activeCooler = new CheckBox();
+                activeCooler.Text = "Active";
+                activeCooler.Font = nameStringFont;
+                activeCooler.Location = new Point(Width - (activeCooler.Width - 20), spacing);
+                activeCooler.CheckedChanged += new EventHandler(ActiveCooler_CheckedChanged);
+                Controls.Add(activeCooler);
+
                 cellX = -1;
                 cellZ = -1;
             }
@@ -45,7 +55,13 @@ namespace NC_Reactor_Planner
             public void Redraw(Graphics g)
             {
                 DrawNamestring(g, selectedBlock.DisplayName);
-                DrawHighlightRectangle(g, Xhighlight, Zhighlight);
+                if(selectedBlock.BlockType == BlockTypes.Cooler && ((Cooler)selectedBlock).Active)
+                    using (Pen activeCoolerPen = new Pen(Color.Green, 3))
+                        DrawHighlightRectangle(g, Xhighlight, Zhighlight, activeCoolerPen);
+                else
+                    using (Pen highlightPen = new Pen(Color.Blue, 3))
+                        DrawHighlightRectangle(g, Xhighlight, Zhighlight, highlightPen);
+
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighSpeed;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
@@ -73,12 +89,12 @@ namespace NC_Reactor_Planner
             private void DrawNamestring(Graphics g, string name)
             {
                 g.FillRectangle(new SolidBrush(DefaultBackColor), new Rectangle(0, 0, Width, namestripHeight));
-                g.DrawString(name, new Font(Font, FontStyle.Bold), Brushes.Black, new PointF(spacing, spacing));
+                g.DrawString(name, nameStringFont, Brushes.Black, new PointF(spacing, spacing));
             }
 
-            private void DrawHighlightRectangle(Graphics g, int cellX, int cellZ)
+            private void DrawHighlightRectangle(Graphics g, int cellX, int cellZ, Pen pen)
             {
-                g.DrawRectangle(new Pen(Color.Blue, 3), cellX * (blockSide + 2 * spacing), namestripHeight + cellZ * (blockSide + 2 * spacing), blockSide + 2 * spacing, blockSide + 2 * spacing);
+                g.DrawRectangle(pen, cellX * (blockSide + 2 * spacing), namestripHeight + cellZ * (blockSide + 2 * spacing), blockSide + 2 * spacing, blockSide + 2 * spacing);
             }
 
             protected override void OnMouseMove(MouseEventArgs e)
@@ -132,6 +148,13 @@ namespace NC_Reactor_Planner
                 }
                 Refresh();
                 base.OnMouseClick(e);
+            }
+
+            private void ActiveCooler_CheckedChanged(object sender, EventArgs e)
+            {
+                LoadPalette(activeCooler.Checked);
+                selectedBlock = BlockPalette[selectedBlock.BlockType == BlockTypes.Cooler ? ((Cooler)selectedBlock).CoolerType.ToString() : selectedBlock.BlockType.ToString()];
+                Refresh();
             }
         }
 
@@ -212,9 +235,9 @@ namespace NC_Reactor_Planner
             BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition));
 
             foreach (Cooler cooler in coolers)
-                BlockPalette.Add(cooler.DisplayName, cooler);
+                BlockPalette.Add(cooler.CoolerType.ToString(), cooler);
             foreach (Moderator moderator in moderators)
-                BlockPalette.Add(moderator.DisplayName, moderator);
+                BlockPalette.Add(moderator.ModeratorType.ToString(), moderator);
         }
 
         private static void PopulateBlocks()
@@ -272,31 +295,28 @@ namespace NC_Reactor_Planner
 
         public static bool PlacingSameBlock(Block block, MouseButtons placementMethod)
         {
-            string blockToPlace = "Null";
             switch (placementMethod)
             {
                 case MouseButtons.Left:
-                    blockToPlace = selectedBlock.DisplayName;
-                    break;
-                case MouseButtons.None:
-                    break;
+                    if (block.BlockType == selectedBlock.BlockType)
+                    {
+                        if (block.BlockType == BlockTypes.Cooler)
+                            return ((Cooler)block).CoolerType == ((Cooler)selectedBlock).CoolerType & ((Cooler)block).Active == ((Cooler)selectedBlock).Active;
+                        else
+                            return true;
+                    }
+                    else
+                        return false;
                 case MouseButtons.Right:
-                    blockToPlace = "Air";
-                    break;
+                    return block.BlockType == BlockTypes.Air;
                 case MouseButtons.Middle:
-                    blockToPlace = "FuelCell";
-                    break;
+                    return block.BlockType == BlockTypes.FuelCell;
                 case MouseButtons.XButton1:
-                    break;
+                case MouseButtons.None:
                 case MouseButtons.XButton2:
-                    break;
                 default:
-                    break;
+                    return false;
             }
-            if (block.DisplayName == blockToPlace)
-                return true;
-            else
-                return false;
         }
     }
 

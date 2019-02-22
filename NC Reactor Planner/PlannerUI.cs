@@ -476,11 +476,6 @@ namespace NC_Reactor_Planner
                 this.Text = appName;
         }
 
-        private void PaletteActive_CheckedChanged(object sender, EventArgs e)
-        {
-            Palette.LoadPalette(paletteActive.Checked);
-        }
-
         private void PlannerUI_Leave(object sender, EventArgs e)
         {
             gridToolTip.Hide(reactorGrid);

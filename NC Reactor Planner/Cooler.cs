@@ -26,7 +26,7 @@ namespace NC_Reactor_Planner
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
 
-        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position, bool active = false) : base(displayName, BlockTypes.Cooler, texture, position)
+        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position, bool active = false) : base((active?"Active ":"") + displayName, BlockTypes.Cooler, texture, position)
         {
             CoolerType = type;
             HeatActive = heatActive;
@@ -37,20 +37,17 @@ namespace NC_Reactor_Planner
             placementErrors = new List<string>();
         }
 
-        public Cooler(Cooler parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, parent.Active)
+        public Cooler(Cooler parent, Point3D position) : this(parent.CoolerType.ToString(), parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, parent.Active)
         {
         }
 
-        public Cooler(Cooler parent, Point3D position, bool active) : this(parent.DisplayName, parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, active)
+        public Cooler(Cooler parent, Point3D position, bool active) : this(parent.CoolerType.ToString(), parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, active)
         {
         }
 
         public override string GetToolTip()
         {
-            string toolTip = (Active ? "Active " : "") + DisplayName + " Cooler\r\n";
-
-            if (Position != Palette.dummyPosition)
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
+            string toolTip = DisplayName + " Cooler\r\n";
 
             toolTip += string.Format(" Passive cooling: {0} HU/t\r\n" +
                                     " Active cooling: {1} HU/t\r\n" +
@@ -223,9 +220,10 @@ namespace NC_Reactor_Planner
             if ((x == 1 & z == 1) || (x == 1 & z == Reactor.interiorDims.Z) || (x == Reactor.interiorDims.X & z == 1) || (x == Reactor.interiorDims.X & z == Reactor.interiorDims.Z))
                 return true;
             else
+            {
                 placementErrors.Add("Not in a corner!");
-
-            return false;
+                return false;
+            }
         }
 
         public override Block Copy(Point3D newPosition)

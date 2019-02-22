@@ -57,7 +57,6 @@
             this.openConfig = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.checkForUpdates = new System.Windows.Forms.Button();
-            this.paletteActive = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -387,11 +386,11 @@
             this.stats.TabStop = false;
             this.stats.Text = "";
             // 
-            // OpenConfig
+            // openConfig
             // 
             this.openConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.openConfig.Location = new System.Drawing.Point(7, 24);
-            this.openConfig.Name = "OpenConfig";
+            this.openConfig.Name = "openConfig";
             this.openConfig.Size = new System.Drawing.Size(136, 23);
             this.openConfig.TabIndex = 25;
             this.openConfig.Text = "Open configuration";
@@ -419,25 +418,12 @@
             this.checkForUpdates.UseVisualStyleBackColor = true;
             this.checkForUpdates.Click += new System.EventHandler(this.checkForUpdates_Click);
             // 
-            // PaletteActive
-            // 
-            this.paletteActive.AutoSize = true;
-            this.paletteActive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.paletteActive.Location = new System.Drawing.Point(262, 119);
-            this.paletteActive.Name = "PaletteActive";
-            this.paletteActive.Size = new System.Drawing.Size(70, 20);
-            this.paletteActive.TabIndex = 32;
-            this.paletteActive.Text = "Active";
-            this.paletteActive.UseVisualStyleBackColor = true;
-            this.paletteActive.CheckedChanged += new System.EventHandler(this.PaletteActive_CheckedChanged);
-            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
-            this.Controls.Add(this.paletteActive);
             this.Controls.Add(this.sizeLabel);
             this.Controls.Add(this.reactorWidth);
             this.Controls.Add(this.checkForUpdates);
@@ -511,6 +497,5 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.Button checkForUpdates;
-        private System.Windows.Forms.CheckBox paletteActive;
     }
 }

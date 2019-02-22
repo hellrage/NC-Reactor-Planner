@@ -32,8 +32,6 @@ namespace NC_Reactor_Planner
         public virtual string GetToolTip()
         {
             string toolTip = DisplayName + "\r\n";
-            if(Position != Palette.dummyPosition)
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
             return toolTip;
         }
 
