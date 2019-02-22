@@ -73,39 +73,9 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Aluminum {
-            get {
-                object obj = ResourceManager.GetObject("Aluminum", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap Beryllium {
             get {
                 object obj = ResourceManager.GetObject("Beryllium", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Boron {
-            get {
-                object obj = ResourceManager.GetObject("Boron", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Conductor {
-            get {
-                object obj = ResourceManager.GetObject("Conductor", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,16 +173,6 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap HeavyWater {
-            get {
-                object obj = ResourceManager.GetObject("HeavyWater", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap Helium {
             get {
                 object obj = ResourceManager.GetObject("Helium", resourceCulture);
@@ -243,39 +203,9 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Lead {
-            get {
-                object obj = ResourceManager.GetObject("Lead", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Lithium {
-            get {
-                object obj = ResourceManager.GetObject("Lithium", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap Magnesium {
             get {
                 object obj = ResourceManager.GetObject("Magnesium", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Manganese {
-            get {
-                object obj = ResourceManager.GetObject("Manganese", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -287,36 +217,6 @@ namespace NC_Reactor_Planner.Properties {
             get {
                 object obj = ResourceManager.GetObject("Newtonsoft_Json", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Obsidian {
-            get {
-                object obj = ResourceManager.GetObject("Obsidian", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Prismarine {
-            get {
-                object obj = ResourceManager.GetObject("Prismarine", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Purpur {
-            get {
-                object obj = ResourceManager.GetObject("Purpur", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -336,26 +236,6 @@ namespace NC_Reactor_Planner.Properties {
         public static System.Drawing.Bitmap Redstone {
             get {
                 object obj = ResourceManager.GetObject("Redstone", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Reflector {
-            get {
-                object obj = ResourceManager.GetObject("Reflector", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Silver {
-            get {
-                object obj = ResourceManager.GetObject("Silver", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
