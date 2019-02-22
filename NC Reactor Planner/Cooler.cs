@@ -228,16 +228,6 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        public override bool NeedsRedraw()
-        {
-            return _oldValid != Valid;
-        }
-
-        public override bool IsValid()
-        {
-            return Valid;
-        }
-
         public override Block Copy(Point3D newPosition)
         {
             return new Cooler(this, newPosition);

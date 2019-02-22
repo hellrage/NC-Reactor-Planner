@@ -45,7 +45,6 @@ namespace NC_Reactor_Planner
             blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
 
             drawAllLayers = true;
-            showClustersInStats = true;
             defaultReactorX = 9;
             defaultReactorY = 5;
             defaultReactorZ = 9;
@@ -63,7 +62,6 @@ namespace NC_Reactor_Planner
             statsLabel.Location = new Point(statsLabel.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
             stats.Location = new Point(stats.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + statsLabel.Size.Height);
             stats.Size = new Size(stats.Size.Width, this.ClientSize.Height - stats.Location.Y - 5);
-            showClusterInfo.Location = new Point(showClusterInfo.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
 
             ResetLayout(LoadedSaveFile != null);
         }
@@ -205,7 +203,7 @@ namespace NC_Reactor_Planner
             fuelSelector.Enabled = true;
             fuelBasePower.Enabled = true;
             fuelBaseHeat.Enabled = true;
-            OpenConfig.Enabled = true;
+            openConfig.Enabled = true;
         }
 
         private void ClearDisposeLayers()
@@ -332,7 +330,7 @@ namespace NC_Reactor_Planner
 
         public void RefreshStats(bool includeClustersInStats = true)
         {
-            stats.Text = Reactor.GetStatString(includeClustersInStats);
+            stats.Text = Reactor.GetStatString();
         }
 
         private void viewStyleSwitch_Click(object sender, EventArgs e)
@@ -480,7 +478,12 @@ namespace NC_Reactor_Planner
 
         private void PaletteActive_CheckedChanged(object sender, EventArgs e)
         {
-            Palette.LoadPalette(PaletteActive.Checked);
+            Palette.LoadPalette(paletteActive.Checked);
+        }
+
+        private void PlannerUI_Leave(object sender, EventArgs e)
+        {
+            gridToolTip.Hide(reactorGrid);
         }
 
         private async void checkForUpdates_Click(object sender, EventArgs e)
@@ -495,7 +498,7 @@ namespace NC_Reactor_Planner
                     saveDialog.FileName = Updater.ExecutableName(updateInfo.Item2);
                     DialogResult saveResult = saveDialog.ShowDialog();
                     if (saveResult == DialogResult.OK)
-                        Updater.DownloadVersionAsync(updateInfo.Item2, saveDialog.FileName);
+                        Updater.PerformFullUpdate(updateInfo.Item2, saveDialog.FileName);
                 }
             }
             else

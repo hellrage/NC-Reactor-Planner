@@ -143,7 +143,7 @@ namespace NC_Reactor_Planner
         public static PalettePanel PaletteControl { get; private set; }
 
         private static Dictionary<Block, BlockTypes> blocks;
-        private static List<HeatSink> heatSinks;
+        private static List<Cooler> coolers;
         private static List<Moderator> moderators;
         private static ToolTip paletteToolTip;
         private static Block selectedBlock;
@@ -157,6 +157,10 @@ namespace NC_Reactor_Planner
             selectedBlock = BlockPalette["Air"];
             PaletteControl = new PalettePanel();
             paletteToolTip = new ToolTip();
+
+            selectedBlock = BlockPalette["Air"];
+            PaletteControl.ResetHighlight();
+            PaletteControl.Refresh();
         }
 
         private static void LoadTextures()
@@ -188,10 +192,6 @@ namespace NC_Reactor_Planner
             PopulateFuelPalette();
 
             ReloadValuesFromConfig();
-
-            selectedBlock = BlockPalette["Air"];
-            PaletteControl.ResetHighlight();
-            PaletteControl.Refresh();
         }
 
         public static void ReloadValuesFromConfig()

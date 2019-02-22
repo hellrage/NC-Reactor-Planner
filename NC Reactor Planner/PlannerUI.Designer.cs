@@ -45,8 +45,6 @@
             this.statsLabel = new System.Windows.Forms.Label();
             this.saveReactor = new System.Windows.Forms.Button();
             this.loadReactor = new System.Windows.Forms.Button();
-            this.PaletteActive = new System.Windows.Forms.CheckBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.viewStyleSwitch = new System.Windows.Forms.Button();
             this.saveAsImage = new System.Windows.Forms.Button();
             this.imageScale = new System.Windows.Forms.NumericUpDown();
@@ -56,9 +54,10 @@
             this.fuelBaseHeat = new System.Windows.Forms.TextBox();
             this.fuelSelector = new System.Windows.Forms.ComboBox();
             this.stats = new System.Windows.Forms.RichTextBox();
-            this.OpenConfig = new System.Windows.Forms.Button();
+            this.openConfig = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.checkForUpdates = new System.Windows.Forms.Button();
+            this.paletteActive = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -272,26 +271,6 @@
             this.loadReactor.UseVisualStyleBackColor = true;
             this.loadReactor.Click += new System.EventHandler(this.loadReactor_Click);
             // 
-            // PaletteActive
-            // 
-            this.PaletteActive.AutoSize = true;
-            this.PaletteActive.Location = new System.Drawing.Point(303, 122);
-            this.PaletteActive.Name = "PaletteActive";
-            this.PaletteActive.Size = new System.Drawing.Size(15, 14);
-            this.PaletteActive.TabIndex = 15;
-            this.PaletteActive.UseVisualStyleBackColor = true;
-            this.PaletteActive.CheckedChanged += new System.EventHandler(this.PaletteActive_CheckedChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(250, 120);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(51, 16);
-            this.label6.TabIndex = 14;
-            this.label6.Text = "Active";
-            // 
             // viewStyleSwitch
             // 
             this.viewStyleSwitch.Enabled = false;
@@ -344,20 +323,20 @@
             this.fuelBaseRFLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseRFLabel.AutoSize = true;
             this.fuelBaseRFLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fuelBaseRFLabel.Location = new System.Drawing.Point(493, 636);
+            this.fuelBaseRFLabel.Location = new System.Drawing.Point(619, 688);
             this.fuelBaseRFLabel.Name = "fuelBaseRFLabel";
-            this.fuelBaseRFLabel.Size = new System.Drawing.Size(124, 16);
+            this.fuelBaseRFLabel.Size = new System.Drawing.Size(99, 18);
             this.fuelBaseRFLabel.TabIndex = 21;
-            this.fuelBaseRFLabel.Text = "Fuel base Power";
+            this.fuelBaseRFLabel.Text = "Base Power";
             // 
             // fuelBasePower
             // 
             this.fuelBasePower.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBasePower.Enabled = false;
-            this.fuelBasePower.Location = new System.Drawing.Point(623, 635);
+            this.fuelBasePower.Location = new System.Drawing.Point(724, 689);
             this.fuelBasePower.Name = "fuelBasePower";
             this.fuelBasePower.ReadOnly = true;
-            this.fuelBasePower.Size = new System.Drawing.Size(74, 20);
+            this.fuelBasePower.Size = new System.Drawing.Size(81, 20);
             this.fuelBasePower.TabIndex = 7;
             // 
             // fuelBaseHeatLabel
@@ -365,20 +344,20 @@
             this.fuelBaseHeatLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseHeatLabel.AutoSize = true;
             this.fuelBaseHeatLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fuelBaseHeatLabel.Location = new System.Drawing.Point(736, 688);
+            this.fuelBaseHeatLabel.Location = new System.Drawing.Point(811, 689);
             this.fuelBaseHeatLabel.Name = "fuelBaseHeatLabel";
-            this.fuelBaseHeatLabel.Size = new System.Drawing.Size(43, 18);
+            this.fuelBaseHeatLabel.Size = new System.Drawing.Size(86, 18);
             this.fuelBaseHeatLabel.TabIndex = 23;
-            this.fuelBaseHeatLabel.Text = "Heat";
+            this.fuelBaseHeatLabel.Text = "Base Heat";
             // 
             // fuelBaseHeat
             // 
             this.fuelBaseHeat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelBaseHeat.Enabled = false;
-            this.fuelBaseHeat.Location = new System.Drawing.Point(783, 688);
+            this.fuelBaseHeat.Location = new System.Drawing.Point(903, 689);
             this.fuelBaseHeat.Name = "fuelBaseHeat";
             this.fuelBaseHeat.ReadOnly = true;
-            this.fuelBaseHeat.Size = new System.Drawing.Size(35, 20);
+            this.fuelBaseHeat.Size = new System.Drawing.Size(64, 20);
             this.fuelBaseHeat.TabIndex = 8;
             // 
             // fuelSelector
@@ -410,14 +389,14 @@
             // 
             // OpenConfig
             // 
-            this.OpenConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.OpenConfig.Location = new System.Drawing.Point(7, 24);
-            this.OpenConfig.Name = "OpenConfig";
-            this.OpenConfig.Size = new System.Drawing.Size(136, 23);
-            this.OpenConfig.TabIndex = 25;
-            this.OpenConfig.Text = "Open configuration";
-            this.OpenConfig.UseVisualStyleBackColor = true;
-            this.OpenConfig.Click += new System.EventHandler(this.OpenConfiguration);
+            this.openConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.openConfig.Location = new System.Drawing.Point(7, 24);
+            this.openConfig.Name = "OpenConfig";
+            this.openConfig.Size = new System.Drawing.Size(136, 23);
+            this.openConfig.TabIndex = 25;
+            this.openConfig.Text = "Open configuration";
+            this.openConfig.UseVisualStyleBackColor = true;
+            this.openConfig.Click += new System.EventHandler(this.OpenConfiguration);
             // 
             // label5
             // 
@@ -432,44 +411,55 @@
             // 
             // checkForUpdates
             // 
-            this.checkForUpdates.Location = new System.Drawing.Point(7, 180);
+            this.checkForUpdates.Location = new System.Drawing.Point(7, 176);
             this.checkForUpdates.Name = "checkForUpdates";
-            this.checkForUpdates.Size = new System.Drawing.Size(124, 23);
-            this.checkForUpdates.TabIndex = 27;
+            this.checkForUpdates.Size = new System.Drawing.Size(136, 23);
+            this.checkForUpdates.TabIndex = 31;
             this.checkForUpdates.Text = "Check for Updates";
             this.checkForUpdates.UseVisualStyleBackColor = true;
             this.checkForUpdates.Click += new System.EventHandler(this.checkForUpdates_Click);
+            // 
+            // PaletteActive
+            // 
+            this.paletteActive.AutoSize = true;
+            this.paletteActive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.paletteActive.Location = new System.Drawing.Point(262, 119);
+            this.paletteActive.Name = "PaletteActive";
+            this.paletteActive.Size = new System.Drawing.Size(70, 20);
+            this.paletteActive.TabIndex = 32;
+            this.paletteActive.Text = "Active";
+            this.paletteActive.UseVisualStyleBackColor = true;
+            this.paletteActive.CheckedChanged += new System.EventHandler(this.PaletteActive_CheckedChanged);
             // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(902, 664);
-            this.Controls.Add(this.checkForUpdates);
-            this.Controls.Add(this.PaletteActive);
-            this.Controls.Add(this.label5);
+            this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.paletteActive);
             this.Controls.Add(this.sizeLabel);
             this.Controls.Add(this.reactorWidth);
-            this.Controls.Add(this.OpenConfig);
+            this.Controls.Add(this.checkForUpdates);
             this.Controls.Add(this.reactorHeight);
-            this.Controls.Add(this.stats);
             this.Controls.Add(this.x1);
-            this.Controls.Add(this.fuelSelector);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.fuelBaseHeat);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.fuelBaseHeatLabel);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.fuelBasePower);
+            this.Controls.Add(this.openConfig);
             this.Controls.Add(this.label4);
+            this.Controls.Add(this.stats);
+            this.Controls.Add(this.resetLayout);
+            this.Controls.Add(this.fuelSelector);
+            this.Controls.Add(this.reactorLength);
+            this.Controls.Add(this.fuelBaseHeat);
+            this.Controls.Add(this.fuelBaseHeatLabel);
+            this.Controls.Add(this.fuelBasePower);
             this.Controls.Add(this.fuelBaseRFLabel);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.imageScale);
             this.Controls.Add(this.saveAsImage);
-            this.Controls.Add(this.resetLayout);
             this.Controls.Add(this.viewStyleSwitch);
-            this.Controls.Add(this.reactorLength);
             this.Controls.Add(this.layerScrollBar);
             this.Controls.Add(this.loadReactor);
             this.Controls.Add(this.saveReactor);
@@ -503,7 +493,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button resetLayout;
-        private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.VScrollBar layerScrollBar;
         private System.Windows.Forms.Label layerLabel;
         private System.Windows.Forms.Label statsLabel;
@@ -518,11 +507,10 @@
         private System.Windows.Forms.TextBox fuelBaseHeat;
         private System.Windows.Forms.ComboBox fuelSelector;
         private System.Windows.Forms.RichTextBox stats;
-        private System.Windows.Forms.Button OpenConfig;
+        private System.Windows.Forms.Button openConfig;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox PaletteActive;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.Button checkForUpdates;
+        private System.Windows.Forms.CheckBox paletteActive;
     }
 }
-

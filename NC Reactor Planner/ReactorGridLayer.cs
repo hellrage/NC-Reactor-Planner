@@ -146,19 +146,6 @@ namespace NC_Reactor_Planner
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            Point cellCoords = ConvertCellCoordinates(e);
-            cellX = cellCoords.X;
-            cellZ = cellCoords.Y;
-
-            Point3D position = new Point3D(cellX, Y, cellZ);
-            HandleMouse(e.Button, position);
-            base.OnMouseDown(e);
-        }
-
-
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
             Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
             cellX = cellCoords.Item1;
             cellZ = cellCoords.Item2;

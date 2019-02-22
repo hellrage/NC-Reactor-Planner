@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Media3D;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System.IO;
 using System.Drawing;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NC_Reactor_Planner
 {
@@ -14,12 +16,14 @@ namespace NC_Reactor_Planner
         public Version SaveVersion;
         public List<Dictionary<string, List<Point3D>>> CompressedReactor;
         public Size3D InteriorDimensions;
+        public Fuel UsedFuel;
 
-        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, List<Tuple<Point3D, string, bool>> fc, Size3D id)
+        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, Size3D id, Fuel uf)
         {
             SaveVersion = sv;
             CompressedReactor = cr;
             InteriorDimensions = id;
+            UsedFuel = uf;
         }
     }
 
@@ -41,7 +45,6 @@ namespace NC_Reactor_Planner
         public static List<string> checkOrder = new List<string> { "Water", "Redstone", "Quartz", "Magnesium", "Emerald", "Enderium", "Gold", "Lapis", "Glowstone", "Diamond", "Cryotheum", "Tin", "Helium", "Copper", "Iron" };
 
         public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
-        public static List<Fuel> fuels;
 
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalPassiveCoolingPerType;
@@ -52,6 +55,11 @@ namespace NC_Reactor_Planner
         public static double energyMultiplier = 0;
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
+        public static double heatMulti = 0;
+
+        public static Fuel usedFuel;
+        public static double maxBaseHeat = 0;
+        public static double fuelDuration = 0;
 
         static Reactor()
         {
@@ -138,6 +146,21 @@ namespace NC_Reactor_Planner
                 { "Graphite", new List<Moderator>() },
                 { "Beryllium", new List<Moderator>() }
             };
+
+            totalCoolingPerTick = 0;
+            totalPassiveCoolingPerType = new Dictionary<string, double>();
+            totalActiveCoolingPerType = new Dictionary<string, double>();
+            totalHeatPerTick = 0;
+            totalEnergyPerTick = 0;
+
+            totalCasings = 0;
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Z);
+            totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
+            totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
+
+            efficiency = 0;
+            energyMultiplier = 0;
+            heatMultiplier = 0;
 
             foreach (Block block in blocks)
             {
@@ -340,7 +363,6 @@ namespace NC_Reactor_Planner
 
         private static void FinalizeLoading()
         {
-            ReloadBlockTextures();
             ReloadValuesFromConfig();
             UpdateStats();
             ConstructLayers();
