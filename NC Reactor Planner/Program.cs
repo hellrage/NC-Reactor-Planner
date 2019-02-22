@@ -14,12 +14,13 @@ namespace NC_Reactor_Planner
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
             PreStartUp();
+            if (args.Length > 1)
+                AfterUpdate(args);
             Application.Run(Reactor.UI);
         }
 
@@ -28,18 +29,16 @@ namespace NC_Reactor_Planner
             FileInfo jsonDll = new FileInfo("Newtonsoft.json.dll");
             if (!jsonDll.Exists)
             {
-                //MessageBox.Show("You do not have the required dll (Newtonsoft.json.dll) in the application folder, it is a dependency! Please download it from the same mediafire link you got the release from and put it next to the executable. The application will work but it's going to crash when you attempt to save your reactor\\configuration");
                 using (var writer = jsonDll.OpenWrite())
                 {
                     writer.Write(Resources.Newtonsoft_Json, 0, Resources.Newtonsoft_Json.Length);
                 }
             }
             Configuration.ResetToDefaults();
-            //Reactor.InitializeReactor(1, 1, 1);
 
             Palette.Load();
 
-            FileInfo defaultConfig = new FileInfo("DefaultConfig.json");
+            FileInfo defaultConfig = new FileInfo("BetaConfig.json");
             if (!defaultConfig.Exists)
                 Configuration.Save(defaultConfig);
             else
@@ -48,6 +47,12 @@ namespace NC_Reactor_Planner
                     MessageBox.Show("Unable to load default configuration, resetting to hardcoded defaults...");
                     Configuration.ResetToDefaults();
                 }
+        }
+
+        static void AfterUpdate(string[] args)
+        {
+            Reactor.Load(new FileInfo(args[0]));
+            File.Delete(args[1]);
         }
     }
 }

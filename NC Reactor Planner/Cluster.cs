@@ -74,22 +74,18 @@ namespace NC_Reactor_Planner
             }
 
             double rawEfficiency = sumEffOfFuelCells / fuelCells.Count;
-            double coolingPenaltyMultiplier = Math.Min(TotalCoolingPerTick / TotalHeatPerTick, TotalHeatPerTick / TotalCoolingPerTick);
+            double coolingPenaltyMultiplier = 0;
+            if(TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
+                coolingPenaltyMultiplier = Math.Min(1, TotalHeatPerTick / TotalCoolingPerTick);
 
             Efficiency = rawEfficiency * coolingPenaltyMultiplier;
             TotalOutput *= coolingPenaltyMultiplier;
 
-            FuelDurationMultiplier = Math.Min(1, TotalCoolingPerTick / TotalHeatPerTick);
+            if (TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
+                FuelDurationMultiplier = Math.Min(1, TotalCoolingPerTick / TotalHeatPerTick);
+            else
+                FuelDurationMultiplier = 0;
             HeatMultiplier = sumHeatMulti / fuelCells.Count;
-
-            //if(!HasPathToCasing)
-            //{
-            //    TotalCoolingPerTick = 0;
-            //    Efficiency = 0;
-            //    FuelDurationMultiplier = 0;
-            //    HeatMultiplier = 0;
-            //    TotalOutput = 0;
-            //}
         }
 
         public string GetStatString()

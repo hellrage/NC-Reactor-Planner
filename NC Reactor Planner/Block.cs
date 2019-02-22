@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 
@@ -10,18 +7,18 @@ namespace NC_Reactor_Planner
 {
     public class Block
     {
-
+        private bool _valid;
         public string DisplayName { get ; private set; }
         public Bitmap Texture { get; set ; }
         public Point3D Position { get; private set; }
         public BlockTypes BlockType { get; private set; }
         public int Cluster { get ; private set; }
-        public virtual bool Valid { get; protected set ; }
+        public virtual bool Valid { get => true; protected set => _valid = value; }
 
         public Block()
         {
             DisplayName = "Air";
-            Texture = new Bitmap(Palette.textures["Air"]);
+            Texture = Palette.Textures["Air"];
             Position = Palette.dummyPosition;
         }
 
@@ -48,11 +45,10 @@ namespace NC_Reactor_Planner
             string toolTip = DisplayName + "\r\n";
             if (Position != Palette.dummyPosition)
             {
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
                 if (Cluster != -1)
                     toolTip += string.Format("Cluster: {0}\r\n", Cluster);
-                else if (Reactor.state == ReactorStates.Running)
-                    toolTip += "No cluster!\r\n";
+                else if (BlockType != BlockTypes.Air && BlockType != BlockTypes.Reflector)
+                    toolTip += "--No cluster!\r\n";
             }
             return toolTip;
         }

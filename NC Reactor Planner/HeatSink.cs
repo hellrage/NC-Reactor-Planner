@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 
@@ -34,19 +32,17 @@ namespace NC_Reactor_Planner
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " HeatSink\r\n";
+            string toolTip = DisplayName + " heatsink\r\n";
 
             if (Position != Palette.dummyPosition)
             {
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
-
                 if (Cluster != -1)
+                {
                     toolTip += string.Format("Cluster: {0}\r\n", Cluster);
-                else if(Reactor.state == ReactorStates.Running)
-                    toolTip += "No cluster!\r\n";
-
-                if (Reactor.state == ReactorStates.Running && Cluster != -1)
-                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : " Invalid cluster!\r\n");
+                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n");
+                }
+                else
+                    toolTip += "--No cluster!\r\n";
             }
 
             toolTip += string.Format(" Cooling: {0} HU/t\r\n" +
@@ -55,7 +51,7 @@ namespace NC_Reactor_Planner
             {
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
-                    toolTip += string.Format("    {0}\r\n", error);
+                    toolTip += string.Format("----{0}\r\n", error);
                 }
             }
             return toolTip;
@@ -85,53 +81,53 @@ namespace NC_Reactor_Planner
             switch (HeatSinkType)
             {
                 case HeatSinkTypes.Water:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case HeatSinkTypes.Redstone:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Quartz:
-                    return Valid = HasAdjacent(Palette.blockPalette["Redstone"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"]);
                 case HeatSinkTypes.Gold:
-                    return Valid = HasAdjacent(Palette.blockPalette["Iron"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"], 2);
                 case HeatSinkTypes.Glowstone:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 2);
                 case HeatSinkTypes.Lapis:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Diamond:
-                    return Valid = HasAdjacent(Palette.blockPalette["Gold"]) & HasAdjacent(Palette.blockPalette["FuelCell"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Gold"]) & HasAdjacent(Palette.BlockPalette["FuelCell"]);
                 case HeatSinkTypes.Helium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Enderium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"], 3);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 3, true);
                 case HeatSinkTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 3);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 3, true);
                 case HeatSinkTypes.Iron:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Emerald:
-                    return Valid = HasAdjacent(Palette.blockPalette["Prismarine"]) & HasAdjacent(Palette.blockPalette["Graphite"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Prismarine"]) & HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Copper:
-                    return Valid = HasAdjacent(Palette.blockPalette["Water"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Water"]);
                 case HeatSinkTypes.Tin:
-                    return Valid = HasAdjacent(Palette.blockPalette["Lapis"], 2);
+                    return Valid = HasAxial(Palette.BlockPalette["Lapis"]);
                 case HeatSinkTypes.Magnesium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Boron:
-                    return Valid = HasAdjacent(Palette.blockPalette["Copper"]) & HasAdjacent(Palette.blockPalette["Tin"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Prismarine:
-                    return Valid = HasAdjacent(Palette.blockPalette["Water"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Water"], 2);
                 case HeatSinkTypes.Obsidian:
-                    return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAxial(Palette.BlockPalette["Glowstone"]);
                 case HeatSinkTypes.Lead:
-                    return Valid = HasAdjacent(Palette.blockPalette["Iron"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"]);
                 case HeatSinkTypes.Aluminum:
-                    return Valid = HasAdjacent(Palette.blockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Copper"]) & HasAdjacent(Palette.BlockPalette["Tin"]);
                 case HeatSinkTypes.Lithium:
-                    return Valid = HasAdjacent(Palette.blockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Manganese:
-                    return Valid = HasAdjacent(Palette.blockPalette["FuelCell"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 2);
                 case HeatSinkTypes.Silver:
-                    return Valid = HasAdjacent(Palette.blockPalette["Glowstone"]) & HasAdjacent(Palette.blockPalette["Lapis"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Glowstone"]) & HasAdjacent(Palette.BlockPalette["Lapis"]);
                 case HeatSinkTypes.Purpur:
-                    return Valid = HasAdjacent(Palette.blockPalette["Obsidian"]);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Obsidian"]);
                 default:
                     throw new ArgumentException("Unexpected HeatSink type");
             }
@@ -181,39 +177,47 @@ namespace NC_Reactor_Planner
                 return activeAdjacent >= number;
         }
 
-        private bool CheckTin()
+        private bool HasAxial(Block needed)
         {
-            bool hasAxialLapis = false;
+            bool hasAxial = false;
+            BlockTypes bn = needed.BlockType;
 
             for (int i = 0; i < 3; i++)
             {
                 Block block1 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i]);
+                BlockTypes bt1 = block1.BlockType;
                 Block block2 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i + 1]);
-                if (block1 is HeatSink c1 && c1.HeatSinkType == HeatSinkTypes.Lapis)
+                BlockTypes bt2 = block2.BlockType;
+
+                if (bt1 == bn)
                 {
-                    if (block2 is HeatSink c2 && c2.HeatSinkType == HeatSinkTypes.Lapis)
+                    if (bt2 == bn)
                     {
-                        while (placementErrors.Remove("No axial Lapis")) ;
-                        hasAxialLapis = true;
-                        if (c1.Valid)
-                            if (c2.Valid)
+                        if ((needed is HeatSink hs && (((HeatSink)block1).HeatSinkType == ((HeatSink)block2).HeatSinkType)))
+                            if (((HeatSink)block1).HeatSinkType == hs.HeatSinkType)
                             {
-                                while (placementErrors.Remove("No axial Lapis")) ;
-                                return true;
+                                while (placementErrors.Remove("No axial " + needed.DisplayName)) ;
+                                hasAxial = true;
+                                if (block1.Valid)
+                                    if (block2.Valid)
+                                    {
+                                        while (placementErrors.Remove("No axial " + needed.DisplayName)) ;
+                                        return true;
+                                    }
+                                    else placementErrors.Add("Inactive " + needed.DisplayName);
+                                else placementErrors.Add("Inactive " + needed.DisplayName);
                             }
-                            else placementErrors.Add("Inactive Lapis");
-                        else placementErrors.Add("Inactive Lapis");
                     }
                     else
                     {
-                        placementErrors.Add("No axial Lapis");
+                        placementErrors.Add("No axial " + needed.DisplayName);
                         continue;
                     }
                 }
                 else
                 {
-                    if (!hasAxialLapis)
-                        placementErrors.Add("No axial Lapis");
+                    if (!hasAxial)
+                        placementErrors.Add("No axial " + needed.DisplayName);
                     continue;
                 }
             }

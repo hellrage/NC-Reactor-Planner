@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NC_Reactor_Planner
 {
@@ -30,7 +27,7 @@ namespace NC_Reactor_Planner
 
         public override string ToString()
         {
-            return string.Format("{0} : {1} : {2} : {3}", Name, BaseEfficiency, BaseHeat, CriticalityFactor);
+            return string.Format("{0}/ {1}/ {2}/ {3}", Name, BaseEfficiency, BaseHeat, CriticalityFactor);
         }
 
         public void ReloadValuesFromConfig()
@@ -38,6 +35,8 @@ namespace NC_Reactor_Planner
             FuelValues fv = Configuration.Fuels[Name];
             BaseHeat = fv.BaseHeat;
             FuelTime = fv.FuelTime;
+            BaseEfficiency = fv.BaseEfficiency;
+            CriticalityFactor = fv.CriticalityFactor;
         }
     }
 }

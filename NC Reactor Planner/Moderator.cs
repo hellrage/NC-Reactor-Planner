@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 
@@ -10,18 +7,19 @@ namespace NC_Reactor_Planner
 {
     public class Moderator : Block
     {
-
-        public bool Active { get; private set; }
+        public bool Active { get; set; }
         public ModeratorTypes ModeratorType { get; private set; }
         public double FluxFactor { get; private set; }
         public double EfficiencyFactor { get; private set; }
-        public override bool Valid { get => Active; }
+        public override bool Valid { get => Active & HasAdjacentValidFuelCell; }
+        public bool HasAdjacentValidFuelCell { get; private set; }
 
         public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             FluxFactor = fluxFactor;
             EfficiencyFactor = efficiencyFactor;
             Active = false;
+            HasAdjacentValidFuelCell = false;
             ModeratorType = type;
         }
 
@@ -30,29 +28,66 @@ namespace NC_Reactor_Planner
             ModeratorType = parent.ModeratorType;
         }
 
-        public void UpdateStats()
+        public override void RevertToSetup()
         {
-            Active = FindAdjacentFuelCells() > 0;
+            Active = false;
+            HasAdjacentValidFuelCell = false;
         }
 
-        public int FindAdjacentFuelCells()
+        public void UpdateStats()
         {
-            int adjCells = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
-                if (Reactor.BlockAt(Position + o) is FuelCell fuelCell)
-                    if(fuelCell.Active)
-                        adjCells++;
-            return adjCells;
+            for(int p = 1; p < 5; p *= 2)
+            {
+                Vector3D offset = Reactor.sixAdjOffsets[p];
+                Tuple<int, BlockTypes> toOffset = WalkLineToValidSource(offset);
+                Tuple<int, BlockTypes> oppositeOffset = WalkLineToValidSource(-offset);
+                if (toOffset.Item1 > 0 & oppositeOffset.Item1 > 0)
+                {
+                    Active = true;
+                    if (toOffset.Item1 == 1 & toOffset.Item2 == BlockTypes.FuelCell || oppositeOffset.Item1 == 1 & oppositeOffset.Item2 == BlockTypes.FuelCell)
+                    {
+                        HasAdjacentValidFuelCell = true;
+                        return;
+                    }
+                }
+            }
+        }
+
+        public Tuple<int, BlockTypes> WalkLineToValidSource(Vector3D offset)
+        {
+            int i = 0;
+            while (++i <= Configuration.Fission.NeutronReach)
+            {
+                Point3D pos = Position + i * offset;
+                Block block = Reactor.BlockAt(pos);
+                if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach)
+                {
+                    if (block.BlockType == BlockTypes.FuelCell)
+                        if (block.Valid)
+                            return Tuple.Create(i, BlockTypes.FuelCell);
+                    if(block.BlockType == BlockTypes.Reflector)
+                        if(block.Valid & i < Configuration.Fission.NeutronReach / 2 + 1)
+                            return Tuple.Create(i, BlockTypes.Reflector);
+                    if (block.BlockType != BlockTypes.Moderator)
+                        return Tuple.Create(-1, BlockTypes.Air);
+                }
+                else
+                    return Tuple.Create(-1, BlockTypes.Air);
+            }
+            return Tuple.Create(-1, BlockTypes.Air);
         }
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " Moderator\r\n";
+            string toolTip = DisplayName + " moderator\r\n";
             if (Position != Palette.dummyPosition)
             {
-                toolTip += string.Format("at: X: {0} Y: {1} Z: {2}\r\n", Position.X, Position.Y, Position.Z);
-                if (!Active)
-                    toolTip += "Inactive!\r\n";
+                if(!Active)
+                    toolTip += "--Inactive!\r\n";
+                if(Active)
+                    toolTip += "In an active moderator line\r\n";
+                if(!HasAdjacentValidFuelCell)
+                    toolTip += "Cannot support any heatsinks\r\n";
             }
             toolTip += string.Format("Flux Factor: {0}\r\n", FluxFactor);
             toolTip += string.Format("Efficiency Factor: {0}\r\n", EfficiencyFactor);
@@ -76,6 +111,7 @@ namespace NC_Reactor_Planner
     {
         Beryllium,
         Graphite,
+        HeavyWater,
         //NotAModerator,
     }
 }
