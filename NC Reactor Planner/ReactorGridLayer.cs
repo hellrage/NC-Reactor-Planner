@@ -142,7 +142,7 @@ namespace NC_Reactor_Planner
 
             if (!block.Valid)
                 g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
-            if(block.BlockType == BlockTypes.Cooler)
+            if(block.BlockType == BlockTypes.Cooler && ((Cooler)block).Active)
                 using (Pen activeCoolerPen = new Pen(Brushes.LightGreen, 3))
                     g.DrawRectangle(activeCoolerPen, location.X + 2*ds, location.Y + 2*ds, bs - 4 * ds, bs - 4 * ds);
         }
