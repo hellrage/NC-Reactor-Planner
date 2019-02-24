@@ -395,7 +395,7 @@ namespace NC_Reactor_Planner
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
             int bs = PlannerUI.blockSize;
 
-            Point StatsRectSize = new Point(28 * fontSize, (statStringLines + 4) * (fontSize + 2));
+            Point StatsRectSize = new Point(28 * fontSize, (statStringLines + 5) * (fontSize + 2));
 
             Bitmap reactorImage = new Bitmap(Math.Max(StatsRectSize.X, (int)(layersPerRow * interiorDims.X * bs + (layersPerRow - 1) * bs)),
                                              StatsRectSize.Y + bs + (int)(rows * interiorDims.Z * bs + (rows - 1) * bs));
@@ -415,7 +415,10 @@ namespace NC_Reactor_Planner
                                     GraphicsUnit.Pixel);
                     layerImage.Dispose();
                 }
-                gr.DrawString(GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                string report = string.Format("Planner version: {0}\r\n",Updater.ShortVersionString(saveVersion));
+                report += string.Format("Used fuel: {0} \r\nBase heat: {1}\r\nBase power: {2}\r\n\r\n", usedFuel.Name, usedFuel.BaseHeat, usedFuel.BasePower);
+                report += GetStatString();
+                gr.DrawString(report, new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             using (FileStream fs = File.OpenWrite(fileName))
             {
