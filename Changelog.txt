@@ -132,3 +132,6 @@
 23.02.19 v1.2.15
 	Palette highlight now changes color depending on the Active checkbox state.
 	Added back Active cooler highlighting when placed.
+
+27.02.19 v1.2.16
+	Emergency release because I accidentally removed fuel info from png export :D
