@@ -60,6 +60,7 @@
             this.fuelCriticalityFactorLabel = new System.Windows.Forms.Label();
             this.fuelCriticalityFactor = new System.Windows.Forms.TextBox();
             this.checkForUpdates = new System.Windows.Forms.Button();
+            this.drawOverlay = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -455,12 +456,25 @@
             this.checkForUpdates.UseVisualStyleBackColor = true;
             this.checkForUpdates.Click += new System.EventHandler(this.checkForUpdates_Click);
             // 
+            // drawOverlay
+            // 
+            this.drawOverlay.AutoSize = true;
+            this.drawOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.792453F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.drawOverlay.Location = new System.Drawing.Point(584, 12);
+            this.drawOverlay.Name = "drawOverlay";
+            this.drawOverlay.Size = new System.Drawing.Size(147, 17);
+            this.drawOverlay.TabIndex = 32;
+            this.drawOverlay.Text = "Heatsink type ovarlay";
+            this.drawOverlay.UseVisualStyleBackColor = true;
+            this.drawOverlay.CheckedChanged += new System.EventHandler(this.drawOverlay_CheckedChanged);
+            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.drawOverlay);
             this.Controls.Add(this.sizeLabel);
             this.Controls.Add(this.reactorWidth);
             this.Controls.Add(this.checkForUpdates);
@@ -540,6 +554,7 @@
         private System.Windows.Forms.CheckBox showClusterInfo;
         private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.Button checkForUpdates;
+        private System.Windows.Forms.CheckBox drawOverlay;
     }
 }
 

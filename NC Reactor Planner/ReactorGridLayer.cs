@@ -152,6 +152,16 @@ namespace NC_Reactor_Planner
 
             g.DrawImage(block.Texture, cellRect);
 
+            if (PlannerUI.HeatsinkTypeOverlay && block.BlockType == BlockTypes.HeatSink && PlannerUI.OverlayedTypes.Contains(((HeatSink)block).HeatSinkType))
+            {
+                g.CompositingMode = CompositingMode.SourceOver;
+                StringFormat sf = new StringFormat();
+                sf.LineAlignment = StringAlignment.Center;
+                sf.Alignment = StringAlignment.Center;
+                g.DrawString(block.DisplayName.Substring(0, 1), new Font(FontFamily.GenericSansSerif, (float)(Reactor.UI.BlockSize/2.7), FontStyle.Bold), Brushes.Black, cellRect, sf);
+                g.CompositingMode = CompositingMode.SourceCopy;
+            }
+
             if (noChecking)
                 return;
 
@@ -251,7 +261,7 @@ namespace NC_Reactor_Planner
         {
             Reactor.UI.GridToolTip.RemoveAll();
 
-            if (PlannerUI.drawAllLayers)
+            if (Reactor.UI.drawAllLayers)
                 foreach (ReactorGridLayer layer in Reactor.layers)
                 {
                     layer.HighlightedCluster = -1;

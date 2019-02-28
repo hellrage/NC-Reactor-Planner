@@ -10,6 +10,7 @@ namespace NC_Reactor_Planner
 {
     public partial class PlannerUI : Form
     {
+        public static readonly List<HeatSinkTypes> OverlayedTypes = new List<HeatSinkTypes> { HeatSinkTypes.Silver, HeatSinkTypes.Iron, HeatSinkTypes.Lithium };
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
         public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
@@ -19,6 +20,7 @@ namespace NC_Reactor_Planner
         public ToolTip GridToolTip;
 
         public int BlockSize { get; private set; }
+        public static bool HeatsinkTypeOverlay { get; private set; }
         private ConfigurationUI configurationUI;
         
         public static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
@@ -27,7 +29,7 @@ namespace NC_Reactor_Planner
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
         public static readonly Pen ValidModeratorPen = new Pen(Brushes.Green, 3);
 
-        public static bool drawAllLayers;
+        public bool drawAllLayers;
         string appName;
         public static Block[,] LayerBuffer { get; set; }
         public ReactorGridLayer MousedOverLayer { get; set; }
@@ -50,6 +52,8 @@ namespace NC_Reactor_Planner
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
+
+            ResizeRedraw = true;
 
             BlockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
 
@@ -115,6 +119,20 @@ namespace NC_Reactor_Planner
             showClusterInfo.Location = new Point(showClusterInfo.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
 
             ResetLayout(LoadedSaveFile != null);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (drawAllLayers)
+            {
+                foreach (ReactorGridLayer layer in Reactor.layers)
+                {
+                    UpdateLocation(layer);
+                }
+            }
+            else
+                UpdateLocation(Reactor.layers[layerScrollBar.Value]);
+            base.OnPaint(e);
         }
 
         private void SetUpToolTips()
@@ -447,7 +465,7 @@ namespace NC_Reactor_Planner
             Point origin;
             if (drawAllLayers)
             {
-                int layersPerRow = (int)Math.Ceiling(Math.Sqrt(Reactor.interiorDims.Y));
+                int layersPerRow = Math.Max(1, (int)Math.Floor(ReactorGrid.Width / (Reactor.interiorDims.X * BlockSize + 16)));
                 origin = new Point((layer.Y - 1) % layersPerRow * layer.Size.Width + (layer.Y - 1) % layersPerRow * 16,
                                     (layer.Y - 1) / layersPerRow * layer.Size.Height + (layer.Y - 1) / layersPerRow * 16);
             }
@@ -555,6 +573,12 @@ namespace NC_Reactor_Planner
                 checkForUpdates.Font = new Font(checkForUpdates.Font, FontStyle.Bold);
                 checkForUpdates.Text = Updater.ShortVersionString(updateInfo.Item2) + " Available!";
             }
+        }
+
+        private void drawOverlay_CheckedChanged(object sender, EventArgs e)
+        {
+            HeatsinkTypeOverlay = drawOverlay.Checked;
+            Redraw();
         }
     }
 }
