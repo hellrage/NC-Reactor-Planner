@@ -16,6 +16,7 @@ namespace NC_Reactor_Planner
         private MenuStrip menu;
         private int cellX;
         private int cellZ;
+
         public int HighlightedCluster { get; set; }
 
         public int X { get; private set; }
@@ -28,17 +29,20 @@ namespace NC_Reactor_Planner
             Y = y;
             Z = (int)Reactor.interiorDims.Z;
 
-            PlannerUI.gridToolTip.RemoveAll();
+            Reactor.UI.GridToolTip.RemoveAll();
             cellX = -1;
             cellZ = -1;
             HighlightedCluster = -1;
 
-            Width = X * PlannerUI.blockSize;
+            MouseEnter += new EventHandler((sender, e) => { Reactor.UI.ReactorGrid.Focus(); Reactor.UI.MousedOverLayer = this; });
+            MouseLeave += new EventHandler((sender, e) => { if(Reactor.UI.MousedOverLayer == this) Reactor.UI.MousedOverLayer = null; });
+
+            Width = X * Reactor.UI.BlockSize;
             Visible = true;
             BorderStyle = BorderStyle.FixedSingle;
 
             ConstructMenu();
-            Height = Z * PlannerUI.blockSize + menu.Height;
+            Height = Z * Reactor.UI.BlockSize + menu.Height;
 
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
@@ -79,7 +83,7 @@ namespace NC_Reactor_Planner
 
         public void Rescale()
         {
-            int bs = PlannerUI.blockSize;
+            int bs = Reactor.UI.BlockSize;
             Size = new Size(bs * X, bs * Z + menu.Height);
             ResetRescaleMenu();
             Refresh();
@@ -107,9 +111,19 @@ namespace NC_Reactor_Planner
 
         }
 
+        public int GetClusterToHighlight()
+        {
+            if (cellX <= Reactor.interiorDims.X & cellX > 0 & cellZ <= Reactor.interiorDims.Z & cellZ >0)
+                return Reactor.BlockAt(new Point3D(cellX, Y, cellZ)).Cluster;
+            else
+                return -1;
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             FullRedraw(e.Graphics);
+            if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+                DrawClusterHighlight(e.Graphics, HighlightedCluster);
         }
 
         public void FullRedraw(Graphics g, bool forExport = false)
@@ -124,13 +138,11 @@ namespace NC_Reactor_Planner
                 {
                     RedrawCell(x, z, g, false, forExport);
                 }
-            if(HighlightedCluster != -1)
-                HighlightCluster(g, HighlightedCluster);
         }
 
         public void RedrawCell(int x, int z, Graphics g, bool noChecking = false, bool forExport = false)
         {
-            int bs = PlannerUI.blockSize;
+            int bs = Reactor.UI.BlockSize;
             int ds = (int)Reactor.UI.DrawingScale;
             Point location;
             location = new Point(bs * (x - 1), (forExport ? 0 : menu.Height) + bs * (z - 1));
@@ -158,14 +170,14 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public void HighlightCluster(Graphics g, int clusterID)
+        public void DrawClusterHighlight(Graphics g, int clusterID)
         {
-            if (clusterID == -1 | Reactor.clusters.Count <= clusterID)
+            if (clusterID == -1 | clusterID > Reactor.clusters.Count-1)
                 return;
 
+            int bs = Reactor.UI.BlockSize;
             Tuple<Point, Point> Line(Point3D position, Vector3D offset)
             {
-                int bs = PlannerUI.blockSize;
                 position = new Point3D(position.X - 1, position.Y, position.Z - 1);
                 if (offset == new Vector3D(1, 0, 0))
                     return Tuple.Create(new Point((int)(position.X + 1)*bs - 3, (int)position.Z * bs + menu.Height), new Point((int)(position.X + 1) * bs - 3, (int)(position.Z + 1) * bs + menu.Height));
@@ -177,7 +189,9 @@ namespace NC_Reactor_Planner
                     return Tuple.Create(new Point((int)(position.X + 1) * bs, (int)position.Z * bs + menu.Height + 3), new Point((int)position.X * bs, (int)position.Z * bs + menu.Height + 3));
                 throw new ArgumentException();
             }
-
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine(string.Format("Redrawing cluster {0} highlight on layer {1}", clusterID, Y));
+#endif
             foreach (Block block in Reactor.clusters[clusterID].blocks)
             {
                 if (block.Position.Y != Y)
@@ -221,28 +235,21 @@ namespace NC_Reactor_Planner
                 Point3D position = new Point3D(cellX, Y, cellZ);
                 HandleMouse(e.Button, position);
                 Block block = Reactor.BlockAt(position);
-                if (HighlightedCluster != block.Cluster)
+                if((ModifierKeys & Keys.Shift) == Keys.Shift)
                 {
-                    if(PlannerUI.drawAllLayers)
-                        foreach (ReactorGridLayer layer in Reactor.layers)
-                        {
-                            layer.HighlightedCluster = block.Cluster;
-                            layer.Refresh();
-                        }
-                    else
+                    if (block.Cluster != HighlightedCluster)
                     {
-                        HighlightedCluster = block.Cluster;
-                        Refresh();
+                        Reactor.UI.HighlightCluster(block.Cluster);
                     }
                 }
-                PlannerUI.gridToolTip.Show(block.GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
+                Reactor.UI.GridToolTip.Show(block.GetToolTip(), this, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16);
             }
             base.OnMouseMove(e);
         }
 
         protected override void OnMouseLeave(EventArgs e)
         {
-            PlannerUI.gridToolTip.RemoveAll();
+            Reactor.UI.GridToolTip.RemoveAll();
 
             if (PlannerUI.drawAllLayers)
                 foreach (ReactorGridLayer layer in Reactor.layers)
@@ -255,7 +262,8 @@ namespace NC_Reactor_Planner
                 HighlightedCluster = -1;
                 Refresh();
             }
-
+            cellX = -1;
+            cellZ = -1;
             base.OnMouseLeave(e);
         }
 
@@ -268,7 +276,7 @@ namespace NC_Reactor_Planner
             Reactor.Update();
             Reactor.UI.RefreshStats();
             Point3D position = new Point3D(cellX, Y, cellZ);
-            PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
+            Reactor.UI.GridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16);
             Reactor.Redraw();
             base.OnMouseUp(e);
         }
@@ -291,7 +299,7 @@ namespace NC_Reactor_Planner
             else
                 newZ = e.Y - menu.Height;
 
-            return new Point((newX / PlannerUI.blockSize) + 1, (newZ / PlannerUI.blockSize) + 1);
+            return new Point((newX / Reactor.UI.BlockSize) + 1, (newZ / Reactor.UI.BlockSize) + 1);
         }
 
         private void HandleMouse(MouseButtons button, Point3D position)
@@ -304,7 +312,7 @@ namespace NC_Reactor_Planner
                         if (fuelCell.CanBePrimed())
                             fuelCell.TogglePrimed();
                         else
-                            PlannerUI.uiToolTip.Show("This FuelCell can't be primed! Has no LOS to a casing.", Reactor.UI.ReactorGrid, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16, 1500);
+                            Reactor.UI.UIToolTip.Show("This FuelCell can't be primed! Has no LOS to a casing.", Reactor.UI.ReactorGrid, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16, 1500);
                     }
                     else
                         PlaceBlock(cellX, cellZ, Palette.BlockToPlace(Reactor.BlockAt(position)));
@@ -335,7 +343,7 @@ namespace NC_Reactor_Planner
 
         public Bitmap DrawToImage()
         {
-            int bs = PlannerUI.blockSize;
+            int bs = Reactor.UI.BlockSize;
             Bitmap layerImage = new Bitmap(X * bs, Z * bs);
             using (Graphics g = Graphics.FromImage(layerImage))
             {

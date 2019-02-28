@@ -15,11 +15,11 @@ namespace NC_Reactor_Planner
         public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
         public FileInfo LoadedSaveFile { get; set; }
 
-        public static ToolTip uiToolTip;
-        public static ToolTip gridToolTip;
+        public ToolTip UIToolTip;
+        public ToolTip GridToolTip;
 
-        public static int blockSize;
-        private static ConfigurationUI configurationUI;
+        public int BlockSize { get; private set; }
+        private ConfigurationUI configurationUI;
         
         public static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
@@ -29,12 +29,14 @@ namespace NC_Reactor_Planner
 
         public static bool drawAllLayers;
         string appName;
-        public static Block[,] layerBuffer;
+        public static Block[,] LayerBuffer { get; set; }
+        public ReactorGridLayer MousedOverLayer { get; set; }
 
         private bool showClustersInStats;
         private decimal defaultReactorX;
         private decimal defaultReactorY;
         private decimal defaultReactorZ;
+        private bool holdingShift = false;
 
         public PlannerUI()
         {
@@ -49,7 +51,7 @@ namespace NC_Reactor_Planner
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
 
-            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
+            BlockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
 
             drawAllLayers = true;
             showClustersInStats = true;
@@ -59,6 +61,46 @@ namespace NC_Reactor_Planner
             SetupReactorSizeControls(defaultReactorX, defaultReactorY, defaultReactorZ);
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+        }
+
+        protected override bool ProcessKeyPreview(ref Message msg)
+        {
+            if (msg.Msg == 0x100)
+            {
+                if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+                    if (MousedOverLayer != null && !holdingShift)
+                    {
+                        holdingShift = true;
+                        int cth = MousedOverLayer.GetClusterToHighlight();
+                        HighlightCluster(cth);
+                    }
+            }
+            else if (msg.Msg == 0x101)
+                if ((ModifierKeys & Keys.Shift) == Keys.None)
+                {
+                    holdingShift = false;
+                    HighlightCluster(-1);
+                }
+
+            return base.ProcessKeyPreview(ref msg);
+        }
+
+        public void HighlightCluster(int clusterID)
+        {
+            if(drawAllLayers)
+            {
+                foreach (ReactorGridLayer layer in Reactor.layers)
+                {
+                    layer.HighlightedCluster = clusterID;
+                    layer.Refresh();
+                }
+            }
+            else
+            {
+                ReactorGridLayer layer = Reactor.layers[layerScrollBar.Value];
+                layer.HighlightedCluster = clusterID;
+                layer.Refresh();
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -77,14 +119,14 @@ namespace NC_Reactor_Planner
 
         private void SetUpToolTips()
         {
-            uiToolTip = new ToolTip
+            UIToolTip = new ToolTip
             {
                 AutoPopDelay = 10000,
                 InitialDelay = 0,
                 ReshowDelay = 0,
             };
 
-            gridToolTip = new ToolTip
+            GridToolTip = new ToolTip
             {
                 AutoPopDelay = 10000,
                 InitialDelay = 1200,
@@ -94,14 +136,14 @@ namespace NC_Reactor_Planner
 
         private void SetUIToolTips()
         {
-            uiToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
-            uiToolTip.SetToolTip(reactorHeight, "Reactor hight (number of internal layers)");
-            uiToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
-            uiToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
-            uiToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
-            uiToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
-            uiToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
-            uiToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
+            UIToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
+            UIToolTip.SetToolTip(reactorHeight, "Reactor hight (number of internal layers)");
+            UIToolTip.SetToolTip(reactorLength, "Reactor length (Z axis internal size)");
+            UIToolTip.SetToolTip(reactorWidth, "Reactor width (X axis internal size)");
+            UIToolTip.SetToolTip(layerScrollBar, "Scrolls through reactor layers. Scrollwheel works, so do arrow keys");
+            UIToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
+            UIToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
+            UIToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
         }
 
         private void SetupReactorSizeControls(decimal X, decimal Y, decimal Z)
@@ -160,7 +202,7 @@ namespace NC_Reactor_Planner
         {
             EnableUIElements();
 
-            gridToolTip.RemoveAll();
+            GridToolTip.RemoveAll();
             
             reactorGrid.Controls.Clear();
 
@@ -261,8 +303,8 @@ namespace NC_Reactor_Planner
 
             Redraw();
 
-            gridToolTip.Active = false;
-            gridToolTip.Active = true;
+            GridToolTip.Active = false;
+            GridToolTip.Active = true;
         }
 
         private void reactorGrid_MouseEnter(object sender, EventArgs e)
@@ -390,7 +432,7 @@ namespace NC_Reactor_Planner
 
         private void imageScale_ValueChanged(object sender, EventArgs e)
         {
-            blockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
+            BlockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
             
             foreach (ReactorGridLayer layer in Reactor.layers)
             {
@@ -411,8 +453,8 @@ namespace NC_Reactor_Planner
             }
             else
             {
-                origin = new Point(Math.Max(0, (int)(reactorGrid.Size.Width / 2 - Reactor.interiorDims.X * blockSize / 2)),
-                                            Math.Max(0, (int)(reactorGrid.Size.Height / 2 - Reactor.interiorDims.Z * blockSize / 2)));
+                origin = new Point(Math.Max(0, (int)(reactorGrid.Size.Width / 2 - Reactor.interiorDims.X * BlockSize / 2)),
+                                            Math.Max(0, (int)(reactorGrid.Size.Height / 2 - Reactor.interiorDims.Z * BlockSize / 2)));
             }
             layer.Location = origin;
         }
@@ -481,7 +523,7 @@ namespace NC_Reactor_Planner
 
         private void PlannerUI_Leave(object sender, EventArgs e)
         {
-            gridToolTip.Hide(reactorGrid);
+            GridToolTip.Hide(reactorGrid);
         }
 
         private async void checkForUpdates_Click(object sender, EventArgs e)

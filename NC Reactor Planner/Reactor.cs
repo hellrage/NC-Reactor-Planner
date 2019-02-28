@@ -125,6 +125,9 @@ namespace NC_Reactor_Planner
 
         public static void Redraw()
         {
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine("Redrawring reactor");
+#endif
             foreach (ReactorGridLayer layer in layers)
             {
                 layer.Refresh();
@@ -562,7 +565,7 @@ namespace NC_Reactor_Planner
         {
             int layersPerRow = (int)Math.Ceiling(Math.Sqrt(interiorDims.Y));
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
-            int bs = PlannerUI.blockSize;
+            int bs = Reactor.UI.BlockSize;
 
             Point StatsRectSize = new Point(28 * fontSize, (statStringLines + 4) * (fontSize + 2));
 
@@ -614,19 +617,19 @@ namespace NC_Reactor_Planner
 
         public static void CopyLayer(ReactorGridLayer layer)
         {
-            PlannerUI.layerBuffer = new Block[layer.X, layer.Z];
+            PlannerUI.LayerBuffer = new Block[layer.X, layer.Z];
             for (int x = 0; x < layer.X; x++)
                 for (int z = 0; z < layer.Z; z++)
                 {
-                    PlannerUI.layerBuffer[x, z] = blocks[x + 1, layer.Y, z + 1];
+                    PlannerUI.LayerBuffer[x, z] = blocks[x + 1, layer.Y, z + 1];
                 }
         }
 
         public static void PasteLayer(ReactorGridLayer layer)
         {
-            if (PlannerUI.layerBuffer == null)
+            if (PlannerUI.LayerBuffer == null)
                 return;
-            if (PlannerUI.layerBuffer.Length != layer.X * layer.Z)
+            if (PlannerUI.LayerBuffer.Length != layer.X * layer.Z)
             {
                 System.Windows.Forms.MessageBox.Show("Buffered layer size doesn't match the layout!");
                 return;
@@ -636,7 +639,7 @@ namespace NC_Reactor_Planner
                 for (int z = 0; z < layer.Z; z++)
                 {
                     Point3D position = new Point3D(x + 1, layer.Y, z + 1);
-                    SetBlock(PlannerUI.layerBuffer[x, z].Copy(position), position);
+                    SetBlock(PlannerUI.LayerBuffer[x, z].Copy(position), position);
                 }
             Update();
             Redraw();

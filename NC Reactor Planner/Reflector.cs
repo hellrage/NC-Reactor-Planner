@@ -50,7 +50,7 @@ namespace NC_Reactor_Planner
                     "Must be no farther than " + Configuration.Fission.NeutronReach / 2 + " moderators\r\n" +
                     "away from a FuelCell.";
             return  tooltip +
-                    (Valid?"":"--Has no neighbouring active FuelCells\r\n");
+                    (Valid?"":"--Not connected to an active FuelCell\r\n");
         }
 
         public override Block Copy(Point3D newPosition)

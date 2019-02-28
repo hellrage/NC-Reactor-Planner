@@ -10,8 +10,8 @@ namespace NC_Reactor_Planner
         public double HeatProducedPerTick { get => HeatMultiplier * UsedFuel.BaseHeat;}
         public double HeatMultiplier { get => AdjacentModeratorLines;}
         public List<FuelCell> AdjacentCells { get; private set; }
+        public List<Reflector> AdjacentReflectors { get; private set; }
         public int AdjacentModeratorLines { get; private set; }
-        public int Reflectors { get; private set; }
         public bool Active { get; private set; }
         public override bool Valid { get => Active; }
         public bool Shielded { get; private set; }
@@ -33,10 +33,10 @@ namespace NC_Reactor_Planner
         {
             SetCluster(-1);
             AdjacentCells = new List<FuelCell>();
+            AdjacentReflectors = new List<Reflector>();
             AdjacentModeratorLines = 0;
             PositionalEfficiency = 0;
             ModeratedNeutronFlux = 0;
-            Reflectors = 0;
             Active = false;
         }
 
@@ -76,7 +76,7 @@ namespace NC_Reactor_Planner
                                     " Criticality factor: {9}\r\n" +
                                     (Primed ? " Primed" : ""
                                     ),
-                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier * 100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency * 100), (int)(PositionalEfficiency * 100), ModeratedNeutronFlux, UsedFuel.CriticalityFactor, Reflectors);
+                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier * 100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency * 100), (int)(PositionalEfficiency * 100), ModeratedNeutronFlux, UsedFuel.CriticalityFactor, AdjacentReflectors.Count);
             }
         }
 
@@ -129,17 +129,24 @@ namespace NC_Reactor_Planner
                 }
                 else if(block.BlockType == BlockTypes.Reflector)
                 {
-                    if (i < 2 || i > (Configuration.Fission.NeutronReach) / 2 + 1)
+                    Reflector reflector = block as Reflector;
+                    if (AdjacentReflectors.Contains(reflector))
+                    {
+                        if (Active)
+                            reflector.Active = true;
+                        return null;
+                    }
+                    if (i < 2 || i > (Configuration.Fission.NeutronReach / 2) + 1)
                         return null;
                     ModeratedNeutronFlux += 2 * sumModeratorFlux;
                     PositionalEfficiency += sumModeratorEfficiency / (2*moderatorsInLine);
-                    ((Reflector)block).AddAdjacentFuelCell(this);
+                    reflector.AddAdjacentFuelCell(this);
                     if (Math.Round(ModeratedNeutronFlux, 2) >= UsedFuel.CriticalityFactor)
                     {
                         Activate();
-                        ((Reflector)block).Active = true;
+                        reflector.Active = true;
                     }
-                    this.Reflectors++;
+                    AdjacentReflectors.Add(reflector);
                     return null;
                 }
                 else
@@ -168,7 +175,7 @@ namespace NC_Reactor_Planner
                 return;
             }
             AdjacentCells = AdjacentCells.FindAll(fc => fc.Active);
-            AdjacentModeratorLines = AdjacentCells.Count + Reflectors;
+            AdjacentModeratorLines = AdjacentCells.Count + AdjacentReflectors.Count;
         }
 
         public bool CanBePrimed()
