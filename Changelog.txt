@@ -135,3 +135,8 @@
 
 27.02.19 v1.2.16
 	Emergency release because I accidentally removed fuel info from png export :D
+
+04.03.19 v1.2.17
+	Default config value fixes.
+	Added Building Gadgets and Schematica reactor exporting, you can now paste them wholesale! Active coolers are TEs and so do not work with BG, use schematica for those.
+	Fixes for .cfg import.

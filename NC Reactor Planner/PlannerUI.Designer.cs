@@ -57,6 +57,8 @@
             this.openConfig = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.checkForUpdates = new System.Windows.Forms.Button();
+            this.generateBGString = new System.Windows.Forms.Button();
+            this.generateSchematic = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
@@ -295,7 +297,13 @@
             // imageScale
             // 
             this.imageScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageScale.DecimalPlaces = 1;
             this.imageScale.Enabled = false;
+            this.imageScale.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
             this.imageScale.Location = new System.Drawing.Point(920, 12);
             this.imageScale.Maximum = new decimal(new int[] {
             10,
@@ -311,10 +319,10 @@
             this.imageScale.Size = new System.Drawing.Size(47, 20);
             this.imageScale.TabIndex = 9;
             this.imageScale.Value = new decimal(new int[] {
-            2,
+            15,
             0,
             0,
-            0});
+            65536});
             this.imageScale.ValueChanged += new System.EventHandler(this.imageScale_ValueChanged);
             // 
             // fuelBaseRFLabel
@@ -410,7 +418,7 @@
             // 
             // checkForUpdates
             // 
-            this.checkForUpdates.Location = new System.Drawing.Point(7, 176);
+            this.checkForUpdates.Location = new System.Drawing.Point(7, 177);
             this.checkForUpdates.Name = "checkForUpdates";
             this.checkForUpdates.Size = new System.Drawing.Size(136, 23);
             this.checkForUpdates.TabIndex = 31;
@@ -418,12 +426,34 @@
             this.checkForUpdates.UseVisualStyleBackColor = true;
             this.checkForUpdates.Click += new System.EventHandler(this.checkForUpdates_Click);
             // 
+            // generateBGString
+            // 
+            this.generateBGString.Location = new System.Drawing.Point(7, 220);
+            this.generateBGString.Name = "generateBGString";
+            this.generateBGString.Size = new System.Drawing.Size(136, 23);
+            this.generateBGString.TabIndex = 32;
+            this.generateBGString.Text = "Generate BG string";
+            this.generateBGString.UseVisualStyleBackColor = true;
+            this.generateBGString.Click += new System.EventHandler(this.generateBGString_Click);
+            // 
+            // generateSchematic
+            // 
+            this.generateSchematic.Location = new System.Drawing.Point(7, 249);
+            this.generateSchematic.Name = "generateSchematic";
+            this.generateSchematic.Size = new System.Drawing.Size(136, 23);
+            this.generateSchematic.TabIndex = 33;
+            this.generateSchematic.Text = "Generate Schematic";
+            this.generateSchematic.UseVisualStyleBackColor = true;
+            this.generateSchematic.Click += new System.EventHandler(this.generateSchematic_Click);
+            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.generateSchematic);
+            this.Controls.Add(this.generateBGString);
             this.Controls.Add(this.sizeLabel);
             this.Controls.Add(this.reactorWidth);
             this.Controls.Add(this.checkForUpdates);
@@ -497,5 +527,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.Button checkForUpdates;
+        private System.Windows.Forms.Button generateBGString;
+        private System.Windows.Forms.Button generateSchematic;
     }
 }

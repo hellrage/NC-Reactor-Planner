@@ -40,6 +40,8 @@ namespace NC_Reactor_Planner
                 activeCooler.Font = nameStringFont;
                 activeCooler.Location = new Point(Width - (activeCooler.Width - 20), spacing);
                 activeCooler.CheckedChanged += new EventHandler(ActiveCooler_CheckedChanged);
+
+                PlannerUI.uiToolTip.SetToolTip(activeCooler, "Toggles between placing a passive or active (fluid-filled) cooler");
                 Controls.Add(activeCooler);
 
                 cellX = -1;
@@ -153,7 +155,12 @@ namespace NC_Reactor_Planner
             private void ActiveCooler_CheckedChanged(object sender, EventArgs e)
             {
                 LoadPalette(activeCooler.Checked);
-                selectedBlock = BlockPalette[selectedBlock.BlockType == BlockTypes.Cooler ? ((Cooler)selectedBlock).CoolerType.ToString() : selectedBlock.BlockType.ToString()];
+                string selected = selectedBlock.BlockType.ToString();
+                if (selectedBlock.BlockType == BlockTypes.Cooler)
+                    selected = ((Cooler)selectedBlock).CoolerType.ToString();
+                else if (selectedBlock.BlockType == BlockTypes.Moderator)
+                    selected = ((Moderator)selectedBlock).ModeratorType.ToString();
+                selectedBlock = BlockPalette[selected];
                 Refresh();
             }
         }

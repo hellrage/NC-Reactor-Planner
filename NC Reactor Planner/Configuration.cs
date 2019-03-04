@@ -268,7 +268,7 @@ namespace NC_Reactor_Planner
         {
             Coolers.Add("Water", new CoolerValues(60, 300, "At least one Reactor Cell or active Moderator"));
             Coolers.Add("Redstone", new CoolerValues(90, 6400, "At least one Reactor Cell"));
-            Coolers.Add("Quartz", new CoolerValues(70, 6000, "At least one active Moderator"));
+            Coolers.Add("Quartz", new CoolerValues(90, 6000, "At least one active Moderator"));
             Coolers.Add("Gold", new CoolerValues(120, 9600, "At least one active Water cooler & active Redstone cooler"));
             Coolers.Add("Glowstone", new CoolerValues(130, 8000, "At least two active Moderators"));
             Coolers.Add("Lapis", new CoolerValues(120, 5600, "At least one Reactor Cell and one Reactor Casing"));
@@ -293,7 +293,7 @@ namespace NC_Reactor_Planner
             Fission.ModeratorExtraPower = 1.0;
             Fission.ModeratorExtraHeat = 2.0;
             Fission.NeutronReach = 4;
-            Fission.ActiveCoolerMaxRate = 5;
+            Fission.ActiveCoolerMaxRate = 10;
         }
 
         //private static void SetDefaultResourceCosts()

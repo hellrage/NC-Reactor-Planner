@@ -316,6 +316,7 @@ namespace NC_Reactor_Planner
                     Configuration.Fission.MinSize = config.Get<int>("fission", "fission_min_size");
                     Configuration.Fission.MaxSize = config.Get<int>("fission", "fission_max_size");
                     Configuration.Fission.NeutronReach = config.Get<int>("fission", "fission_neutron_reach");
+                    Configuration.Fission.ActiveCoolerMaxRate = config.Get<int>("fission", "fission_active_cooler_max_rate");
 
                     SetFuelValues(config, new[] { "TBU", "TBU Oxide" }, "thorium");
                     SetFuelValues(config,

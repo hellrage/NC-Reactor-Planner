@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
+using fNbt;
 
 namespace NC_Reactor_Planner
 {
@@ -18,8 +19,18 @@ namespace NC_Reactor_Planner
 
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
 
-        public static ToolTip uiToolTip;
-        public static ToolTip gridToolTip;
+        public static ToolTip uiToolTip = new ToolTip
+            {
+                AutoPopDelay = 2000,
+                InitialDelay = 0,
+                ReshowDelay = 0,
+            };
+        public static ToolTip gridToolTip = new ToolTip
+            {
+                AutoPopDelay = 10000,
+                InitialDelay = 1200,
+                ReshowDelay = 1000,
+            };
         public static int blockSize;
         private static ConfigurationUI configurationUI;
         public static bool drawAllLayers;
@@ -36,8 +47,7 @@ namespace NC_Reactor_Planner
             Version aVersion = Assembly.GetExecutingAssembly().GetName().Version;
             appName = string.Format("NC Reactor Planner v{0}.{1}.{2} ", aVersion.Major, aVersion.Minor, aVersion.Build);
             this.Text = appName;
-
-            SetUpToolTips();
+            
             SetUIToolTips();
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
@@ -66,23 +76,6 @@ namespace NC_Reactor_Planner
             ResetLayout(LoadedSaveFile != null);
         }
 
-        private void SetUpToolTips()
-        {
-            uiToolTip = new ToolTip
-            {
-                AutoPopDelay = 10000,
-                InitialDelay = 0,
-                ReshowDelay = 0,
-            };
-
-            gridToolTip = new ToolTip
-            {
-                AutoPopDelay = 10000,
-                InitialDelay = 1200,
-                ReshowDelay = 1000,
-            };
-        }
-
         private void SetUIToolTips()
         {
             uiToolTip.SetToolTip(imageScale, "Scale of blocks' textures. Also affects saved PNG scale.");
@@ -93,6 +86,8 @@ namespace NC_Reactor_Planner
             uiToolTip.SetToolTip(viewStyleSwitch, "Toggles between drawing layers one-by-one or all at once.");
             uiToolTip.SetToolTip(saveAsImage, "Saves an image of the reactor. Stats are also added to the output so you have a full description in one picture ^-^");
             uiToolTip.SetToolTip(resetLayout, "Create a new reactor with the specified dimensions. Click again to confirm (overwrites your current layout! Save if you want to keep it.)");
+            uiToolTip.SetToolTip(generateBGString, "Generates a string for use with Building Gadgets' copy-paste tool");
+            uiToolTip.SetToolTip(generateSchematic, "Generates a .schematic file for use with Schematica or any other appropriate tool");
         }
 
         private void SetupReactorSizeControls(decimal X, decimal Y, decimal Z)
@@ -510,6 +505,25 @@ namespace NC_Reactor_Planner
                 checkForUpdates.Font = new Font(checkForUpdates.Font, FontStyle.Bold);
                 checkForUpdates.Text = Updater.ShortVersionString(updateInfo.Item2) + " Available!";
             }
+        }
+
+        private void generateBGString_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(BGExportHelper.FormBGExportString());
+            MessageBox.Show("Copied export string to clipboard!");
+        }
+
+        private void generateSchematic_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog { Filter = "Schematic files | *.schematic"};
+            saveDialog.FileName = "New schematic";
+            DialogResult saveResult = saveDialog.ShowDialog();
+            if (saveResult == DialogResult.OK)
+            {
+                var myFile = new NbtFile(SchematicaExportHelper.ExportReactor());
+                myFile.SaveToFile(saveDialog.FileName, NbtCompression.GZip);
+            }
+            
         }
     }
 }
