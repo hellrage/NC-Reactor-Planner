@@ -97,9 +97,9 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Helium:
                     return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Enderium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 3, true);
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 3);
                 case HeatSinkTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 3, true);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 3);
                 case HeatSinkTypes.Iron:
                     return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Emerald:
@@ -111,7 +111,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Magnesium:
                     return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Boron:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Prismarine:
                     return Valid = HasAdjacent(Palette.BlockPalette["Water"], 2);
                 case HeatSinkTypes.Obsidian:
@@ -121,7 +121,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Aluminum:
                     return Valid = HasAdjacent(Palette.BlockPalette["Copper"]) & HasAdjacent(Palette.BlockPalette["Tin"]);
                 case HeatSinkTypes.Lithium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Lead"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Lead"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
                 case HeatSinkTypes.Manganese:
                     return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 2);
                 case HeatSinkTypes.Silver:
