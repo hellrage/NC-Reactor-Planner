@@ -306,13 +306,13 @@ namespace NC_Reactor_Planner
             reactorLength.Value = (decimal)Reactor.interiorDims.Z;
             reactorWidth.Value = (decimal)Reactor.interiorDims.X;
 
-            UpdateSelectedFuel();
-
             ResetLayout(true);
+            UpdateSelectedFuel();
         }
 
         private void UpdateSelectedFuel()
         {
+            fuelSelector.SelectedItem = Reactor.usedFuel;
             fuelBasePower.Text = Reactor.usedFuel.BasePower.ToString();
             fuelBaseHeat.Text = Reactor.usedFuel.BaseHeat.ToString();
             fuelSelector.Text = Reactor.usedFuel.Name;
@@ -456,8 +456,10 @@ namespace NC_Reactor_Planner
 
         private void ConfigurationClosed(object sender, FormClosedEventArgs e)
         {
+            int previouslySelected = fuelSelector.SelectedIndex;
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+            fuelSelector.SelectedIndex = previouslySelected;
             SetupReactorSizeControls(reactorWidth.Value, reactorHeight.Value, reactorLength.Value);
             Reactor.Redraw();
             RefreshStats();

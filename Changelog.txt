@@ -140,3 +140,5 @@
 	Default config value fixes.
 	Added Building Gadgets and Schematica reactor exporting, you can now paste them wholesale! Active coolers are TEs and so do not work with BG, use schematica for those.
 	Fixes for .cfg import.
+04.03.19 v1.2.18
+	Hotfix for fuelselector crashing the app.
