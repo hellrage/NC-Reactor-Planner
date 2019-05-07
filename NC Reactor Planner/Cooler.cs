@@ -126,6 +126,17 @@ namespace NC_Reactor_Planner
                 BlockTypes bt = block.BlockType;
                 BlockTypes nt = needed.BlockType;
 
+                if(block is Cooler cooler && cooler.Active)
+                {
+                    if(Active && (CoolerType != cooler.CoolerType))
+                    {
+                        placementErrors.Add("Cannot touch active coolers of a different type!");
+                        return false;
+                    }
+                    placementErrors.Add("Cannot be supported by active coolers!");
+                    continue;
+                }
+
                 //If checked block doesn't match at all: log errors
                 //Either cooler types are mismatched or the blocktype is mismatched
                 if (((bt == BlockTypes.Cooler & nt == BlockTypes.Cooler) && ((Cooler)block).CoolerType != ((Cooler)needed).CoolerType) | bt != nt)
@@ -151,7 +162,7 @@ namespace NC_Reactor_Planner
                         placementErrors.Add("Too many " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
                 }
                 else
-                    placementErrors.Add("Inactive " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
+                    placementErrors.Add("Invalid " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString()));
             }
 
             if (exact)

@@ -440,9 +440,9 @@
             // 
             this.generateSchematic.Location = new System.Drawing.Point(7, 249);
             this.generateSchematic.Name = "generateSchematic";
-            this.generateSchematic.Size = new System.Drawing.Size(136, 23);
+            this.generateSchematic.Size = new System.Drawing.Size(136, 40);
             this.generateSchematic.TabIndex = 33;
-            this.generateSchematic.Text = "Generate Schematic";
+            this.generateSchematic.Text = "Generate Structure Nbt";
             this.generateSchematic.UseVisualStyleBackColor = true;
             this.generateSchematic.Click += new System.EventHandler(this.generateSchematic_Click);
             // 

@@ -142,3 +142,7 @@
 	Fixes for .cfg import.
 04.03.19 v1.2.18
 	Hotfix for fuelselector crashing the app.
+
+07.05.19 v1.2.19
+	Fixed active coolers counting as dependencies.
+	Instead of .schematic there is now an option to export the reactor as a vanilla structure.

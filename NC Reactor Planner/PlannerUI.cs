@@ -517,12 +517,12 @@ namespace NC_Reactor_Planner
 
         private void generateSchematic_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveDialog = new SaveFileDialog { Filter = "Schematic files | *.schematic"};
-            saveDialog.FileName = "New schematic";
+            SaveFileDialog saveDialog = new SaveFileDialog { Filter = "Nbt files | *.nbt"};
+            saveDialog.FileName = "ReactorStructure";
             DialogResult saveResult = saveDialog.ShowDialog();
             if (saveResult == DialogResult.OK)
             {
-                var myFile = new NbtFile(SchematicaExportHelper.ExportReactor());
+                var myFile = new NbtFile(SchematicaExportHelper.ExportAsStructure());
                 myFile.SaveToFile(saveDialog.FileName, NbtCompression.GZip);
             }
             

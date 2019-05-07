@@ -137,6 +137,77 @@ namespace NC_Reactor_Planner
             return reactor;
         }
 
+        public static NbtCompound ExportAsStructure()
+        {
+            NbtCompound reactor = new NbtCompound("ReactorStructure");
+            int volume = (int)(Reactor.interiorDims.X * Reactor.interiorDims.Y * Reactor.interiorDims.Z);
+            List<string> listPalette = new List<string>();
+            NbtList palette = new NbtList("palette", NbtTagType.Compound);
+            NbtList blocks = new NbtList("blocks",NbtTagType.Compound);
+            NbtString author = new NbtString("author", "Hellrage");
+            NbtCompound forgeDataVersion = new NbtCompound("ForgeDataVersion", new List<NbtInt>{ new NbtInt("minecraft", 1343) });
+            NbtInt dataVersion = new NbtInt("DataVersion", 1342);
+
+            for (int y = 1; y <= Reactor.interiorDims.Y; y++)
+            {
+                for (int z = 1; z <= Reactor.interiorDims.Z; z++)
+                {
+                    for (int x = 1; x <= Reactor.interiorDims.X; x++)
+                    {
+                        Block block = Reactor.BlockAt(new Point3D(x, y, z));
+                        NbtCompound palettenbt = GetNbtCompound(block);
+                        if (!listPalette.Contains(block.DisplayName))
+                        {
+                            listPalette.Add(block.DisplayName);
+                            palette.Add(palettenbt);
+                        }
+                        NbtCompound blocknbt = new NbtCompound();
+                        if (block.DisplayName.Contains("Active"))
+                            blocknbt.Add(CreateActiveCooler(x - 1, y - 1, z - 1));
+                        blocknbt.Add(new NbtList("pos", new List<NbtInt> { new NbtInt(x - 1), new NbtInt(y - 1), new NbtInt(z - 1) }));
+                        blocknbt.Add(new NbtInt("state", listPalette.IndexOf(block.DisplayName)));
+                        blocks.Add(blocknbt);
+                        }
+                }
+            }
+
+            reactor.Add(new NbtList("size", new List<NbtInt>{ new NbtInt((int)Reactor.interiorDims.X), new NbtInt((int)Reactor.interiorDims.Y), new NbtInt((int)Reactor.interiorDims.Z) }));
+            reactor.Add(new NbtList("entities", new List<NbtInt>(), NbtTagType.Compound));
+            reactor.Add(blocks);
+            reactor.Add(author);
+            reactor.Add(palette);
+            reactor.Add(forgeDataVersion);
+            reactor.Add(dataVersion);
+            return reactor;
+        }
+
+        private static NbtCompound GetNbtCompound(Block block)
+        {
+            BlockTypes bt = block.BlockType;
+            NbtCompound nbt = new NbtCompound();
+            if (block.BlockType == BlockTypes.Air)
+                nbt.Add(new NbtString("Name", "minecraft:air"));
+            else if(bt == BlockTypes.FuelCell)
+                nbt.Add(new NbtString("Name", "nuclearcraft:cell_block"));
+            else if(bt == BlockTypes.Moderator)
+            {
+                nbt.Add(new NbtCompound("Properties", new List<NbtString> { new NbtString("type", ((Moderator)block).ModeratorType.ToString().ToLower()) }));
+                nbt.Add(new NbtString("Name", "nuclearcraft:ingot_block"));
+            }
+            else if(bt== BlockTypes.Cooler)
+            {
+                if (((Cooler)block).Active)
+                    nbt.Add(new NbtString("Name", "nuclearcraft:active_cooler"));
+                else
+                {
+                    nbt.Add(new NbtString("Name", "nuclearcraft:cooler"));
+                    nbt.Add(new NbtCompound("Properties", new List<NbtString> { new NbtString("type", ((Cooler)block).CoolerType.ToString().ToLower()) }));
+                }
+            }
+
+            return nbt;
+        }
+
         private static NbtCompound SetIcon()
         {
             NbtCompound icon = new NbtCompound("Icon");
@@ -149,7 +220,7 @@ namespace NC_Reactor_Planner
 
         private static NbtCompound CreateActiveCooler(int x, int y, int z)
         {
-            NbtCompound activeCooler = new NbtCompound();
+            NbtCompound activeCooler = new NbtCompound("nbt");
             activeCooler.Add(new NbtByte("isRedstonePowered", 0));
             activeCooler.Add(new NbtByte("emptyUnusable", 0));
             activeCooler.Add(new NbtByte("areTanksShared", 0));
