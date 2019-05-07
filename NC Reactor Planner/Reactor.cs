@@ -561,7 +561,7 @@ namespace NC_Reactor_Planner
             layerImage.Dispose();
         }
 
-        public static void SaveReactorAsImage(string fileName, int statStringLines, int fontSize = 24)
+        public static void SaveReactorAsImage(string fileName, int statStringLines,bool includeClusterInfo = false, int fontSize = 24)
         {
             int layersPerRow = (int)Math.Ceiling(Math.Sqrt(interiorDims.Y));
             int rows = (int)Math.Ceiling((interiorDims.Y / layersPerRow));
@@ -587,7 +587,7 @@ namespace NC_Reactor_Planner
                                     GraphicsUnit.Pixel);
                     layerImage.Dispose();
                 }
-                gr.DrawString(GetStatString(), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                gr.DrawString(GetStatString(includeClusterInfo), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             using (FileStream fs = File.OpenWrite(fileName))
             {

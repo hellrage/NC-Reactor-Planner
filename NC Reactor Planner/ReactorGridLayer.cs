@@ -178,6 +178,11 @@ namespace NC_Reactor_Planner
                 if (moderator.Valid)
                     g.DrawRectangle(PlannerUI.ValidModeratorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
             }
+            else if(block is HeatSink heatsink)
+            {
+                if(heatsink.Cluster == -1)
+                    g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);
+            }
         }
 
         public void DrawClusterHighlight(Graphics g, int clusterID)

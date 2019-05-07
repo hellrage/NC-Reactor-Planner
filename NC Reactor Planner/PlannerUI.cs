@@ -442,7 +442,7 @@ namespace NC_Reactor_Planner
             if (fileName != null)
             {
                 if (drawAllLayers)
-                    Reactor.SaveReactorAsImage(fileName, stats.Lines.Length);
+                    Reactor.SaveReactorAsImage(fileName, stats.Lines.Length, showClustersInStats);
                 else
                     Reactor.SaveLayerAsImage(layerScrollBar.Value, fileName);
             }
