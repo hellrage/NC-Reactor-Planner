@@ -121,20 +121,6 @@ namespace NC_Reactor_Planner
             ResetLayout(LoadedSaveFile != null);
         }
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            if (drawAllLayers)
-            {
-                foreach (ReactorGridLayer layer in Reactor.layers)
-                {
-                    UpdateLocation(layer);
-                }
-            }
-            else
-                UpdateLocation(Reactor.layers[layerScrollBar.Value]);
-            base.OnPaint(e);
-        }
-
         private void SetUpToolTips()
         {
             UIToolTip = new ToolTip
@@ -451,6 +437,7 @@ namespace NC_Reactor_Planner
         private void imageScale_ValueChanged(object sender, EventArgs e)
         {
             BlockSize = (int)(Palette.Textures.First().Value.Size.Height * imageScale.Value);
+            reactorGrid.VerticalScroll.Value = 0;
             
             foreach (ReactorGridLayer layer in Reactor.layers)
             {
@@ -572,6 +559,7 @@ namespace NC_Reactor_Planner
             {
                 checkForUpdates.Font = new Font(checkForUpdates.Font, FontStyle.Bold);
                 checkForUpdates.Text = Updater.ShortVersionString(updateInfo.Item2) + " Available!";
+                checkForUpdates.BackColor = Color.FromArgb(81, 237, 82);
             }
         }
 
@@ -579,6 +567,19 @@ namespace NC_Reactor_Planner
         {
             HeatsinkTypeOverlay = drawOverlay.Checked;
             Redraw();
+        }
+
+        private void PlannerUI_Resize(object sender, EventArgs e)
+        {
+            if (drawAllLayers)
+            {
+                foreach (ReactorGridLayer layer in Reactor.layers)
+                {
+                    UpdateLocation(layer);
+                }
+            }
+            else
+                UpdateLocation(Reactor.layers[layerScrollBar.Value]);
         }
     }
 }

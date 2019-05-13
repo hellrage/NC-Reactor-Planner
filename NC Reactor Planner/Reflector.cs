@@ -45,7 +45,7 @@ namespace NC_Reactor_Planner
                     "This block reflects neutrons back\r\n" +
                     "to FuelCells through moderator lines.\r\n" +
                     "This increases the FuelCell's flux and\r\n" +
-                    "heat multiplier but only adds half\r\n" +
+                    "heat multiplier but only adds "+Configuration.Fission.ReflectorEfficiency+"\r\n" +
                     "the positional efficiency.\r\n" +
                     "Must be no farther than " + Configuration.Fission.NeutronReach / 2 + " moderators\r\n" +
                     "away from a FuelCell.";

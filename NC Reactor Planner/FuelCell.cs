@@ -139,7 +139,7 @@ namespace NC_Reactor_Planner
                     if (i < 2 || i > (Configuration.Fission.NeutronReach / 2) + 1)
                         return null;
                     ModeratedNeutronFlux += 2 * sumModeratorFlux;
-                    PositionalEfficiency += sumModeratorEfficiency / (2*moderatorsInLine);
+                    PositionalEfficiency += Configuration.Fission.ReflectorEfficiency * sumModeratorEfficiency / moderatorsInLine;
                     reflector.AddAdjacentFuelCell(this);
                     if (Math.Round(ModeratedNeutronFlux, 2) >= UsedFuel.CriticalityFactor)
                     {

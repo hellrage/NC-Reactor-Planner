@@ -313,7 +313,13 @@
             // imageScale
             // 
             this.imageScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageScale.DecimalPlaces = 1;
             this.imageScale.Enabled = false;
+            this.imageScale.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
             this.imageScale.Location = new System.Drawing.Point(920, 12);
             this.imageScale.Maximum = new decimal(new int[] {
             10,
@@ -464,7 +470,7 @@
             this.drawOverlay.Name = "drawOverlay";
             this.drawOverlay.Size = new System.Drawing.Size(147, 17);
             this.drawOverlay.TabIndex = 32;
-            this.drawOverlay.Text = "Heatsink type ovarlay";
+            this.drawOverlay.Text = "Heatsink type overlay";
             this.drawOverlay.UseVisualStyleBackColor = true;
             this.drawOverlay.CheckedChanged += new System.EventHandler(this.drawOverlay_CheckedChanged);
             // 
@@ -513,6 +519,7 @@
             this.Text = "NC Reactor Planner";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Leave += new System.EventHandler(this.PlannerUI_Leave);
+            this.Resize += new System.EventHandler(this.PlannerUI_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();

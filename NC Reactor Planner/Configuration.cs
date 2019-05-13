@@ -97,8 +97,9 @@ namespace NC_Reactor_Planner
         public int MinSize;
         public int MaxSize;
         public int NeutronReach;
+        public double ReflectorEfficiency;
 
-        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr)
+        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double re)
         {
             Power = p;
             FuelUse = fu;
@@ -106,7 +107,7 @@ namespace NC_Reactor_Planner
             MinSize = ms;
             MaxSize = mxs;
             NeutronReach = nr;
-        }
+            ReflectorEfficiency = re;        }
 
         public FissionValues(List<object> values)
         {
@@ -116,6 +117,7 @@ namespace NC_Reactor_Planner
             MinSize = Convert.ToInt32(values[3]);
             MaxSize = Convert.ToInt32(values[4]);
             NeutronReach = Convert.ToInt32(values[5]);
+            ReflectorEfficiency = Convert.ToDouble(values[6]);
         }
     }
 
@@ -369,6 +371,7 @@ namespace NC_Reactor_Planner
             Fission.MinSize = 1;
             Fission.MaxSize = 24;
             Fission.NeutronReach = 4;
+            Fission.ReflectorEfficiency = 0.5;
         }
 
         private static void SetDefaultResourceCosts()
