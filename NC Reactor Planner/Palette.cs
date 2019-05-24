@@ -253,8 +253,13 @@ namespace NC_Reactor_Planner
 
         private static void PopulateFuelPalette()
         {
+            var fuelList = new List<KeyValuePair<string, Fuel>>();
             foreach (KeyValuePair<string, FuelValues> fuel in Configuration.Fuels)
-                FuelPalette.Add(fuel.Key, new Fuel(fuel.Key, fuel.Value.BaseEfficiency, fuel.Value.BaseHeat, fuel.Value.FuelTime, fuel.Value.CriticalityFactor));
+                fuelList.Add(new KeyValuePair<string, Fuel>(fuel.Key, new Fuel(fuel.Key, fuel.Value.BaseEfficiency, fuel.Value.BaseHeat, fuel.Value.FuelTime, fuel.Value.CriticalityFactor)));
+            fuelList.Sort((x, y) => x.Value.CriticalityFactor.CompareTo(y.Value.CriticalityFactor));
+            FuelPalette = new Dictionary<string, Fuel>();
+            foreach (var kvp in fuelList)
+                FuelPalette.Add(kvp.Key, kvp.Value);
         }
 
         public static Block BlockToPlace(Block previousBlock)
