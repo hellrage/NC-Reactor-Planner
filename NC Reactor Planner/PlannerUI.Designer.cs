@@ -387,10 +387,11 @@
             // 
             this.fuelSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fuelSelector.Enabled = false;
+            this.fuelSelector.Font = new System.Drawing.Font("Consolas", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.fuelSelector.FormattingEnabled = true;
             this.fuelSelector.Location = new System.Drawing.Point(376, 688);
             this.fuelSelector.Name = "fuelSelector";
-            this.fuelSelector.Size = new System.Drawing.Size(237, 21);
+            this.fuelSelector.Size = new System.Drawing.Size(237, 23);
             this.fuelSelector.TabIndex = 6;
             this.fuelSelector.SelectedIndexChanged += new System.EventHandler(this.fuelSelector_SelectedIndexChanged);
             // 

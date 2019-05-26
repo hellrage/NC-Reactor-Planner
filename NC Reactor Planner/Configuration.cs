@@ -171,7 +171,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your DefaultConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 13, 0))
+            if(cf.saveVersion < new Version(2, 0, 14, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -343,12 +343,12 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Copper", new HeatSinkValues(65, "One Water heatsink"));
             HeatSinks.Add("Tin", new HeatSinkValues(85, "Two Lapis heatsinks on the same axis"));
             HeatSinks.Add("Lead", new HeatSinkValues(60, "One Iron heatsink"));
-            HeatSinks.Add("Boron", new HeatSinkValues(140, "Exactly one Quartz heatsink and at least one Reflector"));
+            HeatSinks.Add("Boron", new HeatSinkValues(130, "Exactly one Quartz heatsink and at least one Casing"));
             HeatSinks.Add("Lithium", new HeatSinkValues(125, "Exactly one Lead heatsink and at least one Casing"));
             HeatSinks.Add("Magnesium", new HeatSinkValues(110, "One Moderator and one Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(120, "Two FuelCells"));
-            HeatSinks.Add("Aluminum", new HeatSinkValues(135, "One Copper heatsink and one Tin heatsink"));
-            HeatSinks.Add("Silver", new HeatSinkValues(130, "One Glowstone heatsink and one Lapis heatsink"));
+            HeatSinks.Add("Aluminum", new HeatSinkValues(140, "One Copper heatsink and one Tin heatsink"));
+            HeatSinks.Add("Silver", new HeatSinkValues(135, "One Glowstone heatsink and one Lapis heatsink"));
             HeatSinks.Add("Helium", new HeatSinkValues(165, "Exactly two Redstone heatsinks and at least one Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(155, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(160, "One Moderator and two Reflectors"));

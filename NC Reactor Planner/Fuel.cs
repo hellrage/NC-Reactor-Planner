@@ -27,7 +27,7 @@ namespace NC_Reactor_Planner
 
         public override string ToString()
         {
-            return string.Format("{0}/ {1}/ {2}/ {3}", Name, BaseEfficiency, BaseHeat, CriticalityFactor);
+            return string.Format("{0}{1}{2}{3}", Name.PadRight(14), BaseEfficiency.ToString().PadRight(6), BaseHeat.ToString().PadRight(5), CriticalityFactor.ToString().PadRight(4));
         }
 
         public void ReloadValuesFromConfig()
