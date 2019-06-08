@@ -426,7 +426,7 @@ namespace NC_Reactor_Planner
                 string report = string.Format("Planner version: {0}\r\n",Updater.ShortVersionString(saveVersion));
                 report += string.Format("Used fuel: {0} \r\nBase heat: {1}\r\nBase power: {2}\r\n\r\n", usedFuel.Name, usedFuel.BaseHeat, usedFuel.BasePower);
                 report += GetStatString();
-                gr.DrawString(report, new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+                gr.DrawString(report, new Font(FontFamily.GenericMonospace, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             using (FileStream fs = File.OpenWrite(fileName))
             {
