@@ -149,3 +149,5 @@
 
 08.06.19 v1.2.20
 	Reworked moderators: no longer add heat when invalid, added highlighting for different states and respective tooltips.
+	Changed fonts&formatting of stats to fit large numbers better.
+	Fuel selector now saves the selected fuel between layouts.

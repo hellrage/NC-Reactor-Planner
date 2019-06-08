@@ -153,25 +153,25 @@ namespace NC_Reactor_Planner
             if (LoadedSaveFile == null && !loading)
             {
                 Reactor.InitializeReactor((int)reactorWidth.Value, (int)reactorHeight.Value, (int)reactorLength.Value);
+                if (fuelSelector.SelectedIndex == -1)
+                {
+                    fuelSelector.SelectedItem = fuelSelector.Items[0];
+                }
+                Reactor.usedFuel = (Fuel)fuelSelector.SelectedItem;
             }
             else
             {
                 reactorWidth.Value = (int)Reactor.interiorDims.X;
                 reactorHeight.Value = (int)Reactor.interiorDims.Y;
                 reactorLength.Value = (int)Reactor.interiorDims.Z;
-                fuelSelector.SelectedItem = Reactor.usedFuel;
                 Reactor.ConstructLayers();
             }
 
             UpdateWindowTitle();
-            if (fuelSelector.SelectedIndex == -1)
-            {
-                fuelSelector.SelectedItem = fuelSelector.Items[0];
-                Reactor.usedFuel = (Fuel)fuelSelector.SelectedItem;
-            }
+
             Reactor.UpdateStats();
 
-
+            RefreshStats();
 
             if (drawAllLayers)
             {

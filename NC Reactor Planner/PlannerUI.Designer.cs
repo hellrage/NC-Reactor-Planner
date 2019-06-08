@@ -376,7 +376,7 @@
             this.fuelSelector.Name = "fuelSelector";
             this.fuelSelector.Size = new System.Drawing.Size(237, 21);
             this.fuelSelector.TabIndex = 6;
-            this.fuelSelector.SelectedIndexChanged += new System.EventHandler(this.fuelSelector_SelectedIndexChanged);
+            this.fuelSelector.SelectionChangeCommitted += new System.EventHandler(this.fuelSelector_SelectedIndexChanged);
             // 
             // stats
             // 
@@ -384,6 +384,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.stats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.stats.Font = new System.Drawing.Font("Consolas", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.stats.Location = new System.Drawing.Point(7, 425);
             this.stats.MaximumSize = new System.Drawing.Size(325, 607);
             this.stats.MinimumSize = new System.Drawing.Size(325, 100);

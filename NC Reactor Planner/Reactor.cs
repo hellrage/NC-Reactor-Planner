@@ -263,7 +263,7 @@ namespace NC_Reactor_Planner
                 report += "Passive coolers:\r\n";
                 foreach (KeyValuePair<string, List<Cooler>> coolerType in passiveCoolers)
                 {
-                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", coolerType.Key, passiveCoolers[coolerType.Key].Count, "*  " + (coolerType.Value)[0].Cooling, (int)totalPassiveCoolingPerType[coolerType.Key] + " HU/t");
+                    report += string.Format("{0}{1}{2}{3}\r\n", coolerType.Key.PadRight(12), passiveCoolers[coolerType.Key].Count.ToString().PadRight(5), " * " + (coolerType.Value)[0].Cooling.ToString().PadRight(8), (int)totalPassiveCoolingPerType[coolerType.Key] + " HU/t");
                 }
             }
 
@@ -273,7 +273,7 @@ namespace NC_Reactor_Planner
                 report += "Active coolers:\r\n";
                 foreach (KeyValuePair<string, List<Cooler>> coolerType in activeCoolers)
                 {
-                    report += string.Format("{0,-15}\t{1,-10}\t{2,5}\t\t{3}\r\n", coolerType.Key, activeCoolers[coolerType.Key].Count, "*  " + (coolerType.Value)[0].Cooling, (int)totalActiveCoolingPerType[coolerType.Key] + " HU/t");
+                    report += string.Format("{0}{1}{2}{3}\r\n", coolerType.Key.PadRight(12), activeCoolers[coolerType.Key].Count.ToString().PadRight(5), " * " + (coolerType.Value)[0].Cooling.ToString().PadRight(8), (int)totalActiveCoolingPerType[coolerType.Key] + " HU/t");
                 }
             }
 
@@ -285,37 +285,37 @@ namespace NC_Reactor_Planner
                 {
                     if (kvp.Value.Count == 0)
                         continue;
-                    report += string.Format("{0,-15}\t{1,-10}\r\n", kvp.Key, kvp.Value.Count);
+                    report += string.Format("{0}{1}\r\n", kvp.Key.PadRight(12), kvp.Value.Count.ToString().PadRight(5));
                 }
             }
 
             report += "\r\n";
-            report += string.Format("{0,-15}\t{1,-10}\r\n", "Fuel cells", fuelCells.Count);
+            report += string.Format("{0}{1}\r\n", "Fuel cells".PadRight(12), fuelCells.Count.ToString().PadRight(5));
 
             report += "\r\n";
             //report += "Heat:\r\n";
             int heatDiff = (int)(totalHeatPerTick - totalCoolingPerTick);
             int reactorVolume = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
             int blockHeatCapacity = 25000;
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat gen.", (int)totalHeatPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Cooling", (int)totalCoolingPerTick + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat diff.", heatDiff + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Max base heat", Math.Round(maxBaseHeat,2) + " HU/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Fuel pellet dur.", Math.Round(fuelDuration/20,2) + " s");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Meltdown time", (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
+            report += string.Format("{0}{1,-10}\r\n", "Heat gen.".PadRight(20), (int)totalHeatPerTick + " HU/t");
+            report += string.Format("{0}{1}\r\n", "Cooling".PadRight(20), (int)totalCoolingPerTick + " HU/t");
+            report += string.Format("{0}{1}\r\n", "Heat diff.".PadRight(20), heatDiff + " HU/t");
+            report += string.Format("{0}{1}\r\n", "Max base heat".PadRight(20), Math.Round(maxBaseHeat,2) + " HU/t");
+            report += string.Format("{0}{1}\r\n", "Fuel pellet dur.".PadRight(20), Math.Round(fuelDuration/20,2) + " s");
+            report += string.Format("{0}{1}\r\n", "Meltdown time".PadRight(20), (heatDiff <= 0) ? "Safe" : ((reactorVolume * blockHeatCapacity) / (20 * heatDiff)).ToString() + " s");
 
             report += "\r\n";
             //report += "Energy:\r\n";
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy gen.", (int)totalEnergyPerTick + " RF/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Effective E. gen.", ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Efficiency", (int)efficiency + " %");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Energy per pellet",(int)totalEnergyPerTick*fuelDuration + " RF");
-            report += string.Format("{0,-15}\t\t\t\t{1,-10}\r\n", "Heat mult.", (int)heatMulti + " %");
+            report += string.Format("{0}{1}\r\n", "Energy gen.".PadRight(20), (int)totalEnergyPerTick + " RF/t");
+            report += string.Format("{0}{1}\r\n", "Effective E. gen.".PadRight(20), ((heatDiff <= 0) ? ((int)totalEnergyPerTick).ToString() : ((int)((totalEnergyPerTick * -totalCoolingPerTick)/(-totalCoolingPerTick - heatDiff))).ToString()) + " RF/t");
+            report += string.Format("{0}{1}\r\n", "Efficiency".PadRight(20), (int)efficiency + " %");
+            report += string.Format("{0}{1}\r\n", "Energy per pellet".PadRight(20),(int)totalEnergyPerTick*fuelDuration + " RF");
+            report += string.Format("{0}{1}\r\n", "Heat mult.".PadRight(20), (int)heatMulti + " %");
 
             report += "\r\n";
             //report += "Misc:\r\n";
 
-            report += string.Format("{0,-15}\t{1,-10}\r\n", "Casings", totalCasings);
+            report += string.Format("{0}{1}\r\n", "Casings".PadRight(15), totalCasings);
             return report;
         }
 
