@@ -94,19 +94,31 @@ namespace NC_Reactor_Planner
 
             for (int i = 1; i <= Configuration.Fission.NeutronReach; i++)
             {
-                for (int j = 1; j <= i; j++)
+                pos = Position + offset * i;
+                if ((Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
+                    & (pos.X > 0 & pos.Y > 0 & pos.Z > 0))
                 {
-                    pos = Position + offset * j;
-                    if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
-                        if (pos.X > 0 & pos.Y > 0 & pos.Z > 0)
-                            if (!(Reactor.BlockAt(pos) is Moderator))
-                                return 0;
-                    pos = Position + offset * (j + 1);
-                    if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
-                        if (pos.X > 0 & pos.Y > 0 & pos.Z > 0)
-                            if ((Reactor.BlockAt(pos) is FuelCell))
-                                return 1;
+                    if (!(Reactor.BlockAt(pos) is Moderator))
+                        return 0;
                 }
+                else
+                    return 0;
+                pos = Position + offset * (i + 1);
+                if ((Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z)
+                    & (pos.X > 0 & pos.Y > 0 & pos.Z > 0))
+                {
+                    if ((Reactor.BlockAt(pos) is FuelCell))
+                    {
+                        for (int r = i; r > 0; r--)
+                        {
+                            pos = Position + offset * r;
+                            ((Moderator)Reactor.BlockAt(pos)).Validate();
+                        }
+                        return 1;
+                    }
+                }
+                else
+                    return 0;
             }
             return 0;
         }
@@ -127,8 +139,12 @@ namespace NC_Reactor_Planner
             int adjModerators = 0;
             foreach (Vector3D o in Reactor.sixAdjOffsets)
             {
-                if (Reactor.BlockAt(Position + o) is Moderator)
+                if (Reactor.BlockAt(Position + o) is Moderator moderator)
+                {
                     adjModerators++;
+                    moderator.Validate();
+                    moderator.Active = true;
+                }
             }
             return adjModerators;
         }

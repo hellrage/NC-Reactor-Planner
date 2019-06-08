@@ -146,3 +146,6 @@
 07.05.19 v1.2.19
 	Fixed active coolers counting as dependencies.
 	Instead of .schematic there is now an option to export the reactor as a vanilla structure.
+
+08.06.19 v1.2.20
+	Reworked moderators: no longer add heat when invalid, added highlighting for different states and respective tooltips.

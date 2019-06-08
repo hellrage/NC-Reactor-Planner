@@ -8,6 +8,7 @@ namespace NC_Reactor_Planner
     public class Moderator : Block
     {
         public override bool Valid { get; protected set; }
+        public bool Active { get; set; }
         public double HeatGenerationPerTick { get; private set; }
         public ModeratorTypes ModeratorType { get; private set; }
 
@@ -23,30 +24,14 @@ namespace NC_Reactor_Planner
             ModeratorType = parent.ModeratorType;
         }
 
-        public void UpdateStats()
+        public void Validate()
         {
-            if (FindAdjacentFuelCells() == 0)
-            {
-                HeatGenerationPerTick = Reactor.usedFuel.BaseHeat * Configuration.Fission.HeatGeneration;
-                Reactor.totalHeatPerTick += HeatGenerationPerTick;
-                Valid = false;
-            }
-            else
-            {
-                HeatGenerationPerTick = 0;
-                Valid = true;
-            }
+            Valid = true;
         }
 
-        public int FindAdjacentFuelCells()
+        public void Invalidate()
         {
-            int adjCells = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
-            {
-                if (Reactor.BlockAt(Position + o) is FuelCell)
-                    adjCells++;
-            }
-            return adjCells;
+            Valid = false;
         }
 
         public override string GetToolTip()
@@ -54,8 +39,13 @@ namespace NC_Reactor_Planner
             string toolTip = DisplayName + " moderator\r\n";
             if (Position != Palette.dummyPosition)
             {
-                if (!Valid)
-                    toolTip += "INACTIVE!!!";
+                if (Active)
+                    toolTip += "Active, can support coolers!";
+                else if (Valid)
+                    toolTip += "Inactive, cannot support coolers!";
+                else
+                    toolTip += "Invalid! No adjacent cells or\r\n" +
+                        "in an invalid line";
             }
             return toolTip;
         }

@@ -182,7 +182,6 @@ namespace NC_Reactor_Planner
                 else if (block is FuelCell fuelcell)
                 {
                     fuelCells.Add(fuelcell);
-                    (fuelcell).UpdateStats();
                 }
                 else if (block is Moderator moderator)
                 {
@@ -190,9 +189,18 @@ namespace NC_Reactor_Planner
                         moderators[moderator.ModeratorType.ToString()].Add(moderator);
                     else
                         moderators.Add(moderator.ModeratorType.ToString(), new List<Moderator> { moderator });
-                    moderator.UpdateStats();
                 }
             }
+
+            foreach (var moderatorGroup in moderators)
+                foreach (Moderator moderator in moderatorGroup.Value)
+                {
+                    moderator.Active = false;
+                    moderator.Invalidate();
+                }
+            
+            foreach (FuelCell fuelcell in fuelCells)
+                fuelcell.UpdateStats();
 
             OrderedUpdateCoolerStats();
 
