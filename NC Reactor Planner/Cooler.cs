@@ -155,7 +155,7 @@ namespace NC_Reactor_Planner
                 if (adjacent >= number)
                     while (placementErrors.Remove("Too few " + ((nt == BlockTypes.Cooler) ? ((Cooler)needed).CoolerType.ToString() : nt.ToString())));
 
-                if (block.Valid)
+                if ((block.Valid && !(block is Moderator)) || (block is Moderator moderator && moderator.Active))
                 {
                     activeAdjacent++;
                     if (activeAdjacent > number & exact)
