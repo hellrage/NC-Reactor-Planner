@@ -10,7 +10,7 @@ namespace NC_Reactor_Planner
 {
     public partial class PlannerUI : Form
     {
-        public static readonly List<HeatSinkTypes> OverlayedTypes = new List<HeatSinkTypes> { HeatSinkTypes.Silver, HeatSinkTypes.Iron, HeatSinkTypes.Lithium };
+        public static readonly List<HeatSinkTypes> OverlayedTypes = new List<HeatSinkTypes> { HeatSinkTypes.Silver, HeatSinkTypes.Iron, HeatSinkTypes.Lithium, HeatSinkTypes.Tin };
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
         public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }

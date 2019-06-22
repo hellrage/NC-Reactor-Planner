@@ -208,10 +208,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Air.png" />
+    <None Include="Resources\Villiaumite.png" />
+    <None Include="Resources\TCAlloy.png" />
+    <None Include="Resources\Slime.png" />
     <None Include="Resources\Aluminum.png" />
+    <None Include="Resources\Arsenic.png" />
+    <None Include="Resources\Carobbiite.png" />
+    <None Include="Resources\EndStone.png" />
+    <None Include="Resources\Fluorite.png" />
     <Content Include="Resources\HeavyWater.png" />
     <Content Include="Resources\Lithium.png" />
     <Content Include="Resources\Manganese.png" />
+    <None Include="Resources\NetherBrick.png" />
     <Content Include="Resources\Purpur.png" />
     <Content Include="Resources\Reflector.png" />
     <Content Include="Resources\Silver.png" />

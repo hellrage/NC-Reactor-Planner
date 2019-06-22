@@ -43,7 +43,7 @@ namespace NC_Reactor_Planner
         public static List<Reflector> reflectors;
         public static int totalCasings;
 
-        public static List<string> updateOrder = new List<string> { "Water", "Iron", "Redstone", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Magnesium", "Manganese", "Quartz", "Obsidian", "Gold", "Prismarine", "Copper", "Tin", "Lead", "Silver", "Helium", "Purpur", "Diamond", "Emerald", "Boron", "Lithium", "Aluminum"};
+        public static List<string> updateOrder = new List<string> { "Water", "Slime", "EndStone", "Arsenic", "TCAlloy", "Iron", "Redstone", "Villiaumite", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Magnesium", "Manganese", "Quartz", "Carobbiite", "Obsidian", "NetherBrick", "Gold", "Prismarine", "Fluorite", "Copper", "Tin", "Lead", "Silver", "Helium", "Purpur", "Diamond", "Emerald", "Boron", "Lithium", "Aluminum"};
 
         public static readonly List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
 
@@ -157,6 +157,8 @@ namespace NC_Reactor_Planner
             foreach (Reflector reflector in reflectors)
                 reflector.RevertToSetup();
 
+            FormConductorGroups();
+
             RunFuelCellActivation();
             foreach (FuelCell fuelCell in fuelCells)
                 fuelCell.FilterAdjacentStuff();
@@ -171,7 +173,6 @@ namespace NC_Reactor_Planner
 
             OrderedUpdateHeatSinks();
 
-            FormConductorGroups();
 
             FormClusters();
             foreach (Cluster cluster in clusters)

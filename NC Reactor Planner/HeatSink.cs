@@ -99,7 +99,7 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Enderium:
                     return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 3);
                 case HeatSinkTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(Palette.BlockPalette["Reflector"], 2);
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 3);
                 case HeatSinkTypes.Iron:
                     return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]);
                 case HeatSinkTypes.Emerald:
@@ -127,7 +127,23 @@ namespace NC_Reactor_Planner
                 case HeatSinkTypes.Silver:
                     return Valid = HasAdjacent(Palette.BlockPalette["Glowstone"]) & HasAdjacent(Palette.BlockPalette["Lapis"]);
                 case HeatSinkTypes.Purpur:
+                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"], 1, true) & HasAdjacent(Palette.BlockPalette["EndStone"]);
+                case HeatSinkTypes.Arsenic:
+                    return Valid = HasAxial(Palette.BlockPalette["Reflector"]);
+                case HeatSinkTypes.Carobbiite:
+                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"]) & HasAdjacent(Palette.BlockPalette["Enderium"]);
+                case HeatSinkTypes.Villiaumite:
+                    return Valid = HasAdjacent(Palette.BlockPalette["Reflector"]) & HasAdjacent(Palette.BlockPalette["Redstone"]);
+                case HeatSinkTypes.Slime:
+                    return Valid = HasAdjacent(Palette.BlockPalette["Reflector"]) & HasAdjacent(Palette.BlockPalette["Water"],1 ,true);
+                case HeatSinkTypes.Fluorite:
+                    return Valid = HasAdjacent(Palette.BlockPalette["Gold"]) & HasAdjacent(Palette.BlockPalette["Prismarine"]);
+                case HeatSinkTypes.TCAlloy:
+                    return Valid = HasVertex(new List<Block>() { Palette.BlockPalette["FuelCell"], Palette.BlockPalette["Reflector"], Palette.BlockPalette["Graphite"] });
+                case HeatSinkTypes.NetherBrick:
                     return Valid = HasAdjacent(Palette.BlockPalette["Obsidian"]);
+                case HeatSinkTypes.EndStone:
+                    return Valid = HasAdjacent(Palette.BlockPalette["Reflector"]);
                 default:
                     throw new ArgumentException("Unexpected HeatSink type");
             }
@@ -224,29 +240,75 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        private bool CheckEnderium()
+        private bool HasVertex(List<Block> needed)
         {
-            double x = Position.X;
-            double y = Position.Y;
-            double z = Position.Z;
+            if (needed.Count != 3)
+                throw new ArgumentException("Vertex rules need exactly 3 blocks specified");
 
-            if (y != 1 & y != Reactor.interiorDims.Y)
+            List<List<Vector3D>> eligible = new List<List<Vector3D>>();
+            for (int i = 0; i < 3; i++)
+                eligible.Add(new List<Vector3D>());
+
+            void ProcessNeighbour(Vector3D offset)
             {
-                placementErrors.Add("Not in a corner!");
-                return false;
+                Block nbr = Reactor.BlockAt(Position + offset);
+                for (int i = 0; i < 3; i++)
+                {
+                    if (needed[i].BlockType == nbr.BlockType)
+                    {
+                        if (nbr is HeatSink nbrhs)
+                        {
+                            HeatSink neededhs = needed[i] as HeatSink;
+                            if (neededhs.HeatSinkType == nbrhs.HeatSinkType)
+                            {
+                                while (placementErrors.Remove("No " + needed[i].DisplayName)) ;
+                                if (nbrhs.Valid)
+                                {
+                                    while (placementErrors.Remove("Invalid " + needed[i].DisplayName)) ;
+                                    eligible[i].Add(offset);
+                                }
+                            }
+                            else
+                                placementErrors.Add("No " + needed[i].DisplayName);
+                        }
+                        else
+                        {
+                            while (placementErrors.Remove("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName))) ;
+                            if (nbr.Valid)
+                            {
+                                while (placementErrors.Remove("Invalid " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName))) ;
+                                eligible[i].Add(offset);
+                            }
+                            else
+                                placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
+                        }
+                    }
+                    else
+                    {
+                        placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
+                    }
+                }
             }
 
-            if(Reactor.interiorDims.Y == 1)
-            {
-                placementErrors.Add("Pancake reactor, Enderium won't work here!");
+            foreach (var offset in Reactor.sixAdjOffsets)
+                ProcessNeighbour(offset);
+
+            if (eligible[0].Count == 0 || eligible[1].Count == 0 || eligible[2].Count == 0)
                 return false;
+
+            foreach (Vector3D a in eligible[0])
+            {
+                foreach (Vector3D b in eligible[1])
+                {
+                    foreach (Vector3D c in eligible[2])
+                    {
+                        if (Vector3D.DotProduct(Vector3D.CrossProduct(a, b), c) != 0)
+                            return true;
+                    }
+                }
             }
 
-            if ((x == 1 & z == 1) || (x == 1 & z == Reactor.interiorDims.Z) || (x == Reactor.interiorDims.X & z == 1) || (x == Reactor.interiorDims.X & z == Reactor.interiorDims.Z))
-                return true;
-            else
-                placementErrors.Add("Not in a corner!");
-
+            placementErrors.Add("Required blocks aren't at a single vertex!");
             return false;
         }
 
@@ -259,29 +321,37 @@ namespace NC_Reactor_Planner
     public enum HeatSinkTypes
     {
         Water,
+        Iron,
         Redstone,
         Quartz,
-        Gold,
+        Obsidian,
+        NetherBrick,
         Glowstone,
         Lapis,
+        Gold,
+        Prismarine,
+        Slime,
+        EndStone,
+        Purpur,
         Diamond,
-        Helium,
-        Enderium,
-        Cryotheum,
-        Iron,
         Emerald,
         Copper,
         Tin,
-        Magnesium,
-        Obsidian,
-        Prismarine,
-        Boron,
         Lead,
-        Purpur,
+        Boron,
+        Lithium,
+        Magnesium,
         Manganese,
         Aluminum,
         Silver,
-        Lithium,
+        Fluorite,
+        Villiaumite,
+        Carobbiite,
+        Arsenic,
+        Helium,
+        TCAlloy,
+        Enderium,
+        Cryotheum,
         //NotACooler,
     }
 }
