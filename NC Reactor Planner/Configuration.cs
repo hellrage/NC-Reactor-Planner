@@ -331,8 +331,8 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Water", new HeatSinkValues(55, "One FuelCell"));
             HeatSinks.Add("Iron", new HeatSinkValues(50, "One Moderator"));
             HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell and one Moderator"));
-            HeatSinks.Add("Quartz", new HeatSinkValues(80, "One Redstone heatsink"));
-            HeatSinks.Add("Obsidian", new HeatSinkValues(75, "Two Glowstone heatsinks on the same axis"));
+            HeatSinks.Add("Quartz", new HeatSinkValues(75, "One Redstone heatsink"));
+            HeatSinks.Add("Obsidian", new HeatSinkValues(70, "Two Glowstone heatsinks on the same axis"));
             HeatSinks.Add("Glowstone", new HeatSinkValues(115, "Two Moderators"));
             HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell and one Casing"));
             HeatSinks.Add("Gold", new HeatSinkValues(100, "Two Iron heatsinks"));
@@ -340,10 +340,10 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Purpur", new HeatSinkValues(90, "Exactly one Iron heatsink and at least one EndStone heatsink"));
             HeatSinks.Add("Diamond", new HeatSinkValues(180, "One Gold and one FuelCell"));
             HeatSinks.Add("Emerald", new HeatSinkValues(190, "One Prismarine heatsink and one Moderator"));
-            HeatSinks.Add("Copper", new HeatSinkValues(70, "One Water heatsink"));
+            HeatSinks.Add("Copper", new HeatSinkValues(80, "One Water heatsink"));
             HeatSinks.Add("Tin", new HeatSinkValues(120, "Two Lapis heatsinks on the same axis"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
-            HeatSinks.Add("Boron", new HeatSinkValues(160, "Exactly one Quartz heatsink and at least one Casing"));
+            HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly one Quartz heatsink and at least one Casing"));
             HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exactly one Lead heatsink and at least one Casing"));
             HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator and one Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
