@@ -328,8 +328,8 @@ namespace NC_Reactor_Planner
         private static void SetDefaultHeatSinks()
         {
             HeatSinks = new Dictionary<string, HeatSinkValues>();
-            HeatSinks.Add("Water", new HeatSinkValues(55, "One FuelCell"));
-            HeatSinks.Add("Iron", new HeatSinkValues(50, "One Moderator"));
+            HeatSinks.Add("Water", new HeatSinkValues(50, "One FuelCell"));
+            HeatSinks.Add("Iron", new HeatSinkValues(55, "One Moderator"));
             HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell and one Moderator"));
             HeatSinks.Add("Quartz", new HeatSinkValues(75, "One Redstone heatsink"));
             HeatSinks.Add("Obsidian", new HeatSinkValues(70, "Two Glowstone heatsinks on the same axis"));
@@ -347,12 +347,12 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exactly one Lead heatsink and at least one Casing"));
             HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator and one Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
-            HeatSinks.Add("Aluminum", new HeatSinkValues(170, "One Copper heatsink and one Tin heatsink"));
-            HeatSinks.Add("Silver", new HeatSinkValues(175, "One Glowstone heatsink and one Lapis heatsink"));
+            HeatSinks.Add("Aluminum", new HeatSinkValues(175, "One Quartz heatsink and one Tin heatsink"));
+            HeatSinks.Add("Silver", new HeatSinkValues(170, "One Glowstone heatsink and one Lapis heatsink"));
             HeatSinks.Add("Helium", new HeatSinkValues(195, "Exactly two Redstone heatsinks and at least one Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(185, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(200, "Three FuelCells"));
-            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Quartz heatsink and one EndStone heatsink"));
+            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink and one EndStone heatsink"));
             HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink and one Prismarine heatsink"));
             HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector and one Redstone"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Two Reflectors on the same axis"));

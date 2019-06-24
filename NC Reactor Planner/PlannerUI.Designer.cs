@@ -386,9 +386,11 @@
             // fuelSelector
             // 
             this.fuelSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.fuelSelector.DropDownHeight = 500;
             this.fuelSelector.Enabled = false;
             this.fuelSelector.Font = new System.Drawing.Font("Consolas", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.fuelSelector.FormattingEnabled = true;
+            this.fuelSelector.IntegralHeight = false;
             this.fuelSelector.Location = new System.Drawing.Point(376, 688);
             this.fuelSelector.Name = "fuelSelector";
             this.fuelSelector.Size = new System.Drawing.Size(237, 23);
