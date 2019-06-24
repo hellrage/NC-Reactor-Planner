@@ -352,7 +352,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Helium", new HeatSinkValues(195, "Exactly two Redstone heatsinks and at least one Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(185, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(200, "Three FuelCells"));
-            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Quartz heatsink and one Enderium heatsink"));
+            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Quartz heatsink and one EndStone heatsink"));
             HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink and one Prismarine heatsink"));
             HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector and one Redstone"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Two Reflectors on the same axis"));
