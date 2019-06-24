@@ -588,7 +588,9 @@ namespace NC_Reactor_Planner
                                     GraphicsUnit.Pixel);
                     layerImage.Dispose();
                 }
-                gr.DrawString(GetStatString(includeClusterInfo), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
+
+                string report = string.Format("Planner version: {0}\r\n", Updater.ShortVersionString(saveVersion));
+                gr.DrawString(report + GetStatString(includeClusterInfo), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             using (FileStream fs = File.OpenWrite(fileName))
             {
