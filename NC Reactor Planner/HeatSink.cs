@@ -159,44 +159,58 @@ namespace NC_Reactor_Planner
                 BlockTypes bt = block.BlockType;
                 BlockTypes nt = needed.BlockType;
 
-                //If checked block doesn't match at all: log errors
+                //If checked block doesn't match at all
                 //Either heatsink types are mismatched or the blocktype is mismatched
-                if (((bt == BlockTypes.HeatSink & nt == BlockTypes.HeatSink) && ((HeatSink)block).HeatSinkType != ((HeatSink)needed).HeatSinkType) | bt != nt)
+                if (((bt == BlockTypes.HeatSink & nt == BlockTypes.HeatSink) && ((HeatSink)block).HeatSinkType != ((HeatSink)needed).HeatSinkType) || bt != nt)
                 {
-                    if (adjacent == 0)
-                        placementErrors.Add("No " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
-                    else if (adjacent < number)
-                        placementErrors.Add("Too few " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
-
                     continue;
                 }
 
                 adjacent++;
-                while (placementErrors.Remove("No " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString())));
-
-                if (adjacent >= number)
-                    while (placementErrors.Remove("Too few " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString())));
 
                 if (block.Valid)
                 {
-                    activeAdjacent++;
-                    if (activeAdjacent > number & exact)
-                        placementErrors.Add("Too many " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
+                    if (exact)
+                    {
+                        if (++activeAdjacent > number)
+                            break;
+                    }
+                    else
+                    {
+                        if (++activeAdjacent >= number)
+                            break;
+                    }
                 }
-                else
-                    placementErrors.Add("Inactive " + ((nt == BlockTypes.HeatSink) ? ((HeatSink)needed).HeatSinkType.ToString() : nt.ToString()));
             }
 
-            if (exact)
-                return activeAdjacent == number;
-            else
-                return activeAdjacent >= number;
+            if ((activeAdjacent > number) && exact)
+            {
+                placementErrors.Add("Too many " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                return false;
+            }
+
+            if (adjacent == 0)
+            {
+                placementErrors.Add("No " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                return false;
+            }
+
+            if(activeAdjacent < number)
+            {
+                if (adjacent < number)
+                    placementErrors.Add("Too few " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderators" : needed.DisplayName + "s"));
+                else
+                    placementErrors.Add("Invalid " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                return false;
+            }
+
+            return true;
         }
 
         private bool HasAxial(Block needed)
         {
-            bool hasAxial = false;
             BlockTypes bn = needed.BlockType;
+            byte status = 0; //0:none, 1: invalid, 2: valid
 
             for (int i = 0; i < 3; i++)
             {
@@ -205,39 +219,46 @@ namespace NC_Reactor_Planner
                 Block block2 = Reactor.BlockAt(Position + Reactor.sixAdjOffsets[2 * i + 1]);
                 BlockTypes bt2 = block2.BlockType;
 
-                if (bt1 == bn)
+                if (bt1 == bn && bt2 == bn)
                 {
-                    if (bt2 == bn)
+                    if ((needed is HeatSink hs && (((HeatSink)block1).HeatSinkType == ((HeatSink)block2).HeatSinkType)))
                     {
-                        if ((needed is HeatSink hs && (((HeatSink)block1).HeatSinkType == ((HeatSink)block2).HeatSinkType)))
-                            if (((HeatSink)block1).HeatSinkType == hs.HeatSinkType)
+                        if (((HeatSink)block1).HeatSinkType == hs.HeatSinkType)
+                        {
+                            status = 1;
+                            if(block1.Valid && block2.Valid)
                             {
-                                while (placementErrors.Remove("No axial " + needed.DisplayName)) ;
-                                hasAxial = true;
-                                if (block1.Valid)
-                                    if (block2.Valid)
-                                    {
-                                        while (placementErrors.Remove("No axial " + needed.DisplayName)) ;
-                                        return true;
-                                    }
-                                    else placementErrors.Add("Inactive " + needed.DisplayName);
-                                else placementErrors.Add("Inactive " + needed.DisplayName);
+                                status = 2;
+                                break;
                             }
+                        }
                     }
                     else
                     {
-                        placementErrors.Add("No axial " + needed.DisplayName);
-                        continue;
+                        status = 1;
+                        if (block1.Valid && block2.Valid)
+                        {
+                            status = 2;
+                            break;
+                        }
                     }
                 }
-                else
-                {
-                    if (!hasAxial)
-                        placementErrors.Add("No axial " + needed.DisplayName);
-                    continue;
-                }
             }
-            return false;
+
+            switch (status)
+            {
+                case 0:
+                    placementErrors.Add("No axial " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderators" : needed.DisplayName + "s"));
+                    return false;
+                case 1:
+                    placementErrors.Add("Invalid " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                    return false;
+                case 2:
+                    return true;
+                default:
+                    placementErrors.Add("Unknown status!");
+                    return false;
+            }
         }
 
         private bool HasVertex(List<Block> needed)
@@ -249,7 +270,27 @@ namespace NC_Reactor_Planner
             for (int i = 0; i < 3; i++)
                 eligible.Add(new List<Vector3D>());
 
-            void ProcessNeighbour(Vector3D offset)
+            byte[] status = new byte[3] { 0, 0, 0 };//first, second, third needed block - 0:none, 1:inactive, 2:valid
+
+            void ProcessStatus()
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    switch (status[i])
+                    {
+                        case 0:
+                            placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
+                            break;
+                        case 1:
+                            placementErrors.Add("Invalid " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            foreach (var offset in Reactor.sixAdjOffsets)
             {
                 Block nbr = Reactor.BlockAt(Position + offset);
                 for (int i = 0; i < 3; i++)
@@ -261,40 +302,32 @@ namespace NC_Reactor_Planner
                             HeatSink neededhs = needed[i] as HeatSink;
                             if (neededhs.HeatSinkType == nbrhs.HeatSinkType)
                             {
-                                while (placementErrors.Remove("No " + needed[i].DisplayName)) ;
+                                status[i] = 1;
                                 if (nbrhs.Valid)
                                 {
-                                    while (placementErrors.Remove("Invalid " + needed[i].DisplayName)) ;
+                                    status[i] = 2;
                                     eligible[i].Add(offset);
                                 }
                             }
-                            else
-                                placementErrors.Add("No " + needed[i].DisplayName);
                         }
                         else
                         {
-                            while (placementErrors.Remove("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName))) ;
+                            status[i] = 1;
                             if (nbr.Valid)
                             {
-                                while (placementErrors.Remove("Invalid " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName))) ;
+                                status[i] = 2;
                                 eligible[i].Add(offset);
                             }
-                            else
-                                placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
                         }
-                    }
-                    else
-                    {
-                        placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
                     }
                 }
             }
 
-            foreach (var offset in Reactor.sixAdjOffsets)
-                ProcessNeighbour(offset);
-
             if (eligible[0].Count == 0 || eligible[1].Count == 0 || eligible[2].Count == 0)
+            {
+                ProcessStatus();
                 return false;
+            }
 
             foreach (Vector3D a in eligible[0])
             {
@@ -303,7 +336,10 @@ namespace NC_Reactor_Planner
                     foreach (Vector3D c in eligible[2])
                     {
                         if (Vector3D.DotProduct(Vector3D.CrossProduct(a, b), c) != 0)
+                        {
+                            ProcessStatus();
                             return true;
+                        }
                     }
                 }
             }

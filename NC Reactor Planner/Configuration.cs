@@ -183,13 +183,6 @@ namespace NC_Reactor_Planner
                 return false;
             }
 
-            if(cf.saveVersion <= new Version(1,2,3))
-            {
-                var fuelvalue = cf.Fuels["HELP-239  Oxide"];
-                cf.Fuels.Remove("HELP-239  Oxide");
-                cf.Fuels.Add("HEP-239 Oxide", fuelvalue);
-            }
-
             Fission = cf.Fission;
             ResourceCosts = cf.ResourceCosts;
             if (ResourceCosts.CasingCosts == null)

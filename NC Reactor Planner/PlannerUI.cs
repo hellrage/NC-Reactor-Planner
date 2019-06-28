@@ -571,6 +571,9 @@ namespace NC_Reactor_Planner
 
         private void PlannerUI_Resize(object sender, EventArgs e)
         {
+            if (Reactor.layers == null)
+                return;
+
             if (drawAllLayers)
             {
                 foreach (ReactorGridLayer layer in Reactor.layers)

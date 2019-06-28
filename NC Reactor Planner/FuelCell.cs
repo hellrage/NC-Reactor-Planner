@@ -59,7 +59,7 @@ namespace NC_Reactor_Planner
 #endif
                 return string.Format("{0}" +
                                     ((Cluster!=-1)?
-                                    (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n"):"") +
+                                    (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection"):"") +
                                     " Fuel: {5}\r\n" +
                                     (Active ? " Active\r\n" : "--Inactive!\r\n") +
                                     " Adjacent cells: {1}\r\n" +
