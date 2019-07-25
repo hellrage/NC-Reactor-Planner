@@ -24,7 +24,7 @@ namespace NC_Reactor_Planner
                 switch (args[0])
                 {
                     case "-finalizeupdate":
-                        AfterUpdate(args[1], args[2]);
+                        AfterUpdate(args[2], args[1]);
                         Application.Run(Reactor.UI);
                         break;
                     case "-batch":
