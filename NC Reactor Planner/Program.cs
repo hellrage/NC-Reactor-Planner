@@ -33,7 +33,10 @@ namespace NC_Reactor_Planner
                         break;
                     default:
                         if (File.Exists(args[0]))
+                        {
                             AfterUpdate(args[1], args[0]);
+                            Application.Run(Reactor.UI);
+                        }
                         break;
                 }
             }
