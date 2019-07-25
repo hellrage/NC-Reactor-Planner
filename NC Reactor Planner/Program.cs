@@ -51,16 +51,15 @@ namespace NC_Reactor_Planner
                     writer.Write(Resources.Newtonsoft_Json, 0, Resources.Newtonsoft_Json.Length);
                 }
             }
-            Configuration.ResetToDefaults();
-
-            Palette.Load();
 
             FileInfo defaultConfig = new FileInfo("BetaConfig.json");
             if (!defaultConfig.Exists)
+            {
+                Configuration.ResetToDefaults();
                 Configuration.Save(defaultConfig);
-            else
-                if(!Configuration.Load(defaultConfig))
-                    Configuration.ResetToDefaults();
+            }
+            else if (!Configuration.Load(defaultConfig))
+                Configuration.ResetToDefaults();
         }
 
         static void AfterUpdate(string exePath, string savePath)

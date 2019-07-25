@@ -193,6 +193,8 @@ namespace NC_Reactor_Planner
                 Moderators = cf.Moderators;
             else
                 SetDefaultModerators();
+
+            Palette.Load();
             Reactor.ReloadValuesFromConfig();
             Palette.SetHeatSinkUpdateOrder();
             Palette.PaletteControl.ResetSize();
@@ -230,6 +232,9 @@ namespace NC_Reactor_Planner
             SetDefaultFission();
 
             SetDefaultResourceCosts();
+
+            Palette.Load();
+            Palette.SetHeatSinkUpdateOrder();
         }
 
         private static void SetDefaultFuels()

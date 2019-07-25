@@ -65,8 +65,9 @@
     <ManifestKeyFile>NC Reactor Planner_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -230,6 +231,7 @@
     <Content Include="Resources\Manganese.png" />
     <None Include="Resources\NetherBrick.png" />
     <None Include="Resources\NoTexture.png" />
+    <None Include="Resources\Newtonsoft.Json.dll" />
     <Content Include="Resources\Purpur.png" />
     <Content Include="Resources\Reflector.png" />
     <Content Include="Resources\Silver.png" />
