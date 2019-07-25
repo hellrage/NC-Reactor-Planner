@@ -64,7 +64,7 @@ namespace NC_Reactor_Planner
             FileInfo tempSave = new FileInfo(updatedExe.DirectoryName + ((Reactor.UI.LoadedSaveFile != null) ? "\\" + Reactor.UI.LoadedSaveFile.Name : "\\temp.json"));
             Reactor.Save(tempSave);
             string oldFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            System.Diagnostics.Process.Start(new FileInfo(fileName).FullName, string.Format("\"{0}\" \"{1}\"",tempSave.FullName, oldFile));
+            System.Diagnostics.Process.Start(new FileInfo(fileName).FullName, string.Format("-finalizeupdate \"{0}\" \"{1}\"", tempSave.FullName, oldFile));
             Reactor.UI.Close();
             Application.Exit();
         }
@@ -125,7 +125,7 @@ namespace NC_Reactor_Planner
 
         private static string FormDLLLink(Version rV)
         {
-            return "https://github.com/hellrage/NC-Reactor-Planner/releases/download/v"+ShortVersionString(rV)+"/" + ExecutableName(rV);
+            return "https://github.com/hellrage/NC-Reactor-Planner/releases/download/v" + ShortVersionString(rV) + "/" + ExecutableName(rV);
         }
 
         public static string ShortVersionString(Version v)

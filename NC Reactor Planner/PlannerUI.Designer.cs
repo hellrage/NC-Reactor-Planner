@@ -61,10 +61,14 @@
             this.fuelCriticalityFactor = new System.Windows.Forms.TextBox();
             this.checkForUpdates = new System.Windows.Forms.Button();
             this.drawOverlay = new System.Windows.Forms.CheckBox();
+            this.discordPB = new System.Windows.Forms.PictureBox();
+            this.githubPB = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discordPB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.githubPB)).BeginInit();
             this.SuspendLayout();
             // 
             // reactorWidth
@@ -256,9 +260,9 @@
             // saveReactor
             // 
             this.saveReactor.Enabled = false;
-            this.saveReactor.Location = new System.Drawing.Point(7, 99);
+            this.saveReactor.Location = new System.Drawing.Point(7, 104);
             this.saveReactor.Name = "saveReactor";
-            this.saveReactor.Size = new System.Drawing.Size(136, 23);
+            this.saveReactor.Size = new System.Drawing.Size(136, 28);
             this.saveReactor.TabIndex = 11;
             this.saveReactor.Text = "Save Reactor";
             this.saveReactor.UseVisualStyleBackColor = true;
@@ -266,9 +270,9 @@
             // 
             // loadReactor
             // 
-            this.loadReactor.Location = new System.Drawing.Point(7, 129);
+            this.loadReactor.Location = new System.Drawing.Point(7, 138);
             this.loadReactor.Name = "loadReactor";
-            this.loadReactor.Size = new System.Drawing.Size(136, 23);
+            this.loadReactor.Size = new System.Drawing.Size(136, 28);
             this.loadReactor.TabIndex = 12;
             this.loadReactor.Text = "Load Reactor";
             this.loadReactor.UseVisualStyleBackColor = true;
@@ -304,7 +308,7 @@
             this.saveAsImage.Enabled = false;
             this.saveAsImage.Location = new System.Drawing.Point(7, 70);
             this.saveAsImage.Name = "saveAsImage";
-            this.saveAsImage.Size = new System.Drawing.Size(136, 23);
+            this.saveAsImage.Size = new System.Drawing.Size(136, 28);
             this.saveAsImage.TabIndex = 10;
             this.saveAsImage.Text = "Save PNG";
             this.saveAsImage.UseVisualStyleBackColor = true;
@@ -416,9 +420,9 @@
             // OpenConfig
             // 
             this.OpenConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.OpenConfig.Location = new System.Drawing.Point(7, 24);
+            this.OpenConfig.Location = new System.Drawing.Point(7, 16);
             this.OpenConfig.Name = "OpenConfig";
-            this.OpenConfig.Size = new System.Drawing.Size(136, 23);
+            this.OpenConfig.Size = new System.Drawing.Size(136, 28);
             this.OpenConfig.TabIndex = 25;
             this.OpenConfig.Text = "Open configuration";
             this.OpenConfig.UseVisualStyleBackColor = true;
@@ -459,7 +463,7 @@
             // 
             this.checkForUpdates.Location = new System.Drawing.Point(7, 176);
             this.checkForUpdates.Name = "checkForUpdates";
-            this.checkForUpdates.Size = new System.Drawing.Size(136, 23);
+            this.checkForUpdates.Size = new System.Drawing.Size(136, 28);
             this.checkForUpdates.TabIndex = 31;
             this.checkForUpdates.Text = "Check for Updates";
             this.checkForUpdates.UseVisualStyleBackColor = true;
@@ -468,14 +472,38 @@
             // drawOverlay
             // 
             this.drawOverlay.AutoSize = true;
-            this.drawOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.792453F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.drawOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.830189F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.drawOverlay.Location = new System.Drawing.Point(584, 12);
             this.drawOverlay.Name = "drawOverlay";
-            this.drawOverlay.Size = new System.Drawing.Size(147, 17);
+            this.drawOverlay.Size = new System.Drawing.Size(184, 21);
             this.drawOverlay.TabIndex = 32;
             this.drawOverlay.Text = "Heatsink type overlay";
             this.drawOverlay.UseVisualStyleBackColor = true;
             this.drawOverlay.CheckedChanged += new System.EventHandler(this.drawOverlay_CheckedChanged);
+            // 
+            // discordPB
+            // 
+            this.discordPB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.discordPB.Image = ((System.Drawing.Image)(resources.GetObject("discordPB.Image")));
+            this.discordPB.Location = new System.Drawing.Point(7, 210);
+            this.discordPB.Name = "discordPB";
+            this.discordPB.Size = new System.Drawing.Size(136, 36);
+            this.discordPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.discordPB.TabIndex = 33;
+            this.discordPB.TabStop = false;
+            this.discordPB.Click += new System.EventHandler(this.discordPB_Click);
+            // 
+            // githubPB
+            // 
+            this.githubPB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.githubPB.Image = global::NC_Reactor_Planner.Properties.Resources.GitHub_Logo;
+            this.githubPB.Location = new System.Drawing.Point(7, 252);
+            this.githubPB.Name = "githubPB";
+            this.githubPB.Size = new System.Drawing.Size(136, 28);
+            this.githubPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.githubPB.TabIndex = 34;
+            this.githubPB.TabStop = false;
+            this.githubPB.Click += new System.EventHandler(this.githubPB_Click);
             // 
             // PlannerUI
             // 
@@ -483,6 +511,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.githubPB);
+            this.Controls.Add(this.discordPB);
             this.Controls.Add(this.drawOverlay);
             this.Controls.Add(this.sizeLabel);
             this.Controls.Add(this.reactorWidth);
@@ -527,6 +557,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discordPB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.githubPB)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -565,6 +597,8 @@
         private System.Windows.Forms.Panel reactorGrid;
         private System.Windows.Forms.Button checkForUpdates;
         private System.Windows.Forms.CheckBox drawOverlay;
+        private System.Windows.Forms.PictureBox discordPB;
+        private System.Windows.Forms.PictureBox githubPB;
     }
 }
 

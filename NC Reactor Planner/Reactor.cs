@@ -43,8 +43,6 @@ namespace NC_Reactor_Planner
         public static List<Reflector> reflectors;
         public static int totalCasings;
 
-        public static List<string> updateOrder = new List<string> { "Water", "Slime", "EndStone", "Arsenic", "TCAlloy", "Iron", "Redstone", "Villiaumite", "Glowstone", "Lapis", "Enderium", "Cryotheum", "Magnesium", "Manganese", "Quartz", "Carobbiite", "Obsidian", "NetherBrick", "Gold", "Prismarine", "Fluorite", "Copper", "Tin", "Lead", "Silver", "Helium", "Purpur", "Diamond", "Emerald", "Boron", "Lithium", "Aluminum"};
-
         public static readonly List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
 
         public static double totalCoolingPerTick = 0;
@@ -354,7 +352,7 @@ namespace NC_Reactor_Planner
 
         private static void OrderedUpdateHeatSinks()
         {
-            foreach (string type in updateOrder)
+            foreach (string type in Palette.UpdateOrder)
             {
                 if (heatSinks.ContainsKey(type))
                     foreach (HeatSink heatSink in heatSinks[type])
@@ -537,7 +535,7 @@ namespace NC_Reactor_Planner
                 SetBlock(new Reflector("Reflector", Palette.Textures["Reflector"], pos), pos);
 
             ReloadValuesFromConfig();
-            ConstructLayers();
+            //ConstructLayers();
         }
 
         public static void ReloadValuesFromConfig()
@@ -718,20 +716,6 @@ namespace NC_Reactor_Planner
 
             blocks = newReactor;
             interiorDims = new Size3D(interiorDims.X, interiorDims.Y + 1, interiorDims.Z);
-
-            using (TextWriter tw = File.CreateText("Debug.txt"))
-            {
-                for(int layer = 0; layer < interiorDims.Y + 2; layer++)
-                {
-                    for(int x = 0; x < interiorDims.X + 2; x++)
-                    {
-                        for (int z = 0; z < interiorDims.Z + 2; z++)
-                            tw.Write(string.Format("{0,10}", blocks[x, layer, z].BlockType.ToString()));
-                        tw.WriteLine();
-                    }
-                    tw.WriteLine();
-                }
-            }
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Windows.Media.Media3D;
+using System.Text.RegularExpressions;
 
 namespace NC_Reactor_Planner
 {
@@ -10,24 +11,123 @@ namespace NC_Reactor_Planner
     {
         private List<string> placementErrors;
         
-        public double Cooling { get ; private set; }
-        public string Requirements { get ; private set; }
+        public double Cooling { get; private set; }
+        public string Requirements { get; private set; }
         public override bool Valid { get; protected set; }
+        public List<Func<Point3D,List<string>,bool>> Validators { get; private set; }
+        public List<string> Dependencies { get; private set; }
 
-        public HeatSinkTypes HeatSinkType { get ; private set ; }
+        public string HeatSinkType { get; private set; }
 
 
-        public HeatSink(string displayName, Bitmap texture, HeatSinkTypes type, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.HeatSink, texture, position)
+        public HeatSink(string displayName, Bitmap texture, string type, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.HeatSink, texture, position)
         {
             HeatSinkType = type;
             Cooling = heatPassive;
             Requirements = requirements;
             Valid = false;
+            Validators = new List<Func<Point3D, List<string>, bool>>();
+            Dependencies = new List<string>();
             placementErrors = new List<string>();
         }
 
         public HeatSink(HeatSink parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.Cooling, parent.Requirements, position)
         {
+            Validators = parent.Validators;
+        }
+
+        public void ConstructValidators()
+        {
+            Validators.Clear();
+
+            string[] numberStrings = new string[] { "One", "Two", "Three", "Four", "Five", "Six" };
+            Dictionary<string, byte> nums = new Dictionary<string, byte>();
+            for (int i = 0; i < 6; i++)
+                nums.Add(numberStrings[i], (byte)(i+1));
+            //string numbersRegex = string.Join("|", numberStrings);
+            //Regex ruleFormat = new Regex(@"^(Exact |Vertex |Axial )?("+numbersRegex+@")\s()");
+
+            string[] rules = Requirements.Split(';');
+            foreach (string rule in rules)
+            {
+                //string trimmedRule = rule.Trim();
+                //Match ruleMatch = ruleFormat.Match(trimmedRule);
+                //var words = trimmedRule.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var words = rule.Trim().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                switch (words[0])
+                {
+                    case "Exactly":
+                        if (!rule.Contains("heatsink"))
+                            if (nums[words[1]] > 1)
+                                words[2] = words[2].Substring(0, words[2].Length - 1);
+                        if(!Dependencies.Contains(words[2]))
+                            Dependencies.Add(words[2]);
+
+                        if (words[2] == "Moderator")
+                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette["Graphite"], nums[words[1]], true); });
+                        else if (words[2] == "Casing")
+                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.dummyCasing, nums[words[1]], true); });
+                        else
+                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette[words[2]], nums[words[1]], true); });
+                        break;
+                    case "Vertex":
+                        List<Block> vertexBlocks = new List<Block>();
+                        List<string> vbNames = new List<string>() { words[3].Replace(",", ""), words[words.IndexOf("One", 3) + 1].Replace(",", ""), words[words.IndexOf("One", 6) + 1] };
+                        foreach (string name in vbNames)
+                        {
+                            if (!Dependencies.Contains(name))
+                                Dependencies.Add(name);
+
+                            if (name == "Moderator")
+                                vertexBlocks.Add(Palette.BlockPalette["Graphite"]);
+                            else if (name == "Casing")
+                                vertexBlocks.Add(Palette.dummyCasing);
+                            else
+                                vertexBlocks.Add(Palette.BlockPalette[name]);
+                        }
+                        Validators.Add((pos, errs) => { return HasVertex(pos, errs, vertexBlocks); });
+                        break;
+                    case "Axial":
+                        if (!rule.Contains("heatsink"))
+                            words[1] = words[1].Substring(0, words[1].Length - 1);
+
+                        if (!Dependencies.Contains(words[1]))
+                            Dependencies.Add(words[1]);
+
+                        if (words[1] == "Moderator")
+                            Validators.Add((pos, errs) => { return HasAxial(pos, errs, Palette.BlockPalette["Graphite"]); });
+                        else if (words[1] == "Casing")
+                            Validators.Add((pos, errs) => { return HasAxial(pos, errs, Palette.dummyCasing); });
+                        else
+                            Validators.Add((pos, errs) => { return HasAxial(pos, errs, Palette.BlockPalette[words[1]]); });
+                        break;
+                    case "One":
+                    case "Two":
+                    case "Three":
+                    case "Four":
+                    case "Five":
+                    case "Six":
+                        if (!rule.Contains("heatsink"))
+                            if (nums[words[0]] > 1)
+                                words[1] = words[1].Substring(0, words[1].Length - 1);
+
+                        if (!Dependencies.Contains(words[1]))
+                            Dependencies.Add(words[1]);
+
+                        if (words[1] == "Moderator")
+                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette["Graphite"], nums[words[0]], false); });
+                        else if (words[1] == "Casing")
+                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.dummyCasing, nums[words[0]], false); });
+                        else
+                        Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette[words[1]], nums[words[0]], false); });
+                        break;
+                    default:
+                        System.Windows.Forms.MessageBox.Show(string.Format("Invalid rule string in {0}!\r\n{1}", HeatSinkType, rule));
+                        Requirements = "Invalid requirements!";
+                        Validators.Clear();
+                        return;
+                }
+            }
         }
 
         public override string GetToolTip()
@@ -39,7 +139,7 @@ namespace NC_Reactor_Planner
                 if (Cluster != -1)
                 {
                     toolTip += string.Format("Cluster: {0}\r\n", Cluster);
-                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n");
+                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection");
                 }
                 else
                     toolTip += "--No cluster!\r\n";
@@ -59,8 +159,7 @@ namespace NC_Reactor_Planner
 
         public void UpdateStats()
         {
-            CheckPlacementValid();
-            placementErrors = new HashSet<string>(placementErrors).ToList();
+            Validate();
         }
 
         public override void RevertToSetup()
@@ -70,86 +169,27 @@ namespace NC_Reactor_Planner
 
         public override void ReloadValuesFromConfig()
         {
-            HeatSinkValues cv = Configuration.HeatSinks[HeatSinkType.ToString()];
+            HeatSinkValues cv = Configuration.HeatSinks[HeatSinkType];
             Cooling = cv.HeatPassive;
             Requirements = cv.Requirements;
         }
 
-        public bool CheckPlacementValid()
+        public bool Validate()
         {
             placementErrors = new List<string>();
-            switch (HeatSinkType)
+
+            if (Validators.Count!=0)
             {
-                case HeatSinkTypes.Water:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]);
-                case HeatSinkTypes.Redstone:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(Palette.BlockPalette["Graphite"]);
-                case HeatSinkTypes.Quartz:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"]);
-                case HeatSinkTypes.Gold:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"], 2);
-                case HeatSinkTypes.Glowstone:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 2);
-                case HeatSinkTypes.Lapis:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case HeatSinkTypes.Diamond:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Gold"]) & HasAdjacent(Palette.BlockPalette["FuelCell"]);
-                case HeatSinkTypes.Helium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 2, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case HeatSinkTypes.Enderium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 3);
-                case HeatSinkTypes.Cryotheum:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 3);
-                case HeatSinkTypes.Iron:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]);
-                case HeatSinkTypes.Emerald:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Prismarine"]) & HasAdjacent(Palette.BlockPalette["Graphite"]);
-                case HeatSinkTypes.Copper:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Water"]);
-                case HeatSinkTypes.Tin:
-                    return Valid = HasAxial(Palette.BlockPalette["Lapis"]);
-                case HeatSinkTypes.Magnesium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case HeatSinkTypes.Boron:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case HeatSinkTypes.Prismarine:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Water"], 2);
-                case HeatSinkTypes.Obsidian:
-                    return Valid = HasAxial(Palette.BlockPalette["Glowstone"]);
-                case HeatSinkTypes.Lead:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"]);
-                case HeatSinkTypes.Aluminum:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Quartz"]) & HasAdjacent(Palette.BlockPalette["Tin"]);
-                case HeatSinkTypes.Lithium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Lead"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
-                case HeatSinkTypes.Manganese:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"], 2);
-                case HeatSinkTypes.Silver:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Glowstone"]) & HasAdjacent(Palette.BlockPalette["Lapis"]);
-                case HeatSinkTypes.Purpur:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Iron"], 1, true) & HasAdjacent(Palette.BlockPalette["EndStone"]);
-                case HeatSinkTypes.Arsenic:
-                    return Valid = HasAxial(Palette.BlockPalette["Reflector"]);
-                case HeatSinkTypes.Carobbiite:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Copper"]) & HasAdjacent(Palette.BlockPalette["EndStone"]);
-                case HeatSinkTypes.Villiaumite:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Reflector"]) & HasAdjacent(Palette.BlockPalette["Redstone"]);
-                case HeatSinkTypes.Slime:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Reflector"]) & HasAdjacent(Palette.BlockPalette["Water"],1 ,true);
-                case HeatSinkTypes.Fluorite:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Gold"]) & HasAdjacent(Palette.BlockPalette["Prismarine"]);
-                case HeatSinkTypes.TCAlloy:
-                    return Valid = HasVertex(new List<Block>() { Palette.BlockPalette["FuelCell"], Palette.BlockPalette["Reflector"], Palette.BlockPalette["Graphite"] });
-                case HeatSinkTypes.NetherBrick:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Obsidian"]);
-                case HeatSinkTypes.EndStone:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Reflector"]);
-                default:
-                    throw new ArgumentException("Unexpected HeatSink type");
+                Valid = true;
+                foreach (var validator in Validators)
+                    Valid &= validator(Position, placementErrors);
+                return Valid;
             }
+            else
+                return Valid = false;
         }
 
-        private bool HasAdjacent(Block needed, int number = 1, bool exact = false)
+        private static bool HasAdjacent(Point3D Position, List<string> placementErrors, Block needed, int number = 1, bool exact = false)
         {
             int adjacent = 0;
             int activeAdjacent = 0;
@@ -162,9 +202,7 @@ namespace NC_Reactor_Planner
                 //If checked block doesn't match at all
                 //Either heatsink types are mismatched or the blocktype is mismatched
                 if (((bt == BlockTypes.HeatSink & nt == BlockTypes.HeatSink) && ((HeatSink)block).HeatSinkType != ((HeatSink)needed).HeatSinkType) || bt != nt)
-                {
                     continue;
-                }
 
                 adjacent++;
 
@@ -185,7 +223,7 @@ namespace NC_Reactor_Planner
 
             if ((activeAdjacent > number) && exact)
             {
-                placementErrors.Add("Too many " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                placementErrors.Add("Too many " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderators" : needed.DisplayName + "s"));
                 return false;
             }
 
@@ -207,7 +245,7 @@ namespace NC_Reactor_Planner
             return true;
         }
 
-        private bool HasAxial(Block needed)
+        private static bool HasAxial(Point3D Position, List<string> placementErrors, Block needed)
         {
             BlockTypes bn = needed.BlockType;
             byte status = 0; //0:none, 1: invalid, 2: valid
@@ -221,12 +259,12 @@ namespace NC_Reactor_Planner
 
                 if (bt1 == bn && bt2 == bn)
                 {
-                    if ((needed is HeatSink hs && (((HeatSink)block1).HeatSinkType == ((HeatSink)block2).HeatSinkType)))
+                    if (needed is HeatSink hs)
                     {
-                        if (((HeatSink)block1).HeatSinkType == hs.HeatSinkType)
+                        if (((HeatSink)block1).HeatSinkType == hs.HeatSinkType && (((HeatSink)block1).HeatSinkType == ((HeatSink)block2).HeatSinkType))
                         {
-                            status = 1;
-                            if(block1.Valid && block2.Valid)
+                            status = Math.Max(status, (byte)1);
+                            if (block1.Valid && block2.Valid)
                             {
                                 status = 2;
                                 break;
@@ -235,7 +273,7 @@ namespace NC_Reactor_Planner
                     }
                     else
                     {
-                        status = 1;
+                        status = Math.Max(status, (byte)1);
                         if (block1.Valid && block2.Valid)
                         {
                             status = 2;
@@ -261,7 +299,7 @@ namespace NC_Reactor_Planner
             }
         }
 
-        private bool HasVertex(List<Block> needed)
+        private static bool HasVertex(Point3D Position, List<string> placementErrors, List<Block> needed)
         {
             if (needed.Count != 3)
                 throw new ArgumentException("Vertex rules need exactly 3 blocks specified");
@@ -299,10 +337,9 @@ namespace NC_Reactor_Planner
                     {
                         if (nbr is HeatSink nbrhs)
                         {
-                            HeatSink neededhs = needed[i] as HeatSink;
-                            if (neededhs.HeatSinkType == nbrhs.HeatSinkType)
+                            if (((HeatSink)needed[i]).HeatSinkType == nbrhs.HeatSinkType)
                             {
-                                status[i] = 1;
+                                status[i] = Math.Max(status[i], (byte)1);
                                 if (nbrhs.Valid)
                                 {
                                     status[i] = 2;
@@ -312,7 +349,7 @@ namespace NC_Reactor_Planner
                         }
                         else
                         {
-                            status[i] = 1;
+                            status[i] = Math.Max(status[i], (byte)1); ;
                             if (nbr.Valid)
                             {
                                 status[i] = 2;
@@ -344,7 +381,7 @@ namespace NC_Reactor_Planner
                 }
             }
 
-            placementErrors.Add("Required blocks aren't at a single vertex!");
+            placementErrors.Add("Required blocks aren't on a single vertex!");
             return false;
         }
 
@@ -352,42 +389,5 @@ namespace NC_Reactor_Planner
         {
             return new HeatSink(this, newPosition);
         }
-    }
-
-    public enum HeatSinkTypes
-    {
-        Water,
-        Iron,
-        Redstone,
-        Quartz,
-        Obsidian,
-        NetherBrick,
-        Glowstone,
-        Lapis,
-        Gold,
-        Prismarine,
-        Slime,
-        EndStone,
-        Purpur,
-        Diamond,
-        Emerald,
-        Copper,
-        Tin,
-        Lead,
-        Boron,
-        Lithium,
-        Magnesium,
-        Manganese,
-        Aluminum,
-        Silver,
-        Fluorite,
-        Villiaumite,
-        Carobbiite,
-        Arsenic,
-        Helium,
-        TCAlloy,
-        Enderium,
-        Cryotheum,
-        //NotACooler,
     }
 }

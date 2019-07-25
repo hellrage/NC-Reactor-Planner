@@ -29,11 +29,16 @@ namespace NC_Reactor_Planner
 
             public PalettePanel()
             {
-                int height = (int)Math.Ceiling(((double)(BlockPalette.Keys.Count ) / (Width / (blockSide + 2 * spacing)))) * (blockSide + 2 * spacing);
-                Size = new Size(200, height + namestripHeight);
+                ResetSize();
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
                 cellX = -1;
                 cellZ = -1;
+            }
+
+            public void ResetSize()
+            {
+                int height = (int)Math.Ceiling(((double)(BlockPalette.Keys.Count) / (Width / (blockSide + 2 * spacing)))) * (blockSide + 2 * spacing);
+                Size = new Size(200, height + namestripHeight);
             }
 
             protected override void OnPaint(PaintEventArgs e)
@@ -53,9 +58,9 @@ namespace NC_Reactor_Planner
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 int x = spacing;
                 int y = namestripHeight + spacing;
-                foreach (var block in blocks)
+                foreach (var block in BlockPalette)
                 {
-                    g.DrawImage(block.Key.Texture, x, y, blockSide, blockSide);
+                    g.DrawImage(block.Value.Texture, x, y, blockSide, blockSide);
                     x += blockSide + 2 * spacing;
                     if(x+blockSide+spacing > Width)
                     {
@@ -87,10 +92,10 @@ namespace NC_Reactor_Planner
                     cellX = newCellX;
                     cellZ = newCellZ;
                     int blockIndex = cellZ * (Width / (blockSide + 2 * spacing)) + cellX;
-                    if (blockIndex < blocks.Count)
+                    if (blockIndex < BlockPalette.Count)
                     {
-                        DrawNamestring(CreateGraphics(), blocks.Keys.ElementAt(blockIndex).DisplayName);
-                        paletteToolTip.Show(blocks.Keys.ElementAt(blockIndex).GetToolTip(), this, (cellX + 1) * (blockSide + 2 * spacing), (cellZ + 1) * (blockSide + 2 * spacing) + namestripHeight);
+                        DrawNamestring(CreateGraphics(), BlockPalette.Values.ElementAt(blockIndex).DisplayName);
+                        paletteToolTip.Show(BlockPalette.Values.ElementAt(blockIndex).GetToolTip(), this, (cellX + 1) * (blockSide + 2 * spacing), (cellZ + 1) * (blockSide + 2 * spacing) + namestripHeight);
                     }
                 }
                 base.OnMouseMove(e);
@@ -119,9 +124,9 @@ namespace NC_Reactor_Planner
                 int newCellZ = cellCoords.Item2;
 
                 int blockIndex = cellZ * (Width / (blockSide + 2 * spacing)) + cellX;
-                if (blockIndex < blocks.Count)
+                if (blockIndex < BlockPalette.Count)
                 {
-                    selectedBlock = blocks.Keys.ElementAt(blockIndex);
+                    selectedBlock = BlockPalette.Values.ElementAt(blockIndex);
                     Xhighlight = newCellX;
                     Zhighlight = newCellZ;
                 }
@@ -134,15 +139,16 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, Block> BlockPalette { get; private set; }
         public static Dictionary<string, Fuel> FuelPalette { get; private set; }
         public static readonly Point3D dummyPosition = new Point3D(-1, -1, -1);
+        public static readonly Casing dummyCasing = new Casing("Casing", null, dummyPosition);
         public static Fuel SelectedFuel { get; set; }
         public static PalettePanel PaletteControl { get; private set; }
-
-        private static Dictionary<Block, BlockTypes> blocks;
-        private static List<HeatSink> heatSinks;
-        private static List<Moderator> moderators;
+        
         private static ToolTip paletteToolTip;
         private static Block selectedBlock;
 
+        public static List<string> UpdateOrder { get; private set; }
+
+        private static List<string> T0Blocks = new List<string>() { "Air", "FuelCell", "Moderator", "Reflector", "Casing" };
 
         public static void Load()
         {
@@ -164,20 +170,39 @@ namespace NC_Reactor_Planner
                 if (resource.PropertyType == typeof(Bitmap))
                     Textures.Add(resource.Name, (Bitmap)resource.GetValue(null));
             }
-            return;
+
+            if (!Directory.Exists("Textures"))
+                return;
+
+            string[] customTextures = Directory.GetFiles("Textures", "*.png");
+            foreach (var textureFile in customTextures)
+            {
+                FileInfo fi = new FileInfo(textureFile);
+                Bitmap ct = new Bitmap(fi.FullName);
+                if (ct.Size.Height != 16 || ct.Size.Width != 16)
+                {
+                    MessageBox.Show(textureFile + "Is not a 16x16 image!");
+                    ct.Dispose();
+                    continue;
+                }
+                else
+                {
+                    string textureName = fi.Name.Replace(".png","");
+                    if (Textures.ContainsKey(textureName))
+                    {
+                        Textures[textureName].Dispose();
+                        Textures[textureName] = ct;
+                    }
+                    else
+                        Textures.Add(textureName, ct);
+                }
+            }
         }
 
         public static void LoadPalette()
         {
-            blocks = new Dictionary<Block, BlockTypes>();
             BlockPalette = new Dictionary<string, Block>();
             FuelPalette = new Dictionary<string, Fuel>();
-            heatSinks = new List<HeatSink>();
-            moderators = new List<Moderator>();
-
-            PopulateHeatSinks();
-            PopulateModerators();
-            PopulateBlocks();
 
             PopulateBlockPalette();
             PopulateFuelPalette();
@@ -187,11 +212,18 @@ namespace NC_Reactor_Planner
 
         public static void ReloadValuesFromConfig()
         {
-            foreach (KeyValuePair<Block, BlockTypes> blockEntry in blocks)
-                blockEntry.Key.ReloadValuesFromConfig();
+            foreach (var heatsink in Configuration.HeatSinks)
+            {
+                if (!BlockPalette.ContainsKey(heatsink.Key))
+                    BlockPalette.Add(heatsink.Key, new HeatSink(heatsink.Key, (Textures.ContainsKey(heatsink.Key)) ? Textures[heatsink.Key] : Textures["NoTexture"], heatsink.Key, heatsink.Value.HeatPassive, heatsink.Value.Requirements, dummyPosition));
+            }
 
             foreach (KeyValuePair<string, Block> blockEntry in BlockPalette)
+            {
                 blockEntry.Value.ReloadValuesFromConfig();
+                if (blockEntry.Value is HeatSink hs)
+                    hs.ConstructValidators();
+            }
 
             foreach(KeyValuePair<string, Fuel> fuelEntry in FuelPalette)
                 fuelEntry.Value.ReloadValuesFromConfig();
@@ -202,53 +234,24 @@ namespace NC_Reactor_Planner
             BlockPalette.Add("Air", new Block("Air", BlockTypes.Air, Textures["Air"], dummyPosition));
             BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition, new Fuel()));
 
-            foreach (HeatSink heatSink in heatSinks)
-                BlockPalette.Add(heatSink.DisplayName, heatSink);
-            foreach (Moderator moderator in moderators)
-                BlockPalette.Add(moderator.DisplayName, moderator);
-
-            BlockPalette.Add("Conductor", new Conductor("Conductor", Textures["Conductor"], dummyPosition));
-            BlockPalette.Add("Reflector", new Reflector("Reflector", Textures["Reflector"], dummyPosition));
-        }
-
-        private static void PopulateBlocks()
-        {
-            blocks.Add(new Block("Air", BlockTypes.Air, Textures["Air"], dummyPosition), BlockTypes.Air);
-            blocks.Add(new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition, new Fuel()), BlockTypes.FuelCell);
-
-            foreach (HeatSink heatSink in heatSinks)
-                blocks.Add(heatSink, BlockTypes.HeatSink);
-            foreach (Moderator moderator in moderators)
-                blocks.Add(moderator, BlockTypes.Moderator);
-
-            blocks.Add(new Conductor("Conductor", Textures["Conductor"], dummyPosition), BlockTypes.Conductor);
-            blocks.Add(new Reflector("Reflector", Textures["Reflector"], dummyPosition), BlockTypes.Reflector);
-        }
-
-        private static void PopulateHeatSinks()
-        {
             foreach (KeyValuePair<string, HeatSinkValues> heatSinkEntry in Configuration.HeatSinks)
             {
                 HeatSinkValues cv = heatSinkEntry.Value;
-                HeatSinkTypes parsedType;
-                if (Enum.TryParse(heatSinkEntry.Key, out parsedType))
-                    heatSinks.Add(new HeatSink(heatSinkEntry.Key, Textures[heatSinkEntry.Key], parsedType, cv.HeatPassive, cv.Requirements, dummyPosition));
-                else
-                    throw new ArgumentException("Unexpected heatsink type in config!");
+                BlockPalette.Add(heatSinkEntry.Key, new HeatSink(heatSinkEntry.Key, (Textures.ContainsKey(heatSinkEntry.Key)) ? Textures[heatSinkEntry.Key] : Textures["NoTexture"], heatSinkEntry.Key, cv.HeatPassive, cv.Requirements, dummyPosition));
             }
-        }
 
-        private static void PopulateModerators()
-        {
             foreach (KeyValuePair<string, ModeratorValues> moderatorEntry in Configuration.Moderators)
             {
                 ModeratorValues mv = moderatorEntry.Value;
                 ModeratorTypes parsedType;
                 if (Enum.TryParse(moderatorEntry.Key, out parsedType))
-                    moderators.Add(new Moderator(moderatorEntry.Key, parsedType, Textures[moderatorEntry.Key], dummyPosition, mv.FluxFactor, mv.EfficiencyFactor));
+                    BlockPalette.Add(moderatorEntry.Key, new Moderator(moderatorEntry.Key, parsedType, Textures[moderatorEntry.Key], dummyPosition, mv.FluxFactor, mv.EfficiencyFactor));
                 else
                     throw new ArgumentException("Unexpected moderator type in config: " + moderatorEntry.Key);
             }
+
+            BlockPalette.Add("Conductor", new Conductor("Conductor", Textures["Conductor"], dummyPosition));
+            BlockPalette.Add("Reflector", new Reflector("Reflector", Textures["Reflector"], dummyPosition));
         }
 
         private static void PopulateFuelPalette()
@@ -260,6 +263,30 @@ namespace NC_Reactor_Planner
             FuelPalette = new Dictionary<string, Fuel>();
             foreach (var kvp in fuelList)
                 FuelPalette.Add(kvp.Key, kvp.Value);
+        }
+
+        public static void SetHeatSinkUpdateOrder()
+        {
+            UpdateOrder = new List<string>();
+            List<string> deps;
+            foreach (var entry in BlockPalette)
+            {
+                if (!(entry.Value is HeatSink hs))
+                    continue;
+
+                deps = new List<string>(hs.Dependencies);
+
+                foreach (string dep in T0Blocks)
+                    deps.Remove(dep);
+                int index = 0;
+                while (deps.Count != 0 & index < UpdateOrder.Count)
+                {
+                    deps.Remove(UpdateOrder[index]);
+                    ++index;
+                }
+                UpdateOrder.Insert(index, entry.Key);
+
+            }
         }
 
         public static Block BlockToPlace(Block previousBlock)

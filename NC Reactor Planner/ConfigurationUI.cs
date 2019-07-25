@@ -122,7 +122,7 @@ namespace NC_Reactor_Planner
                 int index = 0;
                 foreach (FieldInfo property in fieldsInfo)
                 {
-                    fields.Add(new TextBox { ReadOnly = (property.Name == "Requirements"), Text = property.GetValue(ob).ToString(), Location = new Point(x, y), Size = new Size(property.Name=="Requirements"?300:80, 14), CausesValidation = true, Tag = property.FieldType }.Set(val => { val.Validating += ValidateValue; }));
+                    fields.Add(new TextBox {Text = property.GetValue(ob).ToString(), Location = new Point(x, y), Size = new Size(property.Name=="Requirements"?300:80, 14), CausesValidation = true, Tag = property.FieldType }.Set(val => { val.Validating += ValidateValue; }));
                     x += settingTabs.TabPages[tabInfo.Name].Controls[index].Size.Width;
                 }
                 IFR.Add(entry, fields);

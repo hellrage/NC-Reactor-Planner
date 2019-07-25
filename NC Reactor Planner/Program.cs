@@ -16,12 +16,29 @@ namespace NC_Reactor_Planner
         [STAThread]
         static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.EnableVisualStyles();
             PreStartUp();
             if (args.Length > 1)
-                AfterUpdate(args);
-            Application.Run(Reactor.UI);
+            {
+                switch (args[0])
+                {
+                    case "-finalizeupdate":
+                        AfterUpdate(args[1], args[2]);
+                        Application.Run(Reactor.UI);
+                        break;
+                    case "-batch":
+                        BatchProcessor.Process(new DirectoryInfo(args[1]));
+                        System.Environment.Exit(0);
+                        break;
+                    default:
+                        if (File.Exists(args[0]))
+                            AfterUpdate(args[0], args[1]);
+                        break;
+                }
+            }
+            else
+                Application.Run(Reactor.UI);
         }
 
         static void PreStartUp()
@@ -43,16 +60,13 @@ namespace NC_Reactor_Planner
                 Configuration.Save(defaultConfig);
             else
                 if(!Configuration.Load(defaultConfig))
-                {
-                    MessageBox.Show("Unable to load default configuration, resetting to hardcoded defaults...");
                     Configuration.ResetToDefaults();
-                }
         }
 
-        static void AfterUpdate(string[] args)
+        static void AfterUpdate(string exePath, string savePath)
         {
-            Reactor.Load(new FileInfo(args[0]));
-            File.Delete(args[1]);
+            Reactor.Load(new FileInfo(savePath));
+            File.Delete(exePath);
         }
     }
 }

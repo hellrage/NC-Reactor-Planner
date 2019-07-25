@@ -171,7 +171,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your DefaultConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 15, 0))
+            if(cf.saveVersion < new Version(2, 0, 19, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -194,6 +194,9 @@ namespace NC_Reactor_Planner
             else
                 SetDefaultModerators();
             Reactor.ReloadValuesFromConfig();
+            Palette.SetHeatSinkUpdateOrder();
+            Palette.PaletteControl.ResetSize();
+            Reactor.UI.UpdateStatsUIPosition();
             return true;
         }
 
@@ -323,35 +326,35 @@ namespace NC_Reactor_Planner
             HeatSinks = new Dictionary<string, HeatSinkValues>();
             HeatSinks.Add("Water", new HeatSinkValues(50, "One FuelCell"));
             HeatSinks.Add("Iron", new HeatSinkValues(55, "One Moderator"));
-            HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell and one Moderator"));
+            HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell; One Moderator"));
             HeatSinks.Add("Quartz", new HeatSinkValues(75, "One Redstone heatsink"));
-            HeatSinks.Add("Obsidian", new HeatSinkValues(70, "Two Glowstone heatsinks on the same axis"));
+            HeatSinks.Add("Obsidian", new HeatSinkValues(70, "Axial Glowstone heatsinks"));
             HeatSinks.Add("Glowstone", new HeatSinkValues(115, "Two Moderators"));
-            HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell and one Casing"));
+            HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell; One Casing"));
             HeatSinks.Add("Gold", new HeatSinkValues(100, "Two Iron heatsinks"));
             HeatSinks.Add("Prismarine", new HeatSinkValues(110, "Two Water heatsinks"));
-            HeatSinks.Add("Purpur", new HeatSinkValues(90, "Exactly one Iron heatsink and at least one EndStone heatsink"));
-            HeatSinks.Add("Diamond", new HeatSinkValues(180, "One Gold and one FuelCell"));
-            HeatSinks.Add("Emerald", new HeatSinkValues(190, "One Prismarine heatsink and one Moderator"));
+            HeatSinks.Add("Purpur", new HeatSinkValues(90, "Exactly One Iron heatsink; One EndStone heatsink"));
+            HeatSinks.Add("Diamond", new HeatSinkValues(180, "One Gold heatsink; One FuelCell"));
+            HeatSinks.Add("Emerald", new HeatSinkValues(190, "One Prismarine heatsink; One Moderator"));
             HeatSinks.Add("Copper", new HeatSinkValues(80, "One Water heatsink"));
-            HeatSinks.Add("Tin", new HeatSinkValues(120, "Two Lapis heatsinks on the same axis"));
+            HeatSinks.Add("Tin", new HeatSinkValues(120, "Axial Lapis heatsinks"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
-            HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly one Quartz heatsink and at least one Casing"));
-            HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exactly one Lead heatsink and at least one Casing"));
-            HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator and one Casing"));
+            HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly One Quartz heatsink; One Casing"));
+            HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exactly One Lead heatsink; One Casing"));
+            HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator; One Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
-            HeatSinks.Add("Aluminum", new HeatSinkValues(175, "One Quartz heatsink and one Tin heatsink"));
-            HeatSinks.Add("Silver", new HeatSinkValues(170, "One Glowstone heatsink and one Lapis heatsink"));
-            HeatSinks.Add("Helium", new HeatSinkValues(195, "Exactly two Redstone heatsinks and at least one Casing"));
+            HeatSinks.Add("Aluminum", new HeatSinkValues(175, "One Quartz heatsink; One Tin heatsink"));
+            HeatSinks.Add("Silver", new HeatSinkValues(170, "One Glowstone heatsink; One Lapis heatsink"));
+            HeatSinks.Add("Helium", new HeatSinkValues(195, "Exactly Two Redstone heatsinks; One Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(185, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(200, "Three FuelCells"));
-            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink and one EndStone heatsink"));
-            HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink and one Prismarine heatsink"));
-            HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector and one Redstone"));
-            HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Two Reflectors on the same axis"));
-            HeatSinks.Add("TCAlloy", new HeatSinkValues(205, "One FuelCell, one Moderator and one Reflector on the same vertex"));
+            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink; One EndStone heatsink"));
+            HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink; One Prismarine heatsink"));
+            HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector; One Redstone heatsink"));
+            HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Axial Reflectors"));
+            HeatSinks.Add("TCAlloy", new HeatSinkValues(205, "Vertex with One FuelCell, One Moderator, One Reflector"));
             HeatSinks.Add("EndStone", new HeatSinkValues(60, "One Reflector"));
-            HeatSinks.Add("Slime", new HeatSinkValues(125, "Exactly one Water heatsink and at least one Reflector"));
+            HeatSinks.Add("Slime", new HeatSinkValues(125, "Exactly One Water heatsink; One Reflector"));
             HeatSinks.Add("NetherBrick", new HeatSinkValues(105, "One Obsidian heatsink"));
 
         }

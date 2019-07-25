@@ -10,7 +10,7 @@ namespace NC_Reactor_Planner
 {
     public partial class PlannerUI : Form
     {
-        public static readonly List<HeatSinkTypes> OverlayedTypes = new List<HeatSinkTypes> { HeatSinkTypes.Silver, HeatSinkTypes.Iron, HeatSinkTypes.Lithium, HeatSinkTypes.Tin };
+        public static readonly List<string> OverlayedTypes = new List<string> { "Silver", "Iron", "Lithium", "Tin" };
         public Panel ReactorGrid { get => reactorGrid; }
         public decimal DrawingScale { get => imageScale.Value; }
         public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
@@ -33,6 +33,7 @@ namespace NC_Reactor_Planner
         string appName;
         public static Block[,] LayerBuffer { get; set; }
         public ReactorGridLayer MousedOverLayer { get; set; }
+        public int StatLineCount { get => stats.Lines.Length; }
 
         private bool showClustersInStats;
         private decimal defaultReactorX;
@@ -113,12 +114,17 @@ namespace NC_Reactor_Planner
             SetUpdateAvailableTextAsync();
 #endif
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+            UpdateStatsUIPosition();
+
+            ResetLayout(LoadedSaveFile != null);
+        }
+
+        public void UpdateStatsUIPosition()
+        {
             statsLabel.Location = new Point(statsLabel.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
             stats.Location = new Point(stats.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + statsLabel.Size.Height);
             stats.Size = new Size(stats.Size.Width, this.ClientSize.Height - stats.Location.Y - 5);
             showClusterInfo.Location = new Point(showClusterInfo.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
-
-            ResetLayout(LoadedSaveFile != null);
         }
 
         private void SetUpToolTips()
@@ -219,7 +225,7 @@ namespace NC_Reactor_Planner
                 reactorWidth.Value = (int)Reactor.interiorDims.X;
                 reactorHeight.Value = (int)Reactor.interiorDims.Y;
                 reactorLength.Value = (int)Reactor.interiorDims.Z;
-                Reactor.ConstructLayers();
+                //Reactor.ConstructLayers();
             }
 
             UpdateWindowTitle();
@@ -583,6 +589,16 @@ namespace NC_Reactor_Planner
             }
             else
                 UpdateLocation(Reactor.layers[layerScrollBar.Value]);
+        }
+
+        private void discordPB_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://discord.gg/S49fF2X");
+        }
+
+        private void githubPB_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/hellrage/NC-Reactor-Planner");
         }
     }
 }
