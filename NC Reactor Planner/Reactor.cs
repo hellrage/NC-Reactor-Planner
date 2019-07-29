@@ -42,6 +42,7 @@ namespace NC_Reactor_Planner
         public static List<Conductor> conductors;
         public static List<Reflector> reflectors;
         public static int totalCasings;
+        public static int totalInteriorBlocks;
 
         public static readonly List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
 
@@ -52,6 +53,8 @@ namespace NC_Reactor_Planner
         
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
+        public static int functionalBlocks = 0;
+        public static double sparsityPenalty = 0;
 
         static Reactor()
         {
@@ -90,7 +93,7 @@ namespace NC_Reactor_Planner
                     blocks[x, y, interiorZ + 1] = new Casing("Casing", null, new Point3D(x, y, interiorZ + 1));
                     blocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
                 }
-
+            totalInteriorBlocks = interiorX * interiorY * interiorZ;
             ConstructLayers();
 
         }
@@ -193,6 +196,8 @@ namespace NC_Reactor_Planner
             conductors = new List<Conductor>();
             reflectors = new List<Reflector>();
 
+            functionalBlocks = 0;
+
             foreach (Block block in blocks)
             {
                 if (block is HeatSink heatSink)
@@ -201,20 +206,28 @@ namespace NC_Reactor_Planner
                         heatSinks[heatSink.DisplayName].Add(heatSink);
                     else
                         heatSinks.Add(heatSink.DisplayName, new List<HeatSink> { heatSink });
+                    ++functionalBlocks;
                 }
                 else if (block is FuelCell fuelCell)
+                {
                     fuelCells.Add(fuelCell);
+                    ++functionalBlocks;
+                }
                 else if (block is Moderator moderator)
                 {
                     if (moderators.ContainsKey(moderator.DisplayName))
                         moderators[moderator.DisplayName].Add(moderator);
                     else
                         moderators.Add(moderator.DisplayName, new List<Moderator> { moderator });
+                    ++functionalBlocks;
                 }
                 else if (block is Conductor conductor)
                     conductors.Add(conductor);
                 else if (block is Reflector reflector)
+                {
                     reflectors.Add(reflector);
+                    ++functionalBlocks;
+                }
 
             }
         }
@@ -400,8 +413,21 @@ namespace NC_Reactor_Planner
             efficiency = (activeFuelCells > 0) ? (sumEfficiency / activeFuelCells) : 0;
             heatMultiplier = (activeFuelCells > 0) ? (sumHeatMultiplier / activeFuelCells) : 0;
 
+            double density = (double)functionalBlocks / (double)totalInteriorBlocks;
+            double spt = Configuration.Fission.SparsityPenaltyThreshold;
+            double mspm = Configuration.Fission.MaxSparsityPenaltyMultiplier;
+            if (density >= spt)
+            {
+                sparsityPenalty = 1;
+            }
+            else
+            {
+                Console.WriteLine("Density: " + density.ToString());
+                sparsityPenalty = ((1 - mspm) * Math.Sin(density * Math.PI / (2 * spt))) + mspm;
+            }
+
             totalHeatPerTick *= Configuration.Fission.HeatGeneration;
-            totalOutputPerTick *= Configuration.Fission.Power;
+            totalOutputPerTick *= Configuration.Fission.Power * sparsityPenalty;
         }
 
         public static string GetStatString(bool includeClusterInfo = true)
@@ -412,8 +438,18 @@ namespace NC_Reactor_Planner
                                         "Total Cooling: {1} HU/t\r\n" +
                                         "Net Heat: {2} HU/t\r\n" +
                                         "Overall Efficiency: {3} %\r\n" +
-                                        "Overall Heat Multiplier: {4} %\r\n\r\n",
-                                        totalHeatPerTick,totalCoolingPerTick,totalHeatPerTick-totalCoolingPerTick,(int)(efficiency*100),(int)(heatMultiplier*100), (int)(totalOutputPerTick/16)
+                                        "Overall Heat Multiplier: {4} %\r\n" +
+                                        "Functional \\ total blocks: {6} \\ {7}\r\n" +
+                                        "Sparsity penalty multiplier: {8}\r\n\r\n",
+                                        totalHeatPerTick,
+                                        totalCoolingPerTick,
+                                        totalHeatPerTick-totalCoolingPerTick,
+                                        (int)(efficiency*100),
+                                        (int)(heatMultiplier*100),
+                                        (int)(totalOutputPerTick/16),
+                                        functionalBlocks,
+                                        totalInteriorBlocks,
+                                        (sparsityPenalty == 0) ? "None" : Math.Round(sparsityPenalty, 4).ToString()
                 );
 
             if(includeClusterInfo)
@@ -675,7 +711,6 @@ namespace NC_Reactor_Planner
 
             blocks = newReactor;
             interiorDims = new Size3D(interiorDims.X, interiorDims.Y - 1, interiorDims.Z);
-
         }
 
         public static void InsertLayer(int y)

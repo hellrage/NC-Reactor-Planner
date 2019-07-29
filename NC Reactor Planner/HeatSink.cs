@@ -178,15 +178,21 @@ namespace NC_Reactor_Planner
         {
             placementErrors = new List<string>();
 
-            if (Validators.Count!=0)
+            if (Validators.Count != 0)
             {
                 Valid = true;
                 foreach (var validator in Validators)
                     Valid &= validator(Position, placementErrors);
-                return Valid;
             }
             else
-                return Valid = false;
+            {
+                --Reactor.functionalBlocks;
+                Valid = false;
+            }
+
+            if (!Valid)
+                --Reactor.functionalBlocks;
+            return Valid;
         }
 
         private static bool HasAdjacent(Point3D Position, List<string> placementErrors, Block needed, int number = 1, bool exact = false)
