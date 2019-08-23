@@ -171,7 +171,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your DefaultConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 19, 0))
+            if(cf.saveVersion < new Version(2, 0, 20, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -345,8 +345,8 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Tin", new HeatSinkValues(120, "Axial Lapis heatsinks"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
             HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly One Quartz heatsink; One Casing"));
-            HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exactly One Lead heatsink; One Casing"));
-            HeatSinks.Add("Magnesium", new HeatSinkValues(135, "One Moderator; One Casing"));
+            HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exactly Two Lead heatsinks; One Casing"));
+            HeatSinks.Add("Magnesium", new HeatSinkValues(135, "Exactly One Moderator; One Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(175, "One Quartz heatsink; One Tin heatsink"));
             HeatSinks.Add("Silver", new HeatSinkValues(170, "One Glowstone heatsink; One Lapis heatsink"));
@@ -357,7 +357,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink; One Prismarine heatsink"));
             HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector; One Redstone heatsink"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Axial Reflectors"));
-            HeatSinks.Add("TCAlloy", new HeatSinkValues(205, "Vertex with One FuelCell, One Moderator, One Reflector"));
+            HeatSinks.Add("TCAlloy", new HeatSinkValues(205, "One FuelCell; Two Moderators; One Reflector"));
             HeatSinks.Add("EndStone", new HeatSinkValues(60, "One Reflector"));
             HeatSinks.Add("Slime", new HeatSinkValues(125, "Exactly One Water heatsink; One Reflector"));
             HeatSinks.Add("NetherBrick", new HeatSinkValues(105, "One Obsidian heatsink"));
