@@ -98,8 +98,11 @@ namespace NC_Reactor_Planner
         public int MaxSize;
         public int NeutronReach;
         public double ReflectorEfficiency;
+        public double MaxSparsityPenaltyMultiplier;
+        public double SparsityPenaltyThreshold;
+        public double CoolingPenaltyLeniency;
 
-        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double re)
+        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double re, double mspm, double spt, double cpl)
         {
             Power = p;
             FuelUse = fu;
@@ -107,7 +110,11 @@ namespace NC_Reactor_Planner
             MinSize = ms;
             MaxSize = mxs;
             NeutronReach = nr;
-            ReflectorEfficiency = re;        }
+            ReflectorEfficiency = re;
+            MaxSparsityPenaltyMultiplier = mspm;
+            SparsityPenaltyThreshold = spt;
+            CoolingPenaltyLeniency = cpl;
+        }
 
         public FissionValues(List<object> values)
         {
@@ -118,6 +125,9 @@ namespace NC_Reactor_Planner
             MaxSize = Convert.ToInt32(values[4]);
             NeutronReach = Convert.ToInt32(values[5]);
             ReflectorEfficiency = Convert.ToDouble(values[6]);
+            MaxSparsityPenaltyMultiplier = Convert.ToDouble(values[7]);
+            SparsityPenaltyThreshold = Convert.ToDouble(values[8]);
+            CoolingPenaltyLeniency = Convert.ToDouble(values[9]);
         }
     }
 
@@ -381,6 +391,9 @@ namespace NC_Reactor_Planner
             Fission.MaxSize = 24;
             Fission.NeutronReach = 4;
             Fission.ReflectorEfficiency = 0.5;
+            Fission.MaxSparsityPenaltyMultiplier = 0.5;
+            Fission.SparsityPenaltyThreshold = 0.75;
+            Fission.CoolingPenaltyLeniency = 10;
         }
 
         private static void SetDefaultResourceCosts()

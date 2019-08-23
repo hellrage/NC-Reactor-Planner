@@ -49,7 +49,7 @@ namespace NC_Reactor_Planner
             Refresh();
         }
 
-        private void ConstructMenu()
+        private void OldConstructMenu()
         {
             menu = new MenuStrip();
             menu.Dock = DockStyle.None;
@@ -69,6 +69,61 @@ namespace NC_Reactor_Planner
             manageMenu.DropDownItems["Insert after"].Click += new EventHandler(MenuInsertAfter);
             manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
             manageMenu.DropDownItems["Insert before"].Click += new EventHandler(MenuInsertBefore);
+            menu.Items.Add(manageMenu);
+
+            ToolStripMenuItem layerLabel = new ToolStripMenuItem { Name = "LayerLabel", Text = "Layer " + Y.ToString() };
+            menu.Items.Add(layerLabel);
+
+            ResetRescaleMenu();
+
+            menu.Location = new Point(0, 0);
+            menu.Visible = true;
+            Controls.Add(menu);
+        }
+        private void ConstructMenu()
+        {
+            menu = new MenuStrip();
+            menu.Dock = DockStyle.None;
+            ToolStripMenuItem editMenu = new ToolStripMenuItem { Name = "Edit", Text = "Edit" };
+            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Clear", Text = "Clear layer" });
+            editMenu.DropDownItems["Clear"].Click += new EventHandler(MenuClear);
+            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Copy", Text = "Copy layer" });
+            editMenu.DropDownItems["Copy"].Click += new EventHandler(MenuCopy);
+            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Paste", Text = "Paste layer" });
+            editMenu.DropDownItems["Paste"].Click += new EventHandler(MenuPaste);
+            menu.Items.Add(editMenu);
+
+            ToolStripMenuItem manageMenu = new ToolStripMenuItem { Name = "Manage", Text = "Manage" };
+
+            ToolStripMenuItem shrinkMenu = new ToolStripMenuItem { Name = "Shrink", Text = "Shrink" };
+            shrinkMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Delete", Text = "Delete this layer" });
+            shrinkMenu.DropDownItems["Delete"].Click += new EventHandler(MenuDelete);
+            shrinkMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Shrink right", Text = "Delete right column" });
+            shrinkMenu.DropDownItems["Shrink right"].Click += new EventHandler(MenuModifySize);
+            shrinkMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Shrink left", Text = "Delete left column" });
+            shrinkMenu.DropDownItems["Shrink left"].Click += new EventHandler(MenuModifySize);
+            shrinkMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Shrink top", Text = "Delete top row" });
+            shrinkMenu.DropDownItems["Shrink top"].Click += new EventHandler(MenuModifySize);
+            shrinkMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Shrink bottom", Text = "Delete bottom row" });
+            shrinkMenu.DropDownItems["Shrink bottom"].Click += new EventHandler(MenuModifySize);
+
+            manageMenu.DropDownItems.Add(shrinkMenu);
+
+            ToolStripMenuItem expandMenu = new ToolStripMenuItem { Name = "Expand", Text = "Expand" };
+            expandMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert after", Text = "Insert a new layer after this one" });
+            expandMenu.DropDownItems["Insert after"].Click += new EventHandler(MenuInsertAfter);
+            expandMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
+            expandMenu.DropDownItems["Insert before"].Click += new EventHandler(MenuInsertBefore);
+            expandMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Expand right", Text = "Insert a column on the right" });
+            expandMenu.DropDownItems["Expand right"].Click += new EventHandler(MenuModifySize);
+            expandMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Expand left", Text = "Insert a column on the left" });
+            expandMenu.DropDownItems["Expand left"].Click += new EventHandler(MenuModifySize);
+            expandMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Expand top", Text = "Insert a row on top" });
+            expandMenu.DropDownItems["Expand top"].Click += new EventHandler(MenuModifySize);
+            expandMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Expand bottom", Text = "Insert a row on the bottom" });
+            expandMenu.DropDownItems["Expand bottom"].Click += new EventHandler(MenuModifySize);
+            manageMenu.DropDownItems.Add(expandMenu);
+
             menu.Items.Add(manageMenu);
 
             ToolStripMenuItem layerLabel = new ToolStripMenuItem { Name = "LayerLabel", Text = "Layer " + Y.ToString() };
@@ -411,6 +466,96 @@ namespace NC_Reactor_Planner
                 return;
             }
             Reactor.InsertLayer(Y + 1);
+            Reactor.UI.ResetLayout(true);
+        }
+
+        private void MenuModifySize(object sender, EventArgs e)
+        {
+            string[] arguments = ((ToolStripItem)sender).Name.Split(' ');
+            int X = (int)Reactor.interiorDims.X;
+            int Y = (int)Reactor.interiorDims.Y;
+            int Z = (int)Reactor.interiorDims.Z;
+            if (arguments[0] == "Expand")
+            {
+                switch (arguments[1])
+                {
+                    case "right":
+                        if(X+1 > Configuration.Fission.MaxSize)
+                        {
+                            MessageBox.Show("Reactor at max size!");
+                            return;
+                        }
+                        Reactor.ModifySize(X + 1, Y, Z, new Point(1, 1), new Point(1, 1));
+                        break;
+                    case "left":
+                        if (X + 1 > Configuration.Fission.MaxSize)
+                        {
+                            MessageBox.Show("Reactor at max size!");
+                            return;
+                        }
+                        Reactor.ModifySize(X + 1, Y, Z, new Point(1, 1), new Point(2, 1));
+                        break;
+                    case "top":
+                        if (Z + 1 > Configuration.Fission.MaxSize)
+                        {
+                            MessageBox.Show("Reactor at max size!");
+                            return;
+                        }
+                        Reactor.ModifySize(X, Y, Z + 1, new Point(1, 1), new Point(1, 2));
+                        break;
+                    case "bottom":
+                        if (Z + 1 > Configuration.Fission.MaxSize)
+                        {
+                            MessageBox.Show("Reactor at max size!");
+                            return;
+                        }
+                        Reactor.ModifySize(X, Y, Z + 1, new Point(1, 1), new Point(1, 1));
+                        break;
+                    default:
+                        throw new ArgumentException("Unexpected expansion direction: " + arguments[1]);
+                }
+
+            }
+            else if(arguments[0] == "Shrink")
+            {
+                switch (arguments[1])
+                {
+                    case "right":
+                        if(X==1)
+                        {
+                            MessageBox.Show("Can't remove the last blocks!");
+                            return;
+                        }
+                        Reactor.ModifySize(X -1, Y, Z, new Point(1, 1), new Point(1, 1));
+                        break;
+                    case "left":
+                        if (X == 1)
+                        {
+                            MessageBox.Show("Can't remove the last blocks!");
+                            return;
+                        }
+                        Reactor.ModifySize(X - 1, Y, Z, new Point(2, 1), new Point(1, 1));
+                        break;
+                    case "top":
+                        if (Z == 1)
+                        {
+                            MessageBox.Show("Can't remove the last blocks!");
+                            return;
+                        }
+                        Reactor.ModifySize(X, Y, Z - 1, new Point(1, 2), new Point(1, 1));
+                        break;
+                    case "bottom":
+                        if (Z == 1)
+                        {
+                            MessageBox.Show("Can't remove the last blocks!");
+                            return;
+                        }
+                        Reactor.ModifySize(X, Y, Z - 1, new Point(1, 1), new Point(1, 1));
+                        break;
+                    default:
+                        throw new ArgumentException("Unexpected shrinking direction: " + arguments[1]);
+                }
+            }
             Reactor.UI.ResetLayout(true);
         }
     }

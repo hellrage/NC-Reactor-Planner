@@ -225,7 +225,7 @@ namespace NC_Reactor_Planner
                 reactorWidth.Value = (int)Reactor.interiorDims.X;
                 reactorHeight.Value = (int)Reactor.interiorDims.Y;
                 reactorLength.Value = (int)Reactor.interiorDims.Z;
-                //Reactor.ConstructLayers();
+                Reactor.ConstructLayers();
             }
 
             UpdateWindowTitle();
@@ -349,7 +349,7 @@ namespace NC_Reactor_Planner
         private string ConstructSaveFileName()
         {
             return (LoadedSaveFile == null)
-                                      ? string.Format("{0} {1} x {2} x {3}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z)
+                                      ? string.Format("{0} {1} x {2} x {3}", Palette.SelectedFuel.Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z)
                                       : LoadedSaveFile.Name;
         }
 
@@ -415,9 +415,9 @@ namespace NC_Reactor_Planner
                 if (LoadedSaveFile == null)
                 {
                     if (drawAllLayers)
-                        autoFileName = string.Format("{0} {1} x {2} x {3}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
+                        autoFileName = string.Format("{0} {1} x {2} x {3}", Palette.SelectedFuel.Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z);
                     else
-                        autoFileName = string.Format("{0} {1} x {2} x {3} layer {4}", ((Fuel)fuelSelector.SelectedItem).Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z, layerScrollBar.Value);
+                        autoFileName = string.Format("{0} {1} x {2} x {3} layer {4}", Palette.SelectedFuel.Name, Reactor.interiorDims.X, Reactor.interiorDims.Y, Reactor.interiorDims.Z, layerScrollBar.Value);
                 }
                 else
                 {

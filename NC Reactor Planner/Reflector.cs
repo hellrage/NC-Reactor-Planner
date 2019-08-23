@@ -30,6 +30,8 @@ namespace NC_Reactor_Planner
         {
             if (adjacentFuelCells.FindIndex(fuelCell => fuelCell.Valid) != -1)
                 Active = true;
+            else
+                --Reactor.functionalBlocks;
         }
 
         public void AddAdjacentFuelCell(FuelCell fuelCell)

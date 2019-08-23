@@ -170,6 +170,7 @@ namespace NC_Reactor_Planner
         {
             if(!Active)
             {
+                --Reactor.functionalBlocks;
                 AdjacentCells.Clear();
                 AdjacentModeratorLines = 0;
                 return;

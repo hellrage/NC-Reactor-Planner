@@ -42,6 +42,7 @@ namespace NC_Reactor_Planner
         public static List<Conductor> conductors;
         public static List<Reflector> reflectors;
         public static int totalCasings;
+        public static int totalInteriorBlocks;
 
         public static readonly List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
 
@@ -52,6 +53,8 @@ namespace NC_Reactor_Planner
         
         public static double heatMultiplier = 0;
         public static double efficiency = 0;
+        public static int functionalBlocks = 0;
+        public static double sparsityPenalty = 0;
 
         static Reactor()
         {
@@ -65,32 +68,7 @@ namespace NC_Reactor_Planner
         public static void InitializeReactor(int interiorX, int interiorY, int interiorZ)
         {
             interiorDims = new Size3D(interiorX, interiorY, interiorZ);
-            blocks = new Block[interiorX + 2, interiorY + 2, interiorZ + 2];
-
-            for (int x = 0; x < interiorX + 2; x++)
-                for (int y = 0; y < interiorY + 2; y++)
-                    for (int z = 0; z < interiorZ + 2; z++)
-                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
-
-            for (int y = 1; y < interiorY + 1; y++)
-                for (int z = 1; z < interiorZ + 1; z++)
-                {
-                    blocks[0, y, z] = new Casing("Casing", null, new Point3D(0, y, z));
-                    blocks[interiorX + 1, y, z] = new Casing("Casing", null, new Point3D(interiorX + 1, y, z));
-                }
-            for (int x = 1; x < interiorX + 1; x++)
-                for (int z = 1; z < interiorZ + 1; z++)
-                {
-                    blocks[x, 0, z] = new Casing("Casing", null, new Point3D(x, 0, z));
-                    blocks[x, interiorY + 1, z] = new Casing("Casing", null, new Point3D(x, interiorY + 1, z));
-                }
-            for (int y = 1; y < interiorY + 1; y++)
-                for (int x = 1; x < interiorX + 1; x++)
-                {
-                    blocks[x, y, interiorZ + 1] = new Casing("Casing", null, new Point3D(x, y, interiorZ + 1));
-                    blocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
-                }
-
+            blocks = CreateBlockArray(interiorX, interiorY, interiorZ);
             ConstructLayers();
 
         }
@@ -98,6 +76,36 @@ namespace NC_Reactor_Planner
         public static void InitializeReactor(Size3D interiorDims)
         {
             InitializeReactor((int)interiorDims.X, (int)interiorDims.Y, (int)interiorDims.Z);
+        }
+
+        private static Block[,,] CreateBlockArray(int interiorX, int interiorY, int interiorZ)
+        {
+            Block[,,] newBlocks = new Block[interiorX + 2, interiorY + 2, interiorZ + 2];
+            for (int x = 0; x < interiorX + 2; x++)
+                for (int y = 0; y < interiorY + 2; y++)
+                    for (int z = 0; z < interiorZ + 2; z++)
+                        newBlocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
+
+            for (int y = 1; y < interiorY + 1; y++)
+                for (int z = 1; z < interiorZ + 1; z++)
+                {
+                    newBlocks[0, y, z] = new Casing("Casing", null, new Point3D(0, y, z));
+                    newBlocks[interiorX + 1, y, z] = new Casing("Casing", null, new Point3D(interiorX + 1, y, z));
+                }
+            for (int x = 1; x < interiorX + 1; x++)
+                for (int z = 1; z < interiorZ + 1; z++)
+                {
+                    newBlocks[x, 0, z] = new Casing("Casing", null, new Point3D(x, 0, z));
+                    newBlocks[x, interiorY + 1, z] = new Casing("Casing", null, new Point3D(x, interiorY + 1, z));
+                }
+            for (int y = 1; y < interiorY + 1; y++)
+                for (int x = 1; x < interiorX + 1; x++)
+                {
+                    newBlocks[x, y, interiorZ + 1] = new Casing("Casing", null, new Point3D(x, y, interiorZ + 1));
+                    newBlocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
+                }
+
+            return newBlocks;
         }
 
         public static void ConstructLayers()
@@ -193,6 +201,8 @@ namespace NC_Reactor_Planner
             conductors = new List<Conductor>();
             reflectors = new List<Reflector>();
 
+            functionalBlocks = 0;
+
             foreach (Block block in blocks)
             {
                 if (block is HeatSink heatSink)
@@ -201,20 +211,28 @@ namespace NC_Reactor_Planner
                         heatSinks[heatSink.DisplayName].Add(heatSink);
                     else
                         heatSinks.Add(heatSink.DisplayName, new List<HeatSink> { heatSink });
+                    ++functionalBlocks;
                 }
                 else if (block is FuelCell fuelCell)
+                {
                     fuelCells.Add(fuelCell);
+                    ++functionalBlocks;
+                }
                 else if (block is Moderator moderator)
                 {
                     if (moderators.ContainsKey(moderator.DisplayName))
                         moderators[moderator.DisplayName].Add(moderator);
                     else
                         moderators.Add(moderator.DisplayName, new List<Moderator> { moderator });
+                    ++functionalBlocks;
                 }
                 else if (block is Conductor conductor)
                     conductors.Add(conductor);
                 else if (block is Reflector reflector)
+                {
                     reflectors.Add(reflector);
+                    ++functionalBlocks;
+                }
 
             }
         }
@@ -372,6 +390,8 @@ namespace NC_Reactor_Planner
             totalCasings += (int)(2 * interiorDims.X * interiorDims.Y);
             totalCasings += (int)(2 * interiorDims.Z * interiorDims.Y);
 
+            totalInteriorBlocks = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
+
             int activeFuelCells = 0;
             double sumEfficiency = 0;
             efficiency = 0;
@@ -400,8 +420,21 @@ namespace NC_Reactor_Planner
             efficiency = (activeFuelCells > 0) ? (sumEfficiency / activeFuelCells) : 0;
             heatMultiplier = (activeFuelCells > 0) ? (sumHeatMultiplier / activeFuelCells) : 0;
 
+            double density = (double)functionalBlocks / (double)totalInteriorBlocks;
+            double spt = Configuration.Fission.SparsityPenaltyThreshold;
+            double mspm = Configuration.Fission.MaxSparsityPenaltyMultiplier;
+            if (density >= spt)
+            {
+                sparsityPenalty = 1;
+            }
+            else
+            {
+                Console.WriteLine("Density: " + density.ToString());
+                sparsityPenalty = ((1 - mspm) * Math.Sin(density * Math.PI / (2 * spt))) + mspm;
+            }
+
             totalHeatPerTick *= Configuration.Fission.HeatGeneration;
-            totalOutputPerTick *= Configuration.Fission.Power;
+            totalOutputPerTick *= Configuration.Fission.Power * sparsityPenalty;
         }
 
         public static string GetStatString(bool includeClusterInfo = true)
@@ -412,8 +445,18 @@ namespace NC_Reactor_Planner
                                         "Total Cooling: {1} HU/t\r\n" +
                                         "Net Heat: {2} HU/t\r\n" +
                                         "Overall Efficiency: {3} %\r\n" +
-                                        "Overall Heat Multiplier: {4} %\r\n\r\n",
-                                        totalHeatPerTick,totalCoolingPerTick,totalHeatPerTick-totalCoolingPerTick,(int)(efficiency*100),(int)(heatMultiplier*100), (int)(totalOutputPerTick/16)
+                                        "Overall Heat Multiplier: {4} %\r\n" +
+                                        "Functional \\ total blocks: {6} \\ {7}\r\n" +
+                                        "Sparsity penalty multiplier: {8}\r\n\r\n",
+                                        totalHeatPerTick,
+                                        totalCoolingPerTick,
+                                        totalHeatPerTick-totalCoolingPerTick,
+                                        (int)(efficiency*100),
+                                        (int)(heatMultiplier*100),
+                                        (int)(totalOutputPerTick/16),
+                                        functionalBlocks,
+                                        totalInteriorBlocks,
+                                        (sparsityPenalty == 0) ? "None" : Math.Round(sparsityPenalty, 4).ToString()
                 );
 
             if(includeClusterInfo)
@@ -675,7 +718,6 @@ namespace NC_Reactor_Planner
 
             blocks = newReactor;
             interiorDims = new Size3D(interiorDims.X, interiorDims.Y - 1, interiorDims.Z);
-
         }
 
         public static void InsertLayer(int y)
@@ -716,6 +758,27 @@ namespace NC_Reactor_Planner
 
             blocks = newReactor;
             interiorDims = new Size3D(interiorDims.X, interiorDims.Y + 1, interiorDims.Z);
+        }
+
+        public static void ModifySize(int interiorX, int interiorY, int interiorZ, Point copyCorner, Point pasteCorner)
+        {
+            Block[,,] newBlocks = CreateBlockArray(interiorX, interiorY, interiorZ);
+            int copyX;
+            int copyZ;
+            for (int y = 1; y <= interiorY; y++)
+            {
+                copyX = copyCorner.X;
+                for (int x = pasteCorner.X; x <= interiorX & copyX <= interiorX & copyX <= interiorDims.X; x++, copyX++)
+                {
+                    copyZ = copyCorner.Y;
+                    for (int z = pasteCorner.Y; z <= interiorZ & copyZ <= interiorZ & copyZ <= interiorDims.Z; z++, copyZ++)
+                    {
+                        newBlocks[x, y, z] = blocks[copyX, y, copyZ].Copy(new Point3D(x,y,z));
+                    }
+                }
+            }
+            blocks = newBlocks;
+            interiorDims = new Size3D(interiorX, interiorY, interiorZ);
         }
     }
 }

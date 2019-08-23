@@ -51,6 +51,9 @@ namespace NC_Reactor_Planner
                     }
                 }
             }
+            if (!Active)
+                --Reactor.functionalBlocks;
+
         }
 
         public Tuple<int, BlockTypes> WalkLineToValidSource(Vector3D offset)
