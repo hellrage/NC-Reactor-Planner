@@ -17,7 +17,7 @@ namespace NC_Reactor_Planner
         public bool Shielded { get; private set; }
         public Fuel UsedFuel { get; private set; }
         public double PositionalEfficiency { get; private set; }
-        public double ModeratedNeutronFlux { get; private set; }
+        public int ModeratedNeutronFlux { get; private set; }
         public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1 / (1 + Math.Exp(2 * (ModeratedNeutronFlux - 2 * UsedFuel.CriticalityFactor)))); }
         public double FuelDuration { get => UsedFuel.FuelTime * Reactor.clusters[Cluster].FuelDurationMultiplier / Configuration.Fission.FuelUse; }
         public bool Primed { get; set; }
@@ -95,7 +95,7 @@ namespace NC_Reactor_Planner
 
         public FuelCell FindModeratorThenAdjacentCell(Vector3D offset)
         {
-            double sumModeratorFlux = 0;
+            int sumModeratorFlux = 0;
             double sumModeratorEfficiency = 0;
             int moderatorsInLine = 0;
             Point3D pos = Position + offset;
@@ -117,7 +117,7 @@ namespace NC_Reactor_Planner
                     fuelCell.PositionalEfficiency += sumModeratorEfficiency / moderatorsInLine;
                     fuelCell.ModeratedNeutronFlux += sumModeratorFlux;
                     fuelCell.AddAdjacentFuelCell(this);
-                    if (Math.Round(fuelCell.ModeratedNeutronFlux,2) >= fuelCell.UsedFuel.CriticalityFactor)
+                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor)
                     {
                         ((Moderator)Reactor.BlockAt(Position + offset)).Active = true;
                         ((Moderator)Reactor.BlockAt(pos - offset)).Active = true;
@@ -141,7 +141,7 @@ namespace NC_Reactor_Planner
                     ModeratedNeutronFlux += 2 * sumModeratorFlux;
                     PositionalEfficiency += Configuration.Fission.ReflectorEfficiency * sumModeratorEfficiency / moderatorsInLine;
                     reflector.AddAdjacentFuelCell(this);
-                    if (Math.Round(ModeratedNeutronFlux, 2) >= UsedFuel.CriticalityFactor)
+                    if (ModeratedNeutronFlux >= UsedFuel.CriticalityFactor)
                     {
                         Activate();
                         reflector.Active = true;

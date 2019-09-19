@@ -9,12 +9,13 @@ namespace NC_Reactor_Planner
     {
         public bool Active { get; set; }
         public ModeratorTypes ModeratorType { get; private set; }
-        public double FluxFactor { get; private set; }
+        public int FluxFactor { get; private set; }
         public double EfficiencyFactor { get; private set; }
         public override bool Valid { get => Active & HasAdjacentValidFuelCell; }
         public bool HasAdjacentValidFuelCell { get; private set; }
 
-        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, double fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
+        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, int
+            fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             FluxFactor = fluxFactor;
             EfficiencyFactor = efficiencyFactor;

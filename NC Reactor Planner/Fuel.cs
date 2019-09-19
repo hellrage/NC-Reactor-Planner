@@ -9,9 +9,9 @@ namespace NC_Reactor_Planner
         public double BaseHeat { get; private set; }
         public double FuelTime { get; private set; }
         public double BaseEfficiency { get; private set; }
-        public double CriticalityFactor { get; private set; }
+        public int CriticalityFactor { get; private set; }
 
-        public Fuel(string name, double baseEfficiency, double baseHeat, double fuelTime, double criticalityFactor)
+        public Fuel(string name, double baseEfficiency, double baseHeat, double fuelTime, int criticalityFactor)
         {
             Name = name;
             BaseHeat = baseHeat;

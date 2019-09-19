@@ -363,6 +363,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Nitrogen {
+            get {
+                object obj = ResourceManager.GetObject("Nitrogen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap NoTexture {
             get {
                 object obj = ResourceManager.GetObject("NoTexture", resourceCulture);
@@ -446,16 +456,6 @@ namespace NC_Reactor_Planner.Properties {
         public static System.Drawing.Bitmap Slime {
             get {
                 object obj = ResourceManager.GetObject("Slime", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap TCAlloy {
-            get {
-                object obj = ResourceManager.GetObject("TCAlloy", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

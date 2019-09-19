@@ -34,9 +34,9 @@ namespace NC_Reactor_Planner
         public double BaseEfficiency;
         public double BaseHeat;
         public double FuelTime;
-        public double CriticalityFactor;
+        public int CriticalityFactor;
 
-        public FuelValues(double be, double bh, double ft, double cf)
+        public FuelValues(double be, double bh, double ft, int cf)
         {
             BaseEfficiency = be;
             BaseHeat = bh;
@@ -49,7 +49,7 @@ namespace NC_Reactor_Planner
             BaseEfficiency = Convert.ToDouble(values[0]);
             BaseHeat = Convert.ToDouble(values[1]);
             FuelTime = Convert.ToDouble(values[2]);
-            CriticalityFactor = Convert.ToDouble(values[3]);
+            CriticalityFactor = Convert.ToInt32(values[3]);
         }
     }
 
@@ -73,10 +73,10 @@ namespace NC_Reactor_Planner
 
     public struct ModeratorValues
     {
-        public double FluxFactor;
+        public int FluxFactor;
         public double EfficiencyFactor;
 
-        public ModeratorValues(double ff, double ef)
+        public ModeratorValues(int ff, double ef)
         {
             FluxFactor = ff;
             EfficiencyFactor = ef;
@@ -84,7 +84,7 @@ namespace NC_Reactor_Planner
 
         public ModeratorValues(List<object> fieldValues)
         {
-            FluxFactor = Convert.ToDouble(fieldValues[0]);
+            FluxFactor = Convert.ToInt32(fieldValues[0]);
             EfficiencyFactor = Convert.ToDouble(fieldValues[1]);
         }
     }
@@ -178,10 +178,10 @@ namespace NC_Reactor_Planner
 
             if(cf.saveVersion < new Version(2,0,0,0))
             {
-                System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your DefaultConfig.json to regenerate a new one.");
+                System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 22, 0))
+            if(cf.saveVersion < new Version(2, 0, 23, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -250,90 +250,117 @@ namespace NC_Reactor_Planner
         private static void SetDefaultFuels()
         {
             Fuels = new Dictionary<string, FuelValues>();
-            Fuels.Add("[OX]TBU", new FuelValues(1, 40, 125000, 17.6));
-            Fuels.Add("[OX]LEU-233", new FuelValues(1.1, 144, 34700, 7.8));
-            Fuels.Add("[OX]HEU-233", new FuelValues(1.1, 432, 34700, 3.9));
-            Fuels.Add("[OX]LEU-235", new FuelValues(1, 120, 41700, 8.5));
-            Fuels.Add("[OX]HEU-235", new FuelValues(1, 360, 41700, 4.2));
-            Fuels.Add("[OX]LEN-236", new FuelValues(1.1, 90, 55600, 9.4));
-            Fuels.Add("[OX]HEN-236", new FuelValues(1.1, 270, 55600, 4.7));
-            Fuels.Add("[OX]LEP-239", new FuelValues(1.2, 105, 47600, 8.9));
-            Fuels.Add("[OX]HEP-239", new FuelValues(1.2, 315, 47600, 4.4));
-            Fuels.Add("[OX]LEP-241", new FuelValues(1.25, 165, 30300, 7.3));
-            Fuels.Add("[OX]HEP-241", new FuelValues(1.25, 495, 30300, 3.6));
-            Fuels.Add("[OX]MOX-239", new FuelValues(1.05, 112, 44600, 8.7));
-            Fuels.Add("[OX]MOX-241", new FuelValues(1.15, 142, 35200, 7.9));
-            Fuels.Add("[OX]LEA-242", new FuelValues(1.35, 192, 26000, 6.5));
-            Fuels.Add("[OX]HEA-242", new FuelValues(1.35, 576, 26000, 3.2));
-            Fuels.Add("[OX]LECm-243", new FuelValues(1.45, 210, 23800, 6.2));
-            Fuels.Add("[OX]HECm-243", new FuelValues(1.45, 630, 23800, 3.1));
-            Fuels.Add("[OX]LECm-245", new FuelValues(1.5, 162, 30900, 7.4));
-            Fuels.Add("[OX]HECm-245", new FuelValues(1.5, 486, 30900, 3.7));
-            Fuels.Add("[OX]LECm-247", new FuelValues(1.55, 138, 36200, 8));
-            Fuels.Add("[OX]HECm-247", new FuelValues(1.55, 414, 36200, 4));
-            Fuels.Add("[OX]LEB-248", new FuelValues(1.65, 135, 37000, 8.1));
-            Fuels.Add("[OX]HEB-248", new FuelValues(1.65, 405, 37000, 4));
-            Fuels.Add("[OX]LECf-249", new FuelValues(1.75, 216, 23100, 6.1));
-            Fuels.Add("[OX]HECf-249", new FuelValues(1.75, 648, 23100, 3));
-            Fuels.Add("[OX]LECf-251", new FuelValues(1.8, 225, 22200, 5.8));
-            Fuels.Add("[OX]HECf-251", new FuelValues(1.8, 675, 22200, 2.9));
+            Fuels.Add("[OX]TBU", new FuelValues(1, 40, 14400, 234));
+            Fuels.Add("[OX]LEU-233", new FuelValues(1.1, 216, 2666, 78));
+            Fuels.Add("[OX]HEU-233", new FuelValues(1.1, 648, 2666, 39));
+            Fuels.Add("[OX]LEU-235", new FuelValues(1, 120, 4800, 102));
+            Fuels.Add("[OX]HEU-235", new FuelValues(1, 360, 4800, 51));
+            Fuels.Add("[OX]LEN-236", new FuelValues(1.1, 292, 1972, 70));
+            Fuels.Add("[OX]HEN-236", new FuelValues(1.1, 876, 1972, 35));
+            Fuels.Add("[OX]LEP-239", new FuelValues(1.2, 126, 4572, 99));
+            Fuels.Add("[OX]HEP-239", new FuelValues(1.2, 378, 4572, 49));
+            Fuels.Add("[OX]LEP-241", new FuelValues(1.25, 182, 3164, 84));
+            Fuels.Add("[OX]HEP-241", new FuelValues(1.25, 546, 3164, 42));
+            Fuels.Add("[OX]MOX-239", new FuelValues(1.05, 132, 4354, 94));
+            Fuels.Add("[OX]MOX-241", new FuelValues(1.15, 192, 3014, 80));
+            Fuels.Add("[OX]LEA-242", new FuelValues(1.35, 390, 1476, 65));
+            Fuels.Add("[OX]HEA-242", new FuelValues(1.35, 1170, 1476, 32));
+            Fuels.Add("[OX]LECm-243", new FuelValues(1.45, 384, 1500, 66));
+            Fuels.Add("[OX]HECm-243", new FuelValues(1.45, 1152, 1500, 33));
+            Fuels.Add("[OX]LECm-245", new FuelValues(1.5, 238, 2420, 75));
+            Fuels.Add("[OX]HECm-245", new FuelValues(1.5, 714, 2420, 37));
+            Fuels.Add("[OX]LECm-247", new FuelValues(1.55, 268, 2150, 72));
+            Fuels.Add("[OX]HECm-247", new FuelValues(1.55, 804, 2150, 36));
+            Fuels.Add("[OX]LEB-248", new FuelValues(1.65, 266, 2166, 73));
+            Fuels.Add("[OX]HEB-248", new FuelValues(1.65, 798, 2166, 36));
+            Fuels.Add("[OX]LECf-249", new FuelValues(1.75, 540, 1066, 60));
+            Fuels.Add("[OX]HECf-249", new FuelValues(1.75, 1620, 1066, 30));
+            Fuels.Add("[OX]LECf-251", new FuelValues(1.8, 288, 2000, 71));
+            Fuels.Add("[OX]HECf-251", new FuelValues(1.8, 864, 2000, 35));
 
-            Fuels.Add("[NI]TBU", new FuelValues(1, 32, 156300, 22));
-            Fuels.Add("[NI]LEU-233", new FuelValues(1.1, 115, 43500, 9.8));
-            Fuels.Add("[NI]HEU-233", new FuelValues(1.1, 345, 43500, 4.9));
-            Fuels.Add("[NI]LEU-235", new FuelValues(1, 96, 52100, 10.6));
-            Fuels.Add("[NI]HEU-235", new FuelValues(1, 288, 52100, 5.3));
-            Fuels.Add("[NI]LEN-236", new FuelValues(1.1, 72, 69400, 11.8));
-            Fuels.Add("[NI]HEN-236", new FuelValues(1.1, 216, 69400, 5.9));
-            Fuels.Add("[NI]LEP-239", new FuelValues(1.2, 84, 59500, 11.1));
-            Fuels.Add("[NI]HEP-239", new FuelValues(1.2, 252, 59500, 5.5));
-            Fuels.Add("[NI]LEP-241", new FuelValues(1.25, 132, 37900, 9.1));
-            Fuels.Add("[NI]HEP-241", new FuelValues(1.25, 396, 37900, 4.5));
-            Fuels.Add("[NI]MNI-239", new FuelValues(1.05, 90, 55600, 10.9));
-            Fuels.Add("[NI]MNI-241", new FuelValues(1.15, 114, 43900, 9.9));
-            Fuels.Add("[NI]LEA-242", new FuelValues(1.35, 154, 32500, 8.1));
-            Fuels.Add("[NI]HEA-242", new FuelValues(1.35, 462, 32500, 4));
-            Fuels.Add("[NI]LECm-243", new FuelValues(1.45, 168, 29800, 7.8));
-            Fuels.Add("[NI]HECm-243", new FuelValues(1.45, 504, 29800, 3.9));
-            Fuels.Add("[NI]LECm-245", new FuelValues(1.5, 130, 38500, 9.3));
-            Fuels.Add("[NI]HECm-245", new FuelValues(1.5, 390, 38500, 4.6));
-            Fuels.Add("[NI]LECm-247", new FuelValues(1.55, 110, 45500, 10));
-            Fuels.Add("[NI]HECm-247", new FuelValues(1.55, 330, 45500, 5));
-            Fuels.Add("[NI]LEB-248", new FuelValues(1.65, 108, 46300, 10.1));
-            Fuels.Add("[NI]HEB-248", new FuelValues(1.65, 324, 46300, 5));
-            Fuels.Add("[NI]LECf-249", new FuelValues(1.75, 173, 28900, 7.6));
-            Fuels.Add("[NI]HECf-249", new FuelValues(1.75, 519, 28900, 3.8));
-            Fuels.Add("[NI]LECf-251", new FuelValues(1.8, 180, 27800, 7.3));
-            Fuels.Add("[NI]HECf-251", new FuelValues(1.8, 540, 27800, 3.6));
+            Fuels.Add("[NI]TBU", new FuelValues(1, 32, 18000, 293));
+            Fuels.Add("[NI]LEU-233", new FuelValues(1.1, 172, 3348, 98));
+            Fuels.Add("[NI]HEU-233", new FuelValues(1.1, 516, 3348, 49));
+            Fuels.Add("[NI]LEU-235", new FuelValues(1, 96, 6000, 128));
+            Fuels.Add("[NI]HEU-235", new FuelValues(1, 288, 6000, 64));
+            Fuels.Add("[NI]LEN-236", new FuelValues(1.1, 234, 2462, 88));
+            Fuels.Add("[NI]HEN-236", new FuelValues(1.1, 702, 2462, 44));
+            Fuels.Add("[NI]LEP-239", new FuelValues(1.2, 100, 5760, 124));
+            Fuels.Add("[NI]HEP-239", new FuelValues(1.2, 300, 5760, 62));
+            Fuels.Add("[NI]LEP-241", new FuelValues(1.25, 146, 3946, 105));
+            Fuels.Add("[NI]HEP-241", new FuelValues(1.25, 438, 3946, 52));
+            Fuels.Add("[NI]MNI-239", new FuelValues(1.05, 106, 5486, 118));
+            Fuels.Add("[NI]MNI-241", new FuelValues(1.15, 154, 3758, 100));
+            Fuels.Add("[NI]LEA-242", new FuelValues(1.35, 312, 1846, 81));
+            Fuels.Add("[NI]HEA-242", new FuelValues(1.35, 936, 1846, 40));
+            Fuels.Add("[NI]LECm-243", new FuelValues(1.45, 308, 1870, 83));
+            Fuels.Add("[NI]HECm-243", new FuelValues(1.45, 924, 1870, 41));
+            Fuels.Add("[NI]LECm-245", new FuelValues(1.5, 190, 3032, 94));
+            Fuels.Add("[NI]HECm-245", new FuelValues(1.5, 570, 3032, 47));
+            Fuels.Add("[NI]LECm-247", new FuelValues(1.55, 214, 2692, 90));
+            Fuels.Add("[NI]HECm-247", new FuelValues(1.55, 642, 2692, 45));
+            Fuels.Add("[NI]LEB-248", new FuelValues(1.65, 212, 2716, 91));
+            Fuels.Add("[NI]HEB-248", new FuelValues(1.65, 636, 2716, 45));
+            Fuels.Add("[NI]LECf-249", new FuelValues(1.75, 432, 1334, 75));
+            Fuels.Add("[NI]HECf-249", new FuelValues(1.75, 1296, 1334, 37));
+            Fuels.Add("[NI]LECf-251", new FuelValues(1.8, 230, 2504, 89));
+            Fuels.Add("[NI]HECf-251", new FuelValues(1.8, 690, 2504, 44));
 
-            Fuels.Add("[ZA]TBU", new FuelValues(1, 48, 104200, 15));
-            Fuels.Add("[ZA]LEU-233", new FuelValues(1.1, 173, 28900, 6.6));
-            Fuels.Add("[ZA]HEU-233", new FuelValues(1.1, 519, 28900, 3.3));
-            Fuels.Add("[ZA]LEU-235", new FuelValues(1, 144, 34700, 7.2));
-            Fuels.Add("[ZA]HEU-235", new FuelValues(1, 432, 34700, 3.6));
-            Fuels.Add("[ZA]LEN-236", new FuelValues(1.1, 108, 46300, 8));
-            Fuels.Add("[ZA]HEN-236", new FuelValues(1.1, 324, 46300, 4));
-            Fuels.Add("[ZA]LEP-239", new FuelValues(1.2, 126, 39700, 7.6));
-            Fuels.Add("[ZA]HEP-239", new FuelValues(1.2, 378, 39700, 3.8));
-            Fuels.Add("[ZA]LEP-241", new FuelValues(1.25, 198, 25300, 6.2));
-            Fuels.Add("[ZA]HEP-241", new FuelValues(1.25, 594, 25300, 3.1));
-            Fuels.Add("[ZA]MZA-239", new FuelValues(1.05, 134, 37300, 7.4));
-            Fuels.Add("[ZA]MZA-241", new FuelValues(1.15, 170, 29400, 6.7));
-            Fuels.Add("[ZA]LEA-242", new FuelValues(1.35, 230, 21700, 5.5));
-            Fuels.Add("[ZA]HEA-242", new FuelValues(1.35, 690, 21700, 2.7));
-            Fuels.Add("[ZA]LECm-243", new FuelValues(1.45, 252, 19800, 5.3));
-            Fuels.Add("[ZA]HECm-243", new FuelValues(1.45, 756, 19800, 2.6));
-            Fuels.Add("[ZA]LECm-245", new FuelValues(1.5, 194, 25800, 6.3));
-            Fuels.Add("[ZA]HECm-245", new FuelValues(1.5, 582, 25800, 3.1));
-            Fuels.Add("[ZA]LECm-247", new FuelValues(1.55, 166, 30100, 6.8));
-            Fuels.Add("[ZA]HECm-247", new FuelValues(1.55, 498, 30100, 3.4));
-            Fuels.Add("[ZA]LEB-248", new FuelValues(1.65, 162, 30900, 6.9));
-            Fuels.Add("[ZA]HEB-248", new FuelValues(1.65, 486, 30900, 3.4));
-            Fuels.Add("[ZA]LECf-249", new FuelValues(1.75, 259, 19300, 5.2));
-            Fuels.Add("[ZA]HECf-249", new FuelValues(1.75, 777, 19300, 2.6));
-            Fuels.Add("[ZA]LECf-251", new FuelValues(1.8, 270, 18500, 4.9));
-            Fuels.Add("[ZA]HECf-251", new FuelValues(1.8, 810, 18500, 2.5));
+            Fuels.Add("[ZA]TBU", new FuelValues(1.05, 50, 11520, 199));
+            Fuels.Add("[ZA]LEU-233", new FuelValues(1.15, 270, 2134, 66));
+            Fuels.Add("[ZA]HEU-233", new FuelValues(1.15, 810, 2134, 33));
+            Fuels.Add("[ZA]LEU-235", new FuelValues(1.05, 150, 3840, 87));
+            Fuels.Add("[ZA]HEU-235", new FuelValues(1.05, 450, 3840, 43));
+            Fuels.Add("[ZA]LEN-236", new FuelValues(1.15, 366, 1574, 60));
+            Fuels.Add("[ZA]HEN-236", new FuelValues(1.15, 1098, 1574, 30));
+            Fuels.Add("[ZA]LEP-239", new FuelValues(1.25, 158, 3646, 84));
+            Fuels.Add("[ZA]HEP-239", new FuelValues(1.25, 474, 3646, 42));
+            Fuels.Add("[ZA]LEP-241", new FuelValues(1.3, 228, 2526, 71));
+            Fuels.Add("[ZA]HEP-241", new FuelValues(1.3, 684, 2526, 35));
+            Fuels.Add("[ZA]MZA-239", new FuelValues(1.1, 166, 3472, 80));
+            Fuels.Add("[ZA]MZA-241", new FuelValues(1.2, 240, 2406, 68));
+            Fuels.Add("[ZA]LEA-242", new FuelValues(1.4, 488, 1180, 55));
+            Fuels.Add("[ZA]HEA-242", new FuelValues(1.4, 1464, 1180, 27));
+            Fuels.Add("[ZA]LECm-243", new FuelValues(1.5, 480, 1200, 56));
+            Fuels.Add("[ZA]HECm-243", new FuelValues(1.5, 1440, 1200, 28));
+            Fuels.Add("[ZA]LECm-245", new FuelValues(1.55, 298, 1932, 64));
+            Fuels.Add("[ZA]HECm-245", new FuelValues(1.55, 894, 1932, 32));
+            Fuels.Add("[ZA]LECm-247", new FuelValues(1.6, 336, 1714, 61));
+            Fuels.Add("[ZA]HECm-247", new FuelValues(1.6, 1008, 1714, 30));
+            Fuels.Add("[ZA]LEB-248", new FuelValues(1.7, 332, 1734, 62));
+            Fuels.Add("[ZA]HEB-248", new FuelValues(1.7, 996, 1734, 31));
+            Fuels.Add("[ZA]LECf-249", new FuelValues(1.8, 676, 852, 51));
+            Fuels.Add("[ZA]HECf-249", new FuelValues(1.8, 2028, 852, 25));
+            Fuels.Add("[ZA]LECf-251", new FuelValues(1.85, 360, 1600, 60));
+            Fuels.Add("[ZA]HECf-251", new FuelValues(1.85, 1080, 1600, 30));
 
+            Fuels.Add("[F4]TBU", new FuelValues(2, 32, 18000, 234));
+            Fuels.Add("[F4]LEU-233", new FuelValues(2.2, 172, 3348, 78));
+            Fuels.Add("[F4]HEU-233", new FuelValues(2.2, 516, 3348, 39));
+            Fuels.Add("[F4]LEU-235", new FuelValues(2, 96, 6000, 102));
+            Fuels.Add("[F4]HEU-235", new FuelValues(2, 288, 6000, 51));
+            Fuels.Add("[F4]LEN-236", new FuelValues(2.2, 234, 2462, 70));
+            Fuels.Add("[F4]HEN-236", new FuelValues(2.2, 702, 2462, 35));
+            Fuels.Add("[F4]LEP-239", new FuelValues(2.4, 100, 5760, 99));
+            Fuels.Add("[F4]HEP-239", new FuelValues(2.4, 300, 5760, 49));
+            Fuels.Add("[F4]LEP-241", new FuelValues(2.5, 146, 3946, 84));
+            Fuels.Add("[F4]HEP-241", new FuelValues(2.5, 438, 3946, 42));
+            Fuels.Add("[F4]MF4-239", new FuelValues(2.1, 106, 5486, 94));
+            Fuels.Add("[F4]MF4-241", new FuelValues(2.3, 154, 3758, 80));
+            Fuels.Add("[F4]LEA-242", new FuelValues(2.7, 312, 1846, 65));
+            Fuels.Add("[F4]HEA-242", new FuelValues(2.7, 936, 1846, 32));
+            Fuels.Add("[F4]LECm-243", new FuelValues(2.9, 308, 1870, 66));
+            Fuels.Add("[F4]HECm-243", new FuelValues(2.9, 924, 1870, 33));
+            Fuels.Add("[F4]LECm-245", new FuelValues(3, 190, 3032, 75));
+            Fuels.Add("[F4]HECm-245", new FuelValues(3, 570, 3032, 37));
+            Fuels.Add("[F4]LECm-247", new FuelValues(3.1, 214, 2692, 72));
+            Fuels.Add("[F4]HECm-247", new FuelValues(3.1, 642, 2692, 36));
+            Fuels.Add("[F4]LEB-248", new FuelValues(3.3, 212, 2716, 73));
+            Fuels.Add("[F4]HEB-248", new FuelValues(3.3, 636, 2716, 36));
+            Fuels.Add("[F4]LECf-249", new FuelValues(3.5, 432, 1334, 60));
+            Fuels.Add("[F4]HECf-249", new FuelValues(3.5, 1296, 1334, 30));
+            Fuels.Add("[F4]LECf-251", new FuelValues(3.6, 230, 2504, 71));
+            Fuels.Add("[F4]HECf-251", new FuelValues(3.6, 690, 2504, 35));
         }
 
         private static void SetDefaultHeatSinks()
@@ -344,13 +371,16 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Redstone", new HeatSinkValues(85, "One FuelCell; One Moderator"));
             HeatSinks.Add("Quartz", new HeatSinkValues(75, "One Redstone heatsink"));
             HeatSinks.Add("Obsidian", new HeatSinkValues(70, "Axial Glowstone heatsinks"));
+            HeatSinks.Add("NetherBrick", new HeatSinkValues(105, "One Obsidian heatsink"));
             HeatSinks.Add("Glowstone", new HeatSinkValues(115, "Two Moderators"));
             HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell; One Casing"));
             HeatSinks.Add("Gold", new HeatSinkValues(100, "Two Iron heatsinks"));
             HeatSinks.Add("Prismarine", new HeatSinkValues(110, "Two Water heatsinks"));
+            HeatSinks.Add("Slime", new HeatSinkValues(125, "Exactly One Water heatsink; One Reflector"));
+            HeatSinks.Add("EndStone", new HeatSinkValues(60, "One Reflector"));
             HeatSinks.Add("Purpur", new HeatSinkValues(90, "Exactly One Iron heatsink; One EndStone heatsink"));
-            HeatSinks.Add("Diamond", new HeatSinkValues(180, "One Gold heatsink; One FuelCell"));
-            HeatSinks.Add("Emerald", new HeatSinkValues(190, "One Prismarine heatsink; One Moderator"));
+            HeatSinks.Add("Diamond", new HeatSinkValues(190, "One Gold heatsink; One FuelCell"));
+            HeatSinks.Add("Emerald", new HeatSinkValues(195, "One Prismarine heatsink; One Moderator"));
             HeatSinks.Add("Copper", new HeatSinkValues(80, "One Water heatsink"));
             HeatSinks.Add("Tin", new HeatSinkValues(120, "Axial Lapis heatsinks"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
@@ -360,26 +390,23 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(175, "One Quartz heatsink; One Tin heatsink"));
             HeatSinks.Add("Silver", new HeatSinkValues(170, "One Glowstone heatsink; One Lapis heatsink"));
-            HeatSinks.Add("Helium", new HeatSinkValues(195, "Exactly Two Redstone heatsinks; One Casing"));
-            HeatSinks.Add("Enderium", new HeatSinkValues(185, "Three Moderators"));
-            HeatSinks.Add("Cryotheum", new HeatSinkValues(200, "Three FuelCells"));
-            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink; One EndStone heatsink"));
             HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink; One Prismarine heatsink"));
             HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector; One Redstone heatsink"));
+            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink; One EndStone heatsink"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Axial Reflectors"));
-            HeatSinks.Add("TCAlloy", new HeatSinkValues(205, "One FuelCell; Two Moderators; One Reflector"));
-            HeatSinks.Add("EndStone", new HeatSinkValues(60, "One Reflector"));
-            HeatSinks.Add("Slime", new HeatSinkValues(125, "Exactly One Water heatsink; One Reflector"));
-            HeatSinks.Add("NetherBrick", new HeatSinkValues(105, "One Obsidian heatsink"));
+            HeatSinks.Add("Nitrogen", new HeatSinkValues(180, "Exactly Two Redstone heatsinks; One Casing"));
+            HeatSinks.Add("Helium", new HeatSinkValues(200, "Exactly Two Redstone heatsinks; One Casing"));
+            HeatSinks.Add("Enderium", new HeatSinkValues(185, "Three Moderators"));
+            HeatSinks.Add("Cryotheum", new HeatSinkValues(205, "Three FuelCells"));
 
         }
 
         private static void SetDefaultModerators()
         {
             Moderators = new Dictionary<string, ModeratorValues>();
-            Moderators.Add("Beryllium", new ModeratorValues(2.2, 1.1));
-            Moderators.Add("Graphite", new ModeratorValues(1.0, 1.2));
-            Moderators.Add("HeavyWater", new ModeratorValues(3.6, 1.0));
+            Moderators.Add("Beryllium", new ModeratorValues(22, 1.1));
+            Moderators.Add("Graphite", new ModeratorValues(10, 1.2));
+            Moderators.Add("HeavyWater", new ModeratorValues(36, 1.0));
         }
 
         private static void SetDefaultFission()

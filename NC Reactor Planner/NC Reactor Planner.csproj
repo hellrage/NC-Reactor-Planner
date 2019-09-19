@@ -245,7 +245,6 @@
   <ItemGroup>
     <Content Include="Resources\Air.png" />
     <None Include="Resources\Villiaumite.png" />
-    <None Include="Resources\TCAlloy.png" />
     <None Include="Resources\Slime.png" />
     <None Include="Resources\Aluminum.png" />
     <None Include="Resources\Arsenic.png" />
@@ -260,6 +259,7 @@
     <None Include="Resources\NetherBrick.png" />
     <None Include="Resources\NoTexture.png" />
     <None Include="Resources\Newtonsoft.Json.dll" />
+    <None Include="Resources\Nitrogen.png" />
     <Content Include="Resources\Purpur.png" />
     <Content Include="Resources\Reflector.png" />
     <Content Include="Resources\Silver.png" />
