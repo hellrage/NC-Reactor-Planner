@@ -394,7 +394,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector; One Redstone heatsink"));
             HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink; One EndStone heatsink"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Axial Reflectors"));
-            HeatSinks.Add("Nitrogen", new HeatSinkValues(180, "Exactly Two Redstone heatsinks; One Casing"));
+            HeatSinks.Add("Nitrogen", new HeatSinkValues(180, "Two Copper heatsinks; Two Lead heatsinks"));
             HeatSinks.Add("Helium", new HeatSinkValues(200, "Exactly Two Redstone heatsinks; One Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(185, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(205, "Three FuelCells"));
