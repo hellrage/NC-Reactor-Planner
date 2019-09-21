@@ -5,7 +5,13 @@ Feature list https://github.com/hellrage/NC-Reactor-Planner/blob/master/Feature%
 
 Changelog https://github.com/hellrage/NC-Reactor-Planner/blob/master/Changelog.txt
 
-Released builds https://github.com/hellrage/NC-Reactor-Planner/releases
+Released builds
+
+You need 1.x "Latest release" tagged builds for the current mod versions.
+
+[OVERHAUL] Pre-releases are NYI in the mod
+
+https://github.com/hellrage/NC-Reactor-Planner/releases
 
 You can find me in NuclearCraft's discord https://discord.gg/KCPYgWw
 
