@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace NC_Reactor_Planner
 {
@@ -100,8 +101,13 @@ namespace NC_Reactor_Planner
                     if (reader.TokenType == JsonToken.PropertyName && reader.Value.ToString() == "ref")
                     {
                         reader.Read();
-                        string vstr = reader.Value.ToString().Split('v')[1];
-                        string[] numbers = vstr.Split('.');
+                        Regex rx = new Regex(@"\d+\.\d+\.\d+");
+                        Match match = rx.Match(reader.Value.ToString());
+                        string[] numbers = { "0", "0", "0" };
+                        if (match.Success)
+                            numbers = match.Value.Split('.');
+                        //string vstr = reader.Value.ToString().Split('v')[1];
+                        //string[] numbers = vstr.Split('.');
                         Version version = new Version(Convert.ToInt32(numbers[0]), Convert.ToInt32(numbers[1]), Convert.ToInt32(numbers[2]), 0);
                         if(version.Major == major && version > latest.Item1)
                         {
