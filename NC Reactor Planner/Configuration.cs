@@ -374,7 +374,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("NetherBrick", new HeatSinkValues(100, "One Obsidian heatsink"));
             HeatSinks.Add("Glowstone", new HeatSinkValues(110, "Two Moderators"));
             HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell; One Casing"));
-            HeatSinks.Add("Gold", new HeatSinkValues(100, "Two Iron heatsinks"));
+            HeatSinks.Add("Gold", new HeatSinkValues(105, "Two Iron heatsinks"));
             HeatSinks.Add("Prismarine", new HeatSinkValues(115, "Two Water heatsinks"));
             HeatSinks.Add("Slime", new HeatSinkValues(135, "Exactly One Water heatsink; One Reflector"));
             HeatSinks.Add("EndStone", new HeatSinkValues(60, "One Reflector"));
