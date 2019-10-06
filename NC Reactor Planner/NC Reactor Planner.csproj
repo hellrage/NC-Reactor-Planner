@@ -208,6 +208,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Air.png" />
+    <None Include="Resources\GitHub_Logo.png" />
+    <None Include="Resources\fNbt.dll" />
+    <None Include="Resources\Discord_Logo.png" />
     <Content Include="Resources\FuelCell.png" />
   </ItemGroup>
   <ItemGroup>

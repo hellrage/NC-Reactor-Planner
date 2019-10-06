@@ -69,8 +69,8 @@ namespace NC_Reactor_Planner
             SetUpdateAvailableTextAsync();
 #endif
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
-            statsLabel.Location = new Point(statsLabel.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
-            stats.Location = new Point(stats.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + statsLabel.Size.Height);
+            statsLabel.Location = new Point(statsLabel.Location.X, githubPB.Location.Y + githubPB.Size.Height);
+            stats.Location = new Point(stats.Location.X, githubPB.Location.Y + githubPB.Size.Height + statsLabel.Size.Height);
             stats.Size = new Size(stats.Size.Width, this.ClientSize.Height - stats.Location.Y - 5);
 
             ResetLayout(LoadedSaveFile != null);
@@ -406,7 +406,7 @@ namespace NC_Reactor_Planner
             Point origin;
             if (drawAllLayers)
             {
-                int layersPerRow = (int)Math.Ceiling(Math.Sqrt(Reactor.interiorDims.Y));
+                int layersPerRow = Math.Max(1, (int)Math.Floor(ReactorGrid.Width / (Reactor.interiorDims.X * blockSize + 16)));
                 origin = new Point((layer.Y - 1) % layersPerRow * layer.Size.Width + (layer.Y - 1) % layersPerRow * 16,
                                     (layer.Y - 1) / layersPerRow * layer.Size.Height + (layer.Y - 1) / layersPerRow * 16);
             }
@@ -485,6 +485,22 @@ namespace NC_Reactor_Planner
             gridToolTip.Hide(reactorGrid);
         }
 
+        private void PlannerUI_Resize(object sender, EventArgs e)
+        {
+            if (Reactor.layers == null)
+                return;
+
+            if (drawAllLayers)
+            {
+                foreach (ReactorGridLayer layer in Reactor.layers)
+                {
+                    UpdateLocation(layer);
+                }
+            }
+            else
+                UpdateLocation(Reactor.layers[layerScrollBar.Value]);
+        }
+
         private async void checkForUpdates_Click(object sender, EventArgs e)
         {
             Tuple<bool, Version, string> updateInfo = await Updater.CheckForUpdateAsync();
@@ -533,6 +549,16 @@ namespace NC_Reactor_Planner
                 myFile.SaveToFile(saveDialog.FileName, NbtCompression.GZip);
             }
             
+        }
+
+        private void discordPB_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://discord.gg/S49fF2X");
+        }
+
+        private void githubPB_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/hellrage/NC-Reactor-Planner");
         }
     }
 }

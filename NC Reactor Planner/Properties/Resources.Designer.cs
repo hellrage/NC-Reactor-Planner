@@ -113,6 +113,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Discord_Logo {
+            get {
+                object obj = ResourceManager.GetObject("Discord_Logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Emerald {
             get {
                 object obj = ResourceManager.GetObject("Emerald", resourceCulture);
@@ -131,11 +141,31 @@ namespace NC_Reactor_Planner.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] fNbt {
+            get {
+                object obj = ResourceManager.GetObject("fNbt", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap FuelCell {
             get {
                 object obj = ResourceManager.GetObject("FuelCell", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap GitHub_Logo {
+            get {
+                object obj = ResourceManager.GetObject("GitHub_Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

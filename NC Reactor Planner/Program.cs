@@ -34,6 +34,14 @@ namespace NC_Reactor_Planner
                     writer.Write(Resources.Newtonsoft_Json, 0, Resources.Newtonsoft_Json.Length);
                 }
             }
+            FileInfo fNbtDll = new FileInfo("fNbt.dll");
+            if (!fNbtDll.Exists)
+            {
+                using (var writer = fNbtDll.OpenWrite())
+                {
+                    writer.Write(Resources.fNbt, 0, Resources.fNbt.Length);
+                }
+            }
             Configuration.ResetToDefaults();
 
             Palette.Load();

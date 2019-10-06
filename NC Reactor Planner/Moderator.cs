@@ -42,7 +42,7 @@ namespace NC_Reactor_Planner
                 if (Active)
                     toolTip += "Active, can support coolers!";
                 else if (Valid)
-                    toolTip += "Inactive, cannot support coolers!";
+                    toolTip += "Valid, cannot support coolers!";
                 else
                     toolTip += "Invalid! No adjacent cells or\r\n" +
                         "in an invalid line";

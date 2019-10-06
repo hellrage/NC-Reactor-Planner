@@ -59,10 +59,14 @@
             this.checkForUpdates = new System.Windows.Forms.Button();
             this.generateBGString = new System.Windows.Forms.Button();
             this.generateSchematic = new System.Windows.Forms.Button();
+            this.githubPB = new System.Windows.Forms.PictureBox();
+            this.discordPB = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.githubPB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discordPB)).BeginInit();
             this.SuspendLayout();
             // 
             // reactorWidth
@@ -447,12 +451,38 @@
             this.generateSchematic.UseVisualStyleBackColor = true;
             this.generateSchematic.Click += new System.EventHandler(this.generateSchematic_Click);
             // 
+            // githubPB
+            // 
+            this.githubPB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.githubPB.Image = global::NC_Reactor_Planner.Properties.Resources.GitHub_Logo;
+            this.githubPB.Location = new System.Drawing.Point(7, 337);
+            this.githubPB.Name = "githubPB";
+            this.githubPB.Size = new System.Drawing.Size(136, 28);
+            this.githubPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.githubPB.TabIndex = 36;
+            this.githubPB.TabStop = false;
+            this.githubPB.Click += new System.EventHandler(this.githubPB_Click);
+            // 
+            // discordPB
+            // 
+            this.discordPB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.discordPB.Image = global::NC_Reactor_Planner.Properties.Resources.Discord_Logo;
+            this.discordPB.Location = new System.Drawing.Point(7, 295);
+            this.discordPB.Name = "discordPB";
+            this.discordPB.Size = new System.Drawing.Size(136, 36);
+            this.discordPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.discordPB.TabIndex = 35;
+            this.discordPB.TabStop = false;
+            this.discordPB.Click += new System.EventHandler(this.discordPB_Click);
+            // 
             // PlannerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(979, 716);
+            this.Controls.Add(this.githubPB);
+            this.Controls.Add(this.discordPB);
             this.Controls.Add(this.generateSchematic);
             this.Controls.Add(this.generateBGString);
             this.Controls.Add(this.sizeLabel);
@@ -484,16 +514,19 @@
             this.Controls.Add(this.layerLabel);
             this.Controls.Add(this.reactorGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(995, 601);
+            this.MinimumSize = new System.Drawing.Size(995, 756);
             this.Name = "PlannerUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "NC Reactor Planner";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Leave += new System.EventHandler(this.PlannerUI_Leave);
+            this.Resize += new System.EventHandler(this.PlannerUI_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.reactorWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reactorHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageScale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.githubPB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discordPB)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -530,5 +563,7 @@
         private System.Windows.Forms.Button checkForUpdates;
         private System.Windows.Forms.Button generateBGString;
         private System.Windows.Forms.Button generateSchematic;
+        private System.Windows.Forms.PictureBox githubPB;
+        private System.Windows.Forms.PictureBox discordPB;
     }
 }

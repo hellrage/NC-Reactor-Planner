@@ -164,6 +164,13 @@ namespace NC_Reactor_Planner
                 cf.Fuels.Add("HEP-239 Oxide", fuelvalue);
             }
 
+            if(cf.saveVersion < new Version(1,2,22))
+            {
+                System.Windows.Forms.MessageBox.Show("There have been changes to cooler descriptions, that required a config reset.\r" +
+                    "Re-import nuclearcraft.cfg and overwrite your DefaultConfig.json if necessary!");
+                return false;
+            }
+
             Fission = cf.Fission;
             if (cf.saveVersion < new Version(1, 2, 14))
                 Fission.ActiveCoolerMaxRate = 5;
@@ -269,16 +276,16 @@ namespace NC_Reactor_Planner
             Coolers.Add("Water", new CoolerValues(60, 300, "At least one Reactor Cell or active Moderator"));
             Coolers.Add("Redstone", new CoolerValues(90, 6400, "At least one Reactor Cell"));
             Coolers.Add("Quartz", new CoolerValues(90, 6000, "At least one active Moderator"));
-            Coolers.Add("Gold", new CoolerValues(120, 9600, "At least one active Water cooler & active Redstone cooler"));
+            Coolers.Add("Gold", new CoolerValues(120, 9600, "At least one Water cooler & Redstone cooler"));
             Coolers.Add("Glowstone", new CoolerValues(130, 8000, "At least two active Moderators"));
             Coolers.Add("Lapis", new CoolerValues(120, 5600, "At least one Reactor Cell and one Reactor Casing"));
-            Coolers.Add("Diamond", new CoolerValues(150, 14000, "One active Water cooler and one active Quartz cooler"));
-            Coolers.Add("Helium", new CoolerValues(140, 13200, "ONLY one active Redstone cooler and at least one Reactor Casing"));
+            Coolers.Add("Diamond", new CoolerValues(150, 14000, "One Water cooler and one Quartz cooler"));
+            Coolers.Add("Helium", new CoolerValues(140, 13200, "ONLY one Redstone cooler and at least one Reactor Casing"));
             Coolers.Add("Enderium", new CoolerValues(120, 10800, "Three Reactor Casings (has to be in a corner)"));
             Coolers.Add("Cryotheum", new CoolerValues(160, 12800, "At least two Reactor Cells"));
-            Coolers.Add("Iron", new CoolerValues(80, 4800, "At least one active Gold cooler"));
-            Coolers.Add("Emerald", new CoolerValues(160, 7200, "At least one active Moderator and one Reactor Cell"));
-            Coolers.Add("Copper", new CoolerValues(80, 5200, "At least one active Glowstone Cooler"));
+            Coolers.Add("Iron", new CoolerValues(80, 4800, "At least one Gold cooler"));
+            Coolers.Add("Emerald", new CoolerValues(160, 7200, "At least one Moderator and one Reactor Cell"));
+            Coolers.Add("Copper", new CoolerValues(80, 5200, "At least one Glowstone Cooler"));
             Coolers.Add("Tin", new CoolerValues(120, 6000, "Two Lapis Coolers on opposite sides (same axis)"));
             Coolers.Add("Magnesium", new CoolerValues(110, 7200, "At least one Reactor Casing and one active Moderator"));
         }

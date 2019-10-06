@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace NC_Reactor_Planner
 {
@@ -91,30 +92,33 @@ namespace NC_Reactor_Planner
             return await webRequest.GetResponseAsync();
         }
 
-        private static async Task<Tuple<Version,string>> FindLatest(string json, int major)
+        private static async Task<Tuple<Version, string>> FindLatest(string json, int major)
         {
-            Tuple<Version,string> latest = Tuple.Create(new Version(major, 0, 0, 0), "");
+            Tuple<Version, string> latest = Tuple.Create(new Version(major, 0, 0, 0), "");
             using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
             {
                 while (reader.Read())
                     if (reader.TokenType == JsonToken.PropertyName && reader.Value.ToString() == "ref")
                     {
                         reader.Read();
-                        string vstr = reader.Value.ToString().Split('v')[1];
-                        string[] numbers = vstr.Split('.');
+                        Regex rx = new Regex(@"\d+\.\d+\.\d+");
+                        Match match = rx.Match(reader.Value.ToString());
+                        string[] numbers = { "0", "0", "0" };
+                        if (match.Success)
+                            numbers = match.Value.Split('.');
                         Version version = new Version(Convert.ToInt32(numbers[0]), Convert.ToInt32(numbers[1]), Convert.ToInt32(numbers[2]), 0);
-                        if(version.Major == major && version > latest.Item1)
+                        if (version.Major == major && version > latest.Item1)
                         {
                             do
                             {
                                 reader.Read();
-                            } while(reader.TokenType != JsonToken.StartObject);
+                            } while (reader.TokenType != JsonToken.StartObject);
                             do
                             {
                                 reader.Read();
                             } while (reader.Value.ToString() != "url");
                             reader.Read();
-                            string message = await GetCommitMessage(reader.Value.ToString()+"?access_token=f83a69064bb51dd50b5b78cafdfa5433910710a2");
+                            string message = await GetCommitMessage(reader.Value.ToString() + "?access_token=f83a69064bb51dd50b5b78cafdfa5433910710a2");
                             latest = Tuple.Create(version, message);
                         }
                     }
