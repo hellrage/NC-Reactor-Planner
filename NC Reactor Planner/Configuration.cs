@@ -181,7 +181,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 25, 0))
+            if(cf.saveVersion < new Version(2, 0, 27, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -390,9 +390,9 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(175, "One Quartz heatsink; One Tin heatsink"));
             HeatSinks.Add("Silver", new HeatSinkValues(170, "One Glowstone heatsink; One Lapis heatsink"));
-            HeatSinks.Add("Fluorite", new HeatSinkValues(150, "One Gold heatsink; One Prismarine heatsink"));
-            HeatSinks.Add("Villiaumite", new HeatSinkValues(155, "One Reflector; One Redstone heatsink"));
-            HeatSinks.Add("Carobbiite", new HeatSinkValues(160, "One Copper heatsink; One EndStone heatsink"));
+            HeatSinks.Add("Fluorite", new HeatSinkValues(155, "One Gold heatsink; One Prismarine heatsink"));
+            HeatSinks.Add("Villiaumite", new HeatSinkValues(160, "One Reflector; One Redstone heatsink"));
+            HeatSinks.Add("Carobbiite", new HeatSinkValues(150, "One Copper heatsink; One EndStone heatsink"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Axial Reflectors"));
             HeatSinks.Add("Nitrogen", new HeatSinkValues(185, "One Copper heatsinks; Two Lead heatsinks"));
             HeatSinks.Add("Helium", new HeatSinkValues(200, "Exactly Two Redstone heatsinks; One Casing"));
