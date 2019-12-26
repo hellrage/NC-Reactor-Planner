@@ -181,7 +181,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 27, 0))
+            if(cf.saveVersion < new Version(2, 0, 29, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
