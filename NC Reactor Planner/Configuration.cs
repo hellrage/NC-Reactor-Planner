@@ -404,8 +404,8 @@ namespace NC_Reactor_Planner
         private static void SetDefaultModerators()
         {
             Moderators = new Dictionary<string, ModeratorValues>();
-            Moderators.Add("Beryllium", new ModeratorValues(22, 1.1));
-            Moderators.Add("Graphite", new ModeratorValues(10, 1.2));
+            Moderators.Add("Beryllium", new ModeratorValues(22, 1.05));
+            Moderators.Add("Graphite", new ModeratorValues(10, 1.1));
             Moderators.Add("HeavyWater", new ModeratorValues(36, 1.0));
         }
 
