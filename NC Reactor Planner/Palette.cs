@@ -15,8 +15,17 @@ using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner
 {
+    /// <summary>
+    /// This class holds all the dummy blocks and textures. It is repopulated as configuration changes.
+    /// Various classes refer to this for creating blocks, checking placement validity, checking the currently selected fuel, etc.
+    /// This also holds the update order for heatsinks.
+    /// Down below is an Enum for BlockTypes!
+    /// </summary>
     public static class Palette
     {
+        /// <summary>
+        /// This is an element of UI that handles the different block types. It is loaded into PlannerUI.
+        /// </summary>
         public class PalettePanel : Panel
         {
             private int cellX;
@@ -182,7 +191,7 @@ namespace NC_Reactor_Planner
                 Bitmap ct = new Bitmap(fi.FullName);
                 if (ct.Size.Height != 16 || ct.Size.Width != 16)
                 {
-                    MessageBox.Show(textureFile + "Is not a 16x16 image!");
+                    MessageBox.Show(textureFile + " Is not a 16x16 image!");
                     ct.Dispose();
                     continue;
                 }

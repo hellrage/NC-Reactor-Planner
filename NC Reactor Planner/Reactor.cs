@@ -10,6 +10,10 @@ using Newtonsoft.Json;
 
 namespace NC_Reactor_Planner
 {
+    /// <summary>
+    /// This struct holds a slightly more efficient representation of the reactor.
+    /// I'm saving all cells as "Type":[List of coordinates] entries instead of as individual blocks.
+    /// </summary>
     public struct CompressedSaveFile
     {
         public Version SaveVersion;
@@ -26,6 +30,11 @@ namespace NC_Reactor_Planner
         }
     }
 
+    /// <summary>
+    /// Ugly main class in need of refactoring!
+    /// Holds the reactor structure, handles everything to do with simulating, modifying,
+    /// calculating stats, save\loading, etc.
+    /// </summary>
     public static class Reactor
     {
         public static readonly PlannerUI UI;

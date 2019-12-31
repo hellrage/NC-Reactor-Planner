@@ -11,6 +11,12 @@ using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
+    /// <summary>
+    /// This class is responsible for handling a single Y-layer of the reactor, including the layer menu.
+    /// Several of these are added to PlannerUI's reactorGrid. They are initially created in Reactor.ConstructLayers
+    /// It also handles drawing the layer to an image for PNG export.
+    /// Mouse clicks and the layer menu are handled here.
+    /// </summary>
     public class ReactorGridLayer : Panel
     {
         private MenuStrip menu;

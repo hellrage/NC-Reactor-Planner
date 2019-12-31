@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 
 namespace NC_Reactor_Planner
 {
+    /// <summary>
+    /// This struct holds the data that we save/load by stringifying it into json.
+    /// </summary>
     public struct ConfigFile
     {
         public Version saveVersion;
@@ -190,6 +193,11 @@ namespace NC_Reactor_Planner
         }
     }
 
+    /// <summary>
+    /// Holds the currently active planner configuration.
+    /// Responsible for save\loading the configuration, holds the default values for regenerating the config.
+    /// This class is referenced by reflection to build tabs/fields of ConfigurationUI!
+    /// </summary>
     public static class Configuration
     {
         //[TODO] incapsulation .\_/.
