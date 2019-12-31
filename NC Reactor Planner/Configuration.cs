@@ -15,14 +15,18 @@ namespace NC_Reactor_Planner
         public FissionValues Fission;
         public CraftingMaterials ResourceCosts;
         public Dictionary<string, FuelValues> Fuels;
+        public Dictionary<string, NeutronSourceValues> NeutronSources;
+        public Dictionary<string, CoolantRecipeValues> CoolantRecipes;
         public Dictionary<string, HeatSinkValues> HeatSinks;
         public Dictionary<string, ModeratorValues> Moderators;
 
-        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
+        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, NeutronSourceValues> ns, Dictionary<string, CoolantRecipeValues> cr, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
         {
             saveVersion = sv;
             Fission = fs;
             Fuels = f;
+            NeutronSources = ns;
+            CoolantRecipes = cr;
             HeatSinks = c;
             Moderators = m;
             ResourceCosts = cm;
@@ -50,6 +54,45 @@ namespace NC_Reactor_Planner
             BaseHeat = Convert.ToDouble(values[1]);
             FuelTime = Convert.ToDouble(values[2]);
             CriticalityFactor = Convert.ToInt32(values[3]);
+        }
+    }
+
+    public struct NeutronSourceValues
+    {
+        public double Efficiency;
+
+        public NeutronSourceValues(double e)
+        {
+            Efficiency = e;
+        }
+
+        public NeutronSourceValues(List<object> values)
+        {
+            Efficiency = Convert.ToDouble(values[0]);
+        }
+    }
+
+    public struct CoolantRecipeValues
+    {
+        public string InputName;
+        public string OutputName;
+        public double HeatCapacity;
+        public double OutToInRatio;
+
+        public CoolantRecipeValues(string iname, string oname, double hcap, double otiratio)
+        {
+            InputName = iname;
+            OutputName = oname;
+            HeatCapacity = hcap;
+            OutToInRatio = otiratio;
+        }
+
+        public CoolantRecipeValues(List<object> values)
+        {
+            InputName = Convert.ToString(values[0]);
+            OutputName = Convert.ToString(values[1]);
+            HeatCapacity = Convert.ToDouble(values[2]);
+            OutToInRatio = Convert.ToDouble(values[3]);
         }
     }
 
@@ -153,6 +196,8 @@ namespace NC_Reactor_Planner
         public static FissionValues Fission;
         public static CraftingMaterials ResourceCosts;
         public static Dictionary<string, FuelValues> Fuels;
+        public static Dictionary<string, NeutronSourceValues> NeutronSources;
+        public static Dictionary<string, CoolantRecipeValues> CoolantRecipes;
         public static Dictionary<string, HeatSinkValues> HeatSinks;
         public static Dictionary<string, ModeratorValues> Moderators;
 
@@ -171,7 +216,7 @@ namespace NC_Reactor_Planner
                 }
                 catch(Exception ex)
                 {
-                    System.Windows.Forms.MessageBox.Show(ex.Message + "\r\nConfig file was corrupt or there were major changes to structure!");
+                    System.Windows.Forms.MessageBox.Show(ex.Message + "\r\nConfig file was corrupt or there were major changes to structure! Reverting to defaults...");
                     return false;
                 }
             }
@@ -181,7 +226,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 29, 0))
+            if(cf.saveVersion < new Version(2, 0, 30, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -198,15 +243,15 @@ namespace NC_Reactor_Planner
             if (ResourceCosts.CasingCosts == null)
                 SetDefaultResourceCosts();
             Fuels = cf.Fuels;
+            NeutronSources = cf.NeutronSources;
+            CoolantRecipes = cf.CoolantRecipes;
             HeatSinks = cf.HeatSinks;
-            if (cf.saveVersion >= new Version(2, 0, 0))
-                Moderators = cf.Moderators;
-            else
-                SetDefaultModerators();
+            Moderators = cf.Moderators;
 
             Palette.Load();
             Reactor.ReloadValuesFromConfig();
             Palette.SetHeatSinkUpdateOrder();
+            Palette.UpdateNeutronSourceNames();
             Palette.PaletteControl.ResetSize();
             Reactor.UI.UpdateStatsUIPosition();
             return true;
@@ -224,7 +269,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, HeatSinks, Moderators, ResourceCosts);
+                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, NeutronSources, CoolantRecipes, HeatSinks, Moderators, ResourceCosts);
                 jss.Serialize(tw, cf);
             }
         }
@@ -236,6 +281,10 @@ namespace NC_Reactor_Planner
             SetDefaultHeatSinks();
 
             SetDefaultFuels();
+
+            SetDefaultNeutronSources();
+
+            SetDefaultCoolantRecipes();
 
             SetDefaultModerators();
 
@@ -363,6 +412,22 @@ namespace NC_Reactor_Planner
             Fuels.Add("[F4]HECf-251", new FuelValues(3.6, 690, 2504, 35));
         }
 
+        private static void SetDefaultNeutronSources()
+        {
+            NeutronSources = new Dictionary<string, NeutronSourceValues>();
+            NeutronSources.Add("Ra-Be", new NeutronSourceValues(0.8));
+            NeutronSources.Add("Po-Be", new NeutronSourceValues(0.9));
+            NeutronSources.Add("Cf-252", new NeutronSourceValues(1));
+        }
+
+        private static void SetDefaultCoolantRecipes()
+        {
+            CoolantRecipes = new Dictionary<string, CoolantRecipeValues>();
+            CoolantRecipes.Add("Water to Hight Pressure Steam", new CoolantRecipeValues("Water", "High Pressure Steam", 64, 4));
+            CoolantRecipes.Add("Preheated Water to Hight Pressure Steam", new CoolantRecipeValues("Preheated Water", "High Pressure Steam", 32, 4));
+            CoolantRecipes.Add("IC2 Coolant to Hot IC2 Coolant", new CoolantRecipeValues("IC2 Coolant", "Hot IC2 Coolant", 160, 1));
+        }
+
         private static void SetDefaultHeatSinks()
         {
             HeatSinks = new Dictionary<string, HeatSinkValues>();
@@ -398,7 +463,6 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Helium", new HeatSinkValues(200, "Exactly Two Redstone heatsinks; One Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(175, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(205, "Three FuelCells"));
-
         }
 
         private static void SetDefaultModerators()

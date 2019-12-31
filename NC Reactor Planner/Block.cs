@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
@@ -42,15 +43,23 @@ namespace NC_Reactor_Planner
 
         public virtual string GetToolTip()
         {
-            string toolTip = DisplayName + "\r\n";
+            StringBuilder report = new StringBuilder();
+            report.Append(DisplayName + "\r\n");
             if (Position != Palette.dummyPosition)
             {
                 if (Cluster != -1)
-                    toolTip += string.Format("Cluster: {0}\r\n", Cluster);
+                {
+                    //[TODO] Consolidate with HeatSink tooltip
+                    report.Append(string.Format("Cluster: {0}\r\n", Cluster));
+                    if (Reactor.clusters[Cluster].PenaltyType > 0)
+                        report.Append("--Cluster is penalized for overheating!\n");
+                    else if (Reactor.clusters[Cluster].PenaltyType < 0)
+                        report.Append("--Cluster is penalized for overcooling!\n");
+                }
                 else if (BlockType != BlockTypes.Air && BlockType != BlockTypes.Reflector)
-                    toolTip += "--No cluster!\r\n";
+                    report.Append("--No cluster!\r\n");
             }
-            return toolTip;
+            return report.ToString();
         }
 
         public virtual void ReloadValuesFromConfig()

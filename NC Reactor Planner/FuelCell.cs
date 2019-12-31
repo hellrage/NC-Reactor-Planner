@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
 using System.Drawing;
+using System.Text;
 
 namespace NC_Reactor_Planner
 {
@@ -18,14 +19,16 @@ namespace NC_Reactor_Planner
         public Fuel UsedFuel { get; private set; }
         public double PositionalEfficiency { get; private set; }
         public int ModeratedNeutronFlux { get; private set; }
-        public double Efficiency { get => PositionalEfficiency * UsedFuel.BaseEfficiency * (1 / (1 + Math.Exp(2 * (ModeratedNeutronFlux - 2 * UsedFuel.CriticalityFactor)))); }
+        public double Efficiency { get => CalculateEfficiency(); }
         public double FuelDuration { get => UsedFuel.FuelTime * Reactor.clusters[Cluster].FuelDurationMultiplier / Configuration.Fission.FuelUse; }
         public bool Primed { get; set; }
+        public string NeutronSource { get; private set; }
 
-        public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel, bool primed = false) : base(displayName, BlockTypes.FuelCell, texture, position)
+        public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel, bool primed = false, string neutronSource = "None") : base(displayName, BlockTypes.FuelCell, texture, position)
         {
             UsedFuel = usedFuel;
             Primed = primed;
+            NeutronSource = neutronSource;
             RevertToSetup();
         }
 
@@ -50,33 +53,34 @@ namespace NC_Reactor_Planner
                 return base.GetToolTip();
             else
             {
+                StringBuilder tb = new StringBuilder(); //TooltipBuilder
+                tb.Append(base.GetToolTip());
+                if(Cluster != -1)
+                    tb.Append(Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection");
+                tb.Append(String.Format(" Fuel : {0}\r\n", UsedFuel.Name));
+                tb.Append(Active ? " Active\r\n" : "--Inactive!\r\n");
+                tb.Append(String.Format(" Adjacent cells: {0}\r\n", AdjacentCells.Count));
 #if DEBUG
                 string adjCells = "";
                 foreach(FuelCell fc in AdjacentCells)
-                {
                     adjCells += "   " + fc.Position.ToString() + "\r\n";
+                tb.Append(adjCells.ToString());
+#endif
+                tb.Append(String.Format(" Adjacent moderator lines: {0}\r\n", AdjacentModeratorLines));
+                tb.Append(String.Format(" Adjacent reflectors: {0}\r\n", AdjacentReflectors.Count));
+                tb.Append(String.Format(" Heat multiplier: {0} %\r\n", (int)(HeatMultiplier * 100)));
+                tb.Append(String.Format(" Heat produced: {0} HU/t\r\n", HeatProducedPerTick));
+                tb.Append(String.Format(" Efficiency: {0} %\r\n", (int)(Efficiency * 100)));
+                tb.Append(String.Format(" Positional Eff.: {0} %\r\n", (int)(PositionalEfficiency * 100)));
+                tb.Append(String.Format(" Total Neutron Flux: {0}\r\n", ModeratedNeutronFlux));
+                tb.Append(String.Format(" Criticality factor: {0}\r\n", UsedFuel.CriticalityFactor));
+                if(Primed)
+                {
+                    tb.Append("Primed\r\n");
+                    tb.Append(String.Format(" Neutron source: {0}", NeutronSource));
                 }
-#endif
-                return string.Format("{0}" +
-                                    ((Cluster!=-1)?
-                                    (Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection"):"") +
-                                    " Fuel: {5}\r\n" +
-                                    (Active ? " Active\r\n" : "--Inactive!\r\n") +
-                                    " Adjacent cells: {1}\r\n" +
-#if DEBUG
-                                    adjCells +
-#endif
-                                    " Adjacent moderator lines: {2}\r\n" +
-                                    " Adjacent reflectors: {10}\r\n" +
-                                    " Heat multiplier: {3} %\r\n" +
-                                    " Heat produced: {4} HU/t\r\n" +
-                                    " Efficiency: {6} %\r\n" +
-                                    " Positional Eff.: {7} %\r\n" +
-                                    " Total Neutron Flux: {8}\r\n" +
-                                    " Criticality factor: {9}\r\n" +
-                                    (Primed ? " Primed" : ""
-                                    ),
-                                    base.GetToolTip(), AdjacentCells.Count, AdjacentModeratorLines, (int)(HeatMultiplier * 100), HeatProducedPerTick, UsedFuel.Name, (int)(Efficiency * 100), (int)(PositionalEfficiency * 100), ModeratedNeutronFlux, UsedFuel.CriticalityFactor, AdjacentReflectors.Count);
+
+                return tb.ToString();
             }
         }
 
@@ -202,9 +206,41 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        public void TogglePrimed()
+        public void UnPrime()
         {
-            Primed = !Primed;
+            Primed = false;
+            NeutronSource = "None";
+        }
+
+        public void CyclePrimed()
+        {
+            if(Primed)
+            {
+                int currIndex = Palette.NeutronSourceNames.IndexOf(NeutronSource);
+                if (currIndex != -1 && currIndex < Palette.NeutronSourceNames.Count - 1)
+                    NeutronSource = Palette.NeutronSourceNames[currIndex + 1];
+                else
+                {
+                    NeutronSource = "None";
+                    Primed = false;
+                    return;
+                }
+            }
+            else
+            {
+                if(Palette.NeutronSourceNames.Count == 0)
+                    throw new IndexOutOfRangeException("There were no Neutron Sources in the configuration!");
+                NeutronSource = Palette.NeutronSourceNames[0];
+                Primed = true;
+            }
+        }
+
+        private double CalculateEfficiency()
+        {
+            double eff = PositionalEfficiency * UsedFuel.BaseEfficiency * (1 / (1 + Math.Exp(2 * (ModeratedNeutronFlux - 2 * UsedFuel.CriticalityFactor))));
+            if(NeutronSource != "None")
+                eff *= Configuration.NeutronSources[NeutronSource].Efficiency;
+            return eff;
         }
 
         public void Activate()
@@ -219,7 +255,7 @@ namespace NC_Reactor_Planner
 
         public string ToSaveString()
         {
-            return string.Join(";",UsedFuel.Name,Primed.ToString());
+            return string.Join(";", UsedFuel.Name, Primed.ToString(), NeutronSource);
         }
     }
 }

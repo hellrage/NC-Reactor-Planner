@@ -12,6 +12,7 @@ namespace NC_Reactor_Planner
     {
         public static readonly List<string> OverlayedTypes = new List<string> { "Silver", "Iron", "Lithium", "Tin" };
         public Panel ReactorGrid { get => reactorGrid; }
+        public ScrollBar LayerScrollBar { get => layerScrollBar; }
         public decimal DrawingScale { get => imageScale.Value; }
         public Point PalettePanelLocation { get => new Point(resetLayout.Location.X - Palette.PalettePanel.spacing, resetLayout.Location.Y + resetLayout.Size.Height); }
         public FileInfo LoadedSaveFile { get; set; }
@@ -25,7 +26,11 @@ namespace NC_Reactor_Planner
         
         public static readonly Pen PaletteHighlightPen = new Pen(Color.Blue, 4);
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
-        public static readonly Pen PrimedFuelCellPen = new Pen(Brushes.Orange, 4);
+        public static readonly Pen ClusterOverheatPen = new Pen(Brushes.OrangeRed, 3);
+        public static readonly Pen ClusterOvercoolPen = new Pen(Brushes.LightSteelBlue, 3);
+        public static readonly Pen PrimedFuelCellOrangePen = new Pen(Brushes.Orange, 4);
+        public static readonly Pen PrimedFuelCellYellowPen = new Pen(Brushes.Yellow, 4);
+        public static readonly Pen PrimedFuelCellGreenPen = new Pen(Brushes.Green, 4);
         public static readonly Pen InactiveClusterPen = new Pen(Brushes.Pink, 4);
         public static readonly Pen ValidModeratorPen = new Pen(Brushes.Green, 3);
 
@@ -50,6 +55,9 @@ namespace NC_Reactor_Planner
 
             SetUpToolTips();
             SetUIToolTips();
+            float[] dashPattern = { 1, 1 };
+            ClusterOvercoolPen.DashPattern = dashPattern;
+            ClusterOverheatPen.DashPattern = dashPattern;
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
@@ -114,6 +122,7 @@ namespace NC_Reactor_Planner
             SetUpdateAvailableTextAsync();
 #endif
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+            coolantRecipeSelector.Items.AddRange(Configuration.CoolantRecipes.Keys.ToArray());
             UpdateStatsUIPosition();
 
             ResetLayout(LoadedSaveFile != null);
@@ -121,10 +130,10 @@ namespace NC_Reactor_Planner
 
         public void UpdateStatsUIPosition()
         {
-            statsLabel.Location = new Point(statsLabel.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
-            stats.Location = new Point(stats.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + statsLabel.Size.Height);
+            statsLabel.Location = new Point(statsLabel.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + 10);
+            stats.Location = new Point(stats.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + 10 + statsLabel.Size.Height);
             stats.Size = new Size(stats.Size.Width, this.ClientSize.Height - stats.Location.Y - 5);
-            showClusterInfo.Location = new Point(showClusterInfo.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height);
+            showClusterInfo.Location = new Point(showClusterInfo.Location.X, PalettePanelLocation.Y + Palette.PaletteControl.Size.Height + 10);
         }
 
         private void SetUpToolTips()
@@ -234,6 +243,11 @@ namespace NC_Reactor_Planner
 
             Reactor.Update();
 
+            if(Reactor.coolantRecipeName != null)
+                coolantRecipeSelector.SelectedItem = Reactor.coolantRecipeName;
+            else if (coolantRecipeSelector.SelectedIndex == -1)
+                coolantRecipeSelector.SelectedItem = coolantRecipeSelector.Items[0];
+
             RefreshStats(showClustersInStats);
 
             if (drawAllLayers)
@@ -269,16 +283,6 @@ namespace NC_Reactor_Planner
             fuelBaseEfficiency.Enabled = true;
             fuelBaseHeat.Enabled = true;
             OpenConfig.Enabled = true;
-        }
-
-        private void ClearDisposeLayers()
-        {
-            if (reactorGrid.Controls.Count > 0)
-            {
-                reactorGrid.Controls.Clear();
-                foreach (Control c in Reactor.layers)
-                    c.Dispose();
-            }
         }
 
         private void SwitchToPerLayer()
@@ -319,6 +323,7 @@ namespace NC_Reactor_Planner
 
         private void reactorGrid_MouseEnter(object sender, EventArgs e)
         {
+            //[TODO] Fix scrolling when in per-layer mode
             if (configurationUI != null && !configurationUI.IsDisposed)
                 return;
             if (drawAllLayers)
@@ -513,6 +518,8 @@ namespace NC_Reactor_Planner
         {
             fuelSelector.Items.Clear();
             fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+            coolantRecipeSelector.Items.Clear();
+            coolantRecipeSelector.Items.AddRange(Configuration.CoolantRecipes.Keys.ToArray());
             SetupReactorSizeControls(reactorWidth.Value, reactorHeight.Value, reactorLength.Value);
             Reactor.Redraw();
             RefreshStats(showClustersInStats);
@@ -599,6 +606,20 @@ namespace NC_Reactor_Planner
         private void githubPB_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/hellrage/NC-Reactor-Planner");
+        }
+
+        private void CoolantRecipeSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CoolantRecipeValues crv;
+            string recipeName = coolantRecipeSelector.SelectedItem.ToString();
+            if (Configuration.CoolantRecipes.TryGetValue(recipeName, out crv))
+            {
+                coolantHeatCapacity.Text = crv.HeatCapacity.ToString();
+                coolantOutToInRatio.Text = crv.OutToInRatio.ToString();
+                Reactor.coolantRecipe = crv;
+                Reactor.coolantRecipeName = recipeName;
+                RefreshStats(showClustersInStats);
+            }
         }
     }
 }

@@ -126,7 +126,6 @@
     <Compile Include="ConfigurationUI.Designer.cs">
       <DependentUpon>ConfigurationUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="HeatSinkParser.cs" />
     <Compile Include="HeatSink.cs" />
     <Compile Include="DummyUI.cs">
       <SubType>Form</SubType>
@@ -134,7 +133,6 @@
     <Compile Include="DummyUI.Designer.cs">
       <DependentUpon>DummyUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="HeatSinkRules.cs" />
     <Compile Include="NuclearcraftConfigImport.cs" />
     <Compile Include="PlannerUI.cs">
       <SubType>Form</SubType>

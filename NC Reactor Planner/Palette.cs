@@ -38,7 +38,7 @@ namespace NC_Reactor_Planner
             public void ResetSize()
             {
                 int height = (int)Math.Ceiling(((double)(BlockPalette.Keys.Count) / (Width / (blockSide + 2 * spacing)))) * (blockSide + 2 * spacing);
-                Size = new Size(200, height + namestripHeight);
+                Size = new Size(200, height + namestripHeight + 6);
             }
 
             protected override void OnPaint(PaintEventArgs e)
@@ -147,8 +147,9 @@ namespace NC_Reactor_Planner
         private static Block selectedBlock;
 
         public static List<string> UpdateOrder { get; private set; }
+        public static List<string> NeutronSourceNames { get; private set; }
 
-        private static List<string> T0Blocks = new List<string>() { "Air", "FuelCell", "Moderator", "Reflector", "Casing" };
+        private static readonly List<string> T0Blocks = new List<string>() { "Air", "FuelCell", "Moderator", "Reflector", "Casing" };
 
         public static void Load()
         {
@@ -208,6 +209,7 @@ namespace NC_Reactor_Planner
             PopulateFuelPalette();
 
             ReloadValuesFromConfig();
+            UpdateNeutronSourceNames();
         }
 
         public static void ReloadValuesFromConfig()
@@ -287,6 +289,16 @@ namespace NC_Reactor_Planner
                 UpdateOrder.Insert(index, entry.Key);
 
             }
+        }
+
+        public static void UpdateNeutronSourceNames()
+        {
+            NeutronSourceNames = new List<string>();
+            foreach (var ns in Configuration.NeutronSources)
+            {
+                NeutronSourceNames.Add(ns.Key);
+            }
+            NeutronSourceNames.Sort();
         }
 
         public static Block BlockToPlace(Block previousBlock)

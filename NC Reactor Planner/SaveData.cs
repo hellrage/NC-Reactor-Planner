@@ -28,8 +28,9 @@ namespace NC_Reactor_Planner
         public List<Point3D> Reflectors { get; private set; }
         public Dictionary<string, List<Point3D>> FuelCells { get; private set; }
         public Size3D InteriorDimensions { get; private set; }
+        public string CoolantRecipeName { get; private set; }
 
-        public SaveData(Version saveVersion, Dictionary<string, List<Point3D>> heatSinks, Dictionary<string, List<Point3D>> moderators, List<Point3D> conductors, List<Point3D> reflectors, Dictionary<string, List<Point3D>> fuelCells, Size3D interiorDimensions)
+        public SaveData(Version saveVersion, Dictionary<string, List<Point3D>> heatSinks, Dictionary<string, List<Point3D>> moderators, List<Point3D> conductors, List<Point3D> reflectors, Dictionary<string, List<Point3D>> fuelCells, Size3D interiorDimensions, string coolantRecipeName)
         {
             SaveVersion = saveVersion;
             HeatSinks = heatSinks;
@@ -38,12 +39,14 @@ namespace NC_Reactor_Planner
             Reflectors = reflectors;
             FuelCells = fuelCells;
             InteriorDimensions = interiorDimensions;
+            CoolantRecipeName = coolantRecipeName;
         }
 
         public ValidationResult PerformValidation()
         {
             if (SaveVersion < new Version(2, 0, 0, 0))
                 return new ValidationResult(false, "Pre-overhaul savefiles not supported!");
+
             if (SaveVersion == new Version(2, 0, 0, 0))
             {
                 Dictionary<string, List<Point3D>> ValidatedFuelCells = new Dictionary<string, List<Point3D>>();
@@ -58,8 +61,7 @@ namespace NC_Reactor_Planner
                             return new ValidationResult(false, "Tried to load an invalid FuelCell: " + fuelCellGroup.Key);
                         case 2:
                             string newFuelName = "[OX]" + props[0].Replace(" Oxide", "");
-                            Fuel usedFuel;
-                            if (Palette.FuelPalette.TryGetValue(newFuelName, out usedFuel))
+                            if (Palette.FuelPalette.ContainsKey(newFuelName))
                                 ValidatedFuelCells.Add(string.Join(";", newFuelName, props[1]), fuelCellGroup.Value);
                             else
                                 ValidatedFuelCells.Add(string.Join(";", Palette.FuelPalette.First().Value.Name, props[1]), fuelCellGroup.Value);
@@ -70,11 +72,27 @@ namespace NC_Reactor_Planner
                 }
                 FuelCells = ValidatedFuelCells;
             }
+            else if (SaveVersion < new Version(2, 0, 30))
+            {
+                Dictionary<string, List<Point3D>> ValidatedFuelCells = new Dictionary<string, List<Point3D>>();
+                foreach (var fuelCellGroup in FuelCells)
+                {
+                    string newKey = fuelCellGroup.Key + (fuelCellGroup.Key.Contains(";True") ? ";Cf-252" : ";None");
+                    ValidatedFuelCells.Add(newKey, fuelCellGroup.Value);
+                }
+                FuelCells = ValidatedFuelCells;
+            }
+
             if(SaveVersion < new Version(2, 0, 6, 0))
             {
                 Reflectors = new List<Point3D>();
             }
 
+            if(CoolantRecipeName == null || !Configuration.CoolantRecipes.ContainsKey(CoolantRecipeName))
+            {
+                CoolantRecipeName = Configuration.CoolantRecipes.First().Key;
+                return new ValidationResult(true, "No such coolant recipe in the configuration! Reset to first available recipe.");
+            }
             return new ValidationResult(true, "Valid savefile.");
         }
     }

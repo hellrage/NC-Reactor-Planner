@@ -13,8 +13,10 @@ namespace NC_Reactor_Planner
         public double TotalCoolingPerTick { get; private set; }
         public double Efficiency { get; private set; }
         public double FuelDurationMultiplier { get; private set; }
+        public double CoolingPenaltyMultiplier { get; private set; }
         public double TotalOutput { get; private set; }
         public double NetHeatingRate { get => (TotalHeatPerTick - TotalCoolingPerTick); }
+        public int PenaltyType { get; private set; }
         public double HeatMultiplier { get; private set; }
         public bool Valid { get => HasPathToCasing; }
         public int ID { get; private set; }
@@ -34,6 +36,7 @@ namespace NC_Reactor_Planner
             TotalCoolingPerTick = 0;
             TotalHeatPerTick = 0;
             FuelDurationMultiplier = 1;
+            CoolingPenaltyMultiplier = 1;
             HeatMultiplier = 0;
             TotalOutput = 0;
         }
@@ -74,31 +77,40 @@ namespace NC_Reactor_Planner
             }
 
             double rawEfficiency = sumEffOfFuelCells / fuelCells.Count;
-            double coolingPenaltyMultiplier = 1;
             if(TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
-                coolingPenaltyMultiplier = Math.Min(1, (TotalHeatPerTick + Configuration.Fission.CoolingPenaltyLeniency) / TotalCoolingPerTick);
+                CoolingPenaltyMultiplier = Math.Min(1, (TotalHeatPerTick + Configuration.Fission.CoolingPenaltyLeniency) / TotalCoolingPerTick);
 
-            Efficiency = rawEfficiency * coolingPenaltyMultiplier;
-            TotalOutput *= coolingPenaltyMultiplier;
+            Efficiency = rawEfficiency * CoolingPenaltyMultiplier;
+            TotalOutput *= CoolingPenaltyMultiplier;
 
             if (TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
                 FuelDurationMultiplier = Math.Min(1, (TotalCoolingPerTick + Configuration.Fission.CoolingPenaltyLeniency) / TotalHeatPerTick);
             else
                 FuelDurationMultiplier = 1;
             HeatMultiplier = sumHeatMulti / fuelCells.Count;
+
+            if (NetHeatingRate < -Configuration.Fission.CoolingPenaltyLeniency)
+                PenaltyType = -1;
+            else if (NetHeatingRate > Configuration.Fission.CoolingPenaltyLeniency)
+                PenaltyType = 1;
+            else
+                PenaltyType = 0;
         }
 
         public string GetStatString()
         {
             if (!Valid)
                 return string.Format("Cluster №{0}\r\nInvalid! Skipping.\r\n\r\n", ID);
-            else return string.Format("Cluster №{6}\r\n" +
-                                "Total output: {0}\r\n" +
-                                "Efficiency: {1} %\r\n" +
-                                "Total Heating: {2} HU/t\r\n" +
-                                "Total Cooling: {3} HU/t\r\n" +
-                                "Net Heating: {4} HU/t\r\n" +
-                                "Heat Multiplier: {5} %\r\n\r\n", TotalOutput, (int)(Efficiency*100), TotalHeatPerTick, TotalCoolingPerTick, NetHeatingRate, (int)(HeatMultiplier*100), ID);
+            StringBuilder stats = new StringBuilder();
+            stats.Append(string.Format("Cluster №{0}\r\n", ID));
+            stats.Append(string.Format("Total output: {0}\r\n", TotalOutput));
+            stats.Append(string.Format("Efficiency: {0} %\r\n", (int)(Efficiency * 100)));
+            stats.Append(string.Format("Total Heating: {0} HU/t\r\n", TotalHeatPerTick));
+            stats.Append(string.Format("Total Cooling: {0} HU/t\r\n", TotalCoolingPerTick));
+            stats.Append(string.Format("Net Heating: {0} HU/t\r\n", NetHeatingRate));
+            stats.Append(string.Format("Heat Multiplier: {0} %\r\n\r\n",(int)(HeatMultiplier*100)));
+
+            return stats.ToString();
         }
     }
 }

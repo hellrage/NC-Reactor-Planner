@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Media.Media3D;
 using System.Reflection;
 using System.IO;
@@ -49,6 +50,8 @@ namespace NC_Reactor_Planner
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalCoolingPerType;
         public static double totalHeatPerTick = 0;
+        public static CoolantRecipeValues coolantRecipe;
+        public static string coolantRecipeName;
         public static double totalOutputPerTick = 0;
         
         public static double heatMultiplier = 0;
@@ -429,7 +432,7 @@ namespace NC_Reactor_Planner
             }
             else
             {
-                Console.WriteLine("Density: " + density.ToString());
+                //Console.WriteLine("Density: " + density.ToString());
                 sparsityPenalty = ((1 - mspm) * Math.Sin(density * Math.PI / (2 * spt))) + mspm;
             }
 
@@ -439,32 +442,23 @@ namespace NC_Reactor_Planner
 
         public static string GetStatString(bool includeClusterInfo = true)
         {
-            string report = string.Format("Overall reactor stats:\r\n" +
-                                        "Total output: {5} mb/t of high pressure steam\r\n" +
-                                        "Total Heat: {0} HU/t\r\n" +
-                                        "Total Cooling: {1} HU/t\r\n" +
-                                        "Net Heat: {2} HU/t\r\n" +
-                                        "Overall Efficiency: {3} %\r\n" +
-                                        "Overall Heat Multiplier: {4} %\r\n" +
-                                        "Functional \\ total blocks: {6} \\ {7}\r\n" +
-                                        "Sparsity penalty multiplier: {8}\r\n\r\n",
-                                        totalHeatPerTick,
-                                        totalCoolingPerTick,
-                                        totalHeatPerTick-totalCoolingPerTick,
-                                        (int)(efficiency*100),
-                                        (int)(heatMultiplier*100),
-                                        (int)(totalOutputPerTick/16),
-                                        functionalBlocks,
-                                        totalInteriorBlocks,
-                                        (sparsityPenalty == 0) ? "None" : Math.Round(sparsityPenalty, 4).ToString()
-                );
+            StringBuilder stats = new StringBuilder();
+            stats.Append("Overall reactor stats:\r\n");
+            stats.Append(string.Format("Total output: {0} mb/t of {1}\r\n", (int)(totalOutputPerTick * coolantRecipe.OutToInRatio / coolantRecipe.HeatCapacity), coolantRecipe.OutputName));
+            stats.Append(string.Format("Total Heat: {0} HU/t\r\n", totalHeatPerTick));
+            stats.Append(string.Format("Total Cooling: {0} HU/t\r\n", totalCoolingPerTick));
+            stats.Append(string.Format("Net Heat: {0} HU/t\r\n", totalHeatPerTick - totalCoolingPerTick));
+            stats.Append(string.Format("Overall Efficiency: {0} %\r\n", (int)(efficiency * 100)));
+            stats.Append(string.Format("Overall Heat Multiplier: {0} %\r\n", (int)(heatMultiplier * 100)));
+            stats.Append(string.Format("Functional \\ total blocks: {0} \\ {1}\r\n", functionalBlocks, totalInteriorBlocks));
+            stats.Append(string.Format("Sparsity penalty multiplier: {0}\r\n\r\n", (sparsityPenalty == 0) ? "None" : Math.Round(sparsityPenalty, 4).ToString()));
 
             if(includeClusterInfo)
                 foreach (Cluster cluster in clusters)
                 {
-                    report += cluster.GetStatString();
+                    stats.Append(cluster.GetStatString());
                 }
-            return report;
+            return stats.ToString();
         }
 
         public static void Save(FileInfo saveFile)
@@ -518,7 +512,7 @@ namespace NC_Reactor_Planner
                 saveFuelCells[fc.ToSaveString()].Add(fc.Position);
             }
 
-            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims);
+            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims, coolantRecipeName);
         }
 
         public static ValidationResult Load(FileInfo saveFile)
@@ -560,12 +554,21 @@ namespace NC_Reactor_Planner
                     {
                         case 0:
                         case 1:
-                            throw new ArgumentException("Tried to load an invalid FuelCell: " + kvp.Key);
                         case 2:
-                            restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, Palette.FuelPalette[props[0]],Convert.ToBoolean(props[1]));
+                            throw new ArgumentException("Tried to load an invalid FuelCell: " + kvp.Key);
+                        case 3:
+                            //[TODO] Fuel palette checks (same as for neutron sources)
+                            restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, Palette.FuelPalette[props[0]], Convert.ToBoolean(props[1]), props[2]);
                             break;
                         default:
                             throw new ArgumentException("Tried to load an unexpected FuelCell: " + kvp.Key);
+                    }
+                    if (restoredFuelCell.Primed && !Configuration.NeutronSources.ContainsKey(restoredFuelCell.NeutronSource))
+                    {
+                        System.Windows.Forms.MessageBox.Show("There is no " + restoredFuelCell.NeutronSource + " neutron source in the current configuration " +
+                            "for FuelCell at " + restoredFuelCell.Position +
+                            ". This reactor was probably created with a different planner configuration! Resetting the FuelCell!");
+                        restoredFuelCell.UnPrime();
                     }
                     SetBlock(restoredFuelCell, pos);
                 }
@@ -578,6 +581,7 @@ namespace NC_Reactor_Planner
                 SetBlock(new Reflector("Reflector", Palette.Textures["Reflector"], pos), pos);
 
             ReloadValuesFromConfig();
+            coolantRecipeName = save.CoolantRecipeName;
             //ConstructLayers();
         }
 
@@ -631,6 +635,7 @@ namespace NC_Reactor_Planner
                 }
 
                 string report = string.Format("Planner version: {0}\r\n", Updater.ShortVersionString(saveVersion));
+                report += string.Format("Recipe: 1 mb of {0} to {2} mb of {1}\r\n", coolantRecipe.InputName, coolantRecipe.OutputName, coolantRecipe.OutToInRatio);
                 gr.DrawString(report + GetStatString(includeClusterInfo), new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel), Brushes.Black, 0, 0);
             }
             using (FileStream fs = File.OpenWrite(fileName))

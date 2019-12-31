@@ -34,7 +34,13 @@ namespace NC_Reactor_Planner
             cellZ = -1;
             HighlightedCluster = -1;
 
-            MouseEnter += new EventHandler((sender, e) => { Reactor.UI.ReactorGrid.Focus(); Reactor.UI.MousedOverLayer = this; });
+            //[TODO] Fix scrolling when in per-layer mode
+            MouseEnter += new EventHandler((sender, e) => {
+                if (Reactor.UI.drawAllLayers)
+                    Reactor.UI.ReactorGrid.Focus();
+                else Reactor.UI.LayerScrollBar.Focus();
+                Reactor.UI.MousedOverLayer = this;
+                });
             MouseLeave += new EventHandler((sender, e) => { if(Reactor.UI.MousedOverLayer == this) Reactor.UI.MousedOverLayer = null; });
 
             Width = X * Reactor.UI.BlockSize;
@@ -49,37 +55,6 @@ namespace NC_Reactor_Planner
             Refresh();
         }
 
-        private void OldConstructMenu()
-        {
-            menu = new MenuStrip();
-            menu.Dock = DockStyle.None;
-            ToolStripMenuItem editMenu = new ToolStripMenuItem { Name = "Edit", Text = "Edit" };
-            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Clear", Text = "Clear layer" });
-            editMenu.DropDownItems["Clear"].Click += new EventHandler(MenuClear);
-            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Copy", Text = "Copy layer" });
-            editMenu.DropDownItems["Copy"].Click += new EventHandler(MenuCopy);
-            editMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Paste", Text = "Paste layer" });
-            editMenu.DropDownItems["Paste"].Click += new EventHandler(MenuPaste);
-            menu.Items.Add(editMenu);
-
-            ToolStripMenuItem manageMenu = new ToolStripMenuItem { Name = "Manage", Text = "Manage" };
-            manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Delete", Text = "Delete layer" });
-            manageMenu.DropDownItems["Delete"].Click += new EventHandler(MenuDelete);
-            manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert after", Text = "Insert a new layer after this one" });
-            manageMenu.DropDownItems["Insert after"].Click += new EventHandler(MenuInsertAfter);
-            manageMenu.DropDownItems.Add(new ToolStripMenuItem { Name = "Insert before", Text = "Insert a new layer before this one" });
-            manageMenu.DropDownItems["Insert before"].Click += new EventHandler(MenuInsertBefore);
-            menu.Items.Add(manageMenu);
-
-            ToolStripMenuItem layerLabel = new ToolStripMenuItem { Name = "LayerLabel", Text = "Layer " + Y.ToString() };
-            menu.Items.Add(layerLabel);
-
-            ResetRescaleMenu();
-
-            menu.Location = new Point(0, 0);
-            menu.Visible = true;
-            Controls.Add(menu);
-        }
         private void ConstructMenu()
         {
             menu = new MenuStrip();
@@ -177,8 +152,21 @@ namespace NC_Reactor_Planner
         protected override void OnPaint(PaintEventArgs e)
         {
             FullRedraw(e.Graphics);
+            DrawClusterHighlights(e.Graphics);
             if ((ModifierKeys & Keys.Shift) == Keys.Shift)
-                DrawClusterHighlight(e.Graphics, HighlightedCluster);
+                DrawClusterHighlight(e.Graphics, HighlightedCluster, PlannerUI.PrimedFuelCellOrangePen);
+        }
+
+        private void DrawClusterHighlights(Graphics g, bool forExport = false)
+        {
+            //[TODO] Consolidate checks with Block and Heatsink
+            foreach (Cluster cluster in Reactor.clusters)
+            {
+                if (cluster.PenaltyType > 0)
+                    DrawClusterHighlight(g, cluster.ID, PlannerUI.ClusterOverheatPen, forExport);
+                else if (cluster.PenaltyType < 0)
+                    DrawClusterHighlight(g, cluster.ID, PlannerUI.ClusterOvercoolPen, forExport);
+            }
         }
 
         public void FullRedraw(Graphics g, bool forExport = false)
@@ -224,9 +212,26 @@ namespace NC_Reactor_Planner
                 g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
             if (block.Cluster != -1 && !Reactor.clusters[block.Cluster].HasPathToCasing)
                 g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);
+
             if (block is FuelCell fuelCell && fuelCell.Primed)
-                g.DrawEllipse(PlannerUI.PrimedFuelCellPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
-            if (block is Moderator moderator)
+            {
+                switch (fuelCell.NeutronSource)
+                {
+                    case "Ra-Be":
+                        g.DrawEllipse(PlannerUI.PrimedFuelCellOrangePen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);  
+                        break;
+                    case "Po-Be":
+                        g.DrawEllipse(PlannerUI.PrimedFuelCellYellowPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
+                        break;
+                    case "Cf-252":
+                        g.DrawEllipse(PlannerUI.PrimedFuelCellGreenPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
+                        break;
+                    default:
+                        g.DrawEllipse(PlannerUI.PaletteHighlightPen, location.X + 3 * ds, location.Y + 3 * ds, bs - 6 * ds, bs - 6 * ds);
+                        break;
+                }
+            }
+            else if (block is Moderator moderator)
             {
                 if (!moderator.Active & !moderator.HasAdjacentValidFuelCell)
                     g.DrawRectangle(PlannerUI.ErrorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
@@ -240,7 +245,7 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public void DrawClusterHighlight(Graphics g, int clusterID)
+        public void DrawClusterHighlight(Graphics g, int clusterID, Pen pen, bool forExport = false)
         {
             if (clusterID == -1 | clusterID > Reactor.clusters.Count-1)
                 return;
@@ -249,19 +254,20 @@ namespace NC_Reactor_Planner
             Tuple<Point, Point> Line(Point3D position, Vector3D offset)
             {
                 position = new Point3D(position.X - 1, position.Y, position.Z - 1);
+                int menuOffset = (forExport ? 0 : menu.Height);
                 if (offset == new Vector3D(1, 0, 0))
-                    return Tuple.Create(new Point((int)(position.X + 1)*bs - 3, (int)position.Z * bs + menu.Height), new Point((int)(position.X + 1) * bs - 3, (int)(position.Z + 1) * bs + menu.Height));
+                    return Tuple.Create(new Point((int)(position.X + 1)*bs - 2, (int)position.Z * bs + menuOffset), new Point((int)(position.X + 1) * bs - 2, (int)(position.Z + 1) * bs + menuOffset));
                 if (offset == new Vector3D(-1, 0, 0))
-                    return Tuple.Create(new Point((int)position.X * bs + 3, (int)position.Z * bs + menu.Height), new Point((int)position.X * bs + 3, (int)(position.Z + 1) * bs + menu.Height));
+                    return Tuple.Create(new Point((int)position.X * bs + 2, (int)position.Z * bs + menuOffset), new Point((int)position.X * bs + 2, (int)(position.Z + 1) * bs + menuOffset));
                 if (offset == new Vector3D(0, 0, 1))
-                    return Tuple.Create(new Point((int)position.X * bs, (int)(position.Z + 1) * bs + menu.Height - 3), new Point((int)(position.X + 1) * bs, (int)(position.Z + 1) * bs + menu.Height - 3));
+                    return Tuple.Create(new Point((int)position.X * bs, (int)(position.Z + 1) * bs + menuOffset - 2), new Point((int)(position.X + 1) * bs, (int)(position.Z + 1) * bs + menuOffset - 2));
                 if (offset == new Vector3D(0, 0, -1))
-                    return Tuple.Create(new Point((int)(position.X + 1) * bs, (int)position.Z * bs + menu.Height + 3), new Point((int)position.X * bs, (int)position.Z * bs + menu.Height + 3));
+                    return Tuple.Create(new Point((int)(position.X + 1) * bs, (int)position.Z * bs + menuOffset + 2), new Point((int)position.X * bs, (int)position.Z * bs + menuOffset + 2));
                 throw new ArgumentException();
             }
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine(string.Format("Redrawing cluster {0} highlight on layer {1}", clusterID, Y));
-#endif
+//#if DEBUG
+            //System.Diagnostics.Debug.WriteLine(string.Format("Redrawing cluster {0} highlight on layer {1}", clusterID, Y));
+//#endif
             foreach (Block block in Reactor.clusters[clusterID].blocks)
             {
                 if (block.Position.Y != Y)
@@ -272,7 +278,7 @@ namespace NC_Reactor_Planner
                     if (neighbourCluster != clusterID)
                     {
                         Tuple<Point, Point> points = Line(block.Position, offset);
-                        g.DrawLine(PlannerUI.PrimedFuelCellPen, points.Item1, points.Item2);
+                        g.DrawLine(pen, points.Item1, points.Item2);
                     }
                 }
             }
@@ -380,9 +386,12 @@ namespace NC_Reactor_Planner
                     if ((ModifierKeys & Keys.Shift) != 0 && Reactor.BlockAt(position) is FuelCell fuelCell)
                     {
                         if (fuelCell.CanBePrimed())
-                            fuelCell.TogglePrimed();
+                            fuelCell.CyclePrimed();
                         else
+                        {
                             Reactor.UI.UIToolTip.Show("This FuelCell can't be primed! Has no LOS to a casing.", Reactor.UI.ReactorGrid, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16, 1500);
+                            fuelCell.UnPrime();
+                        }
                     }
                     else
                         PlaceBlock(cellX, cellZ, Palette.BlockToPlace(Reactor.BlockAt(position)));
@@ -418,6 +427,7 @@ namespace NC_Reactor_Planner
             using (Graphics g = Graphics.FromImage(layerImage))
             {
                 FullRedraw(g, true);
+                DrawClusterHighlights(g, true);
             }
             return layerImage;
         }

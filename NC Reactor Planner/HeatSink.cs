@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 using System.Text.RegularExpressions;
@@ -132,29 +133,36 @@ namespace NC_Reactor_Planner
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " heatsink\r\n";
+            StringBuilder report = new StringBuilder();
+            report.Append(DisplayName);
+            report.Append(" heatsink\r\n");
 
             if (Position != Palette.dummyPosition)
             {
                 if (Cluster != -1)
                 {
-                    toolTip += string.Format("Cluster: {0}\r\n", Cluster);
-                    toolTip += (Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection");
+                    //[TODO] Consolidate with Block tooltip
+                    report.Append(string.Format("Cluster: {0}\r\n", Cluster));
+                    report.Append((Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection"));
+                    if (Reactor.clusters[Cluster].PenaltyType > 0)
+                        report.Append("--Cluster is penalized for overheating!\n");
+                    else if (Reactor.clusters[Cluster].PenaltyType < 0)
+                        report.Append("--Cluster is penalized for overcooling!\n");
                 }
                 else
-                    toolTip += "--No cluster!\r\n";
+                    report.Append("--No cluster!\r\n");
             }
 
-            toolTip += string.Format(" Cooling: {0} HU/t\r\n" +
-                                    " Requires: {1}\r\n", Cooling, Requirements);
+            report.Append(string.Format(" Cooling: {0} HU/t\r\n", Cooling));
+            report.Append(string.Format(" Requires: {0}\r\n", Requirements));
             if (Position != Palette.dummyPosition & !Valid)
             {
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
-                    toolTip += string.Format("----{0}\r\n", error);
+                    report.Append(string.Format("----{0}\r\n", error));
                 }
             }
-            return toolTip;
+            return report.ToString();
         }
 
         public void UpdateStats()
