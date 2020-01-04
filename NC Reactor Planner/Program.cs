@@ -26,7 +26,7 @@ namespace NC_Reactor_Planner
 
         static void PreStartUp()
         {
-            FileInfo jsonDll = new FileInfo("Newtonsoft.json.dll");
+            FileInfo jsonDll = new FileInfo("Newtonsoft.Json.dll");
             if (!jsonDll.Exists)
             {
                 using (var writer = jsonDll.OpenWrite())
