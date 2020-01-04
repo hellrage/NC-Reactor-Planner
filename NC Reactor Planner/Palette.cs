@@ -63,7 +63,6 @@ namespace NC_Reactor_Planner
                     using (Pen highlightPen = new Pen(Color.Blue, 3))
                         DrawHighlightRectangle(g, Xhighlight, Zhighlight, highlightPen);
 
-                g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighSpeed;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
                 g.SmoothingMode = SmoothingMode.HighSpeed;
