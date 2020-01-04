@@ -10,7 +10,6 @@ using System.IO;
 using System.Resources;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Windows.Media.Media3D;
 using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner

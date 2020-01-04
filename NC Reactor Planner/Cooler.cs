@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
