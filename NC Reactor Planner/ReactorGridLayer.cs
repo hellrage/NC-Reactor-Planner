@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.Windows.Media.Media3D;
 
 namespace NC_Reactor_Planner
 {
@@ -113,7 +112,6 @@ namespace NC_Reactor_Planner
 
         public void FullRedraw(Graphics g, bool forExport = false)
         {
-            g.CompositingMode = CompositingMode.SourceCopy;
             g.CompositingQuality = CompositingQuality.HighSpeed;
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.SmoothingMode = SmoothingMode.HighSpeed;

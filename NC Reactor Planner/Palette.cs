@@ -10,7 +10,6 @@ using System.IO;
 using System.Resources;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Windows.Media.Media3D;
 using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner
@@ -64,7 +63,6 @@ namespace NC_Reactor_Planner
                     using (Pen highlightPen = new Pen(Color.Blue, 3))
                         DrawHighlightRectangle(g, Xhighlight, Zhighlight, highlightPen);
 
-                g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighSpeed;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
                 g.SmoothingMode = SmoothingMode.HighSpeed;

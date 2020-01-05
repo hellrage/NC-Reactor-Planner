@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Media.Media3D;
 using System.Drawing;
 
 namespace NC_Reactor_Planner
