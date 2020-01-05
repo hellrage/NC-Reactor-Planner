@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -131,7 +132,7 @@ namespace NC_Reactor_Planner
             location = new Point(bs * (x - 1), (forExport ? 0 : menu.Height) + bs * (z - 1));
             Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
 
-            Block block = Reactor.BlockAt(new Point3D(x, Y, z));
+            Block block = Reactor.BlockAt(new Vector3(x, Y, z));
 
             g.DrawImage(block.Texture, cellRect);
 
@@ -155,7 +156,7 @@ namespace NC_Reactor_Planner
             cellX = cellCoords.Item1;
             cellZ = cellCoords.Item2;
 
-            Point3D position = new Point3D(cellX, Y, cellZ);
+            Vector3 position = new Vector3(cellX, Y, cellZ);
             HandleMouse(e.Button, position);
             base.OnMouseDown(e);
         }
@@ -174,7 +175,7 @@ namespace NC_Reactor_Planner
 
                 if (cellX > X || cellZ > Z || cellX < 1 || cellZ < 1)
                     return;
-                Point3D position = new Point3D(cellX, Y, cellZ);
+                Vector3 position = new Vector3(cellX, Y, cellZ);
                 HandleMouse(e.Button, position);
                 PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
             }
@@ -196,7 +197,7 @@ namespace NC_Reactor_Planner
 
             Reactor.UpdateStats();
             Reactor.UI.RefreshStats();
-            Point3D position = new Point3D(cellX, Y, cellZ);
+            Vector3 position = new Vector3(cellX, Y, cellZ);
             PlannerUI.gridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * PlannerUI.blockSize + 16, menu.Height + cellZ * PlannerUI.blockSize + 16);
             Reactor.Redraw();
             base.OnMouseUp(e);
@@ -223,7 +224,7 @@ namespace NC_Reactor_Planner
             return Tuple.Create((newX / PlannerUI.blockSize) + 1, (newZ / PlannerUI.blockSize) + 1);
         }
 
-        private void HandleMouse(MouseButtons button, Point3D position)
+        private void HandleMouse(MouseButtons button, Vector3 position)
         {
             switch (button)
             {
@@ -249,7 +250,7 @@ namespace NC_Reactor_Planner
 
         private void PlaceBlock(int x, int z, Block block)
         {
-            Reactor.SetBlock(block, new Point3D(x, Y, z));
+            Reactor.SetBlock(block, new Vector3(x, Y, z));
         }
 
         public Bitmap DrawToImage()

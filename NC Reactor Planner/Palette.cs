@@ -10,6 +10,7 @@ using System.IO;
 using System.Resources;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Numerics;
 using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner
@@ -166,7 +167,7 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, Bitmap> Textures { get; private set; }
         public static Dictionary<string, Block> BlockPalette { get; private set; }
         public static Dictionary<string, Fuel> FuelPalette { get; private set; }
-        public static readonly Point3D dummyPosition = new Point3D(-1, -1, -1);
+        public static readonly Vector3 dummyPosition = new Vector3(-1, -1, -1);
         public static Fuel SelectedFuel { get; set; }
         public static PalettePanel PaletteControl { get; private set; }
 

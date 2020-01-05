@@ -158,3 +158,11 @@
 06.10.19 v1.2.22
 	Embedded fNbt.dll (required for vanilla structure export).
 	Changed the wording of active\valid coolers to be clearer.
+
+06.01.2020 v1.2.23
+	Now built targetting .NET 4.7.2
+	Merged the PR allowing the planer to run on Linux! Immediately completely rewrote it to use .NET 4.7.2 Vector3 instead of reinventing the wheel.
+	Changed savefile format a bit (older savefiles can still be loaded).
+	Added "----" before errors in coolers' tooltips.
+	Removed unused values from fuels.
+	.ncr savefiles are no longer supported! I doubt anyone even still has any.

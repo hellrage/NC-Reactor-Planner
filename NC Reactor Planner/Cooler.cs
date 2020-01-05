@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -25,7 +26,7 @@ namespace NC_Reactor_Planner
         public CoolerTypes CoolerType { get => _coolerType; private set => _coolerType = value; }
 
 
-        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Point3D position, bool active = false) : base((active?"Active ":"") + displayName, BlockTypes.Cooler, texture, position)
+        public Cooler(string displayName, Bitmap texture, CoolerTypes type, double heatActive, double heatPassive, string requirements, Vector3 position, bool active = false) : base((active?"Active ":"") + displayName, BlockTypes.Cooler, texture, position)
         {
             CoolerType = type;
             HeatActive = heatActive;
@@ -36,11 +37,11 @@ namespace NC_Reactor_Planner
             placementErrors = new List<string>();
         }
 
-        public Cooler(Cooler parent, Point3D position) : this(parent.CoolerType.ToString(), parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, parent.Active)
+        public Cooler(Cooler parent, Vector3 position) : this(parent.CoolerType.ToString(), parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, parent.Active)
         {
         }
 
-        public Cooler(Cooler parent, Point3D position, bool active) : this(parent.CoolerType.ToString(), parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, active)
+        public Cooler(Cooler parent, Vector3 position, bool active) : this(parent.CoolerType.ToString(), parent.Texture, parent.CoolerType, parent.HeatActive, parent.HeatPassive, parent.Requirements, position, active)
         {
         }
 
@@ -55,7 +56,7 @@ namespace NC_Reactor_Planner
             {
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
-                    toolTip += string.Format("    {0}\r\n", error);
+                    toolTip += string.Format("----{0}\r\n", error);
                 }
             }
             return toolTip;
@@ -91,11 +92,11 @@ namespace NC_Reactor_Planner
                 case CoolerTypes.Glowstone:
                     return Valid = HasAdjacent(Palette.BlockPalette["Graphite"], 2);
                 case CoolerTypes.Lapis:
-                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["FuelCell"]) & HasAdjacent(new Casing("Casing", null, new Vector3()));
                 case CoolerTypes.Diamond:
                     return Valid = HasAdjacent(Palette.BlockPalette["Water"]) & HasAdjacent(Palette.BlockPalette["Quartz"]);
                 case CoolerTypes.Helium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Redstone"], 1, true) & HasAdjacent(new Casing("Casing", null, new Vector3()));
                 case CoolerTypes.Enderium:
                     return Valid = CheckEnderium();
                 case CoolerTypes.Cryotheum:
@@ -109,7 +110,7 @@ namespace NC_Reactor_Planner
                 case CoolerTypes.Tin:
                     return Valid = CheckTin();
                 case CoolerTypes.Magnesium:
-                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Point3D()));
+                    return Valid = HasAdjacent(Palette.BlockPalette["Graphite"]) & HasAdjacent(new Casing("Casing", null, new Vector3()));
                 default:
                     throw new ArgumentException("Unexpected cooler type");
             }
@@ -119,7 +120,7 @@ namespace NC_Reactor_Planner
         {
             int adjacent = 0;
             int activeAdjacent = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
+            foreach (Vector3 o in Reactor.sixAdjOffsets)
             {
                 Block block = Reactor.BlockAt(Position + o);
                 BlockTypes bt = block.BlockType;
@@ -236,7 +237,7 @@ namespace NC_Reactor_Planner
             }
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new Cooler(this, newPosition);
         }

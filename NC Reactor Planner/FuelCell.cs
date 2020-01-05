@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -15,14 +16,14 @@ namespace NC_Reactor_Planner
         public override bool Valid { get => true; }
 
 
-        public FuelCell(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.FuelCell, texture, position)
+        public FuelCell(string displayName, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.FuelCell, texture, position)
         {
             AdjacentCells = 0;
             EnergyProducedPerTick = 0;
             HeatProducedPerTick = 0;
         }
 
-        public FuelCell(FuelCell parent, Point3D position) : this(parent.DisplayName, parent.Texture, position)
+        public FuelCell(FuelCell parent, Vector3 position) : this(parent.DisplayName, parent.Texture, position)
         {
         }
 
@@ -79,7 +80,7 @@ namespace NC_Reactor_Planner
         public int FindModeratorsThenAdjacentCells()
         {
             int moderatorAdjacentCells = 0;
-            foreach (Vector3D offset in Reactor.sixAdjOffsets)
+            foreach (Vector3 offset in Reactor.sixAdjOffsets)
             {
                 moderatorAdjacentCells += FindModeratorThenAdjacentCell(offset);
             }
@@ -87,9 +88,9 @@ namespace NC_Reactor_Planner
             return moderatorAdjacentCells;
         }
 
-        public int FindModeratorThenAdjacentCell(Vector3D offset)
+        public int FindModeratorThenAdjacentCell(Vector3 offset)
         {
-            Point3D pos;
+            Vector3 pos;
 
             for (int i = 1; i <= Configuration.Fission.NeutronReach; i++)
             {
@@ -125,7 +126,7 @@ namespace NC_Reactor_Planner
         public int FindAdjacentCells()
         {
             int adjCells = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
+            foreach (Vector3 o in Reactor.sixAdjOffsets)
             {
                 if (Reactor.BlockAt(Position + o) is FuelCell)
                     adjCells++;
@@ -136,7 +137,7 @@ namespace NC_Reactor_Planner
         public int FindAdjacentModerators()
         {
             int adjModerators = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
+            foreach (Vector3 o in Reactor.sixAdjOffsets)
             {
                 if (Reactor.BlockAt(Position + o) is Moderator moderator)
                 {
@@ -148,7 +149,7 @@ namespace NC_Reactor_Planner
             return adjModerators;
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new FuelCell(this, newPosition);
         }

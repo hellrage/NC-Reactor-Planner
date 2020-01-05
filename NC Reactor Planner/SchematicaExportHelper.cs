@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using fNbt;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -63,7 +64,7 @@ namespace NC_Reactor_Planner
                     for(int x = 1; x <= Reactor.interiorDims.X;x++)
                     {
                         coolerIsActive = false;
-                        Block block = Reactor.BlockAt(new Point3D(x, y, z));
+                        Block block = Reactor.BlockAt(new Vector3(x, y, z));
                         int index = (int)((x-1) + ((y-1) * Reactor.interiorDims.Z + (z-1)) * Reactor.interiorDims.X);
                         blocks[index] = (byte)BlockIDLookup[block.BlockType];
                         if (block.BlockType == BlockTypes.FuelCell | block.BlockType == BlockTypes.Air)
@@ -153,7 +154,7 @@ namespace NC_Reactor_Planner
                 {
                     for (int x = 1; x <= Reactor.interiorDims.X; x++)
                     {
-                        Block block = Reactor.BlockAt(new Point3D(x, y, z));
+                        Block block = Reactor.BlockAt(new Vector3(x, y, z));
                         NbtCompound palettenbt = GetNbtCompound(block);
                         if (!listPalette.Contains(block.DisplayName))
                         {

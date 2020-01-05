@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -11,14 +12,14 @@ namespace NC_Reactor_Planner
         public double HeatGenerationPerTick { get; private set; }
         public ModeratorTypes ModeratorType { get; private set; }
 
-        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Moderator, texture, position)
+        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             HeatGenerationPerTick = 0;
             Valid = false;
             ModeratorType = type;
         }
 
-        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position)
+        public Moderator(Moderator parent, Vector3 position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position)
         {
             ModeratorType = parent.ModeratorType;
         }
@@ -49,7 +50,7 @@ namespace NC_Reactor_Planner
             return toolTip;
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new Moderator(this, newPosition);
         }

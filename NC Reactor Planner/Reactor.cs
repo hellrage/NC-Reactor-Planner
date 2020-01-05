@@ -7,17 +7,18 @@ using System.IO;
 using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
     public struct CompressedSaveFile
     {
         public Version SaveVersion;
-        public List<Dictionary<string, List<Point3D>>> CompressedReactor;
-        public Size3D InteriorDimensions;
+        public Dictionary<string, List<Vector3>> CompressedReactor;
+        public Vector3 InteriorDimensions;
         public Fuel UsedFuel;
 
-        public CompressedSaveFile(Version sv, List<Dictionary<string, List<Point3D>>> cr, Size3D id, Fuel uf)
+        public CompressedSaveFile(Version sv, Dictionary<string, List<Vector3>> cr, Vector3 id, Fuel uf)
         {
             SaveVersion = sv;
             CompressedReactor = cr;
@@ -30,7 +31,7 @@ namespace NC_Reactor_Planner
     {
         public static Block[,,] blocks;
         public static List<ReactorGridLayer> layers;
-        public static Size3D interiorDims;
+        public static Vector3 interiorDims;
         public static readonly Version saveVersion;
 
         public static PlannerUI UI { get; private set; }
@@ -43,7 +44,7 @@ namespace NC_Reactor_Planner
 
         public static List<string> checkOrder = new List<string> { "Water", "Redstone", "Quartz", "Magnesium", "Emerald", "Enderium", "Gold", "Lapis", "Glowstone", "Diamond", "Cryotheum", "Tin", "Helium", "Copper", "Iron" };
 
-        public static List<Vector3D> sixAdjOffsets = new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, -1, 0), new Vector3D(0, 1, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) };// x+-1, y+-1, z+-1
+        public static List<Vector3> sixAdjOffsets = new List<Vector3> { new Vector3(-1, 0, 0), new Vector3(1, 0, 0), new Vector3(0, -1, 0), new Vector3(0, 1, 0), new Vector3(0, 0, -1), new Vector3(0, 0, 1) };// x+-1, y+-1, z+-1
 
         public static double totalCoolingPerTick = 0;
         public static Dictionary<string, double> totalPassiveCoolingPerType;
@@ -71,31 +72,31 @@ namespace NC_Reactor_Planner
 
         public static void InitializeReactor(int interiorX, int interiorY, int interiorZ)
         {
-            interiorDims = new Size3D(interiorX, interiorY, interiorZ);
+            interiorDims = new Vector3(interiorX, interiorY, interiorZ);
             blocks = new Block[interiorX + 2, interiorY + 2, interiorZ + 2];
 
             for (int x = 0; x < interiorX + 2; x++)
                 for (int y = 0; y < interiorY + 2; y++)
                     for (int z = 0; z < interiorZ + 2; z++)
-                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
+                        blocks[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Vector3(x, y, z));
 
             for (int y = 1; y < interiorY + 1; y++)
                 for (int z = 1; z < interiorZ + 1; z++)
                 {
-                    blocks[0, y, z] = new Casing("Casing", null, new Point3D(0, y, z));
-                    blocks[interiorX + 1, y, z] = new Casing("Casing", null, new Point3D(interiorX + 1, y, z));
+                    blocks[0, y, z] = new Casing("Casing", null, new Vector3(0, y, z));
+                    blocks[interiorX + 1, y, z] = new Casing("Casing", null, new Vector3(interiorX + 1, y, z));
                 }
             for (int x = 1; x < interiorX + 1; x++)
                 for (int z = 1; z < interiorZ + 1; z++)
                 {
-                    blocks[x, 0, z] = new Casing("Casing", null, new Point3D(x, 0, z));
-                    blocks[x, interiorY + 1, z] = new Casing("Casing", null, new Point3D(x, interiorY + 1, z));
+                    blocks[x, 0, z] = new Casing("Casing", null, new Vector3(x, 0, z));
+                    blocks[x, interiorY + 1, z] = new Casing("Casing", null, new Vector3(x, interiorY + 1, z));
                 }
             for (int y = 1; y < interiorY + 1; y++)
                 for (int x = 1; x < interiorX + 1; x++)
                 {
-                    blocks[x, y, interiorZ + 1] = new Casing("Casing", null, new Point3D(x, y, interiorZ + 1));
-                    blocks[x, y, 0] = new Casing("Casing", null, new Point3D(x, y, 0));
+                    blocks[x, y, interiorZ + 1] = new Casing("Casing", null, new Vector3(x, y, interiorZ + 1));
+                    blocks[x, y, 0] = new Casing("Casing", null, new Vector3(x, y, 0));
                 }
 
             usedFuel = Palette.FuelPalette.Values.First();
@@ -103,7 +104,7 @@ namespace NC_Reactor_Planner
             ConstructLayers();
         }
 
-        public static void InitializeReactor(Size3D interiorDims)
+        public static void InitializeReactor(Vector3 interiorDims)
         {
             InitializeReactor((int)interiorDims.X, (int)interiorDims.Y, (int)interiorDims.Z);
         }
@@ -338,30 +339,7 @@ namespace NC_Reactor_Planner
         public static void Load(FileInfo saveFile)
         {
             if (saveFile.Extension == ".json")
-            {
                 LoadCompressedReactor(saveFile.FullName);
-            }
-            else if (saveFile.Extension == ".ncr")
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                try
-                {
-                    using (Stream stream = File.Open(saveFile.FullName, FileMode.Open))
-                    {
-                        /*saveVersion = (Version)*/formatter.Deserialize(stream); //Version is now only updated when saving
-                        blocks = (Block[,,])formatter.Deserialize(stream);
-                        interiorDims = (Size3D)formatter.Deserialize(stream);
-                        double fBP = (double)formatter.Deserialize(stream);
-                        double fBH = (double)formatter.Deserialize(stream);
-                        usedFuel = new Fuel("OldFormat", "--", "--", fBP, fBH, 0);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.Forms.MessageBox.Show(ex.Message + "\r\nThis savefile was created before save versioning was in place, unable to load, sorry \"^^");
-                    InitializeReactor(5, 5, 5);
-                }
-            }
             else
                 throw new FileFormatException("Unknown save file format!");
 
@@ -434,67 +412,40 @@ namespace NC_Reactor_Planner
             reactorImage.Dispose();
         }
 
-        public static Block BlockAt(Point3D position)
+        public static Block BlockAt(Vector3 position)
         {
             return blocks[(int)position.X, (int)position.Y, (int)position.Z];
         }
 
-        private static List<Dictionary<string, List<Point3D>>> CompressReactor()
+        private static Dictionary<string, List<Vector3>> CompressReactor()
         {
-            int DLContainsType(string type, List<Dictionary<string, List<Point3D>>> dl)
-            {
-                Dictionary<string, List<Point3D>> d;
-                for(int i = 0; i < dl.Count; i++)
-                {
-                    d = dl[i];
-                    if (d.ContainsKey(type))
-                    {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-
-            List<Dictionary<string, List<Point3D>>> cr = new List<Dictionary<string, List<Point3D>>>();
-            int n;
+            Dictionary<string, List<Vector3>> cr = new Dictionary<string, List<Vector3>>();
             foreach (Block block in blocks)
             {
                 if (block is Casing | block.BlockType == BlockTypes.Air)
                     continue;
 
-                string btype;
+                string btype = null;
                 if (block is Cooler cooler)
-                {
                     btype = (cooler.Active?"Active ":"") + cooler.CoolerType.ToString();
-                    if ((n = DLContainsType(btype, cr)) != -1)
-                        cr[n][btype].Add(block.Position);
-                    else
-                        cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
-                }
                 else if (block is Moderator moderator)
-                {
                     btype = moderator.ModeratorType.ToString();
-                    if ((n = DLContainsType(btype, cr)) != -1)
-                        cr[n][btype].Add(block.Position);
-                    else
-                        cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
-                }
                 else if (block is FuelCell)
-                {
                     btype = "FuelCell";
-                    if ((n = DLContainsType(btype, cr)) != -1)
-                        cr[n][btype].Add(block.Position);
-                    else
-                        cr.Add(new Dictionary<string, List<Point3D>> { { btype, new List<Point3D> { block.Position } } });
-                }
 
+                if (btype == null)
+                    continue;
+                if (cr.ContainsKey(btype))
+                    cr[btype].Add(block.Position);
+                else
+                    cr.Add(btype, new List<Vector3> { block.Position });
             }
             return cr;
         }
 
         private static void LoadCompressedReactor(string fileName)
         {
-            Block restoreBlock(string type, Point3D position)
+            Block restoreBlock(string type, Vector3 position)
             {
                 if (type == "FuelCell")
                     return new FuelCell("FuelCell", Palette.Textures["FuelCell"], position);
@@ -510,44 +461,59 @@ namespace NC_Reactor_Planner
             CompressedSaveFile csf;
             using (StreamReader sr = File.OpenText(fileName))
             {
+                string jsonText = sr.ReadToEnd();
+                JObject saveJSONObject = JObject.Parse(jsonText);
+                Version v;
+                v = saveJSONObject["SaveVersion"].ToObject<Version>();
                 JsonSerializer js = new JsonSerializer();
-                csf = (CompressedSaveFile)js.Deserialize(sr, typeof(CompressedSaveFile));
-                //usedFuel = (Fuel)js.Deserialize(sr, typeof(Fuel));
-            }
 
-            if(csf.SaveVersion.Major == 2)
-            {
-                System.Windows.Forms.MessageBox.Show("Can't load post-overhaul savefiles!");
-                return;
+                if (v.Major == 2)
+                {
+                    System.Windows.Forms.MessageBox.Show("Can't load post-overhaul savefiles!");
+                    return;
+                }
+                else if(v >= new Version(1,2,23))
+                {
+                    csf = (CompressedSaveFile)js.Deserialize(new StringReader(jsonText), typeof(CompressedSaveFile));
+                }
+                else
+                {
+                    Dictionary<string, List<Vector3>> cr = new Dictionary<string, List<Vector3>>();
+                    JToken crToken = saveJSONObject["CompressedReactor"];
+                    foreach (var child in crToken.Children())
+                    {
+                        JProperty entry = child.First().ToObject<JProperty>();
+                        string name = entry.Name;
+                        var children = entry.First().Children().ToList();
+                        cr.Add(name, new List<Vector3>());
+                        foreach (var coord in children)
+                        {
+                            string[] posV = coord.ToObject<string>().Split(',');
+                            cr[name].Add(new Vector3(Convert.ToInt32(posV[0]), Convert.ToInt32(posV[1]), Convert.ToInt32(posV[2])));
+                        }
+                    }
+
+                    string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
+                    Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
+
+                    Fuel fuel = saveJSONObject["UsedFuel"].ToObject<Fuel>();
+                    csf = new CompressedSaveFile(v, cr, inDimsVector, fuel);
+                }
             }
 
             InitializeReactor(csf.InteriorDimensions);
 
-            foreach (Dictionary<string, List<Point3D>> d in csf.CompressedReactor)
+            foreach (KeyValuePair<string, List<Vector3>> kvp in csf.CompressedReactor)
             {
-                foreach (KeyValuePair<string, List<Point3D>> kvp in d)
-                {
-                    foreach(Point3D pos in kvp.Value)
-                        SetBlock(restoreBlock(kvp.Key, pos), pos);
-                }
+                foreach(Vector3 pos in kvp.Value)
+                    SetBlock(restoreBlock(kvp.Key, pos), pos);
             }
 
-            using (StreamReader sr = File.OpenText(fileName))
-            {
-                JObject jsave = JObject.Parse(sr.ReadToEnd());
-                JToken jFuel = jsave["UsedFuel"];
-
-                string fName = jFuel["Name"].ToObject<string>();
-                double fPower = jFuel["BasePower"].ToObject<double>();
-                double fHeat = jFuel["BaseHeat"].ToObject<double>();
-                double fTime = jFuel["FuelTime"].ToObject<double>();
-
-                usedFuel = new Fuel(fName, fPower, fHeat, fTime);
-            }
+            usedFuel = csf.UsedFuel;
             FinalizeLoading();
         }
 
-        public static void SetBlock(Block block, Point3D position)
+        public static void SetBlock(Block block, Vector3 position)
         {
             blocks[(int)position.X, (int)position.Y, (int)position.Z] = block;
         }
@@ -556,7 +522,7 @@ namespace NC_Reactor_Planner
         {
             for (int x = 0; x < interiorDims.X; x++)
                 for (int z = 0; z < interiorDims.Z; z++)
-                    SetBlock(new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x + 1, layer.Y, z + 1)), new Point3D(x + 1, layer.Y, z + 1));
+                    SetBlock(new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Vector3(x + 1, layer.Y, z + 1)), new Vector3(x + 1, layer.Y, z + 1));
             UpdateStats();
             Redraw();
         }
@@ -584,7 +550,7 @@ namespace NC_Reactor_Planner
             for (int x = 0; x < layer.X; x++)
                 for (int z = 0; z < layer.Z; z++)
                 {
-                    Point3D position = new Point3D(x + 1, layer.Y, z + 1);
+                    Vector3 position = new Vector3(x + 1, layer.Y, z + 1);
                     SetBlock(PlannerUI.layerBuffer[x, z].Copy(position), position);
                 }
             UpdateStats();
@@ -603,7 +569,7 @@ namespace NC_Reactor_Planner
                 {
                     for (int z = 0; z < interiorDims.Z+2; z++)
                     {
-                        newReactor[x, layer, z] = blocks[x, layer, z].Copy(new Point3D(x, layer, z));
+                        newReactor[x, layer, z] = blocks[x, layer, z].Copy(new Vector3(x, layer, z));
                     }
                 }
             }
@@ -613,13 +579,13 @@ namespace NC_Reactor_Planner
                 {
                     for (int z = 0; z < interiorDims.Z + 2; z++)
                     {
-                        newReactor[x, layer-1, z] = blocks[x, layer, z].Copy(new Point3D(x, layer-1, z));
+                        newReactor[x, layer-1, z] = blocks[x, layer, z].Copy(new Vector3(x, layer-1, z));
                     }
                 }
             }
 
             blocks = newReactor;
-            interiorDims = new Size3D(interiorDims.X, interiorDims.Y - 1, interiorDims.Z);
+            interiorDims = new Vector3(interiorDims.X, interiorDims.Y - 1, interiorDims.Z);
 
         }
 
@@ -632,7 +598,7 @@ namespace NC_Reactor_Planner
                 {
                     for (int z = 0; z < interiorDims.Z + 2; z++)
                     {
-                        newReactor[x, layer, z] = blocks[x, layer, z].Copy(new Point3D(x, layer, z));
+                        newReactor[x, layer, z] = blocks[x, layer, z].Copy(new Vector3(x, layer, z));
                     }
                 }
             }
@@ -642,9 +608,9 @@ namespace NC_Reactor_Planner
                 for (int z = 0; z < interiorDims.Z + 2; z++)
                 {
                     if(((x == 0 | x == interiorDims.X + 1)&(z > 0 & z < interiorDims.Z + 1)) || ((z == 0 | z == interiorDims.Z + 1) & (x > 0 & x < interiorDims.X + 1)))
-                        newReactor[x, y, z] = new Casing("Casing", null, new Point3D(x, y, z));
+                        newReactor[x, y, z] = new Casing("Casing", null, new Vector3(x, y, z));
                     else
-                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Point3D(x, y, z));
+                        newReactor[x, y, z] = new Block("Air", BlockTypes.Air, Palette.Textures["Air"], new Vector3(x, y, z));
                 }
             }
 
@@ -654,13 +620,13 @@ namespace NC_Reactor_Planner
                 {
                     for (int z = 0; z < interiorDims.Z + 2; z++)
                     {
-                        newReactor[x, layer, z] = blocks[x, layer-1, z].Copy(new Point3D(x, layer, z));
+                        newReactor[x, layer, z] = blocks[x, layer-1, z].Copy(new Vector3(x, layer, z));
                     }
                 }
             }
 
             blocks = newReactor;
-            interiorDims = new Size3D(interiorDims.X, interiorDims.Y + 1, interiorDims.Z);
+            interiorDims = new Vector3(interiorDims.X, interiorDims.Y + 1, interiorDims.Z);
 
             using (TextWriter tw = File.CreateText("Debug.txt"))
             {
