@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Numerics;
-using System.Text.RegularExpressions;
 
 namespace NC_Reactor_Planner
 {
@@ -12,123 +11,26 @@ namespace NC_Reactor_Planner
     {
         private List<string> placementErrors;
         
-        public double Cooling { get; private set; }
-        public string Requirements { get; private set; }
+        public double Cooling { get => Configuration.HeatSinks[HeatSinkType].HeatPassive; }
+        public string Requirements { get => Configuration.HeatSinks[HeatSinkType].Requirements; }
         public override bool Valid { get; protected set; }
-        public List<Func<Vector3,List<string>,bool>> Validators { get; private set; }
+        public List<Func<Vector3,List<string>,bool>> Validators { get => Palette.HeatSinkValidators[HeatSinkType]; }
         public List<string> Dependencies { get; private set; }
 
         public string HeatSinkType { get; private set; }
 
 
-        public HeatSink(string displayName, Bitmap texture, string type, double heatPassive, string requirements, Vector3 position) : base(displayName, BlockTypes.HeatSink, texture, position)
+        public HeatSink(string displayName, Bitmap texture, string type, Vector3 position, List<string> dependencies = null) : base(displayName, BlockTypes.HeatSink, texture, position)
         {
             HeatSinkType = type;
-            Cooling = heatPassive;
-            Requirements = requirements;
             Valid = false;
-            Validators = new List<Func<Vector3, List<string>, bool>>();
-            Dependencies = new List<string>();
+            Dependencies = dependencies ?? new List<string>();
             placementErrors = new List<string>();
         }
 
-        public HeatSink(HeatSink parent, Vector3 position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.Cooling, parent.Requirements, position)
+        public HeatSink(HeatSink parent, Vector3 position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, position)
         {
-            Validators = parent.Validators;
-        }
-
-        public void ConstructValidators()
-        {
-            Validators.Clear();
-
-            string[] numberStrings = new string[] { "One", "Two", "Three", "Four", "Five", "Six" };
-            Dictionary<string, byte> nums = new Dictionary<string, byte>();
-            for (int i = 0; i < 6; i++)
-                nums.Add(numberStrings[i], (byte)(i+1));
-            //string numbersRegex = string.Join("|", numberStrings);
-            //Regex ruleFormat = new Regex(@"^(Exact |Vertex |Axial )?("+numbersRegex+@")\s()");
-
-            string[] rules = Requirements.Split(';');
-            foreach (string rule in rules)
-            {
-                //string trimmedRule = rule.Trim();
-                //Match ruleMatch = ruleFormat.Match(trimmedRule);
-                //var words = trimmedRule.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var words = rule.Trim().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                switch (words[0])
-                {
-                    case "Exactly":
-                        if (!rule.Contains("heatsink"))
-                            if (nums[words[1]] > 1)
-                                words[2] = words[2].Substring(0, words[2].Length - 1);
-                        if(!Dependencies.Contains(words[2]))
-                            Dependencies.Add(words[2]);
-
-                        if (words[2] == "Moderator")
-                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette["Graphite"], nums[words[1]], true); });
-                        else if (words[2] == "Casing")
-                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.dummyCasing, nums[words[1]], true); });
-                        else
-                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette[words[2]], nums[words[1]], true); });
-                        break;
-                    case "Vertex":
-                        List<Block> vertexBlocks = new List<Block>();
-                        List<string> vbNames = new List<string>() { words[3].Replace(",", ""), words[words.IndexOf("One", 3) + 1].Replace(",", ""), words[words.IndexOf("One", 6) + 1] };
-                        foreach (string name in vbNames)
-                        {
-                            if (!Dependencies.Contains(name))
-                                Dependencies.Add(name);
-
-                            if (name == "Moderator")
-                                vertexBlocks.Add(Palette.BlockPalette["Graphite"]);
-                            else if (name == "Casing")
-                                vertexBlocks.Add(Palette.dummyCasing);
-                            else
-                                vertexBlocks.Add(Palette.BlockPalette[name]);
-                        }
-                        Validators.Add((pos, errs) => { return HasVertex(pos, errs, vertexBlocks); });
-                        break;
-                    case "Axial":
-                        if (!rule.Contains("heatsink"))
-                            words[1] = words[1].Substring(0, words[1].Length - 1);
-
-                        if (!Dependencies.Contains(words[1]))
-                            Dependencies.Add(words[1]);
-
-                        if (words[1] == "Moderator")
-                            Validators.Add((pos, errs) => { return HasAxial(pos, errs, Palette.BlockPalette["Graphite"]); });
-                        else if (words[1] == "Casing")
-                            Validators.Add((pos, errs) => { return HasAxial(pos, errs, Palette.dummyCasing); });
-                        else
-                            Validators.Add((pos, errs) => { return HasAxial(pos, errs, Palette.BlockPalette[words[1]]); });
-                        break;
-                    case "One":
-                    case "Two":
-                    case "Three":
-                    case "Four":
-                    case "Five":
-                    case "Six":
-                        if (!rule.Contains("heatsink"))
-                            if (nums[words[0]] > 1)
-                                words[1] = words[1].Substring(0, words[1].Length - 1);
-
-                        if (!Dependencies.Contains(words[1]))
-                            Dependencies.Add(words[1]);
-
-                        if (words[1] == "Moderator")
-                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette["Graphite"], nums[words[0]], false); });
-                        else if (words[1] == "Casing")
-                            Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.dummyCasing, nums[words[0]], false); });
-                        else
-                        Validators.Add((pos, errs) => { return HasAdjacent(pos, errs, Palette.BlockPalette[words[1]], nums[words[0]], false); });
-                        break;
-                    default:
-                        System.Windows.Forms.MessageBox.Show(string.Format("Invalid rule string in {0}!\r\n{1}", HeatSinkType, rule));
-                        Requirements = "Invalid requirements!";
-                        Validators.Clear();
-                        return;
-                }
-            }
+            Dependencies = parent.Dependencies;
         }
 
         public override string GetToolTip()
@@ -157,6 +59,7 @@ namespace NC_Reactor_Planner
             report.Append(string.Format(" Requires: {0}\r\n", Requirements));
             if (Position != Palette.dummyPosition & !Valid)
             {
+                report.Append("----Invalid!\r\n");
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
                     report.Append(string.Format("----{0}\r\n", error));
@@ -173,13 +76,6 @@ namespace NC_Reactor_Planner
         public override void RevertToSetup()
         {
             SetCluster(-1);
-        }
-
-        public override void ReloadValuesFromConfig()
-        {
-            HeatSinkValues cv = Configuration.HeatSinks[HeatSinkType];
-            Cooling = cv.HeatPassive;
-            Requirements = cv.Requirements;
         }
 
         public bool Validate()
@@ -203,7 +99,7 @@ namespace NC_Reactor_Planner
             return Valid;
         }
 
-        private static bool HasAdjacent(Vector3 Position, List<string> placementErrors, Block needed, int number = 1, bool exact = false)
+        public static bool HasAdjacent(Vector3 Position, List<string> placementErrors, Block needed, int number = 1, bool exact = false)
         {
             int adjacent = 0;
             int activeAdjacent = 0;
@@ -237,29 +133,29 @@ namespace NC_Reactor_Planner
 
             if ((activeAdjacent > number) && exact)
             {
-                placementErrors.Add("Too many " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderators" : needed.DisplayName + "s"));
+                placementErrors.Add("Too many " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName + "s" : needed.BlockType.ToString() + "s"));
                 return false;
             }
 
             if (adjacent == 0)
             {
-                placementErrors.Add("No " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                placementErrors.Add("No " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName : needed.BlockType.ToString()));
                 return false;
             }
 
             if(activeAdjacent < number)
             {
                 if (adjacent < number)
-                    placementErrors.Add("Too few " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderators" : needed.DisplayName + "s"));
+                    placementErrors.Add("Too few " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName + "s" : needed.BlockType.ToString() + "s"));
                 else
-                    placementErrors.Add("Invalid " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                    placementErrors.Add("Invalid " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName : needed.BlockType.ToString()));
                 return false;
             }
 
             return true;
         }
 
-        private static bool HasAxial(Vector3 Position, List<string> placementErrors, Block needed)
+        public static bool HasAxial(Vector3 Position, List<string> placementErrors, Block needed)
         {
             BlockTypes bn = needed.BlockType;
             byte status = 0; //0:none, 1: invalid, 2: valid
@@ -300,10 +196,10 @@ namespace NC_Reactor_Planner
             switch (status)
             {
                 case 0:
-                    placementErrors.Add("No axial " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderators" : needed.DisplayName + "s"));
+                    placementErrors.Add("No axial " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName + "s" : needed.BlockType.ToString() + "s"));
                     return false;
                 case 1:
-                    placementErrors.Add("Invalid " + ((needed.BlockType == BlockTypes.Moderator) ? "Moderator" : needed.DisplayName));
+                    placementErrors.Add("Invalid " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName : needed.BlockType.ToString()));
                     return false;
                 case 2:
                     return true;
@@ -313,7 +209,7 @@ namespace NC_Reactor_Planner
             }
         }
 
-        private static bool HasVertex(Vector3 Position, List<string> placementErrors, List<Block> needed)
+        public static bool HasVertex(Vector3 Position, List<string> placementErrors, List<Block> needed)
         {
             if (needed.Count != 3)
                 throw new ArgumentException("Vertex rules need exactly 3 blocks specified");
@@ -331,10 +227,10 @@ namespace NC_Reactor_Planner
                     switch (status[i])
                     {
                         case 0:
-                            placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
+                            placementErrors.Add("No " + ((needed[i].BlockType == BlockTypes.HeatSink) ? needed[i].DisplayName : needed[i].BlockType.ToString()));
                             break;
                         case 1:
-                            placementErrors.Add("Invalid " + ((needed[i].BlockType == BlockTypes.Moderator) ? "Moderator" : needed[i].DisplayName));
+                            placementErrors.Add("Invalid " + ((needed[i].BlockType == BlockTypes.HeatSink) ? needed[i].DisplayName : needed[i].BlockType.ToString()));
                             break;
                         default:
                             break;

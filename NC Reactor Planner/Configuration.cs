@@ -19,16 +19,18 @@ namespace NC_Reactor_Planner
         public CraftingMaterials ResourceCosts;
         public Dictionary<string, FuelValues> Fuels;
         public Dictionary<string, NeutronSourceValues> NeutronSources;
+        public Dictionary<string, ReflectorValues> Reflectors;
         public Dictionary<string, CoolantRecipeValues> CoolantRecipes;
         public Dictionary<string, HeatSinkValues> HeatSinks;
         public Dictionary<string, ModeratorValues> Moderators;
 
-        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, NeutronSourceValues> ns, Dictionary<string, CoolantRecipeValues> cr, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
+        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, NeutronSourceValues> ns, Dictionary<string, ReflectorValues> rfs, Dictionary<string, CoolantRecipeValues> cr, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
         {
             saveVersion = sv;
             Fission = fs;
             Fuels = f;
             NeutronSources = ns;
+            Reflectors = rfs;
             CoolantRecipes = cr;
             HeatSinks = c;
             Moderators = m;
@@ -72,6 +74,24 @@ namespace NC_Reactor_Planner
         public NeutronSourceValues(List<object> values)
         {
             Efficiency = Convert.ToDouble(values[0]);
+        }
+    }
+
+    public struct ReflectorValues
+    {
+        public double ReflectivityMultiplier;
+        public double EfficiencyMultiplier;
+
+        public ReflectorValues(double rm, double em)
+        {
+            ReflectivityMultiplier = rm;
+            EfficiencyMultiplier = em;
+        }
+
+        public ReflectorValues(List<object> values)
+        {
+            ReflectivityMultiplier = Convert.ToDouble(values[0]);
+            EfficiencyMultiplier = Convert.ToDouble(values[1]);
         }
     }
 
@@ -143,12 +163,11 @@ namespace NC_Reactor_Planner
         public int MinSize;
         public int MaxSize;
         public int NeutronReach;
-        public double ReflectorEfficiency;
         public double MaxSparsityPenaltyMultiplier;
         public double SparsityPenaltyThreshold;
         public double CoolingPenaltyLeniency;
 
-        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double re, double mspm, double spt, double cpl)
+        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double mspm, double spt, double cpl)
         {
             Power = p;
             FuelUse = fu;
@@ -156,7 +175,6 @@ namespace NC_Reactor_Planner
             MinSize = ms;
             MaxSize = mxs;
             NeutronReach = nr;
-            ReflectorEfficiency = re;
             MaxSparsityPenaltyMultiplier = mspm;
             SparsityPenaltyThreshold = spt;
             CoolingPenaltyLeniency = cpl;
@@ -170,10 +188,9 @@ namespace NC_Reactor_Planner
             MinSize = Convert.ToInt32(values[3]);
             MaxSize = Convert.ToInt32(values[4]);
             NeutronReach = Convert.ToInt32(values[5]);
-            ReflectorEfficiency = Convert.ToDouble(values[6]);
-            MaxSparsityPenaltyMultiplier = Convert.ToDouble(values[7]);
-            SparsityPenaltyThreshold = Convert.ToDouble(values[8]);
-            CoolingPenaltyLeniency = Convert.ToDouble(values[9]);
+            MaxSparsityPenaltyMultiplier = Convert.ToDouble(values[6]);
+            SparsityPenaltyThreshold = Convert.ToDouble(values[7]);
+            CoolingPenaltyLeniency = Convert.ToDouble(values[8]);
         }
     }
 
@@ -205,6 +222,7 @@ namespace NC_Reactor_Planner
         public static CraftingMaterials ResourceCosts;
         public static Dictionary<string, FuelValues> Fuels;
         public static Dictionary<string, NeutronSourceValues> NeutronSources;
+        public static Dictionary<string, ReflectorValues> Reflectors;
         public static Dictionary<string, CoolantRecipeValues> CoolantRecipes;
         public static Dictionary<string, HeatSinkValues> HeatSinks;
         public static Dictionary<string, ModeratorValues> Moderators;
@@ -234,7 +252,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 30, 0))
+            if(cf.saveVersion < new Version(2, 0, 32, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -252,12 +270,13 @@ namespace NC_Reactor_Planner
                 SetDefaultResourceCosts();
             Fuels = cf.Fuels;
             NeutronSources = cf.NeutronSources;
+            Reflectors = cf.Reflectors;
             CoolantRecipes = cf.CoolantRecipes;
             HeatSinks = cf.HeatSinks;
             Moderators = cf.Moderators;
 
+
             Palette.Load();
-            Reactor.ReloadValuesFromConfig();
             Palette.SetHeatSinkUpdateOrder();
             Palette.UpdateNeutronSourceNames();
             Palette.PaletteControl.ResetSize();
@@ -277,7 +296,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, NeutronSources, CoolantRecipes, HeatSinks, Moderators, ResourceCosts);
+                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, NeutronSources, Reflectors, CoolantRecipes, HeatSinks, Moderators, ResourceCosts);
                 jss.Serialize(tw, cf);
             }
         }
@@ -291,6 +310,8 @@ namespace NC_Reactor_Planner
             SetDefaultFuels();
 
             SetDefaultNeutronSources();
+
+            SetDefaultReflectors();
 
             SetDefaultCoolantRecipes();
 
@@ -428,11 +449,18 @@ namespace NC_Reactor_Planner
             NeutronSources.Add("Cf-252", new NeutronSourceValues(1));
         }
 
+        private static void SetDefaultReflectors()
+        {
+            Reflectors = new Dictionary<string, ReflectorValues>();
+            Reflectors.Add("Beryllium-Carbon", new ReflectorValues(1.0, 0.5));
+            Reflectors.Add("Lead-Steel", new ReflectorValues(0.5, 0.25));
+        }
+
         private static void SetDefaultCoolantRecipes()
         {
             CoolantRecipes = new Dictionary<string, CoolantRecipeValues>();
-            CoolantRecipes.Add("Water to Hight Pressure Steam", new CoolantRecipeValues("Water", "High Pressure Steam", 64, 4));
-            CoolantRecipes.Add("Preheated Water to Hight Pressure Steam", new CoolantRecipeValues("Preheated Water", "High Pressure Steam", 32, 4));
+            CoolantRecipes.Add("Water to High Pressure Steam", new CoolantRecipeValues("Water", "High Pressure Steam", 64, 4));
+            CoolantRecipes.Add("Preheated Water to High Pressure Steam", new CoolantRecipeValues("Preheated Water", "High Pressure Steam", 32, 4));
             CoolantRecipes.Add("IC2 Coolant to Hot IC2 Coolant", new CoolantRecipeValues("IC2 Coolant", "Hot IC2 Coolant", 160, 1));
         }
 
@@ -489,7 +517,6 @@ namespace NC_Reactor_Planner
             Fission.MinSize = 1;
             Fission.MaxSize = 24;
             Fission.NeutronReach = 4;
-            Fission.ReflectorEfficiency = 0.5;
             Fission.MaxSparsityPenaltyMultiplier = 0.5;
             Fission.SparsityPenaltyThreshold = 0.75;
             Fission.CoolingPenaltyLeniency = 10;

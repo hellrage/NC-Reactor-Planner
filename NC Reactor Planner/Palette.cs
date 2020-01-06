@@ -149,6 +149,8 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, Fuel> FuelPalette { get; private set; }
         public static readonly Vector3 dummyPosition = new Vector3(-1, -1, -1);
         public static readonly Casing dummyCasing = new Casing("Casing", null, dummyPosition);
+        public static readonly Block dummyReflector = new Block("Dummy reflector", BlockTypes.Reflector, null, dummyPosition);
+        public static readonly Block dummyModerator = new Block("Dummy moderator", BlockTypes.Moderator, null, dummyPosition);
         public static Fuel SelectedFuel { get; set; }
         public static PalettePanel PaletteControl { get; private set; }
         
@@ -157,6 +159,7 @@ namespace NC_Reactor_Planner
 
         public static List<string> UpdateOrder { get; private set; }
         public static List<string> NeutronSourceNames { get; private set; }
+        public static Dictionary<string, List<Func<Vector3, List<string>, bool>>> HeatSinkValidators { get; private set; }
 
         private static readonly List<string> T0Blocks = new List<string>() { "Air", "FuelCell", "Moderator", "Reflector", "Casing" };
 
@@ -216,28 +219,8 @@ namespace NC_Reactor_Planner
 
             PopulateBlockPalette();
             PopulateFuelPalette();
-
-            ReloadValuesFromConfig();
+            
             UpdateNeutronSourceNames();
-        }
-
-        public static void ReloadValuesFromConfig()
-        {
-            foreach (var heatsink in Configuration.HeatSinks)
-            {
-                if (!BlockPalette.ContainsKey(heatsink.Key))
-                    BlockPalette.Add(heatsink.Key, new HeatSink(heatsink.Key, (Textures.ContainsKey(heatsink.Key)) ? Textures[heatsink.Key] : Textures["NoTexture"], heatsink.Key, heatsink.Value.HeatPassive, heatsink.Value.Requirements, dummyPosition));
-            }
-
-            foreach (KeyValuePair<string, Block> blockEntry in BlockPalette)
-            {
-                blockEntry.Value.ReloadValuesFromConfig();
-                if (blockEntry.Value is HeatSink hs)
-                    hs.ConstructValidators();
-            }
-
-            foreach(KeyValuePair<string, Fuel> fuelEntry in FuelPalette)
-                fuelEntry.Value.ReloadValuesFromConfig();
         }
 
         private static void PopulateBlockPalette()
@@ -245,31 +228,32 @@ namespace NC_Reactor_Planner
             BlockPalette.Add("Air", new Block("Air", BlockTypes.Air, Textures["Air"], dummyPosition));
             BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition, new Fuel()));
 
+            HeatSinkValidators = new Dictionary<string, List<Func<Vector3, List<string>, bool>>>();
             foreach (KeyValuePair<string, HeatSinkValues> heatSinkEntry in Configuration.HeatSinks)
             {
                 HeatSinkValues cv = heatSinkEntry.Value;
-                BlockPalette.Add(heatSinkEntry.Key, new HeatSink(heatSinkEntry.Key, (Textures.ContainsKey(heatSinkEntry.Key)) ? Textures[heatSinkEntry.Key] : Textures["NoTexture"], heatSinkEntry.Key, cv.HeatPassive, cv.Requirements, dummyPosition));
+                BlockPalette.Add(heatSinkEntry.Key, new HeatSink(heatSinkEntry.Key, (Textures.ContainsKey(heatSinkEntry.Key)) ? Textures[heatSinkEntry.Key] : Textures["NoTexture"], heatSinkEntry.Key, dummyPosition, ConstructValidatorsAndDependencies(heatSinkEntry.Key)));
             }
 
             foreach (KeyValuePair<string, ModeratorValues> moderatorEntry in Configuration.Moderators)
             {
                 ModeratorValues mv = moderatorEntry.Value;
-                ModeratorTypes parsedType;
-                if (Enum.TryParse(moderatorEntry.Key, out parsedType))
-                    BlockPalette.Add(moderatorEntry.Key, new Moderator(moderatorEntry.Key, parsedType, Textures[moderatorEntry.Key], dummyPosition, mv.FluxFactor, mv.EfficiencyFactor));
-                else
-                    throw new ArgumentException("Unexpected moderator type in config: " + moderatorEntry.Key);
+                BlockPalette.Add(moderatorEntry.Key, new Moderator(moderatorEntry.Key, moderatorEntry.Key, Textures[moderatorEntry.Key], dummyPosition));
             }
 
             BlockPalette.Add("Conductor", new Conductor("Conductor", Textures["Conductor"], dummyPosition));
-            BlockPalette.Add("Reflector", new Reflector("Reflector", Textures["Reflector"], dummyPosition));
+            foreach (KeyValuePair<string, ReflectorValues> reflectorEntry in Configuration.Reflectors)
+            {
+                ReflectorValues mv = reflectorEntry.Value;
+                BlockPalette.Add(reflectorEntry.Key, new Reflector(reflectorEntry.Key, reflectorEntry.Key, Textures[reflectorEntry.Key.Replace('-', '_')], dummyPosition));
+            }
         }
 
         private static void PopulateFuelPalette()
         {
             var fuelList = new List<KeyValuePair<string, Fuel>>();
             foreach (KeyValuePair<string, FuelValues> fuel in Configuration.Fuels)
-                fuelList.Add(new KeyValuePair<string, Fuel>(fuel.Key, new Fuel(fuel.Key, fuel.Value.BaseEfficiency, fuel.Value.BaseHeat, fuel.Value.FuelTime, fuel.Value.CriticalityFactor)));
+                fuelList.Add(new KeyValuePair<string, Fuel>(fuel.Key, new Fuel(fuel.Key)));
             fuelList.Sort((x, y) => x.Value.CriticalityFactor.CompareTo(y.Value.CriticalityFactor));
             FuelPalette = new Dictionary<string, Fuel>();
             foreach (var kvp in fuelList)
@@ -300,6 +284,106 @@ namespace NC_Reactor_Planner
             }
         }
 
+        public static List<string> ConstructValidatorsAndDependencies(string heatSinkType)
+        {
+            List<Func<Vector3, List<string>, bool>> Validators = new List<Func<Vector3, List<string>, bool>>();
+            List<string> Dependencies = new List<string>();
+
+            string[] numberStrings = new string[] { "One", "Two", "Three", "Four", "Five", "Six" };
+            Dictionary<string, byte> nums = new Dictionary<string, byte>();
+            for (int i = 0; i < 6; i++)
+                nums.Add(numberStrings[i], (byte)(i + 1));
+
+            string[] rules = Configuration.HeatSinks[heatSinkType].Requirements.Split(';');
+            foreach (string rule in rules)
+            {
+                var words = rule.Trim().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                switch (words[0])
+                {
+                    case "Exactly":
+                        if (!rule.Contains("heatsink"))
+                            if (nums[words[1]] > 1)
+                                words[2] = words[2].Substring(0, words[2].Length - 1);
+                        if (!Dependencies.Contains(words[2]))
+                            Dependencies.Add(words[2]);
+
+                        if (words[2] == "Moderator")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.dummyModerator, nums[words[1]], true); });
+                        else if (words[2] == "Casing")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.dummyCasing, nums[words[1]], true); });
+                        else if (words[2] == "Reflector")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.dummyReflector, nums[words[1]], true); });
+                        else
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.BlockPalette[words[2]], nums[words[1]], true); });
+                        break;
+                    case "Vertex":
+                        List<Block> vertexBlocks = new List<Block>();
+                        List<string> vbNames = new List<string>() { words[3].Replace(",", ""), words[words.IndexOf("One", 3) + 1].Replace(",", ""), words[words.IndexOf("One", 6) + 1] };
+                        foreach (string name in vbNames)
+                        {
+                            if (!Dependencies.Contains(name))
+                                Dependencies.Add(name);
+
+                            if (name == "Moderator")
+                                vertexBlocks.Add(Palette.dummyModerator);
+                            else if (name == "Casing")
+                                vertexBlocks.Add(Palette.dummyCasing);
+                            else if (words[1] == "Reflector")
+                                vertexBlocks.Add(Palette.dummyReflector);
+                            else
+                                vertexBlocks.Add(Palette.BlockPalette[name]);
+                        }
+                        Validators.Add((pos, errs) => { return HeatSink.HasVertex(pos, errs, vertexBlocks); });
+                        break;
+                    case "Axial":
+                        if (!rule.Contains("heatsink"))
+                            words[1] = words[1].Substring(0, words[1].Length - 1);
+
+                        if (!Dependencies.Contains(words[1]))
+                            Dependencies.Add(words[1]);
+
+                        if (words[1] == "Moderator")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyModerator); });
+                        else if (words[1] == "Casing")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyCasing); });
+                        else if(words[1] == "Reflector")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyReflector); });
+                        else
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.BlockPalette[words[1]]); });
+                        break;
+                    case "One":
+                    case "Two":
+                    case "Three":
+                    case "Four":
+                    case "Five":
+                    case "Six":
+                        if (!rule.Contains("heatsink"))
+                            if (nums[words[0]] > 1)
+                                words[1] = words[1].Substring(0, words[1].Length - 1);
+
+                        if (!Dependencies.Contains(words[1]))
+                            Dependencies.Add(words[1]);
+
+                        if (words[1] == "Moderator")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.dummyModerator, nums[words[0]], false); });
+                        else if (words[1] == "Casing")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.dummyCasing, nums[words[0]], false); });
+                        else if (words[1] == "Reflector")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.dummyReflector, nums[words[0]], false); });
+                        else
+                            Validators.Add((pos, errs) => { return HeatSink.HasAdjacent(pos, errs, Palette.BlockPalette[words[1]], nums[words[0]], false); });
+                        break;
+                    default:
+                        System.Windows.Forms.MessageBox.Show(string.Format("Invalid rule string in {0}!\r\n{1}", heatSinkType, rule));
+                        Validators.Clear();
+                        HeatSinkValidators[heatSinkType].Clear();
+                        return new List<string>();
+                }
+            }
+            HeatSinkValidators[heatSinkType] = Validators;
+            return Dependencies;
+        }
+
         public static void UpdateNeutronSourceNames()
         {
             NeutronSourceNames = new List<string>();
@@ -325,7 +409,7 @@ namespace NC_Reactor_Planner
                 case BlockTypes.Conductor:
                     return new Conductor("Conductor", Textures["Conductor"], previousBlock.Position);
                 case BlockTypes.Reflector:
-                    return new Reflector("Reflector", Textures["Reflector"], previousBlock.Position);
+                    return new Reflector((Reflector)selectedBlock, previousBlock.Position);
                 default:
                     return new Block("Air", BlockTypes.Air, Textures["Air"], previousBlock.Position);
             }

@@ -143,13 +143,13 @@
     <Compile Include="FuelCell.cs" />
     <Compile Include="Moderator.cs" />
     <Compile Include="Palette.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reactor.cs" />
     <Compile Include="ReactorGridLayer.cs">
       <SubType>Component</SubType>
@@ -250,7 +250,9 @@
     <None Include="Resources\Fluorite.png" />
     <None Include="Resources\Discord_Logo.png" />
     <None Include="Resources\GitHub_Logo.png" />
+    <Content Include="Resources\Beryllium_Carbon.png" />
     <Content Include="Resources\HeavyWater.png" />
+    <Content Include="Resources\Lead_Steel.png" />
     <Content Include="Resources\Lithium.png" />
     <Content Include="Resources\Manganese.png" />
     <None Include="Resources\NetherBrick.png" />

@@ -51,7 +51,7 @@ namespace NC_Reactor_Planner
         public static List<FuelCell> fuelCells;
         public static Dictionary<string, List<Moderator>> moderators;
         public static List<Conductor> conductors;
-        public static List<Reflector> reflectors;
+        public static Dictionary<string, List<Reflector>> reflectors;
         public static int totalCasings;
         public static int totalInteriorBlocks;
 
@@ -173,8 +173,9 @@ namespace NC_Reactor_Planner
                     fuelCell.Primed = false;
             }
 
-            foreach (Reflector reflector in reflectors)
-                reflector.RevertToSetup();
+            foreach (var reflectorType in reflectors)
+                foreach (Reflector reflector in reflectorType.Value)
+                    reflector.RevertToSetup();
 
             FormConductorGroups();
 
@@ -182,23 +183,23 @@ namespace NC_Reactor_Planner
             foreach (FuelCell fuelCell in fuelCells)
                 fuelCell.FilterAdjacentStuff();
 
-            foreach (Reflector reflector in reflectors)
-                reflector.UpdateStats();
+            foreach (var reflectorType in reflectors)
+                foreach (Reflector reflector in reflectorType.Value)
+                    reflector.UpdateStats();
 
             foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
                 foreach (Moderator moderator in moderators.Value)
                     moderator.RevertToSetup();
+
             UpdateModerators();
 
             OrderedUpdateHeatSinks();
-
 
             FormClusters();
             foreach (Cluster cluster in clusters)
                 cluster.UpdateStats();
 
             UpdateStats();
-            
         }
 
         private static void RegenerateTypedLists()
@@ -212,7 +213,7 @@ namespace NC_Reactor_Planner
                 { "HeavyWater", new List<Moderator>() }
             };
             conductors = new List<Conductor>();
-            reflectors = new List<Reflector>();
+            reflectors = new Dictionary<string, List<Reflector>>();
 
             functionalBlocks = 0;
 
@@ -243,7 +244,10 @@ namespace NC_Reactor_Planner
                     conductors.Add(conductor);
                 else if (block is Reflector reflector)
                 {
-                    reflectors.Add(reflector);
+                    if (reflectors.ContainsKey(reflector.ReflectorType))
+                        reflectors[reflector.ReflectorType].Add(reflector);
+                    else
+                        reflectors.Add(reflector.ReflectorType, new List<Reflector> { reflector });
                     ++functionalBlocks;
                 }
 
@@ -491,7 +495,7 @@ namespace NC_Reactor_Planner
             Dictionary<string, List<Vector3>> saveHeatSinks = new Dictionary<string, List<Vector3>>();
             Dictionary<string, List<Vector3>> saveModerators = new Dictionary<string, List<Vector3>>();
             List<Vector3> saveConductors = new List<Vector3>();
-            List<Vector3> saveReflectors = new List<Vector3>();
+            Dictionary<string, List<Vector3>> saveReflectors = new Dictionary<string, List<Vector3>>();
             Dictionary<string, List<Vector3>> saveFuelCells = new Dictionary<string, List<Vector3>>();
 
             foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
@@ -512,8 +516,10 @@ namespace NC_Reactor_Planner
 
             foreach (Conductor cd in conductors)
                 saveConductors.Add(cd.Position);
-            foreach (Reflector rf in reflectors)
-                saveReflectors.Add(rf.Position);
+
+            foreach (var reflectorType in reflectors)
+                foreach (Reflector reflector in reflectorType.Value)
+                    saveReflectors[reflector.ReflectorType].Add(reflector.Position);
 
             foreach (FuelCell fc in fuelCells)
             {
@@ -530,6 +536,9 @@ namespace NC_Reactor_Planner
             Dictionary<string, List<Vector3>> Point3DDictToVector3(JToken dictionary)
             {
                 Dictionary<string, List<Vector3>> result = new Dictionary<string, List<Vector3>>();
+                if (dictionary == null)
+                    return result;
+
                 foreach (var child in dictionary.Children())
                 {
                     var children = child.Children().First().Children().ToList();
@@ -547,6 +556,9 @@ namespace NC_Reactor_Planner
             List<Vector3> Point3DListToVector3(JToken list)
             {
                 List<Vector3> result = new List<Vector3>();
+                if (list == null)
+                    return result;
+
                 string name = list.Path;
                 foreach (var coord in list.Children())
                 {
@@ -568,9 +580,9 @@ namespace NC_Reactor_Planner
                     System.Windows.Forms.MessageBox.Show("Only overhaul saves can be loaded!");
                     return new ValidationResult(false, "Incorrect savefile version");
                 }
-                else if(v >= new Version(2,0,31))
+                else if(v >= new Version(2,0,32))
                     save = (SaveData)js.Deserialize(new StringReader(saveText), typeof(SaveData));
-                else
+                else if(v < new Version(2,0,31))
                 {
                     Dictionary<string, List<Vector3>> heatSinks = new Dictionary<string, List<Vector3>>();
                     Dictionary<string, List<Vector3>> moderators = new Dictionary<string, List<Vector3>>();
@@ -585,12 +597,33 @@ namespace NC_Reactor_Planner
                     JToken list = saveJSONObject["Conductors"];
                     conductors = Point3DListToVector3(list);
                     list = saveJSONObject["Reflectors"];
-                    List<Vector3> reflectors = new List<Vector3>();
-                    reflectors = Point3DListToVector3(list);
+                    Dictionary<string, List<Vector3>> reflectors = new Dictionary<string, List<Vector3>>();
+                    reflectors.Add(Configuration.Reflectors.First().Key, Point3DListToVector3(list));
                     string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
                     Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
                     string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
                     save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe??"None");
+                }
+                else
+                {
+                    Dictionary<string, List<Vector3>> heatSinks = new Dictionary<string, List<Vector3>>();
+                    Dictionary<string, List<Vector3>> moderators = new Dictionary<string, List<Vector3>>();
+                    Dictionary<string, List<Vector3>> fuelCells = new Dictionary<string, List<Vector3>>();
+                    JToken dict = saveJSONObject["HeatSinks"];
+                    heatSinks = dict.ToObject< Dictionary<string, List<Vector3>>>();
+                    dict = saveJSONObject["Moderators"];
+                    moderators = dict.ToObject<Dictionary<string, List<Vector3>>>();
+                    dict = saveJSONObject["FuelCells"];
+                    fuelCells = dict.ToObject<Dictionary<string, List<Vector3>>>();
+                    List<Vector3> conductors = new List<Vector3>();
+                    JToken list = saveJSONObject["Conductors"];
+                    conductors = list.ToObject<List<Vector3>>();
+                    list = saveJSONObject["Reflectors"];
+                    Dictionary<string, List<Vector3>> reflectors = new Dictionary<string, List<Vector3>>();
+                    reflectors.Add(Configuration.Reflectors.First().Key, list.ToObject<List<Vector3>>());
+                    Vector3 inDimsVector = saveJSONObject["InteriorDimensions"].ToObject<Vector3>();
+                    string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
+                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe ?? "None");
                 }
             }
 
@@ -648,26 +681,11 @@ namespace NC_Reactor_Planner
             foreach (Vector3 pos in save.Conductors)
                 SetBlock(new Conductor("Conductor", Palette.Textures["Conductor"], pos), pos);
 
-            foreach (Vector3 pos in save.Reflectors)
-                SetBlock(new Reflector("Reflector", Palette.Textures["Reflector"], pos), pos);
-
-            ReloadValuesFromConfig();
+            foreach (var reflectorType in save.Reflectors)
+                foreach (Vector3 pos in reflectorType.Value)
+                    SetBlock(new Reflector(reflectorType.Key, reflectorType.Key, Palette.Textures[reflectorType.Key.Replace('-', '_')], pos), pos);
+            
             coolantRecipeName = save.CoolantRecipeName;
-            //ConstructLayers();
-        }
-
-        public static void ReloadValuesFromConfig()
-        {
-            Palette.ReloadValuesFromConfig();
-            ReloadBlockValues();
-            //Update();
-        }
-
-        private static void ReloadBlockValues()
-        {
-            if (blocks == null) return;
-            foreach (Block block in blocks)
-                    block.ReloadValuesFromConfig();
         }
 
         public static void SaveLayerAsImage(int layer, string fileName)

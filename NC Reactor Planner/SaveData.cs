@@ -25,13 +25,13 @@ namespace NC_Reactor_Planner
         public Dictionary<string, List<Vector3>> HeatSinks { get; private set; }
         public Dictionary<string, List<Vector3>> Moderators { get; private set; }
         public List<Vector3> Conductors { get; private set; }
-        public List<Vector3> Reflectors { get; private set; }
+        public Dictionary<string, List<Vector3>> Reflectors { get; private set; }
         public Dictionary<string, List<Vector3>> FuelCells { get; private set; }
         public Vector3 InteriorDimensions { get; private set; }
         public string CoolantRecipeName { get; private set; }
 
         [Newtonsoft.Json.JsonConstructor]
-        public SaveData(Version saveVersion, Dictionary<string, List<Vector3>> heatSinks, Dictionary<string, List<Vector3>> moderators, List<Vector3> conductors, List<Vector3> reflectors, Dictionary<string, List<Vector3>> fuelCells, Vector3 interiorDimensions, string coolantRecipeName)
+        public SaveData(Version saveVersion, Dictionary<string, List<Vector3>> heatSinks, Dictionary<string, List<Vector3>> moderators, List<Vector3> conductors, Dictionary<string, List<Vector3>> reflectors, Dictionary<string, List<Vector3>> fuelCells, Vector3 interiorDimensions, string coolantRecipeName)
         {
             SaveVersion = saveVersion;
             HeatSinks = heatSinks;
@@ -73,7 +73,7 @@ namespace NC_Reactor_Planner
                 }
                 FuelCells = ValidatedFuelCells;
             }
-            else if (SaveVersion < new Version(2, 0, 30))
+            if (SaveVersion < new Version(2, 0, 30))
             {
                 Dictionary<string, List<Vector3>> ValidatedFuelCells = new Dictionary<string, List<Vector3>>();
                 foreach (var fuelCellGroup in FuelCells)
@@ -86,7 +86,7 @@ namespace NC_Reactor_Planner
 
             if(SaveVersion < new Version(2, 0, 6, 0))
             {
-                Reflectors = new List<Vector3>();
+                Reflectors = new Dictionary<string, List<Vector3>>();
             }
 
             if(CoolantRecipeName == null || !Configuration.CoolantRecipes.ContainsKey(CoolantRecipeName))

@@ -190,7 +190,6 @@ namespace NC_Reactor_Planner
                     if(Configuration.Load(new FileInfo(fileDialog.FileName)))
                     {
                         ReloadTabs();
-                        Reactor.ReloadValuesFromConfig();
                         Reactor.Update();
                         Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                         MessageBox.Show("Loaded and applied!");
@@ -223,7 +222,6 @@ namespace NC_Reactor_Planner
             {
                 ApplyConfiguration();
                 ReloadTabs();
-                Reactor.ReloadValuesFromConfig();
                 Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                 Reactor.Update();
                 return true;
@@ -233,7 +231,6 @@ namespace NC_Reactor_Planner
                 MessageBox.Show(ex.Message + "\r\nCould not apply configuration, resetting to defaults!");
                 Configuration.ResetToDefaults();
                 ReloadTabs();
-                Reactor.ReloadValuesFromConfig();
                 Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
                 Reactor.Update();
                 return false;

@@ -6,18 +6,14 @@ namespace NC_Reactor_Planner
     public class Fuel
     {
         public string Name { get ; private set; }
-        public double BaseHeat { get; private set; }
-        public double FuelTime { get; private set; }
-        public double BaseEfficiency { get; private set; }
-        public int CriticalityFactor { get; private set; }
+        public double BaseHeat { get => Configuration.Fuels[Name].BaseHeat; }
+        public double FuelTime { get => Configuration.Fuels[Name].FuelTime; }
+        public double BaseEfficiency { get => Configuration.Fuels[Name].BaseEfficiency; }
+        public int CriticalityFactor { get => Configuration.Fuels[Name].CriticalityFactor; }
 
-        public Fuel(string name, double baseEfficiency, double baseHeat, double fuelTime, int criticalityFactor)
+        public Fuel(string name)
         {
             Name = name;
-            BaseHeat = baseHeat;
-            FuelTime = fuelTime;
-            CriticalityFactor = criticalityFactor;
-            BaseEfficiency = baseEfficiency;
         }
 
         public Fuel()
@@ -28,15 +24,6 @@ namespace NC_Reactor_Planner
         public override string ToString()
         {
             return string.Format("{0}{1}{2}{3}", Name.PadRight(14), BaseEfficiency.ToString().PadRight(6), BaseHeat.ToString().PadRight(5), CriticalityFactor.ToString().PadRight(4));
-        }
-
-        public void ReloadValuesFromConfig()
-        {
-            FuelValues fv = Configuration.Fuels[Name];
-            BaseHeat = fv.BaseHeat;
-            FuelTime = fv.FuelTime;
-            BaseEfficiency = fv.BaseEfficiency;
-            CriticalityFactor = fv.CriticalityFactor;
         }
     }
 }

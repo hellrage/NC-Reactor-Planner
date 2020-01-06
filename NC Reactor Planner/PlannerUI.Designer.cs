@@ -153,7 +153,7 @@
             this.sizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.sizeLabel.Location = new System.Drawing.Point(163, 16);
             this.sizeLabel.Name = "sizeLabel";
-            this.sizeLabel.Size = new System.Drawing.Size(146, 16);
+            this.sizeLabel.Size = new System.Drawing.Size(159, 18);
             this.sizeLabel.TabIndex = 7;
             this.sizeLabel.Text = "Reactor dimensions";
             // 
@@ -162,7 +162,7 @@
             this.x1.AutoSize = true;
             this.x1.Location = new System.Drawing.Point(200, 61);
             this.x1.Name = "x1";
-            this.x1.Size = new System.Drawing.Size(14, 13);
+            this.x1.Size = new System.Drawing.Size(15, 15);
             this.x1.TabIndex = 8;
             this.x1.Text = "X";
             // 
@@ -171,7 +171,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(264, 61);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(14, 13);
+            this.label1.Size = new System.Drawing.Size(15, 15);
             this.label1.TabIndex = 9;
             this.label1.Text = "X";
             // 
@@ -181,7 +181,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label2.Location = new System.Drawing.Point(229, 40);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(18, 16);
+            this.label2.Size = new System.Drawing.Size(18, 18);
             this.label2.TabIndex = 10;
             this.label2.Text = "Y";
             // 
@@ -191,7 +191,7 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label3.Location = new System.Drawing.Point(163, 40);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(17, 16);
+            this.label3.Size = new System.Drawing.Size(19, 18);
             this.label3.TabIndex = 11;
             this.label3.Text = "X";
             // 
@@ -201,7 +201,7 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.Location = new System.Drawing.Point(292, 40);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 16);
+            this.label4.Size = new System.Drawing.Size(18, 18);
             this.label4.TabIndex = 12;
             this.label4.Text = "Z";
             // 
@@ -250,7 +250,7 @@
             this.layerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.layerLabel.Location = new System.Drawing.Point(472, 7);
             this.layerLabel.Name = "layerLabel";
-            this.layerLabel.Size = new System.Drawing.Size(61, 24);
+            this.layerLabel.Size = new System.Drawing.Size(71, 25);
             this.layerLabel.TabIndex = 17;
             this.layerLabel.Text = "Layer";
             // 
@@ -260,7 +260,7 @@
             this.statsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.statsLabel.Location = new System.Drawing.Point(16, 398);
             this.statsLabel.Name = "statsLabel";
-            this.statsLabel.Size = new System.Drawing.Size(52, 20);
+            this.statsLabel.Size = new System.Drawing.Size(56, 22);
             this.statsLabel.TabIndex = 19;
             this.statsLabel.Text = "Stats";
             // 
@@ -293,7 +293,7 @@
             this.showClusterInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.showClusterInfo.Location = new System.Drawing.Point(196, 400);
             this.showClusterInfo.Name = "showClusterInfo";
-            this.showClusterInfo.Size = new System.Drawing.Size(124, 17);
+            this.showClusterInfo.Size = new System.Drawing.Size(143, 20);
             this.showClusterInfo.TabIndex = 30;
             this.showClusterInfo.Text = "Show cluster info";
             this.showClusterInfo.UseVisualStyleBackColor = true;
@@ -359,7 +359,7 @@
             this.fuelBaseRFLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.fuelBaseRFLabel.Location = new System.Drawing.Point(436, 669);
             this.fuelBaseRFLabel.Name = "fuelBaseRFLabel";
-            this.fuelBaseRFLabel.Size = new System.Drawing.Size(75, 16);
+            this.fuelBaseRFLabel.Size = new System.Drawing.Size(81, 18);
             this.fuelBaseRFLabel.TabIndex = 21;
             this.fuelBaseRFLabel.Text = "Efficiency";
             // 
@@ -380,7 +380,7 @@
             this.fuelBaseHeatLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.fuelBaseHeatLabel.Location = new System.Drawing.Point(518, 669);
             this.fuelBaseHeatLabel.Name = "fuelBaseHeatLabel";
-            this.fuelBaseHeatLabel.Size = new System.Drawing.Size(41, 16);
+            this.fuelBaseHeatLabel.Size = new System.Drawing.Size(43, 18);
             this.fuelBaseHeatLabel.TabIndex = 23;
             this.fuelBaseHeatLabel.Text = "Heat";
             // 
@@ -404,7 +404,7 @@
             this.fuelSelector.IntegralHeight = false;
             this.fuelSelector.Location = new System.Drawing.Point(419, 644);
             this.fuelSelector.Name = "fuelSelector";
-            this.fuelSelector.Size = new System.Drawing.Size(237, 22);
+            this.fuelSelector.Size = new System.Drawing.Size(237, 23);
             this.fuelSelector.TabIndex = 6;
             this.fuelSelector.SelectedIndexChanged += new System.EventHandler(this.fuelSelector_SelectedIndexChanged);
             // 
@@ -442,7 +442,7 @@
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label5.Location = new System.Drawing.Point(860, 14);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(52, 16);
+            this.label5.Size = new System.Drawing.Size(55, 18);
             this.label5.TabIndex = 26;
             this.label5.Text = "Scale:";
             // 
@@ -453,7 +453,7 @@
             this.fuelCriticalityFactorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.fuelCriticalityFactorLabel.Location = new System.Drawing.Point(565, 669);
             this.fuelCriticalityFactorLabel.Name = "fuelCriticalityFactorLabel";
-            this.fuelCriticalityFactorLabel.Size = new System.Drawing.Size(72, 16);
+            this.fuelCriticalityFactorLabel.Size = new System.Drawing.Size(78, 18);
             this.fuelCriticalityFactorLabel.TabIndex = 27;
             this.fuelCriticalityFactorLabel.Text = "Criticality";
             // 
@@ -482,7 +482,7 @@
             this.drawOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.830189F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.drawOverlay.Location = new System.Drawing.Point(584, 12);
             this.drawOverlay.Name = "drawOverlay";
-            this.drawOverlay.Size = new System.Drawing.Size(161, 19);
+            this.drawOverlay.Size = new System.Drawing.Size(184, 21);
             this.drawOverlay.TabIndex = 32;
             this.drawOverlay.Text = "Heatsink type overlay";
             this.drawOverlay.UseVisualStyleBackColor = true;
@@ -519,7 +519,7 @@
             this.fuelTextLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fuelTextLabel.Location = new System.Drawing.Point(503, 614);
             this.fuelTextLabel.Name = "fuelTextLabel";
-            this.fuelTextLabel.Size = new System.Drawing.Size(58, 25);
+            this.fuelTextLabel.Size = new System.Drawing.Size(65, 29);
             this.fuelTextLabel.TabIndex = 35;
             this.fuelTextLabel.Text = "Fuel";
             // 
@@ -530,7 +530,7 @@
             this.coolantRecipeTextLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.coolantRecipeTextLabel.Location = new System.Drawing.Point(754, 616);
             this.coolantRecipeTextLabel.Name = "coolantRecipeTextLabel";
-            this.coolantRecipeTextLabel.Size = new System.Drawing.Size(165, 25);
+            this.coolantRecipeTextLabel.Size = new System.Drawing.Size(184, 29);
             this.coolantRecipeTextLabel.TabIndex = 35;
             this.coolantRecipeTextLabel.Text = "Coolant recipe";
             // 
@@ -543,7 +543,7 @@
             this.coolantRecipeSelector.IntegralHeight = false;
             this.coolantRecipeSelector.Location = new System.Drawing.Point(714, 644);
             this.coolantRecipeSelector.Name = "coolantRecipeSelector";
-            this.coolantRecipeSelector.Size = new System.Drawing.Size(237, 22);
+            this.coolantRecipeSelector.Size = new System.Drawing.Size(237, 23);
             this.coolantRecipeSelector.TabIndex = 6;
             this.coolantRecipeSelector.SelectedIndexChanged += new System.EventHandler(this.CoolantRecipeSelector_SelectedIndexChanged);
             // 
@@ -554,7 +554,7 @@
             this.coolantHeatCapacityLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.coolantHeatCapacityLabel.Location = new System.Drawing.Point(711, 669);
             this.coolantHeatCapacityLabel.Name = "coolantHeatCapacityLabel";
-            this.coolantHeatCapacityLabel.Size = new System.Drawing.Size(106, 16);
+            this.coolantHeatCapacityLabel.Size = new System.Drawing.Size(113, 18);
             this.coolantHeatCapacityLabel.TabIndex = 27;
             this.coolantHeatCapacityLabel.Text = "Heat Capacity";
             // 
@@ -574,7 +574,7 @@
             this.coolantRecipeOutToInRatioLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.coolantRecipeOutToInRatioLabel.Location = new System.Drawing.Point(845, 669);
             this.coolantRecipeOutToInRatioLabel.Name = "coolantRecipeOutToInRatioLabel";
-            this.coolantRecipeOutToInRatioLabel.Size = new System.Drawing.Size(97, 16);
+            this.coolantRecipeOutToInRatioLabel.Size = new System.Drawing.Size(108, 18);
             this.coolantRecipeOutToInRatioLabel.TabIndex = 27;
             this.coolantRecipeOutToInRatioLabel.Text = "Out / In Ratio";
             // 

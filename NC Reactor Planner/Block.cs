@@ -62,10 +62,6 @@ namespace NC_Reactor_Planner
             return report.ToString();
         }
 
-        public virtual void ReloadValuesFromConfig()
-        {
-        }
-
         public virtual Block Copy(Vector3 newPosition)
         {
             return new Block(DisplayName, BlockType, Texture, newPosition);

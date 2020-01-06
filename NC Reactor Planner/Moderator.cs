@@ -8,23 +8,20 @@ namespace NC_Reactor_Planner
     public class Moderator : Block
     {
         public bool Active { get; set; }
-        public ModeratorTypes ModeratorType { get; private set; }
-        public int FluxFactor { get; private set; }
-        public double EfficiencyFactor { get; private set; }
+        public string ModeratorType { get; private set; }
+        public int FluxFactor { get => Configuration.Moderators[ModeratorType].FluxFactor; }
+        public double EfficiencyFactor { get => Configuration.Moderators[ModeratorType].EfficiencyFactor; }
         public override bool Valid { get => Active & HasAdjacentValidFuelCell; }
         public bool HasAdjacentValidFuelCell { get; private set; }
 
-        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Vector3 position, int
-            fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
+        public Moderator(string displayName, string type, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Moderator, texture, position)
         {
-            FluxFactor = fluxFactor;
-            EfficiencyFactor = efficiencyFactor;
             Active = false;
             HasAdjacentValidFuelCell = false;
             ModeratorType = type;
         }
 
-        public Moderator(Moderator parent, Vector3 position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position, parent.FluxFactor, parent.EfficiencyFactor)
+        public Moderator(Moderator parent, Vector3 position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position)
         {
             ModeratorType = parent.ModeratorType;
         }
@@ -101,20 +98,5 @@ namespace NC_Reactor_Planner
         {
             return new Moderator(this, newPosition);
         }
-
-        public override void ReloadValuesFromConfig()
-        {
-            FluxFactor = Configuration.Moderators[DisplayName].FluxFactor;
-            EfficiencyFactor = Configuration.Moderators[DisplayName].EfficiencyFactor;
-        }
-
-    }
-
-    public enum ModeratorTypes
-    {
-        Beryllium,
-        Graphite,
-        HeavyWater,
-        //NotAModerator,
     }
 }

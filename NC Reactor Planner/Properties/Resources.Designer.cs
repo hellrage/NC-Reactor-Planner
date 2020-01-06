@@ -103,6 +103,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Beryllium_Carbon {
+            get {
+                object obj = ResourceManager.GetObject("Beryllium_Carbon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Boron {
             get {
                 object obj = ResourceManager.GetObject("Boron", resourceCulture);
@@ -306,6 +316,16 @@ namespace NC_Reactor_Planner.Properties {
         public static System.Drawing.Bitmap Lead {
             get {
                 object obj = ResourceManager.GetObject("Lead", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Lead_Steel {
+            get {
+                object obj = ResourceManager.GetObject("Lead_Steel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -487,6 +487,15 @@ namespace NC_Reactor_Planner
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
             Palette.SelectedFuel = selectedFuel; //[TODO]Change to a method you criminal
+
+            //This gets rid of the annoying text highlight
+            new System.Threading.Timer((s) =>
+            {
+                fuelSelector.Invoke(new Action(() =>
+                {
+                    fuelSelector.Select(0, 0);
+                }));
+            }, null, 10, System.Threading.Timeout.Infinite);
         }
 
         private void reactorWidth_Enter(object sender, EventArgs e)
@@ -620,6 +629,15 @@ namespace NC_Reactor_Planner
                 Reactor.coolantRecipeName = recipeName;
                 RefreshStats(showClustersInStats);
             }
+
+            //This gets rid of the annoying text highlight
+            new System.Threading.Timer((s) =>
+            {
+                coolantRecipeSelector.Invoke(new Action(() =>
+                {
+                    coolantRecipeSelector.Select(0, 0);
+                }));
+            }, null, 10, System.Threading.Timeout.Infinite);
         }
     }
 }
