@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 using System.Drawing;
 using System.Text;
 
@@ -24,7 +24,7 @@ namespace NC_Reactor_Planner
         public bool Primed { get; set; }
         public string NeutronSource { get; private set; }
 
-        public FuelCell(string displayName, Bitmap texture, Point3D position, Fuel usedFuel, bool primed = false, string neutronSource = "None") : base(displayName, BlockTypes.FuelCell, texture, position)
+        public FuelCell(string displayName, Bitmap texture, Vector3 position, Fuel usedFuel, bool primed = false, string neutronSource = "None") : base(displayName, BlockTypes.FuelCell, texture, position)
         {
             UsedFuel = usedFuel;
             Primed = primed;
@@ -43,7 +43,7 @@ namespace NC_Reactor_Planner
             Active = false;
         }
 
-        public FuelCell(FuelCell parent, Point3D position, Fuel usedFuel, bool primed = false) : this(parent.DisplayName, parent.Texture, position, usedFuel, primed)
+        public FuelCell(FuelCell parent, Vector3 position, Fuel usedFuel, bool primed = false) : this(parent.DisplayName, parent.Texture, position, usedFuel, primed)
         {
         }
 
@@ -89,7 +89,7 @@ namespace NC_Reactor_Planner
             List<FuelCell> moderatorAdjacentCells = new List<FuelCell>();
             FuelCell fuelCell;
 
-            foreach (Vector3D offset in Reactor.sixAdjOffsets)
+            foreach (Vector3 offset in Reactor.sixAdjOffsets)
                 if ((fuelCell = FindModeratorThenAdjacentCell(offset)) != null)
                     if (!moderatorAdjacentCells.Contains(fuelCell))
                         moderatorAdjacentCells.Add(fuelCell);
@@ -97,12 +97,12 @@ namespace NC_Reactor_Planner
             return moderatorAdjacentCells;
         }
 
-        public FuelCell FindModeratorThenAdjacentCell(Vector3D offset)
+        public FuelCell FindModeratorThenAdjacentCell(Vector3 offset)
         {
             int sumModeratorFlux = 0;
             double sumModeratorEfficiency = 0;
             int moderatorsInLine = 0;
-            Point3D pos = Position + offset;
+            Vector3 pos = Position + offset;
             int i = 1;
             while (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach + 1)
             {
@@ -186,11 +186,11 @@ namespace NC_Reactor_Planner
         public bool CanBePrimed()
         {
             bool primable;
-            foreach (Vector3D offset in Reactor.sixAdjOffsets)
+            foreach (Vector3 offset in Reactor.sixAdjOffsets)
             {
                 int i = 1;
                 primable = true;
-                Point3D pos = Position + i * offset;
+                Vector3 pos = Position + i * offset;
                 while (Reactor.interiorDims.X + 1 >= pos.X & Reactor.interiorDims.Y + 1 >= pos.Y & Reactor.interiorDims.Z + 1 >= pos.Z & pos.X >= 0 & pos.Y >= 0 & pos.Z >= 0)
                 {
                     if (Reactor.BlockAt(pos).BlockType == BlockTypes.FuelCell | Reactor.BlockAt(pos).BlockType == BlockTypes.Reflector)
@@ -248,7 +248,7 @@ namespace NC_Reactor_Planner
             Active = true;
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new FuelCell(this, newPosition, this.UsedFuel, Primed);
         }

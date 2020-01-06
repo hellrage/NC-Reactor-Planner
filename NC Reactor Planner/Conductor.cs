@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 using System.Drawing;
 
 namespace NC_Reactor_Planner
@@ -14,12 +14,12 @@ namespace NC_Reactor_Planner
         public int GroupID { get; set; }
         public override bool Valid { get => HasPathToCasing; }
 
-        public Conductor(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Conductor, texture, position)
+        public Conductor(string displayName, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Conductor, texture, position)
         {
             GroupID = -1;
         }
 
-        public Conductor(Conductor parent, Point3D newPosition) : this(parent.DisplayName, parent.Texture, newPosition)
+        public Conductor(Conductor parent, Vector3 newPosition) : this(parent.DisplayName, parent.Texture, newPosition)
         {
 
         }
@@ -44,7 +44,7 @@ namespace NC_Reactor_Planner
                                 (HasPathToCasing?"Has path to casing":"--Has no path to casing!"));
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new Conductor(this, newPosition);
         }

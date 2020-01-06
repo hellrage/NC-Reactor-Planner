@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -14,7 +14,7 @@ namespace NC_Reactor_Planner
         public override bool Valid { get => Active & HasAdjacentValidFuelCell; }
         public bool HasAdjacentValidFuelCell { get; private set; }
 
-        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Point3D position, int
+        public Moderator(string displayName, ModeratorTypes type, Bitmap texture, Vector3 position, int
             fluxFactor, double efficiencyFactor) : base(displayName, BlockTypes.Moderator, texture, position)
         {
             FluxFactor = fluxFactor;
@@ -24,7 +24,7 @@ namespace NC_Reactor_Planner
             ModeratorType = type;
         }
 
-        public Moderator(Moderator parent, Point3D position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position, parent.FluxFactor, parent.EfficiencyFactor)
+        public Moderator(Moderator parent, Vector3 position) : this(parent.DisplayName, parent.ModeratorType, parent.Texture, position, parent.FluxFactor, parent.EfficiencyFactor)
         {
             ModeratorType = parent.ModeratorType;
         }
@@ -39,7 +39,7 @@ namespace NC_Reactor_Planner
         {
             for(int p = 1; p < 5; p *= 2)
             {
-                Vector3D offset = Reactor.sixAdjOffsets[p];
+                Vector3 offset = Reactor.sixAdjOffsets[p];
                 Tuple<int, BlockTypes> toOffset = WalkLineToValidSource(offset);
                 Tuple<int, BlockTypes> oppositeOffset = WalkLineToValidSource(-offset);
                 if (toOffset.Item1 > 0 & oppositeOffset.Item1 > 0)
@@ -56,12 +56,12 @@ namespace NC_Reactor_Planner
                 --Reactor.functionalBlocks;
         }
 
-        public Tuple<int, BlockTypes> WalkLineToValidSource(Vector3D offset)
+        public Tuple<int, BlockTypes> WalkLineToValidSource(Vector3 offset)
         {
             int i = 0;
             while (++i <= Configuration.Fission.NeutronReach)
             {
-                Point3D pos = Position + i * offset;
+                Vector3 pos = Position + i * offset;
                 Block block = Reactor.BlockAt(pos);
                 if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach)
                 {
@@ -97,7 +97,7 @@ namespace NC_Reactor_Planner
             return toolTip;
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new Moderator(this, newPosition);
         }

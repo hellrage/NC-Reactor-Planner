@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace NC_Reactor_Planner
@@ -15,24 +15,24 @@ namespace NC_Reactor_Planner
         public double Cooling { get; private set; }
         public string Requirements { get; private set; }
         public override bool Valid { get; protected set; }
-        public List<Func<Point3D,List<string>,bool>> Validators { get; private set; }
+        public List<Func<Vector3,List<string>,bool>> Validators { get; private set; }
         public List<string> Dependencies { get; private set; }
 
         public string HeatSinkType { get; private set; }
 
 
-        public HeatSink(string displayName, Bitmap texture, string type, double heatPassive, string requirements, Point3D position) : base(displayName, BlockTypes.HeatSink, texture, position)
+        public HeatSink(string displayName, Bitmap texture, string type, double heatPassive, string requirements, Vector3 position) : base(displayName, BlockTypes.HeatSink, texture, position)
         {
             HeatSinkType = type;
             Cooling = heatPassive;
             Requirements = requirements;
             Valid = false;
-            Validators = new List<Func<Point3D, List<string>, bool>>();
+            Validators = new List<Func<Vector3, List<string>, bool>>();
             Dependencies = new List<string>();
             placementErrors = new List<string>();
         }
 
-        public HeatSink(HeatSink parent, Point3D position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.Cooling, parent.Requirements, position)
+        public HeatSink(HeatSink parent, Vector3 position) : this(parent.DisplayName, parent.Texture, parent.HeatSinkType, parent.Cooling, parent.Requirements, position)
         {
             Validators = parent.Validators;
         }
@@ -203,11 +203,11 @@ namespace NC_Reactor_Planner
             return Valid;
         }
 
-        private static bool HasAdjacent(Point3D Position, List<string> placementErrors, Block needed, int number = 1, bool exact = false)
+        private static bool HasAdjacent(Vector3 Position, List<string> placementErrors, Block needed, int number = 1, bool exact = false)
         {
             int adjacent = 0;
             int activeAdjacent = 0;
-            foreach (Vector3D o in Reactor.sixAdjOffsets)
+            foreach (Vector3 o in Reactor.sixAdjOffsets)
             {
                 Block block = Reactor.BlockAt(Position + o);
                 BlockTypes bt = block.BlockType;
@@ -259,7 +259,7 @@ namespace NC_Reactor_Planner
             return true;
         }
 
-        private static bool HasAxial(Point3D Position, List<string> placementErrors, Block needed)
+        private static bool HasAxial(Vector3 Position, List<string> placementErrors, Block needed)
         {
             BlockTypes bn = needed.BlockType;
             byte status = 0; //0:none, 1: invalid, 2: valid
@@ -313,14 +313,14 @@ namespace NC_Reactor_Planner
             }
         }
 
-        private static bool HasVertex(Point3D Position, List<string> placementErrors, List<Block> needed)
+        private static bool HasVertex(Vector3 Position, List<string> placementErrors, List<Block> needed)
         {
             if (needed.Count != 3)
                 throw new ArgumentException("Vertex rules need exactly 3 blocks specified");
 
-            List<List<Vector3D>> eligible = new List<List<Vector3D>>();
+            List<List<Vector3>> eligible = new List<List<Vector3>>();
             for (int i = 0; i < 3; i++)
-                eligible.Add(new List<Vector3D>());
+                eligible.Add(new List<Vector3>());
 
             byte[] status = new byte[3] { 0, 0, 0 };//first, second, third needed block - 0:none, 1:inactive, 2:valid
 
@@ -380,13 +380,13 @@ namespace NC_Reactor_Planner
                 return false;
             }
 
-            foreach (Vector3D a in eligible[0])
+            foreach (Vector3 a in eligible[0])
             {
-                foreach (Vector3D b in eligible[1])
+                foreach (Vector3 b in eligible[1])
                 {
-                    foreach (Vector3D c in eligible[2])
+                    foreach (Vector3 c in eligible[2])
                     {
-                        if (Vector3D.DotProduct(Vector3D.CrossProduct(a, b), c) != 0)
+                        if (Vector3.Dot(Vector3.Cross(a, b), c) != 0)
                         {
                             ProcessStatus();
                             return true;
@@ -399,7 +399,7 @@ namespace NC_Reactor_Planner
             return false;
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new HeatSink(this, newPosition);
         }

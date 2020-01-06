@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -150,7 +150,7 @@ namespace NC_Reactor_Planner
         public int GetClusterToHighlight()
         {
             if (cellX <= Reactor.interiorDims.X & cellX > 0 & cellZ <= Reactor.interiorDims.Z & cellZ >0)
-                return Reactor.BlockAt(new Point3D(cellX, Y, cellZ)).Cluster;
+                return Reactor.BlockAt(new Vector3(cellX, Y, cellZ)).Cluster;
             else
                 return -1;
         }
@@ -177,7 +177,7 @@ namespace NC_Reactor_Planner
 
         public void FullRedraw(Graphics g, bool forExport = false)
         {
-            g.CompositingMode = CompositingMode.SourceCopy;
+            //g.CompositingMode = CompositingMode.SourceCopy;
             g.CompositingQuality = CompositingQuality.HighSpeed;
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.SmoothingMode = SmoothingMode.HighSpeed;
@@ -197,7 +197,7 @@ namespace NC_Reactor_Planner
             location = new Point(bs * (x - 1), (forExport ? 0 : menu.Height) + bs * (z - 1));
             Rectangle cellRect = new Rectangle(location, new Size(bs, bs));
 
-            Block block = Reactor.BlockAt(new Point3D(x, Y, z));
+            Block block = Reactor.BlockAt(new Vector3(x, Y, z));
 
             g.DrawImage(block.Texture, cellRect);
 
@@ -257,17 +257,17 @@ namespace NC_Reactor_Planner
                 return;
 
             int bs = Reactor.UI.BlockSize;
-            Tuple<Point, Point> Line(Point3D position, Vector3D offset)
+            Tuple<Point, Point> Line(Vector3 position, Vector3 offset)
             {
-                position = new Point3D(position.X - 1, position.Y, position.Z - 1);
+                position = new Vector3(position.X - 1, position.Y, position.Z - 1);
                 int menuOffset = (forExport ? 0 : menu.Height);
-                if (offset == new Vector3D(1, 0, 0))
+                if (offset == new Vector3(1, 0, 0))
                     return Tuple.Create(new Point((int)(position.X + 1)*bs - 2, (int)position.Z * bs + menuOffset), new Point((int)(position.X + 1) * bs - 2, (int)(position.Z + 1) * bs + menuOffset));
-                if (offset == new Vector3D(-1, 0, 0))
+                if (offset == new Vector3(-1, 0, 0))
                     return Tuple.Create(new Point((int)position.X * bs + 2, (int)position.Z * bs + menuOffset), new Point((int)position.X * bs + 2, (int)(position.Z + 1) * bs + menuOffset));
-                if (offset == new Vector3D(0, 0, 1))
+                if (offset == new Vector3(0, 0, 1))
                     return Tuple.Create(new Point((int)position.X * bs, (int)(position.Z + 1) * bs + menuOffset - 2), new Point((int)(position.X + 1) * bs, (int)(position.Z + 1) * bs + menuOffset - 2));
-                if (offset == new Vector3D(0, 0, -1))
+                if (offset == new Vector3(0, 0, -1))
                     return Tuple.Create(new Point((int)(position.X + 1) * bs, (int)position.Z * bs + menuOffset + 2), new Point((int)position.X * bs, (int)position.Z * bs + menuOffset + 2));
                 throw new ArgumentException();
             }
@@ -278,7 +278,7 @@ namespace NC_Reactor_Planner
             {
                 if (block.Position.Y != Y)
                     continue;
-                foreach (Vector3D offset in new List<Vector3D> { new Vector3D(-1, 0, 0), new Vector3D(1, 0, 0), new Vector3D(0, 0, -1), new Vector3D(0, 0, 1) })
+                foreach (Vector3 offset in new List<Vector3> { new Vector3(-1, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 0, 1) })
                 {
                     int neighbourCluster = Reactor.BlockAt(block.Position + offset).Cluster;
                     if (neighbourCluster != clusterID)
@@ -296,7 +296,7 @@ namespace NC_Reactor_Planner
             cellX = cellCoords.X;
             cellZ = cellCoords.Y;
 
-            Point3D position = new Point3D(cellX, Y, cellZ);
+            Vector3 position = new Vector3(cellX, Y, cellZ);
             HandleMouse(e.Button, position);
             base.OnMouseDown(e);
         }
@@ -314,7 +314,7 @@ namespace NC_Reactor_Planner
 
                 if (cellX > X || cellZ > Z || cellX < 1 || cellZ < 1)
                     return;
-                Point3D position = new Point3D(cellX, Y, cellZ);
+                Vector3 position = new Vector3(cellX, Y, cellZ);
                 HandleMouse(e.Button, position);
                 Block block = Reactor.BlockAt(position);
                 if((ModifierKeys & Keys.Shift) == Keys.Shift)
@@ -357,7 +357,7 @@ namespace NC_Reactor_Planner
 
             Reactor.Update();
             Reactor.UI.RefreshStats();
-            Point3D position = new Point3D(cellX, Y, cellZ);
+            Vector3 position = new Vector3(cellX, Y, cellZ);
             Reactor.UI.GridToolTip.Show(Reactor.BlockAt(position).GetToolTip(), this, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16);
             Reactor.Redraw();
             base.OnMouseUp(e);
@@ -384,7 +384,7 @@ namespace NC_Reactor_Planner
             return new Point((newX / Reactor.UI.BlockSize) + 1, (newZ / Reactor.UI.BlockSize) + 1);
         }
 
-        private void HandleMouse(MouseButtons button, Point3D position)
+        private void HandleMouse(MouseButtons button, Vector3 position)
         {
             switch (button)
             {
@@ -421,7 +421,7 @@ namespace NC_Reactor_Planner
 
         private void PlaceBlock(int x, int z, Block block)
         {
-            Reactor.SetBlock(block, new Point3D(x, Y, z));
+            Reactor.SetBlock(block, new Vector3(x, Y, z));
             if (block is FuelCell)
                 Reactor.Update();
         }

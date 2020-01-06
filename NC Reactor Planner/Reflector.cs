@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 using System.Drawing;
 
 namespace NC_Reactor_Planner
@@ -11,12 +11,12 @@ namespace NC_Reactor_Planner
         public bool Active { get; set; }
         private List<FuelCell> adjacentFuelCells;
 
-        public Reflector(string displayName, Bitmap texture, Point3D position) : base(displayName, BlockTypes.Reflector, texture, position)
+        public Reflector(string displayName, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Reflector, texture, position)
         {
             RevertToSetup();
         }
 
-        public Reflector(Reflector parent, Point3D position) : this(parent.DisplayName, parent.Texture, position)
+        public Reflector(Reflector parent, Vector3 position) : this(parent.DisplayName, parent.Texture, position)
         {
         }
 
@@ -55,7 +55,7 @@ namespace NC_Reactor_Planner
                     (Valid?"":"--Not connected to an active FuelCell\r\n");
         }
 
-        public override Block Copy(Point3D newPosition)
+        public override Block Copy(Vector3 newPosition)
         {
             return new Reflector(this, newPosition);
         }

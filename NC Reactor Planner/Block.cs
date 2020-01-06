@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -11,7 +11,7 @@ namespace NC_Reactor_Planner
         private bool _valid;
         public string DisplayName { get; private set; }
         public Bitmap Texture { get; set; }
-        public Point3D Position { get; private set; }
+        public Vector3 Position { get; private set; }
         public BlockTypes BlockType { get; private set; }
         public int Cluster { get; private set; }
         public virtual bool Valid { get => true; protected set => _valid = value; }
@@ -23,7 +23,7 @@ namespace NC_Reactor_Planner
             Position = Palette.dummyPosition;
         }
 
-        public Block(string displayName, BlockTypes blockType, Bitmap texture, Point3D position, int clusterID = -1)
+        public Block(string displayName, BlockTypes blockType, Bitmap texture, Vector3 position, int clusterID = -1)
         {
             DisplayName = displayName;
             Texture = texture;
@@ -66,7 +66,7 @@ namespace NC_Reactor_Planner
         {
         }
 
-        public virtual Block Copy(Point3D newPosition)
+        public virtual Block Copy(Vector3 newPosition)
         {
             return new Block(DisplayName, BlockType, Texture, newPosition);
         }

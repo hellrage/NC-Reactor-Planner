@@ -10,7 +10,7 @@ using System.IO;
 using System.Resources;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 using NC_Reactor_Planner.Properties;
 
 namespace NC_Reactor_Planner
@@ -60,7 +60,7 @@ namespace NC_Reactor_Planner
             {
                 DrawNamestring(g, selectedBlock.DisplayName);
                 DrawHighlightRectangle(g, Xhighlight, Zhighlight);
-                g.CompositingMode = CompositingMode.SourceCopy;
+                //g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighSpeed;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
                 g.SmoothingMode = SmoothingMode.HighSpeed;
@@ -147,7 +147,7 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, Bitmap> Textures { get; private set; }
         public static Dictionary<string, Block> BlockPalette { get; private set; }
         public static Dictionary<string, Fuel> FuelPalette { get; private set; }
-        public static readonly Point3D dummyPosition = new Point3D(-1, -1, -1);
+        public static readonly Vector3 dummyPosition = new Vector3(-1, -1, -1);
         public static readonly Casing dummyCasing = new Casing("Casing", null, dummyPosition);
         public static Fuel SelectedFuel { get; set; }
         public static PalettePanel PaletteControl { get; private set; }

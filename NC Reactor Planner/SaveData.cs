@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
+using System.Numerics;
 
 namespace NC_Reactor_Planner
 {
@@ -22,15 +22,16 @@ namespace NC_Reactor_Planner
     public class SaveData
     {
         public Version SaveVersion { get; private set; }
-        public Dictionary<string, List<Point3D>> HeatSinks { get; private set; }
-        public Dictionary<string, List<Point3D>> Moderators { get; private set; }
-        public List<Point3D> Conductors { get; private set; }
-        public List<Point3D> Reflectors { get; private set; }
-        public Dictionary<string, List<Point3D>> FuelCells { get; private set; }
-        public Size3D InteriorDimensions { get; private set; }
+        public Dictionary<string, List<Vector3>> HeatSinks { get; private set; }
+        public Dictionary<string, List<Vector3>> Moderators { get; private set; }
+        public List<Vector3> Conductors { get; private set; }
+        public List<Vector3> Reflectors { get; private set; }
+        public Dictionary<string, List<Vector3>> FuelCells { get; private set; }
+        public Vector3 InteriorDimensions { get; private set; }
         public string CoolantRecipeName { get; private set; }
 
-        public SaveData(Version saveVersion, Dictionary<string, List<Point3D>> heatSinks, Dictionary<string, List<Point3D>> moderators, List<Point3D> conductors, List<Point3D> reflectors, Dictionary<string, List<Point3D>> fuelCells, Size3D interiorDimensions, string coolantRecipeName)
+        [Newtonsoft.Json.JsonConstructor]
+        public SaveData(Version saveVersion, Dictionary<string, List<Vector3>> heatSinks, Dictionary<string, List<Vector3>> moderators, List<Vector3> conductors, List<Vector3> reflectors, Dictionary<string, List<Vector3>> fuelCells, Vector3 interiorDimensions, string coolantRecipeName)
         {
             SaveVersion = saveVersion;
             HeatSinks = heatSinks;
@@ -49,8 +50,8 @@ namespace NC_Reactor_Planner
 
             if (SaveVersion == new Version(2, 0, 0, 0))
             {
-                Dictionary<string, List<Point3D>> ValidatedFuelCells = new Dictionary<string, List<Point3D>>();
-                foreach (KeyValuePair<string, List<Point3D>> fuelCellGroup in FuelCells)
+                Dictionary<string, List<Vector3>> ValidatedFuelCells = new Dictionary<string, List<Vector3>>();
+                foreach (KeyValuePair<string, List<Vector3>> fuelCellGroup in FuelCells)
                 {
                     List<string> props = fuelCellGroup.Key.Split(';').ToList();
 
@@ -74,7 +75,7 @@ namespace NC_Reactor_Planner
             }
             else if (SaveVersion < new Version(2, 0, 30))
             {
-                Dictionary<string, List<Point3D>> ValidatedFuelCells = new Dictionary<string, List<Point3D>>();
+                Dictionary<string, List<Vector3>> ValidatedFuelCells = new Dictionary<string, List<Vector3>>();
                 foreach (var fuelCellGroup in FuelCells)
                 {
                     string newKey = fuelCellGroup.Key + (fuelCellGroup.Key.Contains(";True") ? ";Cf-252" : ";None");
@@ -85,7 +86,7 @@ namespace NC_Reactor_Planner
 
             if(SaveVersion < new Version(2, 0, 6, 0))
             {
-                Reflectors = new List<Point3D>();
+                Reflectors = new List<Vector3>();
             }
 
             if(CoolantRecipeName == null || !Configuration.CoolantRecipes.ContainsKey(CoolantRecipeName))

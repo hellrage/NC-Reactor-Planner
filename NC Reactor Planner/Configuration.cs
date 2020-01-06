@@ -423,8 +423,8 @@ namespace NC_Reactor_Planner
         private static void SetDefaultNeutronSources()
         {
             NeutronSources = new Dictionary<string, NeutronSourceValues>();
-            NeutronSources.Add("Ra-Be", new NeutronSourceValues(0.8));
-            NeutronSources.Add("Po-Be", new NeutronSourceValues(0.9));
+            NeutronSources.Add("Ra-Be", new NeutronSourceValues(0.9));
+            NeutronSources.Add("Po-Be", new NeutronSourceValues(0.95));
             NeutronSources.Add("Cf-252", new NeutronSourceValues(1));
         }
 
