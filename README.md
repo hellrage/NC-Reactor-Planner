@@ -20,3 +20,24 @@ I'd appreciate it if you worked with me instead of in parallel when making addit
 Old builds for the sake of history http://www.mediafire.com/folder/14d49uxv4n9z2/NC_Reactor_Planner_builds
 
 The source code is available under the CC0 1.0 License (https://creativecommons.org/publicdomain/zero/1.0/).
+
+# Linux
+The reactor planner is written in .NET, and therefore works best on Windows, but it can be run on \*nix-like platforms using Mono.
+Detailed instructions for setting up Mono can be found here[https://www.mono-project.com/download/stable/#download-lin], but most package managers should have Mono available by doing `apt install mono-devel`.
+
+Note: Mono is pretty good at reproducing Windows applications on linux, but there are potentially some errors that could occur.  If you run into any issues, check the 'Common Errors' section below or ask around on the Discord server (link above).
+
+To run the planner, just download the target release and `mono <exe that you downloaded>`.  Part of running the executable will extract a few resources (dlls and a default config), but you can keep the executable in a folder and run it with a shell script.  A sample run script follows:
+```
+#!/bin/bash
+cd <location>
+mono NC_Reactor_Planner.exe
+```
+
+Then `chmod +x <script>` and it can be run by doubleclicking from the desktop env.
+
+## Common Errors
+Cannot open assembly - permission denied
+ - Make sure you have read access to the executable.
+Cannot load library Systemm.Windows.Forms
+ - Confirm you have `mono-devel` installed.  If that doesn't work, ask on the Discord.
