@@ -518,8 +518,12 @@ namespace NC_Reactor_Planner
                 saveConductors.Add(cd.Position);
 
             foreach (var reflectorType in reflectors)
+            {
+                if (!saveReflectors.ContainsKey(reflectorType.Key))
+                    saveReflectors.Add(reflectorType.Key, new List<Vector3>());
                 foreach (Reflector reflector in reflectorType.Value)
                     saveReflectors[reflector.ReflectorType].Add(reflector.Position);
+            }
 
             foreach (FuelCell fc in fuelCells)
             {

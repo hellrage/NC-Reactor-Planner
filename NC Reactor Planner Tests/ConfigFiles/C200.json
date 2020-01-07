@@ -1,0 +1,610 @@
+{
+  "saveVersion": {
+    "Major": 2,
+    "Minor": 0,
+    "Build": 0,
+    "Revision": 0,
+    "MajorRevision": 0,
+    "MinorRevision": 0
+  },
+  "Fission": {
+    "Power": 1.0,
+    "FuelUse": 1.0,
+    "HeatGeneration": 1.0,
+    "MinSize": 1,
+    "MaxSize": 24,
+    "NeutronReach": 4
+  },
+  "ResourceCosts": {
+    "HeatSinkCosts": {
+      "Water": {
+        "Empty HeatSink": 1,
+        "Water Bucket": 1
+      },
+      "Iron": {
+        "Empty HeatSink": 1,
+        "Iron Ingot": 8
+      },
+      "Redstone": {
+        "Empty HeatSink": 1,
+        "Redstone": 2,
+        "Block of Redstone": 2
+      },
+      "Quartz": {
+        "Empty HeatSink": 1,
+        "Block of Quartz": 2,
+        "Crushed Quartz": 2
+      },
+      "Obsidian": {
+        "Empty HeatSink": 1,
+        "Obsidian": 8
+      },
+      "Glowstone": {
+        "Empty HeatSink": 1,
+        "Glowstone": 2,
+        "Glowstone Dust": 6
+      },
+      "Lapis": {
+        "Empty HeatSink": 1,
+        "Lapis Lazuli Block": 2
+      },
+      "Gold": {
+        "Empty HeatSink": 1,
+        "Gold Ingot": 8
+      },
+      "Prismarine": {
+        "Empty HeatSink": 1,
+        "Prismarine Shard": 8
+      },
+      "Purpur": {
+        "Empty HeatSink": 1
+      },
+      "Diamond": {
+        "Empty HeatSink": 1,
+        "Diamond": 8
+      },
+      "Emerald": {
+        "Empty HeatSink": 1,
+        "Emerald": 6
+      },
+      "Copper": {
+        "Empty HeatSink": 1,
+        "Copper Ingot": 8
+      },
+      "Tin": {
+        "Empty HeatSink": 1,
+        "Tin Ingot": 8
+      },
+      "Lead": {
+        "Empty HeatSink": 1,
+        "Lead Ingot": 8
+      },
+      "Boron": {
+        "Empty HeatSink": 1,
+        "Boron Ingot": 8
+      },
+      "Lithium": {
+        "Empty HeatSink": 1
+      },
+      "Magnesium": {
+        "Empty HeatSink": 1,
+        "Magnesium Ingot": 8
+      },
+      "Manganese": {
+        "Empty HeatSink": 1
+      },
+      "Aluminum": {
+        "Empty HeatSink": 1
+      },
+      "Silver": {
+        "Empty HeatSink": 1
+      },
+      "Helium": {
+        "Empty HeatSink": 1,
+        "Liquid Helium Bucket": 1
+      },
+      "Enderium": {
+        "Empty HeatSink": 1,
+        "Enderium Ingot": 8
+      },
+      "Cryotheum": {
+        "Empty HeatSink": 1,
+        "Cryotheum Dust": 8
+      }
+    },
+    "ModeratorCosts": {
+      "Graphite": {
+        "Graphite Ingot": 9
+      },
+      "Beryllium": {
+        "Beryllium Ingot": 9
+      }
+    },
+    "FuelCellCosts": {
+      "Glass": 4,
+      "Tough Alloy": 4
+    },
+    "CasingCosts": {
+      "Tough Alloy": 1,
+      "Basic Plating": 4
+    }
+  },
+  "Fuels": {
+    "TBU": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 18.0,
+      "FuelTime": 144000.0,
+      "CriticalityFactor": 5.0,
+      "FluxMultiplier": 2.91
+    },
+    "TBU Oxide": {
+      "BaseEfficiency": 1.01,
+      "BaseHeat": 22.5,
+      "FuelTime": 144000.0,
+      "CriticalityFactor": 5.0,
+      "FluxMultiplier": 2.36
+    },
+    "LEU-233": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 60.0,
+      "FuelTime": 102000.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.4
+    },
+    "LEU-233 Oxide": {
+      "BaseEfficiency": 1.06,
+      "BaseHeat": 75.0,
+      "FuelTime": 102000.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.02
+    },
+    "HEU-233": {
+      "BaseEfficiency": 1.38,
+      "BaseHeat": 360.0,
+      "FuelTime": 102000.0,
+      "CriticalityFactor": 12.5,
+      "FluxMultiplier": 2.4
+    },
+    "HEU-233 Oxide": {
+      "BaseEfficiency": 1.48,
+      "BaseHeat": 450.0,
+      "FuelTime": 102000.0,
+      "CriticalityFactor": 14.5,
+      "FluxMultiplier": 2.02
+    },
+    "LEU-235": {
+      "BaseEfficiency": 1.04,
+      "BaseHeat": 50.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.16
+    },
+    "LEU-235 Oxide": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 62.5,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.01
+    },
+    "HEU-235": {
+      "BaseEfficiency": 1.32,
+      "BaseHeat": 300.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 11.5,
+      "FluxMultiplier": 2.16
+    },
+    "HEU-235 Oxide": {
+      "BaseEfficiency": 1.4,
+      "BaseHeat": 375.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 13.0,
+      "FluxMultiplier": 2.01
+    },
+    "LEN-236": {
+      "BaseEfficiency": 1.02,
+      "BaseHeat": 36.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 5.5,
+      "FluxMultiplier": 2.9
+    },
+    "LEN-236 Oxide": {
+      "BaseEfficiency": 1.03,
+      "BaseHeat": 45.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 5.5,
+      "FluxMultiplier": 2.48
+    },
+    "HEN-236": {
+      "BaseEfficiency": 1.22,
+      "BaseHeat": 216.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 9.5,
+      "FluxMultiplier": 2.9
+    },
+    "HEN-236 Oxide": {
+      "BaseEfficiency": 1.28,
+      "BaseHeat": 270.0,
+      "FuelTime": 91920.0,
+      "CriticalityFactor": 10.5,
+      "FluxMultiplier": 2.48
+    },
+    "LEP-239": {
+      "BaseEfficiency": 1.02,
+      "BaseHeat": 40.0,
+      "FuelTime": 86040.0,
+      "CriticalityFactor": 5.5,
+      "FluxMultiplier": 2.13
+    },
+    "LEP-239 Oxide": {
+      "BaseEfficiency": 1.04,
+      "BaseHeat": 50.0,
+      "FuelTime": 86040.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.94
+    },
+    "HEP-239": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 240.0,
+      "FuelTime": 86040.0,
+      "CriticalityFactor": 10.0,
+      "FluxMultiplier": 2.13
+    },
+    "HEP-239 Oxide": {
+      "BaseEfficiency": 1.32,
+      "BaseHeat": 300.0,
+      "FuelTime": 86040.0,
+      "CriticalityFactor": 11.5,
+      "FluxMultiplier": 2.94
+    },
+    "LEP-241": {
+      "BaseEfficiency": 1.06,
+      "BaseHeat": 70.0,
+      "FuelTime": 84000.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.96
+    },
+    "LEP-241 Oxide": {
+      "BaseEfficiency": 1.08,
+      "BaseHeat": 87.5,
+      "FuelTime": 78000.0,
+      "CriticalityFactor": 6.5,
+      "FluxMultiplier": 2.05
+    },
+    "HEP-241": {
+      "BaseEfficiency": 1.45,
+      "BaseHeat": 420.0,
+      "FuelTime": 78000.0,
+      "CriticalityFactor": 14.0,
+      "FluxMultiplier": 2.96
+    },
+    "HEP-241 Oxide": {
+      "BaseEfficiency": 1.57,
+      "BaseHeat": 525.0,
+      "FuelTime": 78000.0,
+      "CriticalityFactor": 16.5,
+      "FluxMultiplier": 2.05
+    },
+    "MOX-239": {
+      "BaseEfficiency": 1.04,
+      "BaseHeat": 57.5,
+      "FuelTime": 78000.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.27
+    },
+    "MOX-241": {
+      "BaseEfficiency": 1.09,
+      "BaseHeat": 97.5,
+      "FuelTime": 72000.0,
+      "CriticalityFactor": 7.0,
+      "FluxMultiplier": 2.75
+    },
+    "LEA-242": {
+      "BaseEfficiency": 1.09,
+      "BaseHeat": 94.0,
+      "FuelTime": 72000.0,
+      "CriticalityFactor": 7.0,
+      "FluxMultiplier": 2.7
+    },
+    "LEA-242 Oxide": {
+      "BaseEfficiency": 1.11,
+      "BaseHeat": 117.5,
+      "FuelTime": 72000.0,
+      "CriticalityFactor": 7.0,
+      "FluxMultiplier": 2.29
+    },
+    "HEA-242": {
+      "BaseEfficiency": 1.61,
+      "BaseHeat": 564.0,
+      "FuelTime": 72000.0,
+      "CriticalityFactor": 17.0,
+      "FluxMultiplier": 2.7
+    },
+    "HEA-242 Oxide": {
+      "BaseEfficiency": 1.77,
+      "BaseHeat": 705.0,
+      "FuelTime": 67920.0,
+      "CriticalityFactor": 20.5,
+      "FluxMultiplier": 2.29
+    },
+    "LECm-243": {
+      "BaseEfficiency": 1.11,
+      "BaseHeat": 112.0,
+      "FuelTime": 67920.0,
+      "CriticalityFactor": 7.0,
+      "FluxMultiplier": 2.58
+    },
+    "LECm-243 Oxide": {
+      "BaseEfficiency": 1.14,
+      "BaseHeat": 140.0,
+      "FuelTime": 67920.0,
+      "CriticalityFactor": 8.0,
+      "FluxMultiplier": 2.03
+    },
+    "HECm-243": {
+      "BaseEfficiency": 1.73,
+      "BaseHeat": 672.0,
+      "FuelTime": 67920.0,
+      "CriticalityFactor": 19.5,
+      "FluxMultiplier": 2.58
+    },
+    "HECm-243 Oxide": {
+      "BaseEfficiency": 1.92,
+      "BaseHeat": 840.0,
+      "FuelTime": 63960.0,
+      "CriticalityFactor": 23.5,
+      "FluxMultiplier": 2.03
+    },
+    "LECm-245": {
+      "BaseEfficiency": 1.06,
+      "BaseHeat": 68.0,
+      "FuelTime": 63960.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.9
+    },
+    "LECm-245 Oxide": {
+      "BaseEfficiency": 1.08,
+      "BaseHeat": 85.0,
+      "FuelTime": 63960.0,
+      "CriticalityFactor": 6.5,
+      "FluxMultiplier": 2.98
+    },
+    "HECm-245": {
+      "BaseEfficiency": 1.44,
+      "BaseHeat": 408.0,
+      "FuelTime": 63960.0,
+      "CriticalityFactor": 14.0,
+      "FluxMultiplier": 2.9
+    },
+    "HECm-245 Oxide": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 510.0,
+      "FuelTime": 60000.0,
+      "CriticalityFactor": 16.0,
+      "FluxMultiplier": 2.98
+    },
+    "LECm-247": {
+      "BaseEfficiency": 1.04,
+      "BaseHeat": 54.0,
+      "FuelTime": 60000.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.67
+    },
+    "LECm-247 Oxide": {
+      "BaseEfficiency": 1.06,
+      "BaseHeat": 67.5,
+      "FuelTime": 60000.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.75
+    },
+    "HECm-247": {
+      "BaseEfficiency": 1.34,
+      "BaseHeat": 324.0,
+      "FuelTime": 60000.0,
+      "CriticalityFactor": 12.0,
+      "FluxMultiplier": 2.67
+    },
+    "HECm-247 Oxide": {
+      "BaseEfficiency": 1.43,
+      "BaseHeat": 405.0,
+      "FuelTime": 57960.0,
+      "CriticalityFactor": 13.5,
+      "FluxMultiplier": 2.75
+    },
+    "LEB-248": {
+      "BaseEfficiency": 1.04,
+      "BaseHeat": 52.0,
+      "FuelTime": 57960.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.32
+    },
+    "LEB-248 Oxide": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 65.0,
+      "FuelTime": 57960.0,
+      "CriticalityFactor": 6.0,
+      "FluxMultiplier": 2.66
+    },
+    "HEB-248": {
+      "BaseEfficiency": 1.33,
+      "BaseHeat": 312.0,
+      "FuelTime": 57960.0,
+      "CriticalityFactor": 11.5,
+      "FluxMultiplier": 2.32
+    },
+    "HEB-248 Oxide": {
+      "BaseEfficiency": 1.43,
+      "BaseHeat": 398.0,
+      "FuelTime": 55920.0,
+      "CriticalityFactor": 13.5,
+      "FluxMultiplier": 2.66
+    },
+    "LECf-249": {
+      "BaseEfficiency": 1.11,
+      "BaseHeat": 116.0,
+      "FuelTime": 54000.0,
+      "CriticalityFactor": 7.0,
+      "FluxMultiplier": 2.04
+    },
+    "LECf-249 Oxide": {
+      "BaseEfficiency": 1.14,
+      "BaseHeat": 145.0,
+      "FuelTime": 54000.0,
+      "CriticalityFactor": 8.0,
+      "FluxMultiplier": 2.33
+    },
+    "HECf-249": {
+      "BaseEfficiency": 1.76,
+      "BaseHeat": 696.0,
+      "FuelTime": 54000.0,
+      "CriticalityFactor": 20.0,
+      "FluxMultiplier": 2.04
+    },
+    "HECf-249 Oxide": {
+      "BaseEfficiency": 1.96,
+      "BaseHeat": 870.0,
+      "FuelTime": 54000.0,
+      "CriticalityFactor": 24.0,
+      "FluxMultiplier": 2.33
+    },
+    "LECf-251": {
+      "BaseEfficiency": 1.11,
+      "BaseHeat": 120.0,
+      "FuelTime": 51960.0,
+      "CriticalityFactor": 7.0,
+      "FluxMultiplier": 2.13
+    },
+    "LECf-251 Oxide": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 150.0,
+      "FuelTime": 51960.0,
+      "CriticalityFactor": 8.0,
+      "FluxMultiplier": 2.8
+    },
+    "HECf-251": {
+      "BaseEfficiency": 1.79,
+      "BaseHeat": 720.0,
+      "FuelTime": 51960.0,
+      "CriticalityFactor": 21.0,
+      "FluxMultiplier": 2.13
+    },
+    "HECf-251 Oxide": {
+      "BaseEfficiency": 1.99,
+      "BaseHeat": 900.0,
+      "FuelTime": 51960.0,
+      "CriticalityFactor": 25.0,
+      "FluxMultiplier": 2.8
+    }
+  },
+  "HeatSinks": {
+    "Water": {
+      "HeatPassive": 50.0,
+      "Requirements": "One FuelCell"
+    },
+    "Iron": {
+      "HeatPassive": 55.0,
+      "Requirements": "One Moderator"
+    },
+    "Redstone": {
+      "HeatPassive": 70.0,
+      "Requirements": "One FuelCell and one Moderator"
+    },
+    "Quartz": {
+      "HeatPassive": 75.0,
+      "Requirements": "One Redstone heatsink"
+    },
+    "Obsidian": {
+      "HeatPassive": 80.0,
+      "Requirements": "Two Glowstone heatsinks on the same axis"
+    },
+    "Glowstone": {
+      "HeatPassive": 110.0,
+      "Requirements": "Two Moderators"
+    },
+    "Lapis": {
+      "HeatPassive": 95.0,
+      "Requirements": "One FuelCell and one Casing"
+    },
+    "Gold": {
+      "HeatPassive": 105.0,
+      "Requirements": "Two Iron heatsinks"
+    },
+    "Prismarine": {
+      "HeatPassive": 100.0,
+      "Requirements": "Two Water heatsinks"
+    },
+    "Purpur": {
+      "HeatPassive": 90.0,
+      "Requirements": "One Obsidian heatsink"
+    },
+    "Diamond": {
+      "HeatPassive": 145.0,
+      "Requirements": "One Gold and one FuelCell"
+    },
+    "Emerald": {
+      "HeatPassive": 150.0,
+      "Requirements": "One Prismarine heatsink and one Moderator"
+    },
+    "Copper": {
+      "HeatPassive": 60.0,
+      "Requirements": "One Water heatsink"
+    },
+    "Tin": {
+      "HeatPassive": 85.0,
+      "Requirements": "Two Lapis heatsinks on the same axis"
+    },
+    "Lead": {
+      "HeatPassive": 65.0,
+      "Requirements": "One Iron heatsink"
+    },
+    "Boron": {
+      "HeatPassive": 120.0,
+      "Requirements": "One Copper heatsink and one Tin heatsink"
+    },
+    "Lithium": {
+      "HeatPassive": 115.0,
+      "Requirements": "One Lead heatsink and one Casing"
+    },
+    "Magnesium": {
+      "HeatPassive": 135.0,
+      "Requirements": "One Moderator and one Casing"
+    },
+    "Manganese": {
+      "HeatPassive": 130.0,
+      "Requirements": "Two FuelCells"
+    },
+    "Aluminum": {
+      "HeatPassive": 125.0,
+      "Requirements": "One Quartz heatsink and one Casing"
+    },
+    "Silver": {
+      "HeatPassive": 140.0,
+      "Requirements": "One Glowstone heatsink and one Lapis heatsink"
+    },
+    "Helium": {
+      "HeatPassive": 165.0,
+      "Requirements": "Exactly two Redstone heatsinks and at least one Casing"
+    },
+    "Enderium": {
+      "HeatPassive": 155.0,
+      "Requirements": "Exactly three Moderators"
+    },
+    "Cryotheum": {
+      "HeatPassive": 160.0,
+      "Requirements": "Exactly three FuelCells"
+    }
+  },
+  "Moderators": {
+    "Beryllium": {
+      "FluxFactor": 1.0,
+      "EfficiencyFactor": 1.2
+    },
+    "Graphite": {
+      "FluxFactor": 1.2,
+      "EfficiencyFactor": 1.0
+    },
+    "HeavyWater": {
+      "FluxFactor": 1.1,
+      "EfficiencyFactor": 1.1
+    }
+  }
+}

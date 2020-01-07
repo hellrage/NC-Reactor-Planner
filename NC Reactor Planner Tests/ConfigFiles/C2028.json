@@ -1,0 +1,954 @@
+{
+  "saveVersion": {
+    "Major": 2,
+    "Minor": 0,
+    "Build": 28,
+    "Revision": 0,
+    "MajorRevision": 0,
+    "MinorRevision": 0
+  },
+  "Fission": {
+    "Power": 1.0,
+    "FuelUse": 1.0,
+    "HeatGeneration": 1.0,
+    "MinSize": 1,
+    "MaxSize": 24,
+    "NeutronReach": 4,
+    "ReflectorEfficiency": 0.5,
+    "MaxSparsityPenaltyMultiplier": 0.5,
+    "SparsityPenaltyThreshold": 0.75,
+    "CoolingPenaltyLeniency": 10.0
+  },
+  "ResourceCosts": {
+    "HeatSinkCosts": {
+      "Water": {
+        "Empty HeatSink": 1,
+        "Water Bucket": 1
+      },
+      "Iron": {
+        "Empty HeatSink": 1,
+        "Iron Ingot": 8
+      },
+      "Redstone": {
+        "Empty HeatSink": 1,
+        "Redstone": 2,
+        "Block of Redstone": 2
+      },
+      "Quartz": {
+        "Empty HeatSink": 1,
+        "Block of Quartz": 2,
+        "Crushed Quartz": 2
+      },
+      "Obsidian": {
+        "Empty HeatSink": 1,
+        "Obsidian": 8
+      },
+      "NetherBrick": {
+        "Empty HeatSink": 1
+      },
+      "Glowstone": {
+        "Empty HeatSink": 1,
+        "Glowstone": 2,
+        "Glowstone Dust": 6
+      },
+      "Lapis": {
+        "Empty HeatSink": 1,
+        "Lapis Lazuli Block": 2
+      },
+      "Gold": {
+        "Empty HeatSink": 1,
+        "Gold Ingot": 8
+      },
+      "Prismarine": {
+        "Empty HeatSink": 1,
+        "Prismarine Shard": 8
+      },
+      "Slime": {
+        "Empty HeatSink": 1
+      },
+      "EndStone": {
+        "Empty HeatSink": 1
+      },
+      "Purpur": {
+        "Empty HeatSink": 1
+      },
+      "Diamond": {
+        "Empty HeatSink": 1,
+        "Diamond": 8
+      },
+      "Emerald": {
+        "Empty HeatSink": 1,
+        "Emerald": 6
+      },
+      "Copper": {
+        "Empty HeatSink": 1,
+        "Copper Ingot": 8
+      },
+      "Tin": {
+        "Empty HeatSink": 1,
+        "Tin Ingot": 8
+      },
+      "Lead": {
+        "Empty HeatSink": 1,
+        "Lead Ingot": 8
+      },
+      "Boron": {
+        "Empty HeatSink": 1,
+        "Boron Ingot": 8
+      },
+      "Lithium": {
+        "Empty HeatSink": 1
+      },
+      "Magnesium": {
+        "Empty HeatSink": 1,
+        "Magnesium Ingot": 8
+      },
+      "Manganese": {
+        "Empty HeatSink": 1
+      },
+      "Aluminum": {
+        "Empty HeatSink": 1
+      },
+      "Silver": {
+        "Empty HeatSink": 1
+      },
+      "Fluorite": {
+        "Empty HeatSink": 1
+      },
+      "Villiaumite": {
+        "Empty HeatSink": 1
+      },
+      "Carobbiite": {
+        "Empty HeatSink": 1
+      },
+      "Arsenic": {
+        "Empty HeatSink": 1
+      },
+      "Nitrogen": {
+        "Empty HeatSink": 1
+      },
+      "Helium": {
+        "Empty HeatSink": 1,
+        "Liquid Helium Bucket": 1
+      },
+      "Enderium": {
+        "Empty HeatSink": 1,
+        "Enderium Ingot": 8
+      },
+      "Cryotheum": {
+        "Empty HeatSink": 1,
+        "Cryotheum Dust": 8
+      }
+    },
+    "ModeratorCosts": {
+      "Graphite": {
+        "Graphite Ingot": 9
+      },
+      "Beryllium": {
+        "Beryllium Ingot": 9
+      }
+    },
+    "FuelCellCosts": {
+      "Glass": 4,
+      "Tough Alloy": 4
+    },
+    "CasingCosts": {
+      "Tough Alloy": 1,
+      "Basic Plating": 4
+    }
+  },
+  "Fuels": {
+    "[OX]TBU": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 40.0,
+      "FuelTime": 14400.0,
+      "CriticalityFactor": 234
+    },
+    "[OX]LEU-233": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 216.0,
+      "FuelTime": 2666.0,
+      "CriticalityFactor": 78
+    },
+    "[OX]HEU-233": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 648.0,
+      "FuelTime": 2666.0,
+      "CriticalityFactor": 39
+    },
+    "[OX]LEU-235": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 120.0,
+      "FuelTime": 4800.0,
+      "CriticalityFactor": 102
+    },
+    "[OX]HEU-235": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 360.0,
+      "FuelTime": 4800.0,
+      "CriticalityFactor": 51
+    },
+    "[OX]LEN-236": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 292.0,
+      "FuelTime": 1972.0,
+      "CriticalityFactor": 70
+    },
+    "[OX]HEN-236": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 876.0,
+      "FuelTime": 1972.0,
+      "CriticalityFactor": 35
+    },
+    "[OX]LEP-239": {
+      "BaseEfficiency": 1.2,
+      "BaseHeat": 126.0,
+      "FuelTime": 4572.0,
+      "CriticalityFactor": 99
+    },
+    "[OX]HEP-239": {
+      "BaseEfficiency": 1.2,
+      "BaseHeat": 378.0,
+      "FuelTime": 4572.0,
+      "CriticalityFactor": 49
+    },
+    "[OX]LEP-241": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 182.0,
+      "FuelTime": 3164.0,
+      "CriticalityFactor": 84
+    },
+    "[OX]HEP-241": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 546.0,
+      "FuelTime": 3164.0,
+      "CriticalityFactor": 42
+    },
+    "[OX]MOX-239": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 132.0,
+      "FuelTime": 4354.0,
+      "CriticalityFactor": 94
+    },
+    "[OX]MOX-241": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 192.0,
+      "FuelTime": 3014.0,
+      "CriticalityFactor": 80
+    },
+    "[OX]LEA-242": {
+      "BaseEfficiency": 1.35,
+      "BaseHeat": 390.0,
+      "FuelTime": 1476.0,
+      "CriticalityFactor": 65
+    },
+    "[OX]HEA-242": {
+      "BaseEfficiency": 1.35,
+      "BaseHeat": 1170.0,
+      "FuelTime": 1476.0,
+      "CriticalityFactor": 32
+    },
+    "[OX]LECm-243": {
+      "BaseEfficiency": 1.45,
+      "BaseHeat": 384.0,
+      "FuelTime": 1500.0,
+      "CriticalityFactor": 66
+    },
+    "[OX]HECm-243": {
+      "BaseEfficiency": 1.45,
+      "BaseHeat": 1152.0,
+      "FuelTime": 1500.0,
+      "CriticalityFactor": 33
+    },
+    "[OX]LECm-245": {
+      "BaseEfficiency": 1.5,
+      "BaseHeat": 238.0,
+      "FuelTime": 2420.0,
+      "CriticalityFactor": 75
+    },
+    "[OX]HECm-245": {
+      "BaseEfficiency": 1.5,
+      "BaseHeat": 714.0,
+      "FuelTime": 2420.0,
+      "CriticalityFactor": 37
+    },
+    "[OX]LECm-247": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 268.0,
+      "FuelTime": 2150.0,
+      "CriticalityFactor": 72
+    },
+    "[OX]HECm-247": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 804.0,
+      "FuelTime": 2150.0,
+      "CriticalityFactor": 36
+    },
+    "[OX]LEB-248": {
+      "BaseEfficiency": 1.65,
+      "BaseHeat": 266.0,
+      "FuelTime": 2166.0,
+      "CriticalityFactor": 73
+    },
+    "[OX]HEB-248": {
+      "BaseEfficiency": 1.65,
+      "BaseHeat": 798.0,
+      "FuelTime": 2166.0,
+      "CriticalityFactor": 36
+    },
+    "[OX]LECf-249": {
+      "BaseEfficiency": 1.75,
+      "BaseHeat": 540.0,
+      "FuelTime": 1066.0,
+      "CriticalityFactor": 60
+    },
+    "[OX]HECf-249": {
+      "BaseEfficiency": 1.75,
+      "BaseHeat": 1620.0,
+      "FuelTime": 1066.0,
+      "CriticalityFactor": 30
+    },
+    "[OX]LECf-251": {
+      "BaseEfficiency": 1.8,
+      "BaseHeat": 288.0,
+      "FuelTime": 2000.0,
+      "CriticalityFactor": 71
+    },
+    "[OX]HECf-251": {
+      "BaseEfficiency": 1.8,
+      "BaseHeat": 864.0,
+      "FuelTime": 2000.0,
+      "CriticalityFactor": 35
+    },
+    "[NI]TBU": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 32.0,
+      "FuelTime": 18000.0,
+      "CriticalityFactor": 293
+    },
+    "[NI]LEU-233": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 172.0,
+      "FuelTime": 3348.0,
+      "CriticalityFactor": 98
+    },
+    "[NI]HEU-233": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 516.0,
+      "FuelTime": 3348.0,
+      "CriticalityFactor": 49
+    },
+    "[NI]LEU-235": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 96.0,
+      "FuelTime": 6000.0,
+      "CriticalityFactor": 128
+    },
+    "[NI]HEU-235": {
+      "BaseEfficiency": 1.0,
+      "BaseHeat": 288.0,
+      "FuelTime": 6000.0,
+      "CriticalityFactor": 64
+    },
+    "[NI]LEN-236": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 234.0,
+      "FuelTime": 2462.0,
+      "CriticalityFactor": 88
+    },
+    "[NI]HEN-236": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 702.0,
+      "FuelTime": 2462.0,
+      "CriticalityFactor": 44
+    },
+    "[NI]LEP-239": {
+      "BaseEfficiency": 1.2,
+      "BaseHeat": 100.0,
+      "FuelTime": 5760.0,
+      "CriticalityFactor": 124
+    },
+    "[NI]HEP-239": {
+      "BaseEfficiency": 1.2,
+      "BaseHeat": 300.0,
+      "FuelTime": 5760.0,
+      "CriticalityFactor": 62
+    },
+    "[NI]LEP-241": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 146.0,
+      "FuelTime": 3946.0,
+      "CriticalityFactor": 105
+    },
+    "[NI]HEP-241": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 438.0,
+      "FuelTime": 3946.0,
+      "CriticalityFactor": 52
+    },
+    "[NI]MNI-239": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 106.0,
+      "FuelTime": 5486.0,
+      "CriticalityFactor": 118
+    },
+    "[NI]MNI-241": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 154.0,
+      "FuelTime": 3758.0,
+      "CriticalityFactor": 100
+    },
+    "[NI]LEA-242": {
+      "BaseEfficiency": 1.35,
+      "BaseHeat": 312.0,
+      "FuelTime": 1846.0,
+      "CriticalityFactor": 81
+    },
+    "[NI]HEA-242": {
+      "BaseEfficiency": 1.35,
+      "BaseHeat": 936.0,
+      "FuelTime": 1846.0,
+      "CriticalityFactor": 40
+    },
+    "[NI]LECm-243": {
+      "BaseEfficiency": 1.45,
+      "BaseHeat": 308.0,
+      "FuelTime": 1870.0,
+      "CriticalityFactor": 83
+    },
+    "[NI]HECm-243": {
+      "BaseEfficiency": 1.45,
+      "BaseHeat": 924.0,
+      "FuelTime": 1870.0,
+      "CriticalityFactor": 41
+    },
+    "[NI]LECm-245": {
+      "BaseEfficiency": 1.5,
+      "BaseHeat": 190.0,
+      "FuelTime": 3032.0,
+      "CriticalityFactor": 94
+    },
+    "[NI]HECm-245": {
+      "BaseEfficiency": 1.5,
+      "BaseHeat": 570.0,
+      "FuelTime": 3032.0,
+      "CriticalityFactor": 47
+    },
+    "[NI]LECm-247": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 214.0,
+      "FuelTime": 2692.0,
+      "CriticalityFactor": 90
+    },
+    "[NI]HECm-247": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 642.0,
+      "FuelTime": 2692.0,
+      "CriticalityFactor": 45
+    },
+    "[NI]LEB-248": {
+      "BaseEfficiency": 1.65,
+      "BaseHeat": 212.0,
+      "FuelTime": 2716.0,
+      "CriticalityFactor": 91
+    },
+    "[NI]HEB-248": {
+      "BaseEfficiency": 1.65,
+      "BaseHeat": 636.0,
+      "FuelTime": 2716.0,
+      "CriticalityFactor": 45
+    },
+    "[NI]LECf-249": {
+      "BaseEfficiency": 1.75,
+      "BaseHeat": 432.0,
+      "FuelTime": 1334.0,
+      "CriticalityFactor": 75
+    },
+    "[NI]HECf-249": {
+      "BaseEfficiency": 1.75,
+      "BaseHeat": 1296.0,
+      "FuelTime": 1334.0,
+      "CriticalityFactor": 37
+    },
+    "[NI]LECf-251": {
+      "BaseEfficiency": 1.8,
+      "BaseHeat": 230.0,
+      "FuelTime": 2504.0,
+      "CriticalityFactor": 89
+    },
+    "[NI]HECf-251": {
+      "BaseEfficiency": 1.8,
+      "BaseHeat": 690.0,
+      "FuelTime": 2504.0,
+      "CriticalityFactor": 44
+    },
+    "[ZA]TBU": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 50.0,
+      "FuelTime": 11520.0,
+      "CriticalityFactor": 199
+    },
+    "[ZA]LEU-233": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 270.0,
+      "FuelTime": 2134.0,
+      "CriticalityFactor": 66
+    },
+    "[ZA]HEU-233": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 810.0,
+      "FuelTime": 2134.0,
+      "CriticalityFactor": 33
+    },
+    "[ZA]LEU-235": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 150.0,
+      "FuelTime": 3840.0,
+      "CriticalityFactor": 87
+    },
+    "[ZA]HEU-235": {
+      "BaseEfficiency": 1.05,
+      "BaseHeat": 450.0,
+      "FuelTime": 3840.0,
+      "CriticalityFactor": 43
+    },
+    "[ZA]LEN-236": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 366.0,
+      "FuelTime": 1574.0,
+      "CriticalityFactor": 60
+    },
+    "[ZA]HEN-236": {
+      "BaseEfficiency": 1.15,
+      "BaseHeat": 1098.0,
+      "FuelTime": 1574.0,
+      "CriticalityFactor": 30
+    },
+    "[ZA]LEP-239": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 158.0,
+      "FuelTime": 3646.0,
+      "CriticalityFactor": 84
+    },
+    "[ZA]HEP-239": {
+      "BaseEfficiency": 1.25,
+      "BaseHeat": 474.0,
+      "FuelTime": 3646.0,
+      "CriticalityFactor": 42
+    },
+    "[ZA]LEP-241": {
+      "BaseEfficiency": 1.3,
+      "BaseHeat": 228.0,
+      "FuelTime": 2526.0,
+      "CriticalityFactor": 71
+    },
+    "[ZA]HEP-241": {
+      "BaseEfficiency": 1.3,
+      "BaseHeat": 684.0,
+      "FuelTime": 2526.0,
+      "CriticalityFactor": 35
+    },
+    "[ZA]MZA-239": {
+      "BaseEfficiency": 1.1,
+      "BaseHeat": 166.0,
+      "FuelTime": 3472.0,
+      "CriticalityFactor": 80
+    },
+    "[ZA]MZA-241": {
+      "BaseEfficiency": 1.2,
+      "BaseHeat": 240.0,
+      "FuelTime": 2406.0,
+      "CriticalityFactor": 68
+    },
+    "[ZA]LEA-242": {
+      "BaseEfficiency": 1.4,
+      "BaseHeat": 488.0,
+      "FuelTime": 1180.0,
+      "CriticalityFactor": 55
+    },
+    "[ZA]HEA-242": {
+      "BaseEfficiency": 1.4,
+      "BaseHeat": 1464.0,
+      "FuelTime": 1180.0,
+      "CriticalityFactor": 27
+    },
+    "[ZA]LECm-243": {
+      "BaseEfficiency": 1.5,
+      "BaseHeat": 480.0,
+      "FuelTime": 1200.0,
+      "CriticalityFactor": 56
+    },
+    "[ZA]HECm-243": {
+      "BaseEfficiency": 1.5,
+      "BaseHeat": 1440.0,
+      "FuelTime": 1200.0,
+      "CriticalityFactor": 28
+    },
+    "[ZA]LECm-245": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 298.0,
+      "FuelTime": 1932.0,
+      "CriticalityFactor": 64
+    },
+    "[ZA]HECm-245": {
+      "BaseEfficiency": 1.55,
+      "BaseHeat": 894.0,
+      "FuelTime": 1932.0,
+      "CriticalityFactor": 32
+    },
+    "[ZA]LECm-247": {
+      "BaseEfficiency": 1.6,
+      "BaseHeat": 336.0,
+      "FuelTime": 1714.0,
+      "CriticalityFactor": 61
+    },
+    "[ZA]HECm-247": {
+      "BaseEfficiency": 1.6,
+      "BaseHeat": 1008.0,
+      "FuelTime": 1714.0,
+      "CriticalityFactor": 30
+    },
+    "[ZA]LEB-248": {
+      "BaseEfficiency": 1.7,
+      "BaseHeat": 332.0,
+      "FuelTime": 1734.0,
+      "CriticalityFactor": 62
+    },
+    "[ZA]HEB-248": {
+      "BaseEfficiency": 1.7,
+      "BaseHeat": 996.0,
+      "FuelTime": 1734.0,
+      "CriticalityFactor": 31
+    },
+    "[ZA]LECf-249": {
+      "BaseEfficiency": 1.8,
+      "BaseHeat": 676.0,
+      "FuelTime": 852.0,
+      "CriticalityFactor": 51
+    },
+    "[ZA]HECf-249": {
+      "BaseEfficiency": 1.8,
+      "BaseHeat": 2028.0,
+      "FuelTime": 852.0,
+      "CriticalityFactor": 25
+    },
+    "[ZA]LECf-251": {
+      "BaseEfficiency": 1.85,
+      "BaseHeat": 360.0,
+      "FuelTime": 1600.0,
+      "CriticalityFactor": 60
+    },
+    "[ZA]HECf-251": {
+      "BaseEfficiency": 1.85,
+      "BaseHeat": 1080.0,
+      "FuelTime": 1600.0,
+      "CriticalityFactor": 30
+    },
+    "[F4]TBU": {
+      "BaseEfficiency": 2.0,
+      "BaseHeat": 32.0,
+      "FuelTime": 18000.0,
+      "CriticalityFactor": 234
+    },
+    "[F4]LEU-233": {
+      "BaseEfficiency": 2.2,
+      "BaseHeat": 172.0,
+      "FuelTime": 3348.0,
+      "CriticalityFactor": 78
+    },
+    "[F4]HEU-233": {
+      "BaseEfficiency": 2.2,
+      "BaseHeat": 516.0,
+      "FuelTime": 3348.0,
+      "CriticalityFactor": 39
+    },
+    "[F4]LEU-235": {
+      "BaseEfficiency": 2.0,
+      "BaseHeat": 96.0,
+      "FuelTime": 6000.0,
+      "CriticalityFactor": 102
+    },
+    "[F4]HEU-235": {
+      "BaseEfficiency": 2.0,
+      "BaseHeat": 288.0,
+      "FuelTime": 6000.0,
+      "CriticalityFactor": 51
+    },
+    "[F4]LEN-236": {
+      "BaseEfficiency": 2.2,
+      "BaseHeat": 234.0,
+      "FuelTime": 2462.0,
+      "CriticalityFactor": 70
+    },
+    "[F4]HEN-236": {
+      "BaseEfficiency": 2.2,
+      "BaseHeat": 702.0,
+      "FuelTime": 2462.0,
+      "CriticalityFactor": 35
+    },
+    "[F4]LEP-239": {
+      "BaseEfficiency": 2.4,
+      "BaseHeat": 100.0,
+      "FuelTime": 5760.0,
+      "CriticalityFactor": 99
+    },
+    "[F4]HEP-239": {
+      "BaseEfficiency": 2.4,
+      "BaseHeat": 300.0,
+      "FuelTime": 5760.0,
+      "CriticalityFactor": 49
+    },
+    "[F4]LEP-241": {
+      "BaseEfficiency": 2.5,
+      "BaseHeat": 146.0,
+      "FuelTime": 3946.0,
+      "CriticalityFactor": 84
+    },
+    "[F4]HEP-241": {
+      "BaseEfficiency": 2.5,
+      "BaseHeat": 438.0,
+      "FuelTime": 3946.0,
+      "CriticalityFactor": 42
+    },
+    "[F4]MF4-239": {
+      "BaseEfficiency": 2.1,
+      "BaseHeat": 106.0,
+      "FuelTime": 5486.0,
+      "CriticalityFactor": 94
+    },
+    "[F4]MF4-241": {
+      "BaseEfficiency": 2.3,
+      "BaseHeat": 154.0,
+      "FuelTime": 3758.0,
+      "CriticalityFactor": 80
+    },
+    "[F4]LEA-242": {
+      "BaseEfficiency": 2.7,
+      "BaseHeat": 312.0,
+      "FuelTime": 1846.0,
+      "CriticalityFactor": 65
+    },
+    "[F4]HEA-242": {
+      "BaseEfficiency": 2.7,
+      "BaseHeat": 936.0,
+      "FuelTime": 1846.0,
+      "CriticalityFactor": 32
+    },
+    "[F4]LECm-243": {
+      "BaseEfficiency": 2.9,
+      "BaseHeat": 308.0,
+      "FuelTime": 1870.0,
+      "CriticalityFactor": 66
+    },
+    "[F4]HECm-243": {
+      "BaseEfficiency": 2.9,
+      "BaseHeat": 924.0,
+      "FuelTime": 1870.0,
+      "CriticalityFactor": 33
+    },
+    "[F4]LECm-245": {
+      "BaseEfficiency": 3.0,
+      "BaseHeat": 190.0,
+      "FuelTime": 3032.0,
+      "CriticalityFactor": 75
+    },
+    "[F4]HECm-245": {
+      "BaseEfficiency": 3.0,
+      "BaseHeat": 570.0,
+      "FuelTime": 3032.0,
+      "CriticalityFactor": 37
+    },
+    "[F4]LECm-247": {
+      "BaseEfficiency": 3.1,
+      "BaseHeat": 214.0,
+      "FuelTime": 2692.0,
+      "CriticalityFactor": 72
+    },
+    "[F4]HECm-247": {
+      "BaseEfficiency": 3.1,
+      "BaseHeat": 642.0,
+      "FuelTime": 2692.0,
+      "CriticalityFactor": 36
+    },
+    "[F4]LEB-248": {
+      "BaseEfficiency": 3.3,
+      "BaseHeat": 212.0,
+      "FuelTime": 2716.0,
+      "CriticalityFactor": 73
+    },
+    "[F4]HEB-248": {
+      "BaseEfficiency": 3.3,
+      "BaseHeat": 636.0,
+      "FuelTime": 2716.0,
+      "CriticalityFactor": 36
+    },
+    "[F4]LECf-249": {
+      "BaseEfficiency": 3.5,
+      "BaseHeat": 432.0,
+      "FuelTime": 1334.0,
+      "CriticalityFactor": 60
+    },
+    "[F4]HECf-249": {
+      "BaseEfficiency": 3.5,
+      "BaseHeat": 1296.0,
+      "FuelTime": 1334.0,
+      "CriticalityFactor": 30
+    },
+    "[F4]LECf-251": {
+      "BaseEfficiency": 3.6,
+      "BaseHeat": 230.0,
+      "FuelTime": 2504.0,
+      "CriticalityFactor": 71
+    },
+    "[F4]HECf-251": {
+      "BaseEfficiency": 3.6,
+      "BaseHeat": 690.0,
+      "FuelTime": 2504.0,
+      "CriticalityFactor": 35
+    }
+  },
+  "HeatSinks": {
+    "Water": {
+      "HeatPassive": 50.0,
+      "Requirements": "One FuelCell"
+    },
+    "Iron": {
+      "HeatPassive": 55.0,
+      "Requirements": "One Moderator"
+    },
+    "Redstone": {
+      "HeatPassive": 85.0,
+      "Requirements": "One FuelCell; One Moderator"
+    },
+    "Quartz": {
+      "HeatPassive": 75.0,
+      "Requirements": "One Redstone heatsink"
+    },
+    "Obsidian": {
+      "HeatPassive": 70.0,
+      "Requirements": "Axial Glowstone heatsinks"
+    },
+    "NetherBrick": {
+      "HeatPassive": 100.0,
+      "Requirements": "One Obsidian heatsink"
+    },
+    "Glowstone": {
+      "HeatPassive": 110.0,
+      "Requirements": "Two Moderators"
+    },
+    "Lapis": {
+      "HeatPassive": 95.0,
+      "Requirements": "One FuelCell; One Casing"
+    },
+    "Gold": {
+      "HeatPassive": 105.0,
+      "Requirements": "Two Iron heatsinks"
+    },
+    "Prismarine": {
+      "HeatPassive": 115.0,
+      "Requirements": "Two Water heatsinks"
+    },
+    "Slime": {
+      "HeatPassive": 135.0,
+      "Requirements": "Exactly One Water heatsink; One Reflector"
+    },
+    "EndStone": {
+      "HeatPassive": 60.0,
+      "Requirements": "One Reflector"
+    },
+    "Purpur": {
+      "HeatPassive": 90.0,
+      "Requirements": "Exactly One Iron heatsink; One EndStone heatsink"
+    },
+    "Diamond": {
+      "HeatPassive": 190.0,
+      "Requirements": "One Gold heatsink; One FuelCell"
+    },
+    "Emerald": {
+      "HeatPassive": 195.0,
+      "Requirements": "One Prismarine heatsink; One Moderator"
+    },
+    "Copper": {
+      "HeatPassive": 80.0,
+      "Requirements": "One Water heatsink"
+    },
+    "Tin": {
+      "HeatPassive": 120.0,
+      "Requirements": "Axial Lapis heatsinks"
+    },
+    "Lead": {
+      "HeatPassive": 65.0,
+      "Requirements": "One Iron heatsink"
+    },
+    "Boron": {
+      "HeatPassive": 165.0,
+      "Requirements": "Exactly One Quartz heatsink; One Casing"
+    },
+    "Lithium": {
+      "HeatPassive": 125.0,
+      "Requirements": "Exactly Two Lead heatsinks; One Casing"
+    },
+    "Magnesium": {
+      "HeatPassive": 130.0,
+      "Requirements": "Exactly One Moderator; One Casing"
+    },
+    "Manganese": {
+      "HeatPassive": 140.0,
+      "Requirements": "Two FuelCells"
+    },
+    "Aluminum": {
+      "HeatPassive": 185.0,
+      "Requirements": "One Quartz heatsink; One Lapis heatsink"
+    },
+    "Silver": {
+      "HeatPassive": 170.0,
+      "Requirements": "One Glowstone heatsink; One Tin heatsink"
+    },
+    "Fluorite": {
+      "HeatPassive": 155.0,
+      "Requirements": "One Gold heatsink; One Prismarine heatsink"
+    },
+    "Villiaumite": {
+      "HeatPassive": 160.0,
+      "Requirements": "One Reflector; One Redstone heatsink"
+    },
+    "Carobbiite": {
+      "HeatPassive": 150.0,
+      "Requirements": "One Copper heatsink; One EndStone heatsink"
+    },
+    "Arsenic": {
+      "HeatPassive": 145.0,
+      "Requirements": "Axial Reflectors"
+    },
+    "Nitrogen": {
+      "HeatPassive": 180.0,
+      "Requirements": "One Copper heatsinks; Two Lead heatsinks"
+    },
+    "Helium": {
+      "HeatPassive": 200.0,
+      "Requirements": "Exactly Two Redstone heatsinks; One Casing"
+    },
+    "Enderium": {
+      "HeatPassive": 175.0,
+      "Requirements": "Three Moderators"
+    },
+    "Cryotheum": {
+      "HeatPassive": 205.0,
+      "Requirements": "Three FuelCells"
+    }
+  },
+  "Moderators": {
+    "Beryllium": {
+      "FluxFactor": 22,
+      "EfficiencyFactor": 1.1
+    },
+    "Graphite": {
+      "FluxFactor": 10,
+      "EfficiencyFactor": 1.2
+    },
+    "HeavyWater": {
+      "FluxFactor": 36,
+      "EfficiencyFactor": 1.0
+    }
+  }
+}
