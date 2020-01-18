@@ -7,9 +7,9 @@ Changelog https://github.com/hellrage/NC-Reactor-Planner/blob/master/Changelog.t
 
 # Released builds
 
-You need 1.x "Latest release" tagged builds for the current mod versions.
+You need v1.x "Latest release" tagged builds for the current mod versions.
 
-[OVERHAUL] "Pre-release" tagged builds are for a separate, beta version of the mod.
+[OVERHAUL] v2.x "Pre-release" tagged builds are for a separate, beta version of the mod.
 
 https://github.com/hellrage/NC-Reactor-Planner/releases
 
