@@ -5,19 +5,24 @@ Feature list https://github.com/hellrage/NC-Reactor-Planner/blob/master/Feature%
 
 Changelog https://github.com/hellrage/NC-Reactor-Planner/blob/master/Changelog.txt
 
-# Released builds
 
+# Released builds
 You need v1.x "Latest release" tagged builds for the current mod versions.
 
-[OVERHAUL] v2.x "Pre-release" tagged builds are for a separate, beta version of the mod.
+[Latest release](https://github.com/hellrage/NC-Reactor-Planner/releases/latest)
 
-https://github.com/hellrage/NC-Reactor-Planner/releases
+\[OVERHAUL\] v2.x "Pre-release" tagged builds are for a separate, beta version of the mod.
 
-You can find me in NuclearCraft's discord https://discord.gg/KCPYgWw
+[Link to all releases](https://github.com/hellrage/NC-Reactor-Planner/releases)
+
+
+## Contact me
+You can find me (Hellrage#5076) in NuclearCraft's discord https://discord.gg/KCPYgWw
 
 I'd appreciate it if you worked with me instead of in parallel when making additions, but feel free to fork the repo and do your own thing if i'm not responding / have expressly ended active development / you just want your own version.
 
 The source code is available under the CC0 1.0 License (https://creativecommons.org/publicdomain/zero/1.0/).
+
 
 # Linux
 The reactor planner is written in .NET, and therefore works best on Windows, but it can be run on \*nix-like platforms using Mono.
