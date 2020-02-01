@@ -448,13 +448,4 @@ namespace NC_Reactor_Planner
             MessageBox.Show(totals);
         }
     }
-
-    public static class ObjectExtensions
-    {
-        public static T Set<T>(this T item, Action<T> setter)
-        {
-            setter?.Invoke(item);
-            return item;
-        }
-    }
 }

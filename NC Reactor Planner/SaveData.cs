@@ -29,9 +29,10 @@ namespace NC_Reactor_Planner
         public Dictionary<string, List<Vector3>> FuelCells { get; private set; }
         public Vector3 InteriorDimensions { get; private set; }
         public string CoolantRecipeName { get; private set; }
+        public ReactorStats ReactorOverallStats { get; private set; }
 
         [Newtonsoft.Json.JsonConstructor]
-        public SaveData(Version saveVersion, Dictionary<string, List<Vector3>> heatSinks, Dictionary<string, List<Vector3>> moderators, List<Vector3> conductors, Dictionary<string, List<Vector3>> reflectors, Dictionary<string, List<Vector3>> fuelCells, Vector3 interiorDimensions, string coolantRecipeName)
+        public SaveData(Version saveVersion, Dictionary<string, List<Vector3>> heatSinks, Dictionary<string, List<Vector3>> moderators, List<Vector3> conductors, Dictionary<string, List<Vector3>> reflectors, Dictionary<string, List<Vector3>> fuelCells, Vector3 interiorDimensions, string coolantRecipeName, ReactorStats reactorOverallStats)
         {
             SaveVersion = saveVersion;
             HeatSinks = heatSinks;
@@ -41,6 +42,7 @@ namespace NC_Reactor_Planner
             FuelCells = fuelCells;
             InteriorDimensions = interiorDimensions;
             CoolantRecipeName = coolantRecipeName;
+            ReactorOverallStats = reactorOverallStats;
         }
 
         public ValidationResult PerformValidation()

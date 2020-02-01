@@ -103,8 +103,11 @@ namespace NC_Reactor_Planner
                     int blockIndex = cellZ * (Width / (blockSide + 2 * spacing)) + cellX;
                     if (blockIndex < BlockPalette.Count)
                     {
-                        DrawNamestring(CreateGraphics(), BlockPalette.Values.ElementAt(blockIndex).DisplayName);
-                        paletteToolTip.Show(BlockPalette.Values.ElementAt(blockIndex).GetToolTip(), this, (cellX + 1) * (blockSide + 2 * spacing), (cellZ + 1) * (blockSide + 2 * spacing) + namestripHeight);
+                        using(Graphics g = CreateGraphics())
+                        {
+                            DrawNamestring(g, BlockPalette.Values.ElementAt(blockIndex).DisplayName);
+                            paletteToolTip.Show(BlockPalette.Values.ElementAt(blockIndex).GetToolTip(), this, (cellX + 1) * (blockSide + 2 * spacing), (cellZ + 1) * (blockSide + 2 * spacing) + namestripHeight);
+                        }
                     }
                 }
                 base.OnMouseMove(e);

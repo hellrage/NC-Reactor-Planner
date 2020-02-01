@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using System.Text;
 
 namespace NC_Reactor_Planner
 {
@@ -79,19 +80,21 @@ namespace NC_Reactor_Planner
 
         public override string GetToolTip()
         {
-            string toolTip = DisplayName + " moderator\r\n";
+            StringBuilder result = new StringBuilder();
+            result.Append(DisplayName);
+            result.AppendLine(" moderator");
             if (Position != Palette.dummyPosition)
             {
                 if(!Active)
-                    toolTip += "--Inactive!\r\n";
+                    result.AppendLine($"--Inactive!");
                 if(Active)
-                    toolTip += "In an active moderator line\r\n";
+                    result.AppendLine("In an active moderator line");
                 if(!HasAdjacentValidFuelCell)
-                    toolTip += "Cannot support any heatsinks\r\n";
+                    result.AppendLine("Cannot support any heatsinks");
             }
-            toolTip += string.Format("Flux Factor: {0}\r\n", FluxFactor);
-            toolTip += string.Format("Efficiency Factor: {0}\r\n", EfficiencyFactor);
-            return toolTip;
+            result.AppendLine($"Flux Factor: {FluxFactor}");
+            result.AppendLine($"Efficiency Factor: {EfficiencyFactor}");
+            return result.ToString(); ;
         }
 
         public override Block Copy(Vector3 newPosition)

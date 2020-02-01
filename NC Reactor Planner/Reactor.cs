@@ -32,6 +32,37 @@ namespace NC_Reactor_Planner
     }
 
     /// <summary>
+    /// This struct holds reactor stat values for saving into the json \ passing around.
+    /// </summary>
+    public struct ReactorStats
+    {
+        public double TotalOutput;
+        public double RawOutput;
+        public double TotalHeatPerTick;
+        public double TotalCoolingPerTick;
+        public double NetHeatPerTick;
+        public double OverallEfficiency;
+        public double OverallHeatMultiplier;
+        public int FunctionalBlocks;
+        public int TotalInteriorBlocks;
+        public double SparsityPenaltyMultiplier;
+
+        public ReactorStats(double totalOutput, double rawOutput, double totalHeatPerTick, double totalCoolingPerTick, double netHeatPerTick, double overallEfficiency, double overallHeatMultiplier, int functionalBlocks, int totalInteriorBlocks, double sparsityPenaltyMultiplier)
+        {
+            TotalOutput = totalOutput;
+            RawOutput = rawOutput;
+            TotalHeatPerTick = totalHeatPerTick;
+            TotalCoolingPerTick = totalCoolingPerTick;
+            NetHeatPerTick = netHeatPerTick;
+            OverallEfficiency = overallEfficiency;
+            OverallHeatMultiplier = overallHeatMultiplier;
+            FunctionalBlocks = functionalBlocks;
+            TotalInteriorBlocks = totalInteriorBlocks;
+            SparsityPenaltyMultiplier = sparsityPenaltyMultiplier;
+        }
+    }
+
+    /// <summary>
     /// Ugly main class in need of refactoring!
     /// Holds the reactor structure, handles everything to do with simulating, modifying,
     /// calculating stats, save\loading, etc.
@@ -457,15 +488,16 @@ namespace NC_Reactor_Planner
         public static string GetStatString(bool includeClusterInfo = true)
         {
             StringBuilder stats = new StringBuilder();
-            stats.Append("Overall reactor stats:\r\n");
-            stats.Append(string.Format("Total output: {0} mb/t of {1}\r\n", (int)(totalOutputPerTick * coolantRecipe.OutToInRatio / coolantRecipe.HeatCapacity), coolantRecipe.OutputName));
-            stats.Append(string.Format("Total Heat: {0} HU/t\r\n", totalHeatPerTick));
-            stats.Append(string.Format("Total Cooling: {0} HU/t\r\n", totalCoolingPerTick));
-            stats.Append(string.Format("Net Heat: {0} HU/t\r\n", totalHeatPerTick - totalCoolingPerTick));
-            stats.Append(string.Format("Overall Efficiency: {0} %\r\n", (int)(efficiency * 100)));
-            stats.Append(string.Format("Overall Heat Multiplier: {0} %\r\n", (int)(heatMultiplier * 100)));
-            stats.Append(string.Format("Functional \\ total blocks: {0} \\ {1}\r\n", functionalBlocks, totalInteriorBlocks));
-            stats.Append(string.Format("Sparsity penalty multiplier: {0}\r\n\r\n", (sparsityPenalty == 0) ? "1" : Math.Round(sparsityPenalty, 4).ToString()));
+            stats.AppendLine("Overall reactor stats:");
+            stats.AppendLine(string.Format("Total output: {0} mb/t of {1}", (int)(totalOutputPerTick * coolantRecipe.OutToInRatio / coolantRecipe.HeatCapacity), coolantRecipe.OutputName));
+            stats.AppendLine(string.Format("Total Heat: {0} HU/t", totalHeatPerTick));
+            stats.AppendLine(string.Format("Total Cooling: {0} HU/t", totalCoolingPerTick));
+            stats.AppendLine(string.Format("Net Heat: {0} HU/t", totalHeatPerTick - totalCoolingPerTick));
+            stats.AppendLine(string.Format("Overall Efficiency: {0} %", (int)(efficiency * 100)));
+            stats.AppendLine(string.Format("Overall Heat Multiplier: {0} %", (int)(heatMultiplier * 100)));
+            stats.AppendLine(string.Format("Functional \\ total blocks: {0} \\ {1}", functionalBlocks, totalInteriorBlocks));
+            stats.AppendLine(string.Format("Sparsity penalty multiplier: {0}", (sparsityPenalty == 0) ? "1" : Math.Round(sparsityPenalty, 4).ToString()));
+            stats.AppendLine();
 
             if(includeClusterInfo)
                 foreach (Cluster cluster in clusters)
@@ -475,6 +507,21 @@ namespace NC_Reactor_Planner
             return stats.ToString();
         }
 
+        public static ReactorStats GetOverallStats()
+        {
+            return new ReactorStats(
+                totalOutputPerTick * coolantRecipe.OutToInRatio / coolantRecipe.HeatCapacity,
+                totalOutputPerTick,
+                totalHeatPerTick,
+                totalCoolingPerTick,
+                totalHeatPerTick - totalCoolingPerTick,
+                efficiency,
+                heatMultiplier,
+                functionalBlocks,
+                totalInteriorBlocks,
+                sparsityPenalty
+                );
+        }
         public static void Save(FileInfo saveFile)
         {
             using (TextWriter tw = File.CreateText(saveFile.FullName))
@@ -532,7 +579,7 @@ namespace NC_Reactor_Planner
                 saveFuelCells[fc.ToSaveString()].Add(fc.Position);
             }
 
-            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims, coolantRecipeName);
+            return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims, coolantRecipeName, GetOverallStats());
         }
 
         public static ValidationResult Load(FileInfo saveFile)
@@ -606,7 +653,7 @@ namespace NC_Reactor_Planner
                     string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
                     Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
                     string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
-                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe??"None");
+                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe??"None", new ReactorStats());
                 }
                 else
                 {
@@ -627,7 +674,7 @@ namespace NC_Reactor_Planner
                     reflectors.Add(Configuration.Reflectors.First().Key, list.ToObject<List<Vector3>>());
                     Vector3 inDimsVector = saveJSONObject["InteriorDimensions"].ToObject<Vector3>();
                     string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
-                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe ?? "None");
+                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe ?? "None", new ReactorStats());
                 }
             }
 
@@ -665,7 +712,7 @@ namespace NC_Reactor_Planner
                         case 2:
                             throw new ArgumentException("Tried to load an invalid FuelCell: " + kvp.Key);
                         case 3:
-                            //[TODO] Fuel palette checks (same as for neutron sources)
+                            //TODO: Fuel palette checks (same as for neutron sources)
                             restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, Palette.FuelPalette[props[0]], Convert.ToBoolean(props[1]), props[2]);
                             break;
                         default:

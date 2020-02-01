@@ -48,7 +48,7 @@ namespace NC_Reactor_Planner
         {
             StringBuilder result = new StringBuilder();
             result.Append(DisplayName);
-            result.Append(" reflector\r\n");
+            result.AppendLine(" reflector");
             if (Position == Palette.dummyPosition)
             {
                 result.Append("This block reflects neutrons back\r\n" +
@@ -61,9 +61,9 @@ namespace NC_Reactor_Planner
                     "away from a FuelCell.");
                 return result.ToString();
             }
-            result.Append(string.Format("Reflectivity: {0}\r\n", ReflectivityMultiplier));
-            result.Append(string.Format("Efficiency multiplier: {0}\r\n", EfficiencyMultiplier));
-            result.Append(Valid?"":"--Not connected to an active FuelCell\r\n");
+            result.AppendLine($"Reflectivity: {ReflectivityMultiplier}");
+            result.AppendLine($"Efficiency multiplier: {EfficiencyMultiplier}");
+            result.AppendLine(Valid?"":"--Not connected to an active FuelCell");
             return result.ToString();
         }
 

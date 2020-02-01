@@ -28,6 +28,7 @@ namespace NC_Reactor_Planner
         public static readonly Pen ErrorPen = new Pen(Brushes.Red, 3);
         public static readonly Pen ClusterOverheatPen = new Pen(Brushes.OrangeRed, 3);
         public static readonly Pen ClusterOvercoolPen = new Pen(Brushes.LightSteelBlue, 3);
+        public static readonly Pen ClusterHeatPositivePen = new Pen(Brushes.Yellow, 3);
         public static readonly Pen PrimedFuelCellOrangePen = new Pen(Brushes.Orange, 4);
         public static readonly Pen PrimedFuelCellYellowPen = new Pen(Brushes.Yellow, 4);
         public static readonly Pen PrimedFuelCellGreenPen = new Pen(Brushes.Green, 4);
@@ -58,6 +59,7 @@ namespace NC_Reactor_Planner
             float[] dashPattern = { 1, 1 };
             ClusterOvercoolPen.DashPattern = dashPattern;
             ClusterOverheatPen.DashPattern = dashPattern;
+            ClusterHeatPositivePen.DashPattern = dashPattern;
 
             resetLayout.MouseLeave += new EventHandler(ResetButtonFocusLost);
             resetLayout.LostFocus += new EventHandler(ResetButtonFocusLost);
@@ -323,7 +325,7 @@ namespace NC_Reactor_Planner
 
         private void reactorGrid_MouseEnter(object sender, EventArgs e)
         {
-            //[TODO] Fix scrolling when in per-layer mode
+            //TODO: Fix scrolling when in per-layer mode
             if (configurationUI != null && !configurationUI.IsDisposed)
                 return;
             if (drawAllLayers)
@@ -486,16 +488,18 @@ namespace NC_Reactor_Planner
             fuelBaseEfficiency.Text = selectedFuel.BaseEfficiency.ToString();
             fuelBaseHeat.Text = selectedFuel.BaseHeat.ToString();
             fuelCriticalityFactor.Text = selectedFuel.CriticalityFactor.ToString();
-            Palette.SelectedFuel = selectedFuel; //[TODO]Change to a method you criminal
+            Palette.SelectedFuel = selectedFuel; //TODO:Change to a method you criminal
 
+            //Makes sure we're not trying to invoke a method without a handle (Not sure why the crashhappens but this should be the reason)
+            if (coolantRecipeSelector.IsHandleCreated)
             //This gets rid of the annoying text highlight
-            new System.Threading.Timer((s) =>
-            {
-                fuelSelector.Invoke(new Action(() =>
+                new System.Threading.Timer((s) =>
                 {
-                    fuelSelector.Select(0, 0);
-                }));
-            }, null, 10, System.Threading.Timeout.Infinite);
+                    fuelSelector.Invoke(new Action(() =>
+                    {
+                        fuelSelector.Select(0, 0);
+                    }));
+                }, null, 10, System.Threading.Timeout.Infinite);
         }
 
         private void reactorWidth_Enter(object sender, EventArgs e)
@@ -630,14 +634,16 @@ namespace NC_Reactor_Planner
                 RefreshStats(showClustersInStats);
             }
 
+            //Makes sure we're not trying to invoke a method without a handle (Not sure why the crashhappens but this should be the reason)
+            if(coolantRecipeSelector.IsHandleCreated)
             //This gets rid of the annoying text highlight
-            new System.Threading.Timer((s) =>
-            {
-                coolantRecipeSelector.Invoke(new Action(() =>
+                new System.Threading.Timer((s) =>
                 {
-                    coolantRecipeSelector.Select(0, 0);
-                }));
-            }, null, 10, System.Threading.Timeout.Infinite);
+                    coolantRecipeSelector.Invoke(new Action(() =>
+                    {
+                        coolantRecipeSelector.Select(0, 0);
+                    }));
+                }, null, 10, System.Threading.Timeout.Infinite);
         }
     }
 }

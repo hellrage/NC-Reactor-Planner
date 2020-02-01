@@ -133,6 +133,7 @@
       <DependentUpon>DummyUI.cs</DependentUpon>
     </Compile>
     <Compile Include="NuclearcraftConfigImport.cs" />
+    <Compile Include="ObjectExtensions.cs" />
     <Compile Include="PlannerUI.cs">
       <SubType>Form</SubType>
     </Compile>

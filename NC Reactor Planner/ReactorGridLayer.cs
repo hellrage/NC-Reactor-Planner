@@ -40,7 +40,7 @@ namespace NC_Reactor_Planner
             cellZ = -1;
             HighlightedCluster = -1;
 
-            //[TODO] Fix scrolling when in per-layer mode
+            //TODO: Fix scrolling when in per-layer mode
             MouseEnter += new EventHandler((sender, e) => {
                 if (Reactor.UI.drawAllLayers)
                     Reactor.UI.ReactorGrid.Focus();
@@ -165,13 +165,15 @@ namespace NC_Reactor_Planner
 
         private void DrawClusterHighlights(Graphics g, bool forExport = false)
         {
-            //[TODO] Consolidate checks with Block and Heatsink
+            //TODO: Consolidate checks with Block and Heatsink
             foreach (Cluster cluster in Reactor.clusters)
             {
-                if (cluster.PenaltyType > 0)
+                if (cluster.NetHeatClass == NetHeatClass.Overheating)
                     DrawClusterHighlight(g, cluster.ID, PlannerUI.ClusterOverheatPen, forExport);
-                else if (cluster.PenaltyType < 0)
+                else if (cluster.NetHeatClass == NetHeatClass.Overcooled)
                     DrawClusterHighlight(g, cluster.ID, PlannerUI.ClusterOvercoolPen, forExport);
+                else if(cluster.NetHeatClass == NetHeatClass.HeatPositive)
+                    DrawClusterHighlight(g, cluster.ID, PlannerUI.ClusterHeatPositivePen, forExport);
             }
         }
 
@@ -414,9 +416,11 @@ namespace NC_Reactor_Planner
                 default:
                     return;
             }
-            Graphics g = CreateGraphics();
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            RedrawCell(cellX, cellZ, g, true);
+            using (Graphics g = CreateGraphics())
+            {
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                RedrawCell(cellX, cellZ, g, true);
+            }
         }
 
         private void PlaceBlock(int x, int z, Block block)

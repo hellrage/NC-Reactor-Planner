@@ -37,32 +37,35 @@ namespace NC_Reactor_Planner
         {
             StringBuilder report = new StringBuilder();
             report.Append(DisplayName);
-            report.Append(" heatsink\r\n");
+            report.AppendLine(" heatsink");
 
             if (Position != Palette.dummyPosition)
             {
                 if (Cluster != -1)
                 {
-                    //[TODO] Consolidate with Block tooltip
-                    report.Append(string.Format("Cluster: {0}\r\n", Cluster));
-                    report.Append((Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection"));
-                    if (Reactor.clusters[Cluster].PenaltyType > 0)
-                        report.Append("--Cluster is penalized for overheating!\n");
-                    else if (Reactor.clusters[Cluster].PenaltyType < 0)
-                        report.Append("--Cluster is penalized for overcooling!\n");
+                    //TODO: Consolidate with Block tooltip
+                    report.AppendLine($"Cluster: {Cluster}");
+                    report.AppendLine((Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection" : $"--Invalid cluster!{Environment.NewLine}--No casing connection"));
+
+                    if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.Overheating)
+                        report.AppendLine("--Cluster is penalized for overheating!");
+                    else if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.Overcooled)
+                        report.AppendLine("--Cluster is penalized for overcooling!");
+                    else if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.HeatPositive)
+                        report.AppendLine("--Cluster is heat positive!");
                 }
                 else
-                    report.Append("--No cluster!\r\n");
+                    report.AppendLine("--No cluster!");
             }
 
-            report.Append(string.Format(" Cooling: {0} HU/t\r\n", Cooling));
-            report.Append(string.Format(" Requires: {0}\r\n", Requirements));
+            report.AppendLine($" Cooling: {Cooling} HU/t");
+            report.AppendLine($" Requires: {Requirements}");
             if (Position != Palette.dummyPosition & !Valid)
             {
-                report.Append("----Invalid!\r\n");
+                report.AppendLine("----Invalid!");
                 foreach (string error in new HashSet<string>(placementErrors))
                 {
-                    report.Append(string.Format("----{0}\r\n", error));
+                    report.AppendLine($"----{error}");
                 }
             }
             return report.ToString();

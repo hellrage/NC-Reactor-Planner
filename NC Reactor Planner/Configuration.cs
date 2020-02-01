@@ -217,7 +217,7 @@ namespace NC_Reactor_Planner
     /// </summary>
     public static class Configuration
     {
-        //[TODO] incapsulation .\_/.
+        //TODO: incapsulation .\_/.
         public static FissionValues Fission;
         public static CraftingMaterials ResourceCosts;
         public static Dictionary<string, FuelValues> Fuels;
@@ -477,7 +477,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Lapis", new HeatSinkValues(95, "One FuelCell; One Casing"));
             HeatSinks.Add("Gold", new HeatSinkValues(105, "Two Iron heatsinks"));
             HeatSinks.Add("Prismarine", new HeatSinkValues(115, "Two Water heatsinks"));
-            HeatSinks.Add("Slime", new HeatSinkValues(135, "Exactly One Water heatsink; One Reflector"));
+            HeatSinks.Add("Slime", new HeatSinkValues(135, "Exactly One Water heatsink; Two Lead heatsinks"));
             HeatSinks.Add("EndStone", new HeatSinkValues(60, "One Reflector"));
             HeatSinks.Add("Purpur", new HeatSinkValues(90, "Exactly One Iron heatsink; One EndStone heatsink"));
             HeatSinks.Add("Diamond", new HeatSinkValues(190, "One Gold heatsink; One FuelCell"));
@@ -486,7 +486,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Tin", new HeatSinkValues(120, "Axial Lapis heatsinks"));
             HeatSinks.Add("Lead", new HeatSinkValues(65, "One Iron heatsink"));
             HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly One Quartz heatsink; One Casing"));
-            HeatSinks.Add("Lithium", new HeatSinkValues(125, "Exactly Two Lead heatsinks; One Casing"));
+            HeatSinks.Add("Lithium", new HeatSinkValues(125, "Axial Lead heatsinks; One Casing"));
             HeatSinks.Add("Magnesium", new HeatSinkValues(130, "Exactly One Moderator; One Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(140, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(185, "One Quartz heatsink; One Lapis heatsink"));
@@ -495,7 +495,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Villiaumite", new HeatSinkValues(160, "One Reflector; One Redstone heatsink"));
             HeatSinks.Add("Carobbiite", new HeatSinkValues(150, "One Copper heatsink; One EndStone heatsink"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(145, "Axial Reflectors"));
-            HeatSinks.Add("Nitrogen", new HeatSinkValues(180, "One Copper heatsinks; Two Lead heatsinks"));
+            HeatSinks.Add("Nitrogen", new HeatSinkValues(180, "Two Copper heatsinks; One Purpur heatsink"));
             HeatSinks.Add("Helium", new HeatSinkValues(200, "Exactly Two Redstone heatsinks; One Casing"));
             HeatSinks.Add("Enderium", new HeatSinkValues(175, "Three Moderators"));
             HeatSinks.Add("Cryotheum", new HeatSinkValues(205, "Three FuelCells"));

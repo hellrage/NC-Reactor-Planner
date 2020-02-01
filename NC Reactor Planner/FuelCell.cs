@@ -43,7 +43,7 @@ namespace NC_Reactor_Planner
             Active = false;
         }
 
-        public FuelCell(FuelCell parent, Vector3 position, Fuel usedFuel, bool primed = false) : this(parent.DisplayName, parent.Texture, position, usedFuel, primed)
+        public FuelCell(FuelCell parent, Vector3 position, Fuel usedFuel, bool primed = false) : this(parent.DisplayName, parent.Texture, position, usedFuel, primed, parent.NeutronSource)
         {
         }
 
@@ -56,28 +56,26 @@ namespace NC_Reactor_Planner
                 StringBuilder tb = new StringBuilder(); //TooltipBuilder
                 tb.Append(base.GetToolTip());
                 if(Cluster != -1)
-                    tb.Append(Reactor.clusters[Cluster].Valid ? " Has casing connection\r\n" : "--Invalid cluster!\r\n--No casing connection");
-                tb.Append(String.Format(" Fuel : {0}\r\n", UsedFuel.Name));
-                tb.Append(Active ? " Active\r\n" : "--Inactive!\r\n");
-                tb.Append(String.Format(" Adjacent cells: {0}\r\n", AdjacentCells.Count));
+                    tb.AppendLine(Reactor.clusters[Cluster].Valid ? " Has casing connection" : $"--Invalid cluster!{Environment.NewLine}--No casing connection");
+                tb.AppendLine($" Fuel : {UsedFuel.Name}");
+                tb.AppendLine(Active ? " Active" : "--Inactive!");
+                tb.AppendLine($" Adjacent cells: {AdjacentCells.Count}");
 #if DEBUG
-                string adjCells = "";
                 foreach(FuelCell fc in AdjacentCells)
-                    adjCells += "   " + fc.Position.ToString() + "\r\n";
-                tb.Append(adjCells.ToString());
+                    tb.AppendLine($"   {fc.Position.ToString()}");
 #endif
-                tb.Append(String.Format(" Adjacent moderator lines: {0}\r\n", AdjacentModeratorLines));
-                tb.Append(String.Format(" Adjacent reflectors: {0}\r\n", AdjacentReflectors.Count));
-                tb.Append(String.Format(" Heat multiplier: {0} %\r\n", (int)(HeatMultiplier * 100)));
-                tb.Append(String.Format(" Heat produced: {0} HU/t\r\n", HeatProducedPerTick));
-                tb.Append(String.Format(" Efficiency: {0} %\r\n", (int)(Efficiency * 100)));
-                tb.Append(String.Format(" Positional Eff.: {0} %\r\n", (int)(PositionalEfficiency * 100)));
-                tb.Append(String.Format(" Total Neutron Flux: {0}\r\n", ModeratedNeutronFlux));
-                tb.Append(String.Format(" Criticality factor: {0}\r\n", UsedFuel.CriticalityFactor));
+                tb.AppendLine($" Adjacent moderator lines: {AdjacentModeratorLines}");
+                tb.AppendLine($" Adjacent reflectors: {AdjacentReflectors.Count}");
+                tb.AppendLine($" Heat multiplier: {(int)(HeatMultiplier * 100)} %");
+                tb.AppendLine($" Heat produced: {HeatProducedPerTick} HU/t");
+                tb.AppendLine($" Efficiency: {(int)(Efficiency * 100)} %");
+                tb.AppendLine($" Positional Eff.: {(int)(PositionalEfficiency * 100)} %");
+                tb.AppendLine($" Total Neutron Flux: {ModeratedNeutronFlux}");
+                tb.AppendLine($" Criticality factor: {UsedFuel.CriticalityFactor}");
                 if(Primed)
                 {
-                    tb.Append("Primed\r\n");
-                    tb.Append(String.Format(" Neutron source: {0}", NeutronSource));
+                    tb.AppendLine("Primed");
+                    tb.AppendLine($" Neutron source: {NeutronSource}");
                 }
 
                 return tb.ToString();

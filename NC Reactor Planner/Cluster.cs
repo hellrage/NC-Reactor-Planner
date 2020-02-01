@@ -16,7 +16,8 @@ namespace NC_Reactor_Planner
         public double CoolingPenaltyMultiplier { get; private set; }
         public double TotalOutput { get; private set; }
         public double NetHeatingRate { get => (TotalHeatPerTick - TotalCoolingPerTick); }
-        public int PenaltyType { get; private set; }
+        public int MeltdownTime { get; private set; }
+        public NetHeatClass NetHeatClass { get; private set; }
         public double HeatMultiplier { get; private set; }
         public bool Valid { get => HasPathToCasing; }
         public int ID { get; private set; }
@@ -39,6 +40,7 @@ namespace NC_Reactor_Planner
             CoolingPenaltyMultiplier = 1;
             HeatMultiplier = 0;
             TotalOutput = 0;
+            MeltdownTime = -1;
         }
 
         public void AddBlock(Block block)
@@ -90,11 +92,13 @@ namespace NC_Reactor_Planner
             HeatMultiplier = sumHeatMulti / fuelCells.Count;
 
             if (NetHeatingRate < -Configuration.Fission.CoolingPenaltyLeniency)
-                PenaltyType = -1;
+                NetHeatClass = NetHeatClass.Overcooled;
             else if (NetHeatingRate > Configuration.Fission.CoolingPenaltyLeniency)
-                PenaltyType = 1;
+                NetHeatClass = NetHeatClass.Overheating;
+            else if (NetHeatingRate > 0)
+                NetHeatClass = NetHeatClass.HeatPositive;
             else
-                PenaltyType = 0;
+                NetHeatClass = NetHeatClass.Safe;
         }
 
         public string GetStatString()
@@ -102,15 +106,24 @@ namespace NC_Reactor_Planner
             if (!Valid)
                 return string.Format("Cluster №{0}\r\nInvalid! Skipping.\r\n\r\n", ID);
             StringBuilder stats = new StringBuilder();
-            stats.Append(string.Format("Cluster №{0}\r\n", ID));
-            stats.Append(string.Format("Total output: {0}\r\n", TotalOutput));
-            stats.Append(string.Format("Efficiency: {0} %\r\n", (int)(Efficiency * 100)));
-            stats.Append(string.Format("Total Heating: {0} HU/t\r\n", TotalHeatPerTick));
-            stats.Append(string.Format("Total Cooling: {0} HU/t\r\n", TotalCoolingPerTick));
-            stats.Append(string.Format("Net Heating: {0} HU/t\r\n", NetHeatingRate));
-            stats.Append(string.Format("Heat Multiplier: {0} %\r\n\r\n",(int)(HeatMultiplier*100)));
+            stats.AppendLine($"Cluster №{ID}");
+            stats.AppendLine($"Total output: {TotalOutput}");
+            stats.AppendLine($"Efficiency: {(int)(Efficiency * 100)} %");
+            stats.AppendLine($"Total Heating: {TotalHeatPerTick} HU/t");
+            stats.AppendLine($"Total Cooling: {TotalCoolingPerTick} HU/t");
+            stats.AppendLine($"Net Heating: {NetHeatingRate} HU/t");
+            stats.AppendLine($"Heat Multiplier: {(int)(HeatMultiplier * 100)} %");
+            stats.AppendLine();
 
             return stats.ToString();
         }
+    }
+
+    public enum NetHeatClass
+    {
+        Safe,
+        Overheating,
+        Overcooled,
+        HeatPositive
     }
 }
