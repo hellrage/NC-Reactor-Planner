@@ -440,7 +440,7 @@ namespace NC_Reactor_Planner
 
             totalInteriorBlocks = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
 
-            int activeFuelCells = 0;
+            int activeClusters = 0;
             double sumEfficiency = 0;
             efficiency = 0;
             double sumHeatMultiplier = 0;
@@ -454,18 +454,18 @@ namespace NC_Reactor_Planner
                 totalOutputPerTick += cluster.TotalOutput;
                 totalCoolingPerTick += cluster.TotalCoolingPerTick;
                 totalHeatPerTick += cluster.TotalHeatPerTick;
+                sumEfficiency += cluster.Efficiency;
+                activeClusters++;
+                sumHeatMultiplier += cluster.HeatMultiplier;
             }
 
             foreach (FuelCell fuelCell in fuelCells)
             {
                 if (!fuelCell.Active || !clusters[fuelCell.Cluster].Valid)
                     continue;
-                activeFuelCells++;
-                sumEfficiency += fuelCell.Efficiency;
-                sumHeatMultiplier += fuelCell.HeatMultiplier;
             }
 
-            heatMultiplier = (activeFuelCells > 0) ? (sumHeatMultiplier / activeFuelCells) : 0;
+            heatMultiplier = (activeClusters > 0) ? (sumHeatMultiplier / activeClusters) : 0;
 
             double density = (double)functionalBlocks / (double)totalInteriorBlocks;
             double spt = Configuration.Fission.SparsityPenaltyThreshold;
@@ -476,10 +476,9 @@ namespace NC_Reactor_Planner
             }
             else
             {
-                //Console.WriteLine("Density: " + density.ToString());
                 sparsityPenalty = ((1 - mspm) * Math.Sin(density * Math.PI / (2 * spt))) + mspm;
             }
-            efficiency = (activeFuelCells > 0) ? (sumEfficiency * sparsityPenalty / activeFuelCells) : 0;
+            efficiency = (activeClusters > 0) ? (sumEfficiency * sparsityPenalty / activeClusters) : 0;
 
             totalHeatPerTick *= Configuration.Fission.HeatGeneration;
             totalOutputPerTick *= Configuration.Fission.Power * sparsityPenalty;
