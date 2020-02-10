@@ -333,7 +333,7 @@ namespace NC_Reactor_Planner
                         continue;
                     }
 
-                    if(!clusters[id].blocks.Contains(root))
+                    if(!clusters[id].Blocks.Contains(root))
                         clusters[id].AddBlock(root);
                     root.SetCluster(id);
 
@@ -440,7 +440,7 @@ namespace NC_Reactor_Planner
 
             totalInteriorBlocks = (int)(interiorDims.X * interiorDims.Y * interiorDims.Z);
 
-            int activeClusters = 0;
+            int activeFuelCells = 0;
             double sumEfficiency = 0;
             efficiency = 0;
             double sumHeatMultiplier = 0;
@@ -454,18 +454,18 @@ namespace NC_Reactor_Planner
                 totalOutputPerTick += cluster.TotalOutput;
                 totalCoolingPerTick += cluster.TotalCoolingPerTick;
                 totalHeatPerTick += cluster.TotalHeatPerTick;
-                sumEfficiency += cluster.Efficiency;
-                activeClusters++;
-                sumHeatMultiplier += cluster.HeatMultiplier;
+                sumEfficiency += cluster.Efficiency * cluster.ActiveFuelCells.Count;
             }
 
             foreach (FuelCell fuelCell in fuelCells)
             {
                 if (!fuelCell.Active || !clusters[fuelCell.Cluster].Valid)
                     continue;
+                activeFuelCells++;
+                sumHeatMultiplier += fuelCell.HeatMultiplier;
             }
 
-            heatMultiplier = (activeClusters > 0) ? (sumHeatMultiplier / activeClusters) : 0;
+            heatMultiplier = (activeFuelCells > 0) ? (sumHeatMultiplier / activeFuelCells) : 0;
 
             double density = (double)functionalBlocks / (double)totalInteriorBlocks;
             double spt = Configuration.Fission.SparsityPenaltyThreshold;
@@ -478,7 +478,7 @@ namespace NC_Reactor_Planner
             {
                 sparsityPenalty = ((1 - mspm) * Math.Sin(density * Math.PI / (2 * spt))) + mspm;
             }
-            efficiency = (activeClusters > 0) ? (sumEfficiency * sparsityPenalty / activeClusters) : 0;
+            efficiency = (activeFuelCells > 0) ? (sumEfficiency * sparsityPenalty / activeFuelCells) : 0;
 
             totalHeatPerTick *= Configuration.Fission.HeatGeneration;
             totalOutputPerTick *= Configuration.Fission.Power * sparsityPenalty;

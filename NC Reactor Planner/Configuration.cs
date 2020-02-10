@@ -252,7 +252,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 35, 0))
+            if(cf.saveVersion < new Version(2, 0, 37, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json");
                 return false;
@@ -485,14 +485,14 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Copper", new HeatSinkValues(80, "One Water heatsink"));
             HeatSinks.Add("Tin", new HeatSinkValues(120, "Axial Lapis heatsinks"));
             HeatSinks.Add("Lead", new HeatSinkValues(60, "One Iron heatsink"));
-            HeatSinks.Add("Boron", new HeatSinkValues(170, "Exactly One Quartz heatsink; One Casing"));
+            HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly One Quartz heatsink; One Casing"));
             HeatSinks.Add("Lithium", new HeatSinkValues(130, "Axial Lead heatsinks; One Casing"));
             HeatSinks.Add("Magnesium", new HeatSinkValues(125, "Exactly One Moderator; One Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(145, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(185, "One Quartz heatsink; One Lapis heatsink"));
-            HeatSinks.Add("Silver", new HeatSinkValues(165, "One Glowstone heatsink; One Tin heatsink"));
+            HeatSinks.Add("Silver", new HeatSinkValues(170, "Two Glowstone heatsinks; One Tin heatsink"));
             HeatSinks.Add("Fluorite", new HeatSinkValues(175, "One Gold heatsink; One Prismarine heatsink"));
-            HeatSinks.Add("Villiaumite", new HeatSinkValues(160, "One Enderium heatsink; One Redstone heatsink"));
+            HeatSinks.Add("Villiaumite", new HeatSinkValues(160, "One EndStone heatsink; One Redstone heatsink"));
             HeatSinks.Add("Carobbiite", new HeatSinkValues(150, "One Copper heatsink; One EndStone heatsink"));
             HeatSinks.Add("Arsenic", new HeatSinkValues(140, "Axial Reflectors"));
             HeatSinks.Add("Nitrogen", new HeatSinkValues(180, "Two Copper heatsinks; One Purpur heatsink"));

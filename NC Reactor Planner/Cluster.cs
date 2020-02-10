@@ -22,11 +22,12 @@ namespace NC_Reactor_Planner
         public bool Valid { get => HasPathToCasing; }
         public int ID { get; private set; }
 
-        public List<Block> blocks;
+        public List<Block> Blocks { get; private set; }
+        public List<FuelCell> ActiveFuelCells { get; private set; } 
 
         public Cluster(int id)
         {
-            blocks = new List<Block>();
+            Blocks = new List<Block>();
             ID = id;
             HasPathToCasing = false;
             ResetValues();
@@ -45,7 +46,7 @@ namespace NC_Reactor_Planner
 
         public void AddBlock(Block block)
         {
-            blocks.Add(block);
+            Blocks.Add(block);
         }
 
         public void UpdateStats()
@@ -53,8 +54,8 @@ namespace NC_Reactor_Planner
             double sumEffOfFuelCells = 0;
             double sumHeatMulti = 0;
             ResetValues();
-            List<FuelCell> fuelCells = new List<FuelCell>();
-            foreach(Block block in blocks)
+            ActiveFuelCells = new List<FuelCell>();
+            foreach(Block block in Blocks)
             {
                 switch (block.BlockType)
                 {
@@ -63,7 +64,11 @@ namespace NC_Reactor_Planner
                         break;
                     case BlockTypes.FuelCell:
                         FuelCell fuelCell = block as FuelCell;
-                        fuelCells.Add(fuelCell);
+                        ActiveFuelCells.Add(fuelCell);
+
+                        if (!fuelCell.Active)
+                            continue;
+
                         TotalHeatPerTick += fuelCell.HeatProducedPerTick;
                         TotalOutput += fuelCell.Efficiency * fuelCell.UsedFuel.BaseHeat;
                         sumEffOfFuelCells += fuelCell.Efficiency;
@@ -78,7 +83,7 @@ namespace NC_Reactor_Planner
                 }
             }
 
-            double rawEfficiency = sumEffOfFuelCells / fuelCells.Count;
+            double rawEfficiency = sumEffOfFuelCells / ActiveFuelCells.Count;
             if(TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
                 CoolingPenaltyMultiplier = Math.Min(1, (TotalHeatPerTick + Configuration.Fission.CoolingPenaltyLeniency) / TotalCoolingPerTick);
 
@@ -89,7 +94,7 @@ namespace NC_Reactor_Planner
                 FuelDurationMultiplier = Math.Min(1, (TotalCoolingPerTick + Configuration.Fission.CoolingPenaltyLeniency) / TotalHeatPerTick);
             else
                 FuelDurationMultiplier = 1;
-            HeatMultiplier = sumHeatMulti / fuelCells.Count;
+            HeatMultiplier = sumHeatMulti / ActiveFuelCells.Count;
 
             if (NetHeatingRate < -Configuration.Fission.CoolingPenaltyLeniency)
                 NetHeatClass = NetHeatClass.Overcooled;
@@ -113,6 +118,7 @@ namespace NC_Reactor_Planner
             stats.AppendLine($"Total Cooling: {TotalCoolingPerTick} HU/t");
             stats.AppendLine($"Net Heating: {NetHeatingRate} HU/t");
             stats.AppendLine($"Heat Multiplier: {(int)(HeatMultiplier * 100)} %");
+            stats.AppendLine($"Cooling penalty mult: {Math.Round(CoolingPenaltyMultiplier, 4).ToString()}");
             stats.AppendLine();
 
             return stats.ToString();

@@ -276,7 +276,7 @@ namespace NC_Reactor_Planner
 //#if DEBUG
             //System.Diagnostics.Debug.WriteLine(string.Format("Redrawing cluster {0} highlight on layer {1}", clusterID, Y));
 //#endif
-            foreach (Block block in Reactor.clusters[clusterID].blocks)
+            foreach (Block block in Reactor.clusters[clusterID].Blocks)
             {
                 if (block.Position.Y != Y)
                     continue;
