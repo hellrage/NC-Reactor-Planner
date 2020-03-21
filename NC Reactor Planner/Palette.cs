@@ -95,20 +95,33 @@ namespace NC_Reactor_Planner
                 Tuple<int, int> cellCoords = ConvertCellCoordinates(e);
                 int newCellX = cellCoords.Item1;
                 int newCellZ = cellCoords.Item2;
-
-                if (cellX != newCellX | cellZ != newCellZ)
+                int blockIndex = -1;
+                try
                 {
-                    cellX = newCellX;
-                    cellZ = newCellZ;
-                    int blockIndex = cellZ * (Width / (blockSide + 2 * spacing)) + cellX;
-                    if (blockIndex < BlockPalette.Count)
+                    if (cellX != newCellX | cellZ != newCellZ)
                     {
-                        using(Graphics g = CreateGraphics())
+                        cellX = newCellX;
+                        cellZ = newCellZ;
+                        blockIndex = cellZ * (Width / (blockSide + 2 * spacing)) + cellX;
+                        if (blockIndex < BlockPalette.Count && blockIndex >= 0)
                         {
-                            DrawNamestring(g, BlockPalette.Values.ElementAt(blockIndex).DisplayName);
-                            paletteToolTip.Show(BlockPalette.Values.ElementAt(blockIndex).GetToolTip(), this, (cellX + 1) * (blockSide + 2 * spacing), (cellZ + 1) * (blockSide + 2 * spacing) + namestripHeight);
+                            using (Graphics g = CreateGraphics())
+                            {
+                                DrawNamestring(g, BlockPalette.Values.ElementAt(blockIndex).DisplayName);
+                                paletteToolTip.Show(BlockPalette.Values.ElementAt(blockIndex).GetToolTip(), this, (cellX + 1) * (blockSide + 2 * spacing), (cellZ + 1) * (blockSide + 2 * spacing) + namestripHeight);
+                            }
                         }
                     }
+                    //throw new ArgumentException("message!");
+                }
+                catch(Exception exception)
+                {
+                    StringBuilder report = new StringBuilder();
+                    report.AppendLine($"cellCoords: {newCellX}; {newCellZ}");
+                    report.AppendLine($"blockIndex: {blockIndex}");
+                    report.AppendLine($"Blocks in palette: {BlockPalette.Count}");
+                    report.AppendLine(exception.Message);
+                    MessageBox.Show(report.ToString());
                 }
                 base.OnMouseMove(e);
             }
@@ -125,8 +138,24 @@ namespace NC_Reactor_Planner
 
             private Tuple<int, int> ConvertCellCoordinates(MouseEventArgs e)
             {
-                return Tuple.Create(((e.X > Width - spacing - Width % (blockSide+2*spacing)) ? Width - (blockSide + 2 * spacing) : e.X) / (blockSide + 2*spacing),
-                                    ((e.Y - namestripHeight > Height) ? Height : e.Y - namestripHeight) / (blockSide + 2*spacing));
+                int newX = 0;
+                int newZ = 0;
+
+                if (e.X >= Width - spacing - Width % (blockSide + 2 * spacing))
+                    newX = Width - (blockSide + 2 * spacing);
+                else
+                    newX = Math.Max(spacing, e.X);
+                newX = (int)Math.Floor((double)newX / (blockSide + 2 * spacing));
+
+                if (e.Y >= Height)
+                    newZ = Height - namestripHeight - spacing;
+                else
+                    newZ = Math.Max(e.Y - namestripHeight, namestripHeight);
+                newZ = (int)Math.Floor((double)newZ / (blockSide + 2 * spacing));
+
+                //return Tuple.Create(((e.X > Width - spacing - Width % (blockSide+2*spacing)) ? Width - (blockSide + 2 * spacing) : e.X) / (blockSide + 2*spacing),
+                //                    ((e.Y - namestripHeight > Height) ? Height : e.Y - namestripHeight) / (blockSide + 2*spacing));
+                return Tuple.Create(newX, newZ);
             }
 
             protected override void OnMouseClick(MouseEventArgs e)
