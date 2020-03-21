@@ -93,7 +93,6 @@ namespace NC_Reactor_Planner
             }
             else
             {
-                --Reactor.functionalBlocks;
                 Valid = false;
             }
 
@@ -158,10 +157,11 @@ namespace NC_Reactor_Planner
             return true;
         }
 
-        public static bool HasAxial(Vector3 Position, List<string> placementErrors, Block needed)
+        public static bool HasAxial(Vector3 Position, List<string> placementErrors, Block needed, int number = 2, bool exact = false)
         {
             BlockTypes bn = needed.BlockType;
-            byte status = 0; //0:none, 1: invalid, 2: valid
+            byte status = 0; //0:none, 1: invalid, 2: valid, 3: under exact amount, 4: over exact amount
+            int found = 0;
 
             for (int i = 0; i < 3; i++)
             {
@@ -179,8 +179,12 @@ namespace NC_Reactor_Planner
                             status = Math.Max(status, (byte)1);
                             if (block1.Valid && block2.Valid)
                             {
-                                status = 2;
-                                break;
+                                found += 2;
+                                if(!exact && found >= number)
+                                {
+                                    status = 2;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -189,11 +193,25 @@ namespace NC_Reactor_Planner
                         status = Math.Max(status, (byte)1);
                         if (block1.Valid && block2.Valid)
                         {
-                            status = 2;
-                            break;
+                            found += 2;
+                            if (!exact && found >= number)
+                            {
+                                status = 2;
+                                break;
+                            }
                         }
                     }
                 }
+            }
+
+            if(exact)
+            {
+                if (found > number)
+                    status = 4;
+                else if (found < number)
+                    status = 3;
+                else
+                    status = 2;
             }
 
             switch (status)
@@ -206,6 +224,12 @@ namespace NC_Reactor_Planner
                     return false;
                 case 2:
                     return true;
+                case 3:
+                    placementErrors.Add("Not enough " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName + "s" : needed.BlockType.ToString() + "s"));
+                    return false;
+                case 4:
+                    placementErrors.Add("Too many " + ((needed.BlockType == BlockTypes.HeatSink) ? needed.DisplayName + "s" : needed.BlockType.ToString() + "s"));
+                    return false;
                 default:
                     placementErrors.Add("Unknown status!");
                     return false;
