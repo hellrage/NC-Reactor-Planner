@@ -521,6 +521,7 @@ namespace NC_Reactor_Planner
                 sparsityPenalty
                 );
         }
+
         public static void Save(FileInfo saveFile)
         {
             using (TextWriter tw = File.CreateText(saveFile.FullName))
@@ -533,6 +534,22 @@ namespace NC_Reactor_Planner
                 };
                 //CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(out List<Tuple<Vector3, string, bool>> fuelCells), fuelCells, interiorDims);
                 jss.Serialize(tw, ComposeSaveData());
+            }
+        }
+
+        public static string SaveToString()
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                JsonSerializer jss = new JsonSerializer
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+                };
+                //CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(out List<Tuple<Vector3, string, bool>> fuelCells), fuelCells, interiorDims);
+                jss.Serialize(sw, ComposeSaveData());
+                return sw.ToString();
             }
         }
 
@@ -581,7 +598,7 @@ namespace NC_Reactor_Planner
             return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims, coolantRecipeName, GetOverallStats());
         }
 
-        public static ValidationResult Load(FileInfo saveFile)
+        public static ValidationResult Load(String jsonString, bool fromFile, string saveFileName = null)
         {
             Dictionary<string, List<Vector3>> Point3DDictToVector3(JToken dictionary)
             {
@@ -619,68 +636,67 @@ namespace NC_Reactor_Planner
             }
 
             SaveData save;
-            using (StreamReader sr = File.OpenText(saveFile.FullName))
+            JsonSerializer js = new JsonSerializer();
+            JObject saveJSONObject = JObject.Parse(jsonString);
+            Version v = saveJSONObject["SaveVersion"].ToObject<Version>();
+            if(v.Major != 2)
             {
-                JsonSerializer js = new JsonSerializer();
-                string saveText = sr.ReadToEnd();
-                JObject saveJSONObject = JObject.Parse(saveText);
-                Version v = saveJSONObject["SaveVersion"].ToObject<Version>();
-                if(v.Major != 2)
-                {
-                    System.Windows.Forms.MessageBox.Show("Only overhaul saves can be loaded!");
-                    return new ValidationResult(false, "Incorrect savefile version");
-                }
-                else if(v >= new Version(2,0,32))
-                    save = (SaveData)js.Deserialize(new StringReader(saveText), typeof(SaveData));
-                else if(v < new Version(2,0,31))
-                {
-                    Dictionary<string, List<Vector3>> heatSinks = new Dictionary<string, List<Vector3>>();
-                    Dictionary<string, List<Vector3>> moderators = new Dictionary<string, List<Vector3>>();
-                    Dictionary<string, List<Vector3>> fuelCells = new Dictionary<string, List<Vector3>>();
-                    JToken dict = saveJSONObject["HeatSinks"];
-                    heatSinks = Point3DDictToVector3(dict);
-                    dict = saveJSONObject["Moderators"];
-                    moderators = Point3DDictToVector3(dict);
-                    dict = saveJSONObject["FuelCells"];
-                    fuelCells = Point3DDictToVector3(dict);
-                    List<Vector3> conductors = new List<Vector3>();
-                    JToken list = saveJSONObject["Conductors"];
-                    conductors = Point3DListToVector3(list);
-                    list = saveJSONObject["Reflectors"];
-                    Dictionary<string, List<Vector3>> reflectors = new Dictionary<string, List<Vector3>>();
-                    reflectors.Add(Configuration.Reflectors.First().Key, Point3DListToVector3(list));
-                    string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
-                    Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
-                    string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
-                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe??"None", new ReactorStats());
-                }
-                else
-                {
-                    Dictionary<string, List<Vector3>> heatSinks = new Dictionary<string, List<Vector3>>();
-                    Dictionary<string, List<Vector3>> moderators = new Dictionary<string, List<Vector3>>();
-                    Dictionary<string, List<Vector3>> fuelCells = new Dictionary<string, List<Vector3>>();
-                    JToken dict = saveJSONObject["HeatSinks"];
-                    heatSinks = dict.ToObject< Dictionary<string, List<Vector3>>>();
-                    dict = saveJSONObject["Moderators"];
-                    moderators = dict.ToObject<Dictionary<string, List<Vector3>>>();
-                    dict = saveJSONObject["FuelCells"];
-                    fuelCells = dict.ToObject<Dictionary<string, List<Vector3>>>();
-                    List<Vector3> conductors = new List<Vector3>();
-                    JToken list = saveJSONObject["Conductors"];
-                    conductors = list.ToObject<List<Vector3>>();
-                    list = saveJSONObject["Reflectors"];
-                    Dictionary<string, List<Vector3>> reflectors = new Dictionary<string, List<Vector3>>();
-                    reflectors.Add(Configuration.Reflectors.First().Key, list.ToObject<List<Vector3>>());
-                    Vector3 inDimsVector = saveJSONObject["InteriorDimensions"].ToObject<Vector3>();
-                    string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
-                    save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe ?? "None", new ReactorStats());
-                }
+                System.Windows.Forms.MessageBox.Show("Only overhaul saves can be loaded!");
+                return new ValidationResult(false, "Incorrect savefile version");
+            }
+            else if(v >= new Version(2,0,32))
+                save = (SaveData)js.Deserialize(new StringReader(jsonString), typeof(SaveData));
+            else if(v < new Version(2,0,31))
+            {
+                Dictionary<string, List<Vector3>> heatSinks = new Dictionary<string, List<Vector3>>();
+                Dictionary<string, List<Vector3>> moderators = new Dictionary<string, List<Vector3>>();
+                Dictionary<string, List<Vector3>> fuelCells = new Dictionary<string, List<Vector3>>();
+                JToken dict = saveJSONObject["HeatSinks"];
+                heatSinks = Point3DDictToVector3(dict);
+                dict = saveJSONObject["Moderators"];
+                moderators = Point3DDictToVector3(dict);
+                dict = saveJSONObject["FuelCells"];
+                fuelCells = Point3DDictToVector3(dict);
+                List<Vector3> conductors = new List<Vector3>();
+                JToken list = saveJSONObject["Conductors"];
+                conductors = Point3DListToVector3(list);
+                list = saveJSONObject["Reflectors"];
+                Dictionary<string, List<Vector3>> reflectors = new Dictionary<string, List<Vector3>>();
+                reflectors.Add(Configuration.Reflectors.First().Key, Point3DListToVector3(list));
+                string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
+                Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
+                string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
+                save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe??"None", new ReactorStats());
+            }
+            else
+            {
+                Dictionary<string, List<Vector3>> heatSinks = new Dictionary<string, List<Vector3>>();
+                Dictionary<string, List<Vector3>> moderators = new Dictionary<string, List<Vector3>>();
+                Dictionary<string, List<Vector3>> fuelCells = new Dictionary<string, List<Vector3>>();
+                JToken dict = saveJSONObject["HeatSinks"];
+                heatSinks = dict.ToObject< Dictionary<string, List<Vector3>>>();
+                dict = saveJSONObject["Moderators"];
+                moderators = dict.ToObject<Dictionary<string, List<Vector3>>>();
+                dict = saveJSONObject["FuelCells"];
+                fuelCells = dict.ToObject<Dictionary<string, List<Vector3>>>();
+                List<Vector3> conductors = new List<Vector3>();
+                JToken list = saveJSONObject["Conductors"];
+                conductors = list.ToObject<List<Vector3>>();
+                list = saveJSONObject["Reflectors"];
+                Dictionary<string, List<Vector3>> reflectors = new Dictionary<string, List<Vector3>>();
+                reflectors.Add(Configuration.Reflectors.First().Key, list.ToObject<List<Vector3>>());
+                Vector3 inDimsVector = saveJSONObject["InteriorDimensions"].ToObject<Vector3>();
+                string coolantRecipe = saveJSONObject["CoolantRecipeName"]?.ToObject<string>();
+                save = new SaveData(v, heatSinks, moderators, conductors, reflectors, fuelCells, inDimsVector, coolantRecipe ?? "None", new ReactorStats());
             }
 
             ValidationResult vr = save.PerformValidation();
             if (vr.Successful)
             {
-                UI.LoadedSaveFile = saveFile;
+                if (fromFile)
+                    UI.LoadedSaveFile = new FileInfo(saveFileName);
+                else
+                    UI.LoadedSaveFile = null;
                 LoadFromSaveData(save);
             }
             return vr;

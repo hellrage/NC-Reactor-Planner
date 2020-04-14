@@ -67,7 +67,8 @@ namespace NC_Reactor_Planner
 
         static void AfterUpdate(string exePath, string savePath)
         {
-            Reactor.Load(new FileInfo(savePath));
+            string saveFile = (new FileInfo(savePath)).OpenText().ReadToEnd();
+            Reactor.Load(saveFile, true, savePath);
             File.Delete(exePath);
         }
     }

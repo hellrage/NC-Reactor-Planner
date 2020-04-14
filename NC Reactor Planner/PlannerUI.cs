@@ -334,11 +334,6 @@ namespace NC_Reactor_Planner
                 layerScrollBar.Focus();
         }
 
-        private void saveReactor_Click(object sender, EventArgs e)
-        {
-            SaveReactor();
-        }
-
         private void SaveReactor()
         {
             using (SaveFileDialog fileDialog = new SaveFileDialog { Filter = "JSON files(*.json)|*.json" })
@@ -360,11 +355,6 @@ namespace NC_Reactor_Planner
                                       : LoadedSaveFile.Name;
         }
 
-        private void loadReactor_Click(object sender, EventArgs e)
-        {
-            LoadReactor();
-        }
-
         private void LoadReactor()
         {
             using (OpenFileDialog fileDialog = new OpenFileDialog { Filter = "NuclearCraft Reactor files(*.ncr)|*.ncr|JSON files(*.json)|*.json" })
@@ -373,12 +363,15 @@ namespace NC_Reactor_Planner
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     LoadedSaveFile = new FileInfo(fileDialog.FileName);
-                    ValidationResult vr = Reactor.Load(LoadedSaveFile);
-                    if (!vr.Successful)
+                    using (StreamReader sr = File.OpenText(LoadedSaveFile.FullName))
                     {
-                        MessageBox.Show(vr.Result);
-                        LoadedSaveFile = null;
-                        return;
+                        ValidationResult vr = Reactor.Load(sr.ReadToEnd(), true, LoadedSaveFile.FullName);
+                        if (!vr.Successful)
+                        {
+                            MessageBox.Show(vr.Result);
+                            LoadedSaveFile = null;
+                            return;
+                        }
                     }
                 }
                 else
@@ -644,6 +637,34 @@ namespace NC_Reactor_Planner
                         coolantRecipeSelector.Select(0, 0);
                     }));
                 }, null, 10, System.Threading.Timeout.Infinite);
+        }
+
+        private void loadReactor_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ValidationResult vr = Reactor.Load(Clipboard.GetText(), false, null);
+                if (!vr.Successful)
+                {
+                    MessageBox.Show(vr.Result);
+                    LoadedSaveFile = null;
+                    return;
+                }
+                ResetLayout(true);
+            }
+            else if (e.Button == MouseButtons.Left)
+                LoadReactor();
+        }
+
+        private void saveReactor_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                Clipboard.SetText(Reactor.SaveToString());
+                UIToolTip.Show("Saved to clipboard!", this);
+            }
+            else if (e.Button == MouseButtons.Left)
+                SaveReactor();
         }
     }
 }

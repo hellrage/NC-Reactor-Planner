@@ -23,7 +23,7 @@ namespace NC_Reactor_Planner
                 foreach (var saveFile in saveFiles)
                 {
                     tw.WriteLine("Processing file: " + saveFile.Name);
-                    ValidationResult vr = Reactor.Load(saveFile);
+                    ValidationResult vr = Reactor.Load(saveFile.OpenText().ReadToEnd(), true, saveFile.FullName);
                     if (!vr.Successful)
                     {
                         tw.WriteLine("\tFailed to load savefile! Skipping");
