@@ -378,7 +378,7 @@ namespace NC_Reactor_Planner
 
         public static void ReloadValuesFromConfig()
         {
-            Palette.ReloadValuesFromConfig();
+            Palette.LoadPalette();
             ReloadBlockValues();
         }
 
