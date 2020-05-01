@@ -222,7 +222,7 @@ namespace NC_Reactor_Planner
                 return false;
             }
 
-            if(Reactor.interiorDims.Y == 1)
+            if(Reactor.interiorDims.Y == 1 || Reactor.interiorDims.X == 1 || Reactor.interiorDims.Z == 1)
             {
                 placementErrors.Add("Pancake reactor, Enderium won't work here!");
                 return false;
