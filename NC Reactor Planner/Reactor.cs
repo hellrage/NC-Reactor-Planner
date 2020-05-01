@@ -336,13 +336,36 @@ namespace NC_Reactor_Planner
             }
         }
 
+        public static string SaveToString()
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                JsonSerializer jss = new JsonSerializer
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+                };
+
+                CompressedSaveFile csf = new CompressedSaveFile(saveVersion, CompressReactor(), interiorDims, usedFuel);
+                jss.Serialize(sw, csf);
+                return sw.ToString();
+            }
+        }
+
         public static void Load(FileInfo saveFile)
         {
             if (saveFile.Extension == ".json")
-                LoadCompressedReactor(saveFile.FullName);
+                LoadCompressedReactor(saveFile.OpenText().ReadToEnd());
             else
                 throw new FileFormatException("Unknown save file format!");
 
+            FinalizeLoading();
+        }
+
+        public static void LoadFromString(string jsonString)
+        {
+            LoadCompressedReactor(jsonString);
             FinalizeLoading();
         }
 
@@ -443,7 +466,7 @@ namespace NC_Reactor_Planner
             return cr;
         }
 
-        private static void LoadCompressedReactor(string fileName)
+        private static void LoadCompressedReactor(string jsonText)
         {
             Block restoreBlock(string type, Vector3 position)
             {
@@ -459,47 +482,44 @@ namespace NC_Reactor_Planner
             }
 
             CompressedSaveFile csf;
-            using (StreamReader sr = File.OpenText(fileName))
+            JObject saveJSONObject = JObject.Parse(jsonText);
+            Version v;
+            v = saveJSONObject["SaveVersion"].ToObject<Version>();
+            JsonSerializer js = new JsonSerializer();
+
+            if (v.Major == 2)
             {
-                string jsonText = sr.ReadToEnd();
-                JObject saveJSONObject = JObject.Parse(jsonText);
-                Version v;
-                v = saveJSONObject["SaveVersion"].ToObject<Version>();
-                JsonSerializer js = new JsonSerializer();
-
-                if (v.Major == 2)
-                {
-                    System.Windows.Forms.MessageBox.Show("Can't load post-overhaul savefiles!");
-                    return;
-                }
-                else if(v >= new Version(1,2,23))
-                {
-                    csf = (CompressedSaveFile)js.Deserialize(new StringReader(jsonText), typeof(CompressedSaveFile));
-                }
-                else
-                {
-                    Dictionary<string, List<Vector3>> cr = new Dictionary<string, List<Vector3>>();
-                    JToken crToken = saveJSONObject["CompressedReactor"];
-                    foreach (var child in crToken.Children())
-                    {
-                        JProperty entry = child.First().ToObject<JProperty>();
-                        string name = entry.Name;
-                        var children = entry.First().Children().ToList();
-                        cr.Add(name, new List<Vector3>());
-                        foreach (var coord in children)
-                        {
-                            string[] posV = coord.ToObject<string>().Split(',');
-                            cr[name].Add(new Vector3(Convert.ToInt32(posV[0]), Convert.ToInt32(posV[1]), Convert.ToInt32(posV[2])));
-                        }
-                    }
-
-                    string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
-                    Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
-
-                    Fuel fuel = saveJSONObject["UsedFuel"].ToObject<Fuel>();
-                    csf = new CompressedSaveFile(v, cr, inDimsVector, fuel);
-                }
+                System.Windows.Forms.MessageBox.Show("Can't load post-overhaul savefiles!");
+                return;
             }
+            else if(v >= new Version(1,2,23))
+            {
+                csf = (CompressedSaveFile)js.Deserialize(new StringReader(jsonText), typeof(CompressedSaveFile));
+            }
+            else
+            {
+                Dictionary<string, List<Vector3>> cr = new Dictionary<string, List<Vector3>>();
+                JToken crToken = saveJSONObject["CompressedReactor"];
+                foreach (var child in crToken.Children())
+                {
+                    JProperty entry = child.First().ToObject<JProperty>();
+                    string name = entry.Name;
+                    var children = entry.First().Children().ToList();
+                    cr.Add(name, new List<Vector3>());
+                    foreach (var coord in children)
+                    {
+                        string[] posV = coord.ToObject<string>().Split(',');
+                        cr[name].Add(new Vector3(Convert.ToInt32(posV[0]), Convert.ToInt32(posV[1]), Convert.ToInt32(posV[2])));
+                    }
+                }
+
+                string[] interiorDims = saveJSONObject["InteriorDimensions"].ToObject<string>().Split(',');
+                Vector3 inDimsVector = new Vector3(Convert.ToInt32(interiorDims[0]), Convert.ToInt32(interiorDims[1]), Convert.ToInt32(interiorDims[2]));
+
+                Fuel fuel = saveJSONObject["UsedFuel"].ToObject<Fuel>();
+                csf = new CompressedSaveFile(v, cr, inDimsVector, fuel);
+            }
+           
 
             InitializeReactor(csf.InteriorDimensions);
 

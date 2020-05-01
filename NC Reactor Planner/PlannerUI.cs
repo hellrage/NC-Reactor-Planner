@@ -560,5 +560,32 @@ namespace NC_Reactor_Planner
         {
             System.Diagnostics.Process.Start("https://github.com/hellrage/NC-Reactor-Planner");
         }
+
+        private void saveReactor_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                SaveReactor();
+            else if(e.Button == MouseButtons.Right)
+            {
+                Clipboard.SetText(Reactor.SaveToString());
+            }
+        }
+
+        private void loadReactor_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                LoadReactor();
+            else if (e.Button == MouseButtons.Right)
+            {
+                Reactor.LoadFromString(Clipboard.GetText());
+
+                reactorHeight.Value = (decimal)Reactor.interiorDims.Y;
+                reactorLength.Value = (decimal)Reactor.interiorDims.Z;
+                reactorWidth.Value = (decimal)Reactor.interiorDims.X;
+
+                ResetLayout(true);
+                UpdateSelectedFuel();
+            }
+        }
     }
 }

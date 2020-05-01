@@ -264,7 +264,7 @@
             this.saveReactor.TabIndex = 11;
             this.saveReactor.Text = "Save Reactor";
             this.saveReactor.UseVisualStyleBackColor = true;
-            this.saveReactor.Click += new System.EventHandler(this.saveReactor_Click);
+            this.saveReactor.MouseUp += new System.Windows.Forms.MouseEventHandler(this.saveReactor_MouseUp);
             // 
             // loadReactor
             // 
@@ -274,7 +274,7 @@
             this.loadReactor.TabIndex = 12;
             this.loadReactor.Text = "Load Reactor";
             this.loadReactor.UseVisualStyleBackColor = true;
-            this.loadReactor.Click += new System.EventHandler(this.loadReactor_Click);
+            this.loadReactor.MouseUp += new System.Windows.Forms.MouseEventHandler(this.loadReactor_MouseUp);
             // 
             // viewStyleSwitch
             // 
