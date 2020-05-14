@@ -303,6 +303,16 @@ namespace NC_Reactor_Planner.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Irradiator {
+            get {
+                object obj = ResourceManager.GetObject("Irradiator", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Lapis {
             get {
                 object obj = ResourceManager.GetObject("Lapis", resourceCulture);

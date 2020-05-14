@@ -253,6 +253,8 @@ namespace NC_Reactor_Planner
             PopulateFuelPalette();
             
             UpdateNeutronSourceNames();
+
+            PaletteControl?.Refresh();
         }
 
         private static void PopulateBlockPalette()
@@ -274,6 +276,9 @@ namespace NC_Reactor_Planner
             }
 
             BlockPalette.Add("Conductor", new Conductor("Conductor", Textures["Conductor"], dummyPosition));
+            BlockPalette.Add("Irradiator", new Irradiator("Irradiator", Textures["Irradiator"], dummyPosition));
+            ((Irradiator)BlockPalette["Irradiator"]).HeatPerFlux = Configuration.Fission.IrradiatorHeatPerFlux;
+            ((Irradiator)BlockPalette["Irradiator"]).EfficiencyMultiplier = Configuration.Fission.IrradiatorEfficiencyMultiplier;
             foreach (KeyValuePair<string, ReflectorValues> reflectorEntry in Configuration.Reflectors)
             {
                 ReflectorValues mv = reflectorEntry.Value;
@@ -442,6 +447,8 @@ namespace NC_Reactor_Planner
                     return new Conductor("Conductor", Textures["Conductor"], previousBlock.Position);
                 case BlockTypes.Reflector:
                     return new Reflector((Reflector)selectedBlock, previousBlock.Position);
+                case BlockTypes.Irradiator:
+                    return new Irradiator((Irradiator)selectedBlock, previousBlock.Position);
                 default:
                     return new Block("Air", BlockTypes.Air, Textures["Air"], previousBlock.Position);
             }
@@ -455,30 +462,24 @@ namespace NC_Reactor_Planner
                 case MouseButtons.Left:
                     blockToPlace = selectedBlock.DisplayName;
                     break;
-                case MouseButtons.None:
-                    break;
                 case MouseButtons.Right:
                     blockToPlace = "Air";
                     break;
                 case MouseButtons.Middle:
                     blockToPlace = "FuelCell";
                     break;
-                case MouseButtons.XButton1:
-                    break;
-                case MouseButtons.XButton2:
-                    break;
                 default:
                     break;
             }
             if (block.DisplayName == blockToPlace)
+            {
                 if ((selectedBlock is FuelCell fuelCell) && block is FuelCell placedFuelCell)
-                    if (fuelCell.UsedFuel == placedFuelCell.UsedFuel)
-                        return true;
-                    else
-                        return false;
-                else
-                    return true;
-
+                {
+                    return fuelCell.UsedFuel == placedFuelCell.UsedFuel;
+                }
+                else if((selectedBlock is Irradiator irradiator) && block is Irradiator placedIrradiator)
+                    return irradiator.EfficiencyMultiplier == placedIrradiator.EfficiencyMultiplier && irradiator.HeatPerFlux == placedIrradiator.HeatPerFlux;
+            }
             return false;
         }
     }
@@ -492,5 +493,7 @@ namespace NC_Reactor_Planner
         Casing,
         Conductor,
         Reflector,
+        Irradiator,
+        NeutronShield,
     }
 }

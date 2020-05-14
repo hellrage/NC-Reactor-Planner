@@ -12,6 +12,7 @@ namespace NC_Reactor_Planner
         public double HeatMultiplier { get => AdjacentModeratorLines;}
         public List<FuelCell> AdjacentCells { get; private set; }
         public List<Reflector> AdjacentReflectors { get; private set; }
+        public List<Irradiator> AdjacentIrradiators { get; private set; }
         public int AdjacentModeratorLines { get; private set; }
         public bool Active { get; private set; }
         public override bool Valid { get => Active; }
@@ -37,6 +38,7 @@ namespace NC_Reactor_Planner
             SetCluster(-1);
             AdjacentCells = new List<FuelCell>();
             AdjacentReflectors = new List<Reflector>();
+            AdjacentIrradiators = new List<Irradiator>();
             AdjacentModeratorLines = 0;
             PositionalEfficiency = 0;
             ModeratedNeutronFlux = 0;
@@ -129,9 +131,15 @@ namespace NC_Reactor_Planner
                     else
                         return null;
                 }
-                else if(block.BlockType == BlockTypes.Reflector)
+                else if (block is Irradiator irradiator && i > 1 && !this.AdjacentIrradiators.Contains(irradiator))
                 {
-                    Reflector reflector = block as Reflector;
+                    irradiator.ModeratedNeutronFlux += sumModeratorFlux;
+                    this.AdjacentIrradiators.Add(irradiator);
+                    this.PositionalEfficiency += sumModeratorEfficiency * irradiator.EfficiencyMultiplier / moderatorsInLine;
+                    return null;
+                }
+                else if (block is Reflector reflector)
+                {
                     if (AdjacentReflectors.Contains(reflector))
                     {
                         if (Active)
@@ -163,11 +171,6 @@ namespace NC_Reactor_Planner
             AdjacentCells.Add(fuelCell);
         }
 
-        public void AddAdjacentModeratorLine()
-        {
-            AdjacentModeratorLines++;
-        }
-
         public void FilterAdjacentStuff()
         {
             if(!Active)
@@ -178,7 +181,7 @@ namespace NC_Reactor_Planner
                 return;
             }
             AdjacentCells = AdjacentCells.FindAll(fc => fc.Active);
-            AdjacentModeratorLines = AdjacentCells.Count + AdjacentReflectors.Count;
+            AdjacentModeratorLines = AdjacentCells.Count + AdjacentReflectors.Count + AdjacentIrradiators.Count;
         }
 
         public bool CanBePrimed()

@@ -74,6 +74,10 @@ namespace NC_Reactor_Planner
                         sumEffOfFuelCells += fuelCell.Efficiency;
                         sumHeatMulti += fuelCell.HeatMultiplier;
                         break;
+                    case BlockTypes.Irradiator:
+                        Irradiator irradiator = block as Irradiator;
+                        TotalHeatPerTick += irradiator.HeatPerTick;
+                        break;
                     case BlockTypes.Moderator:
                     case BlockTypes.Air:
                     case BlockTypes.Casing:
@@ -82,6 +86,9 @@ namespace NC_Reactor_Planner
                         throw new ArgumentException("Unexpected blockType in cluster: " + block.BlockType.ToString());
                 }
             }
+
+            TotalHeatPerTick *= Configuration.Fission.HeatGeneration;
+            TotalOutput *= Configuration.Fission.Power;
 
             double rawEfficiency = sumEffOfFuelCells / ActiveFuelCells.Count;
             if(TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)

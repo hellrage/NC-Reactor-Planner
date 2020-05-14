@@ -155,6 +155,39 @@ namespace NC_Reactor_Planner
         }
     }
 
+    public struct IrradiatorValues
+    {
+        public int IrradiatorHeatPerFlux;
+        public double IrradiatorEfficiencyMultiplier;
+
+        public IrradiatorValues(int ihpf, double ie)
+        {
+            IrradiatorHeatPerFlux = ihpf;
+            IrradiatorEfficiencyMultiplier = ie;
+        }
+
+        public IrradiatorValues(List<object> fieldValues)
+        {
+            IrradiatorHeatPerFlux = Convert.ToInt32(fieldValues[0]);
+            IrradiatorEfficiencyMultiplier = Convert.ToDouble(fieldValues[1]);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is IrradiatorValues iv)
+            {
+                return iv.IrradiatorEfficiencyMultiplier == this.IrradiatorEfficiencyMultiplier && iv.IrradiatorHeatPerFlux == this.IrradiatorHeatPerFlux;
+            }
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+
     public struct FissionValues
     {
         public double Power;
@@ -166,8 +199,10 @@ namespace NC_Reactor_Planner
         public double MaxSparsityPenaltyMultiplier;
         public double SparsityPenaltyThreshold;
         public double CoolingPenaltyLeniency;
+        public int IrradiatorHeatPerFlux;
+        public double IrradiatorEfficiencyMultiplier;
 
-        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double mspm, double spt, double cpl)
+        public FissionValues(double p, double fu, double hg, int ms, int mxs, int nr, double mspm, double spt, double cpl, int ihpf, double ie)
         {
             Power = p;
             FuelUse = fu;
@@ -178,6 +213,8 @@ namespace NC_Reactor_Planner
             MaxSparsityPenaltyMultiplier = mspm;
             SparsityPenaltyThreshold = spt;
             CoolingPenaltyLeniency = cpl;
+            IrradiatorHeatPerFlux = ihpf;
+            IrradiatorEfficiencyMultiplier = ie;
         }
 
         public FissionValues(List<object> values)
@@ -191,6 +228,8 @@ namespace NC_Reactor_Planner
             MaxSparsityPenaltyMultiplier = Convert.ToDouble(values[6]);
             SparsityPenaltyThreshold = Convert.ToDouble(values[7]);
             CoolingPenaltyLeniency = Convert.ToDouble(values[8]);
+            IrradiatorHeatPerFlux = Convert.ToInt32(values[9]);
+            IrradiatorEfficiencyMultiplier = Convert.ToDouble(values[10]);
         }
     }
 
@@ -278,7 +317,6 @@ namespace NC_Reactor_Planner
 
             Palette.Load();
             Palette.SetHeatSinkUpdateOrder();
-            Palette.UpdateNeutronSourceNames();
             Palette.PaletteControl.ResetSize();
             Reactor.UI.UpdateStatsUIPosition();
             return true;

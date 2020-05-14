@@ -223,6 +223,7 @@ namespace NC_Reactor_Planner
                 ApplyConfiguration();
                 ReloadTabs();
                 Reactor.UI.fuelSelector_SelectedIndexChanged(null, null);
+                Palette.Load();
                 Reactor.Update();
                 return true;
             }

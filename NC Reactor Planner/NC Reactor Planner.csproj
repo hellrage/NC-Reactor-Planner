@@ -132,6 +132,7 @@
     <Compile Include="DummyUI.Designer.cs">
       <DependentUpon>DummyUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Irradiator.cs" />
     <Compile Include="NuclearcraftConfigImport.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="PlannerUI.cs">
@@ -253,6 +254,7 @@
     <None Include="Resources\GitHub_Logo.png" />
     <Content Include="Resources\Beryllium_Carbon.png" />
     <Content Include="Resources\HeavyWater.png" />
+    <Content Include="Resources\Irradiator.png" />
     <Content Include="Resources\Lead_Steel.png" />
     <Content Include="Resources\Lithium.png" />
     <Content Include="Resources\Manganese.png" />

@@ -63,10 +63,11 @@ namespace NC_Reactor_Planner
                 Block block = Reactor.BlockAt(pos);
                 if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach)
                 {
-                    if (block.BlockType == BlockTypes.FuelCell)
-                        if (block.Valid)
-                            return Tuple.Create(i, BlockTypes.FuelCell);
-                    if(block.BlockType == BlockTypes.Reflector)
+                    if (block.BlockType == BlockTypes.FuelCell && block.Valid)
+                        return Tuple.Create(i, BlockTypes.FuelCell);
+                    if (block.BlockType == BlockTypes.Irradiator && block.Valid)
+                        return Tuple.Create(i, BlockTypes.Irradiator);
+                    if (block.BlockType == BlockTypes.Reflector)
                         if(block.Valid & i < Configuration.Fission.NeutronReach / 2 + 1)
                             return Tuple.Create(i, BlockTypes.Reflector);
                     if (block.BlockType != BlockTypes.Moderator)

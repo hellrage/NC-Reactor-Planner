@@ -83,6 +83,7 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, List<Moderator>> moderators;
         public static List<Conductor> conductors;
         public static Dictionary<string, List<Reflector>> reflectors;
+        public static List<Irradiator> irradiators;
         public static int totalCasings;
         public static int totalInteriorBlocks;
 
@@ -188,14 +189,16 @@ namespace NC_Reactor_Planner
         {
             RegenerateTypedLists();
             clusters = new List<Cluster>();
-
-
+            
             foreach (KeyValuePair<string, List<HeatSink>> heatSinks in heatSinks)
                 foreach (HeatSink heatSink in heatSinks.Value)
                     heatSink.RevertToSetup();
 
             foreach (Conductor conductor in conductors)
                 conductor.RevertToSetup();
+
+            foreach (Irradiator irradiator in irradiators)
+                irradiator.RevertToSetup();
 
             foreach (FuelCell fuelCell in fuelCells)
             {
@@ -245,6 +248,7 @@ namespace NC_Reactor_Planner
             };
             conductors = new List<Conductor>();
             reflectors = new Dictionary<string, List<Reflector>>();
+            irradiators = new List<Irradiator>();
 
             functionalBlocks = 0;
 
@@ -281,7 +285,11 @@ namespace NC_Reactor_Planner
                         reflectors.Add(reflector.ReflectorType, new List<Reflector> { reflector });
                     ++functionalBlocks;
                 }
-
+                else if (block is Irradiator irradiator)
+                {
+                    irradiators.Add(irradiator);
+                    ++functionalBlocks;
+                }
             }
         }
 
@@ -312,6 +320,14 @@ namespace NC_Reactor_Planner
             foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
                 foreach (Moderator moderator in moderators.Value)
                     moderator.UpdateStats();
+        }
+
+        private static void UpdateIrradiators()
+        {
+            foreach (var irradiator in irradiators)
+            {
+                irradiator.UpdateStats();
+            }
         }
 
         private static void FormClusters()
@@ -364,6 +380,12 @@ namespace NC_Reactor_Planner
             foreach (FuelCell fuelCell in fuelCells.FindAll(fc => fc.Valid))
             {
                 if (FormCluster(fuelCell, clusterID))
+                    clusterID++;
+            }
+
+            foreach (Irradiator irradiator in irradiators)
+            {
+                if (FormCluster(irradiator, clusterID))
                     clusterID++;
             }
         }
@@ -479,9 +501,8 @@ namespace NC_Reactor_Planner
                 sparsityPenalty = ((1 - mspm) * Math.Sin(density * Math.PI / (2 * spt))) + mspm;
             }
             efficiency = (activeFuelCells > 0) ? (sumEfficiency * sparsityPenalty / activeFuelCells) : 0;
-
-            totalHeatPerTick *= Configuration.Fission.HeatGeneration;
-            totalOutputPerTick *= Configuration.Fission.Power * sparsityPenalty;
+            
+            totalOutputPerTick *= sparsityPenalty;
         }
 
         public static string GetStatString(bool includeClusterInfo = true)
@@ -560,6 +581,7 @@ namespace NC_Reactor_Planner
             List<Vector3> saveConductors = new List<Vector3>();
             Dictionary<string, List<Vector3>> saveReflectors = new Dictionary<string, List<Vector3>>();
             Dictionary<string, List<Vector3>> saveFuelCells = new Dictionary<string, List<Vector3>>();
+            Dictionary<IrradiatorValues, List<Vector3>> saveIrradiators = new Dictionary<IrradiatorValues, List<Vector3>>();
 
             foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
             {
@@ -595,6 +617,14 @@ namespace NC_Reactor_Planner
                 saveFuelCells[fc.ToSaveString()].Add(fc.Position);
             }
 
+            foreach (Irradiator irradiator in irradiators)
+            {
+                IrradiatorValues iv = new IrradiatorValues(irradiator.HeatPerFlux, irradiator.EfficiencyMultiplier);
+                if (!saveIrradiators.ContainsKey(iv))
+                    saveIrradiators.Add(iv, new List<Vector3> { irradiator.Position });
+                else
+                    saveIrradiators[iv].Add(irradiator.Position);
+            }
             return new SaveData(saveVersion, saveHeatSinks, saveModerators, saveConductors, saveReflectors, saveFuelCells, interiorDims, coolantRecipeName, GetOverallStats());
         }
 

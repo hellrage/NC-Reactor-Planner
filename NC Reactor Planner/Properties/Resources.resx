@@ -253,4 +253,7 @@
   <data name="Lead_Steel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Lead_Steel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Irradiator" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Irradiator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
