@@ -60,6 +60,9 @@ namespace NC_Reactor_Planner
                 tb.AppendLine("Increases heat multiplier.");
                 tb.AppendLine($"Only adds {EfficiencyMultiplier*100}% of positional efficiency.");
                 tb.AppendLine("Heat per flux: " + HeatPerFlux);
+                tb.AppendLine("Change values in the configuration to set your recipe.");
+                tb.AppendLine("Each placed irradiator is unique (like fuel cells),");
+                tb.AppendLine("so you can have multiple different ones in the same reactor.");
             }
             else
             {
