@@ -196,7 +196,8 @@ namespace NC_Reactor_Planner
                 Vector3 pos = Position + i * offset;
                 while (Reactor.interiorDims.X + 1 >= pos.X & Reactor.interiorDims.Y + 1 >= pos.Y & Reactor.interiorDims.Z + 1 >= pos.Z & pos.X >= 0 & pos.Y >= 0 & pos.Z >= 0)
                 {
-                    if (Reactor.BlockAt(pos).BlockType == BlockTypes.FuelCell | Reactor.BlockAt(pos).BlockType == BlockTypes.Reflector)
+                    BlockTypes blockType = Reactor.BlockAt(pos).BlockType;
+                    if (blockType == BlockTypes.FuelCell | blockType == BlockTypes.Reflector | blockType == BlockTypes.Irradiator)
                     {
                         primable = false;
                         break;
