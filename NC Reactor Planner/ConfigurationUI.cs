@@ -380,8 +380,38 @@ namespace NC_Reactor_Planner
                 case "Int":
                     CheckIntValue(sender, args);
                     break;
+                case "Boolean":
+                    CheckBooleanValue(sender, args);
+                    break;
                 default:
                     break;
+            }
+        }
+
+        private void CheckBooleanValue(object sender, EventArgs args)
+        {
+            var control = sender as TextBox;
+            if (control == null)
+                return;
+
+            var data = control.Text;
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                control.BackColor = Color.LightSalmon;
+                this.ttValidation.SetToolTip(control, "Please enter a value");
+                return;
+            }
+
+            if (bool.TryParse(data, out bool value))
+            {
+                control.BackColor = SystemColors.Window;
+                control.Text = value.ToString();
+                this.ttValidation.SetToolTip(control, null);
+            }
+            else
+            {
+                control.BackColor = Color.LightSalmon;
+                this.ttValidation.SetToolTip(control, "The value entered is not a valid number");
             }
         }
 

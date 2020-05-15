@@ -296,7 +296,7 @@ namespace NC_Reactor_Planner
         private static void RunFuelCellActivation()
         {
             List<FuelCell> visited = new List<FuelCell>();
-            List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Primed; });
+            List<FuelCell> activeFuelCells = fuelCells.FindAll(delegate (FuelCell fc) { return fc.Primed || fc.Active; });
             foreach (FuelCell activeFuelCell in activeFuelCells)
             {
                 List<FuelCell> queue = new List<FuelCell>{activeFuelCell};

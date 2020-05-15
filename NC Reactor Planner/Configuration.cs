@@ -44,13 +44,15 @@ namespace NC_Reactor_Planner
         public double BaseHeat;
         public double FuelTime;
         public int CriticalityFactor;
+        public bool SelfPriming;
 
-        public FuelValues(double be, double bh, double ft, int cf)
+        public FuelValues(double be, double bh, double ft, int cf, bool sp = false)
         {
             BaseEfficiency = be;
             BaseHeat = bh;
             FuelTime = ft;
             CriticalityFactor = cf;
+            SelfPriming = sp;
         }
 
         public FuelValues(List<object> values)
@@ -59,6 +61,10 @@ namespace NC_Reactor_Planner
             BaseHeat = Convert.ToDouble(values[1]);
             FuelTime = Convert.ToDouble(values[2]);
             CriticalityFactor = Convert.ToInt32(values[3]);
+            if (values.Count > 4)
+                SelfPriming = Convert.ToBoolean(values[4]);
+            else
+                SelfPriming = false;
         }
     }
 
@@ -296,7 +302,7 @@ namespace NC_Reactor_Planner
                 System.Windows.Forms.MessageBox.Show("Pre-overhaul configurations aren't supported!\r\nDelete your BetaConfig.json to regenerate a new one.");
                 return false;
             }
-            if(cf.saveVersion < new Version(2, 0, 38, 0))
+            if(cf.saveVersion < new Version(2, 1, 0, 0))
             {
                 System.Windows.Forms.MessageBox.Show("Ignoring old config file as the values have changed, please overwrite BetaConfig.json!");
                 return false;
@@ -394,10 +400,10 @@ namespace NC_Reactor_Planner
             Fuels.Add("[OX]HECm-247", new FuelValues(1.6, 804, 2150, 36));
             Fuels.Add("[OX]LEB-248", new FuelValues(1.65, 266, 2166, 73));
             Fuels.Add("[OX]HEB-248", new FuelValues(1.7, 798, 2166, 36));
-            Fuels.Add("[OX]LECf-249", new FuelValues(1.75, 540, 1066, 60));
-            Fuels.Add("[OX]HECf-249", new FuelValues(1.8, 1620, 1066, 30));
-            Fuels.Add("[OX]LECf-251", new FuelValues(1.8, 288, 2000, 71));
-            Fuels.Add("[OX]HECf-251", new FuelValues(1.85, 864, 2000, 35));
+            Fuels.Add("[OX]LECf-249", new FuelValues(1.75, 540, 1066, 60, true));
+            Fuels.Add("[OX]HECf-249", new FuelValues(1.8, 1620, 1066, 30, true));
+            Fuels.Add("[OX]LECf-251", new FuelValues(1.8, 288, 2000, 71, true));
+            Fuels.Add("[OX]HECf-251", new FuelValues(1.85, 864, 2000, 35, true));
 
             Fuels.Add("[NI]TBU", new FuelValues(1.25, 32, 18000, 293));
             Fuels.Add("[NI]LEU-233", new FuelValues(1.1, 172, 3348, 98));
@@ -422,10 +428,10 @@ namespace NC_Reactor_Planner
             Fuels.Add("[NI]HECm-247", new FuelValues(1.6, 642, 2692, 45));
             Fuels.Add("[NI]LEB-248", new FuelValues(1.65, 212, 2716, 91));
             Fuels.Add("[NI]HEB-248", new FuelValues(1.7, 636, 2716, 45));
-            Fuels.Add("[NI]LECf-249", new FuelValues(1.75, 432, 1334, 75));
-            Fuels.Add("[NI]HECf-249", new FuelValues(1.8, 1296, 1334, 37));
-            Fuels.Add("[NI]LECf-251", new FuelValues(1.8, 230, 2504, 89));
-            Fuels.Add("[NI]HECf-251", new FuelValues(1.85, 690, 2504, 44));
+            Fuels.Add("[NI]LECf-249", new FuelValues(1.75, 432, 1334, 75, true));
+            Fuels.Add("[NI]HECf-249", new FuelValues(1.8, 1296, 1334, 37, true));
+            Fuels.Add("[NI]LECf-251", new FuelValues(1.8, 230, 2504, 89, true));
+            Fuels.Add("[NI]HECf-251", new FuelValues(1.85, 690, 2504, 44, true));
 
             Fuels.Add("[ZA]TBU", new FuelValues(1.25, 50, 11520, 199));
             Fuels.Add("[ZA]LEU-233", new FuelValues(1.1, 270, 2134, 66));
@@ -450,10 +456,10 @@ namespace NC_Reactor_Planner
             Fuels.Add("[ZA]HECm-247", new FuelValues(1.6, 1008, 1714, 30));
             Fuels.Add("[ZA]LEB-248", new FuelValues(1.65, 332, 1734, 62));
             Fuels.Add("[ZA]HEB-248", new FuelValues(1.7, 996, 1734, 31));
-            Fuels.Add("[ZA]LECf-249", new FuelValues(1.75, 676, 852, 51));
-            Fuels.Add("[ZA]HECf-249", new FuelValues(1.8, 2028, 852, 25));
-            Fuels.Add("[ZA]LECf-251", new FuelValues(1.8, 360, 1600, 60));
-            Fuels.Add("[ZA]HECf-251", new FuelValues(1.85, 1080, 1600, 30));
+            Fuels.Add("[ZA]LECf-249", new FuelValues(1.75, 676, 852, 51, true));
+            Fuels.Add("[ZA]HECf-249", new FuelValues(1.8, 2028, 852, 25, true));
+            Fuels.Add("[ZA]LECf-251", new FuelValues(1.8, 360, 1600, 60, true));
+            Fuels.Add("[ZA]HECf-251", new FuelValues(1.85, 1080, 1600, 30, true));
 
             Fuels.Add("[F4]TBU", new FuelValues(2.5, 32, 18000, 234));
             Fuels.Add("[F4]LEU-233", new FuelValues(2.2, 172, 3348, 78));
@@ -478,10 +484,10 @@ namespace NC_Reactor_Planner
             Fuels.Add("[F4]HECm-247", new FuelValues(3.2, 642, 2692, 36));
             Fuels.Add("[F4]LEB-248", new FuelValues(3.3, 212, 2716, 73));
             Fuels.Add("[F4]HEB-248", new FuelValues(3.4, 636, 2716, 36));
-            Fuels.Add("[F4]LECf-249", new FuelValues(3.5, 432, 1334, 60));
-            Fuels.Add("[F4]HECf-249", new FuelValues(3.6, 1296, 1334, 30));
-            Fuels.Add("[F4]LECf-251", new FuelValues(3.6, 230, 2504, 71));
-            Fuels.Add("[F4]HECf-251", new FuelValues(3.7, 690, 2504, 35));
+            Fuels.Add("[F4]LECf-249", new FuelValues(3.5, 432, 1334, 60, true));
+            Fuels.Add("[F4]HECf-249", new FuelValues(3.6, 1296, 1334, 30, true));
+            Fuels.Add("[F4]LECf-251", new FuelValues(3.6, 230, 2504, 71, true));
+            Fuels.Add("[F4]HECf-251", new FuelValues(3.7, 690, 2504, 35, true));
         }
 
         private static void SetDefaultNeutronSources()

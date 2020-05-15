@@ -249,8 +249,8 @@ namespace NC_Reactor_Planner
             BlockPalette = new Dictionary<string, Block>();
             FuelPalette = new Dictionary<string, Fuel>();
 
-            PopulateBlockPalette();
             PopulateFuelPalette();
+            PopulateBlockPalette();
             
             UpdateNeutronSourceNames();
 
@@ -260,7 +260,7 @@ namespace NC_Reactor_Planner
         private static void PopulateBlockPalette()
         {
             BlockPalette.Add("Air", new Block("Air", BlockTypes.Air, Textures["Air"], dummyPosition));
-            BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition, new Fuel()));
+            BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition, FuelPalette.First().Value));
 
             HeatSinkValidators = new Dictionary<string, List<Func<Vector3, List<string>, bool>>>();
             foreach (KeyValuePair<string, HeatSinkValues> heatSinkEntry in Configuration.HeatSinks)

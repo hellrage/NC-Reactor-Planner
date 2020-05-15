@@ -42,7 +42,7 @@ namespace NC_Reactor_Planner
             AdjacentModeratorLines = 0;
             PositionalEfficiency = 0;
             ModeratedNeutronFlux = 0;
-            Active = false;
+            Active = UsedFuel.SelfPriming;
         }
 
         public FuelCell(FuelCell parent, Vector3 position, Fuel usedFuel, bool primed = false) : this(parent.DisplayName, parent.Texture, position, usedFuel, primed, parent.NeutronSource)
@@ -74,6 +74,8 @@ namespace NC_Reactor_Planner
                 tb.AppendLine($" Positional Eff.: {(int)(PositionalEfficiency * 100)} %");
                 tb.AppendLine($" Total Neutron Flux: {ModeratedNeutronFlux}");
                 tb.AppendLine($" Criticality factor: {UsedFuel.CriticalityFactor}");
+                if(UsedFuel.SelfPriming)
+                    tb.AppendLine(" Self-priming!");
                 if(Primed)
                 {
                     tb.AppendLine("Primed");
