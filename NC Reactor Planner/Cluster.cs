@@ -90,7 +90,9 @@ namespace NC_Reactor_Planner
             TotalHeatPerTick *= Configuration.Fission.HeatGeneration;
             TotalOutput *= Configuration.Fission.Power;
 
-            double rawEfficiency = sumEffOfFuelCells / ActiveFuelCells.Count;
+            double rawEfficiency = 0;
+            if (ActiveFuelCells.Count > 0)
+                rawEfficiency = sumEffOfFuelCells / ActiveFuelCells.Count;
             if(TotalCoolingPerTick > 0 & TotalHeatPerTick > 0)
                 CoolingPenaltyMultiplier = Math.Min(1, (TotalHeatPerTick + Configuration.Fission.CoolingPenaltyLeniency) / TotalCoolingPerTick);
 

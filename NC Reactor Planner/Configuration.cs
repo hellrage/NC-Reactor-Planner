@@ -154,7 +154,7 @@ namespace NC_Reactor_Planner
             EfficiencyFactor = Convert.ToDouble(fieldValues[1]);
         }
     }
-
+    
     public struct IrradiatorValues
     {
         public int IrradiatorHeatPerFlux;
@@ -185,6 +185,11 @@ namespace NC_Reactor_Planner
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 

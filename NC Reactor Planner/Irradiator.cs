@@ -16,10 +16,17 @@ namespace NC_Reactor_Planner
         public double EfficiencyMultiplier { get; set; }
         public override bool Valid { get => ModeratedNeutronFlux > 0; }
 
+        public Irradiator(string displayName, Bitmap texture, Vector3 position, IrradiatorValues values) : base(displayName, BlockTypes.Irradiator, texture, position)
+        {
+            this.HeatPerFlux = values.IrradiatorHeatPerFlux;
+            this.EfficiencyMultiplier = values.IrradiatorEfficiencyMultiplier;
+            RevertToSetup();
+        }
+
         public Irradiator(string displayName, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Irradiator, texture, position)
         {
-            this.HeatPerFlux = 0;
-            this.EfficiencyMultiplier = 0;
+            this.HeatPerFlux = Configuration.Fission.IrradiatorHeatPerFlux;
+            this.EfficiencyMultiplier = Configuration.Fission.IrradiatorEfficiencyMultiplier;
             RevertToSetup();
         }
 
