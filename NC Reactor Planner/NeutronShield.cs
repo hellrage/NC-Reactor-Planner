@@ -70,7 +70,7 @@ namespace NC_Reactor_Planner
                             }
                             else
                             {
-                                ModeratedNeutronFlux += toOffset.Item3 + (int)((toOffset.Item3 + oppositeOffset.Item3) * ((Reflector)Reactor.BlockAt(Position + oppositeOffset.Item1 * offset)).ReflectivityMultiplier);
+                                ModeratedNeutronFlux += toOffset.Item3 + (int)((toOffset.Item3 + oppositeOffset.Item3) * ((Reflector)Reactor.BlockAt(Position - oppositeOffset.Item1 * offset)).ReflectivityMultiplier);
                             }
                         }
                     }

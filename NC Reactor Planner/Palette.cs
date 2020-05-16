@@ -268,7 +268,7 @@ namespace NC_Reactor_Planner
                 HeatSinkValues cv = heatSinkEntry.Value;
                 BlockPalette.Add(heatSinkEntry.Key, new HeatSink(heatSinkEntry.Key, (Textures.ContainsKey(heatSinkEntry.Key)) ? Textures[heatSinkEntry.Key] : Textures["NoTexture"], heatSinkEntry.Key, dummyPosition, ConstructValidatorsAndDependencies(heatSinkEntry.Key)));
             }
-
+            // [TODO] Refactor texture handling
             foreach (var moderatorEntry in Configuration.Moderators)
             {
                 ModeratorValues mv = moderatorEntry.Value;
