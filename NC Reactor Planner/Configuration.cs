@@ -23,8 +23,9 @@ namespace NC_Reactor_Planner
         public Dictionary<string, CoolantRecipeValues> CoolantRecipes;
         public Dictionary<string, HeatSinkValues> HeatSinks;
         public Dictionary<string, ModeratorValues> Moderators;
+        public Dictionary<string, NeutronShieldValues> NeutronShields;
 
-        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, NeutronSourceValues> ns, Dictionary<string, ReflectorValues> rfs, Dictionary<string, CoolantRecipeValues> cr, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm)
+        public ConfigFile(Version sv, FissionValues fs, Dictionary<string, FuelValues> f, Dictionary<string, NeutronSourceValues> ns, Dictionary<string, ReflectorValues> rfs, Dictionary<string, CoolantRecipeValues> cr, Dictionary<string, HeatSinkValues> c, Dictionary<string, ModeratorValues> m, CraftingMaterials cm, Dictionary<string, NeutronShieldValues> nsh)
         {
             saveVersion = sv;
             Fission = fs;
@@ -35,6 +36,7 @@ namespace NC_Reactor_Planner
             HeatSinks = c;
             Moderators = m;
             ResourceCosts = cm;
+            NeutronShields = nsh;
         }
     }
 
@@ -160,29 +162,47 @@ namespace NC_Reactor_Planner
             EfficiencyFactor = Convert.ToDouble(fieldValues[1]);
         }
     }
-    
+
+    public struct NeutronShieldValues
+    {
+        public int HeatPerFlux;
+        public double EfficiencyFactor;
+
+        public NeutronShieldValues(int hpf, double ef)
+        {
+            HeatPerFlux = hpf;
+            EfficiencyFactor = ef;
+        }
+
+        public NeutronShieldValues(List<object> fieldValues)
+        {
+            HeatPerFlux = Convert.ToInt32(fieldValues[0]);
+            EfficiencyFactor = Convert.ToDouble(fieldValues[1]);
+        }
+    }
+
     public struct IrradiatorValues
     {
-        public int IrradiatorHeatPerFlux;
-        public double IrradiatorEfficiencyMultiplier;
+        public int HeatPerFlux;
+        public double EfficiencyMultiplier;
 
-        public IrradiatorValues(int ihpf, double ie)
+        public IrradiatorValues(int hpf, double em)
         {
-            IrradiatorHeatPerFlux = ihpf;
-            IrradiatorEfficiencyMultiplier = ie;
+            HeatPerFlux = hpf;
+            EfficiencyMultiplier = em;
         }
 
         public IrradiatorValues(List<object> fieldValues)
         {
-            IrradiatorHeatPerFlux = Convert.ToInt32(fieldValues[0]);
-            IrradiatorEfficiencyMultiplier = Convert.ToDouble(fieldValues[1]);
+            HeatPerFlux = Convert.ToInt32(fieldValues[0]);
+            EfficiencyMultiplier = Convert.ToDouble(fieldValues[1]);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is IrradiatorValues iv)
             {
-                return iv.IrradiatorEfficiencyMultiplier == this.IrradiatorEfficiencyMultiplier && iv.IrradiatorHeatPerFlux == this.IrradiatorHeatPerFlux;
+                return iv.EfficiencyMultiplier == this.EfficiencyMultiplier && iv.HeatPerFlux == this.HeatPerFlux;
             }
             else
                 return false;
@@ -276,6 +296,7 @@ namespace NC_Reactor_Planner
         public static Dictionary<string, CoolantRecipeValues> CoolantRecipes;
         public static Dictionary<string, HeatSinkValues> HeatSinks;
         public static Dictionary<string, ModeratorValues> Moderators;
+        public static Dictionary<string, NeutronShieldValues> NeutronShields;
 
         private static FileInfo configFileInfo;
 
@@ -324,7 +345,7 @@ namespace NC_Reactor_Planner
             CoolantRecipes = cf.CoolantRecipes;
             HeatSinks = cf.HeatSinks;
             Moderators = cf.Moderators;
-
+            NeutronShields = cf.NeutronShields;
 
             Palette.Load();
             Palette.SetHeatSinkUpdateOrder();
@@ -345,7 +366,7 @@ namespace NC_Reactor_Planner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                 };
 
-                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, NeutronSources, Reflectors, CoolantRecipes, HeatSinks, Moderators, ResourceCosts);
+                ConfigFile cf = new ConfigFile(Reactor.saveVersion, Fission, Fuels, NeutronSources, Reflectors, CoolantRecipes, HeatSinks, Moderators, ResourceCosts, NeutronShields);
                 jss.Serialize(tw, cf);
             }
         }
@@ -367,6 +388,8 @@ namespace NC_Reactor_Planner
             SetDefaultModerators();
 
             SetDefaultFission();
+
+            SetDefaultNeutronShields();
 
             SetDefaultResourceCosts();
 
@@ -535,7 +558,7 @@ namespace NC_Reactor_Planner
             HeatSinks.Add("Tin", new HeatSinkValues(120, "Axial Lapis heatsinks"));
             HeatSinks.Add("Lead", new HeatSinkValues(60, "One Iron heatsink"));
             HeatSinks.Add("Boron", new HeatSinkValues(165, "Exactly One Quartz heatsink; One Casing"));
-            HeatSinks.Add("Lithium", new HeatSinkValues(130, "Axial Lead heatsinks; One Casing"));
+            HeatSinks.Add("Lithium", new HeatSinkValues(130, "Exact-Axial Two Lead heatsinks; One Casing"));
             HeatSinks.Add("Magnesium", new HeatSinkValues(125, "Exactly One Moderator; One Casing"));
             HeatSinks.Add("Manganese", new HeatSinkValues(150, "Two FuelCells"));
             HeatSinks.Add("Aluminum", new HeatSinkValues(185, "One Quartz heatsink; One Lapis heatsink"));
@@ -556,6 +579,12 @@ namespace NC_Reactor_Planner
             Moderators.Add("Beryllium", new ModeratorValues(22, 1.05));
             Moderators.Add("Graphite", new ModeratorValues(10, 1.1));
             Moderators.Add("HeavyWater", new ModeratorValues(36, 1.0));
+        }
+
+        private static void SetDefaultNeutronShields()
+        {
+            NeutronShields = new Dictionary<string, NeutronShieldValues>();
+            NeutronShields.Add("Boron-Silver", new NeutronShieldValues(5, 0.5));
         }
 
         private static void SetDefaultFission()

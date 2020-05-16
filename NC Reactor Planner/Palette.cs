@@ -263,23 +263,27 @@ namespace NC_Reactor_Planner
             BlockPalette.Add("FuelCell", new FuelCell("FuelCell", Textures["FuelCell"], dummyPosition, FuelPalette.First().Value));
 
             HeatSinkValidators = new Dictionary<string, List<Func<Vector3, List<string>, bool>>>();
-            foreach (KeyValuePair<string, HeatSinkValues> heatSinkEntry in Configuration.HeatSinks)
+            foreach (var heatSinkEntry in Configuration.HeatSinks)
             {
                 HeatSinkValues cv = heatSinkEntry.Value;
                 BlockPalette.Add(heatSinkEntry.Key, new HeatSink(heatSinkEntry.Key, (Textures.ContainsKey(heatSinkEntry.Key)) ? Textures[heatSinkEntry.Key] : Textures["NoTexture"], heatSinkEntry.Key, dummyPosition, ConstructValidatorsAndDependencies(heatSinkEntry.Key)));
             }
 
-            foreach (KeyValuePair<string, ModeratorValues> moderatorEntry in Configuration.Moderators)
+            foreach (var moderatorEntry in Configuration.Moderators)
             {
                 ModeratorValues mv = moderatorEntry.Value;
                 BlockPalette.Add(moderatorEntry.Key, new Moderator(moderatorEntry.Key, moderatorEntry.Key, Textures[moderatorEntry.Key], dummyPosition));
             }
 
+            foreach (var neutronShieldEntry in Configuration.NeutronShields)
+            {
+                NeutronShieldValues nsv = neutronShieldEntry.Value;
+                BlockPalette.Add(neutronShieldEntry.Key, new NeutronShield(neutronShieldEntry.Key, neutronShieldEntry.Key, Textures[neutronShieldEntry.Key.Replace('-', '_') + "_Off"], dummyPosition));
+            }
+
             BlockPalette.Add("Conductor", new Conductor("Conductor", Textures["Conductor"], dummyPosition));
             BlockPalette.Add("Irradiator", new Irradiator("Irradiator", Textures["Irradiator"], dummyPosition));
-            ((Irradiator)BlockPalette["Irradiator"]).HeatPerFlux = Configuration.Fission.IrradiatorHeatPerFlux;
-            ((Irradiator)BlockPalette["Irradiator"]).EfficiencyMultiplier = Configuration.Fission.IrradiatorEfficiencyMultiplier;
-            foreach (KeyValuePair<string, ReflectorValues> reflectorEntry in Configuration.Reflectors)
+            foreach (var reflectorEntry in Configuration.Reflectors)
             {
                 ReflectorValues mv = reflectorEntry.Value;
                 BlockPalette.Add(reflectorEntry.Key, new Reflector(reflectorEntry.Key, reflectorEntry.Key, Textures[reflectorEntry.Key.Replace('-', '_')], dummyPosition));
@@ -383,10 +387,26 @@ namespace NC_Reactor_Planner
                             Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyModerator); });
                         else if (words[1] == "Casing")
                             Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyCasing); });
-                        else if(words[1] == "Reflector")
+                        else if (words[1] == "Reflector")
                             Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyReflector); });
                         else
                             Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.BlockPalette[words[1]]); });
+                        break;
+                    case "Exact-Axial":
+                        if (!rule.Contains("heatsink"))
+                            if (nums[words[1]] > 1)
+                                words[2] = words[2].Substring(0, words[2].Length - 1);
+                        if (!Dependencies.Contains(words[2]))
+                            Dependencies.Add(words[2]);
+
+                        if (words[2] == "Moderator")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyModerator, nums[words[1]], true); });
+                        else if (words[2] == "Casing")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyCasing, nums[words[1]], true); });
+                        else if (words[2] == "Reflector")
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.dummyReflector, nums[words[1]], true); });
+                        else
+                            Validators.Add((pos, errs) => { return HeatSink.HasAxial(pos, errs, Palette.BlockPalette[words[2]], nums[words[1]], true); });
                         break;
                     case "One":
                     case "Two":
@@ -449,6 +469,8 @@ namespace NC_Reactor_Planner
                     return new Reflector((Reflector)selectedBlock, previousBlock.Position);
                 case BlockTypes.Irradiator:
                     return new Irradiator((Irradiator)selectedBlock, previousBlock.Position);
+                case BlockTypes.NeutronShield:
+                    return new NeutronShield((NeutronShield)selectedBlock, previousBlock.Position);
                 default:
                     return new Block("Air", BlockTypes.Air, Textures["Air"], previousBlock.Position);
             }

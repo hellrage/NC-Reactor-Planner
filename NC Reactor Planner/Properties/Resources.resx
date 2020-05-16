@@ -256,4 +256,10 @@
   <data name="Irradiator" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Irradiator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Boron_Silver_Off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Boron_Silver_Off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Boron_Silver_On" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Boron_Silver_On.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

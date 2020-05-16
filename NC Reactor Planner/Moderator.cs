@@ -70,6 +70,13 @@ namespace NC_Reactor_Planner
                     if (block.BlockType == BlockTypes.Reflector)
                         if(block.Valid & i < Configuration.Fission.NeutronReach / 2 + 1)
                             return Tuple.Create(i, BlockTypes.Reflector);
+                    if (block is NeutronShield neutronShield)
+                    {
+                        if (neutronShield.Active)
+                            return Tuple.Create(-1, BlockTypes.NeutronShield);
+                        else
+                            continue;
+                    }
                     if (block.BlockType != BlockTypes.Moderator)
                         return Tuple.Create(-1, BlockTypes.Air);
                 }

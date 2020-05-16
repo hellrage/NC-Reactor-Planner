@@ -246,9 +246,9 @@ namespace NC_Reactor_Planner
                 if (moderator.Valid)
                     g.DrawRectangle(PlannerUI.ValidModeratorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
             }
-            else if(block is HeatSink heatsink)
+            else if(block.BlockType == BlockTypes.HeatSink || block.BlockType == BlockTypes.Irradiator || block.BlockType == BlockTypes.NeutronShield)
             {
-                if(heatsink.Cluster == -1)
+                if(block.Cluster == -1)
                     g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);
             }
         }
@@ -391,14 +391,24 @@ namespace NC_Reactor_Planner
             switch (button)
             {
                 case MouseButtons.Left:
-                    if ((ModifierKeys & Keys.Shift) != 0 && Reactor.BlockAt(position) is FuelCell fuelCell)
+                    if ((ModifierKeys & Keys.Shift) != 0)
                     {
-                        if (fuelCell.CanBePrimed())
-                            fuelCell.CyclePrimed();
-                        else
+                        if (Reactor.BlockAt(position) is FuelCell fuelCell)
                         {
-                            Reactor.UI.UIToolTip.Show("This FuelCell can't be primed! Has no LOS to a casing.", Reactor.UI.ReactorGrid, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16, 1500);
-                            fuelCell.UnPrime();
+                            if (fuelCell.CanBePrimed())
+                                fuelCell.CyclePrimed();
+                            else
+                            {
+                                Reactor.UI.UIToolTip.Show("This FuelCell can't be primed! Has no LOS to a casing.", Reactor.UI.ReactorGrid, cellX * Reactor.UI.BlockSize + 16, menu.Height + cellZ * Reactor.UI.BlockSize + 16, 1500);
+                                fuelCell.UnPrime();
+                            }
+                        }
+                        else if(Reactor.BlockAt(position) is NeutronShield neutronShield)
+                        {
+                            if (neutronShield.Active)
+                                neutronShield.Deactivate();
+                            else
+                                neutronShield.Activate();
                         }
                     }
                     else

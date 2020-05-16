@@ -84,6 +84,7 @@ namespace NC_Reactor_Planner
         public static List<Conductor> conductors;
         public static Dictionary<string, List<Reflector>> reflectors;
         public static List<Irradiator> irradiators;
+        public static Dictionary<string, List<NeutronShield>> neutronShields;
         public static int totalCasings;
         public static int totalInteriorBlocks;
 
@@ -190,8 +191,8 @@ namespace NC_Reactor_Planner
             RegenerateTypedLists();
             clusters = new List<Cluster>();
             
-            foreach (KeyValuePair<string, List<HeatSink>> heatSinks in heatSinks)
-                foreach (HeatSink heatSink in heatSinks.Value)
+            foreach (var heatSinkType in heatSinks)
+                foreach (HeatSink heatSink in heatSinkType.Value)
                     heatSink.RevertToSetup();
 
             foreach (Conductor conductor in conductors)
@@ -199,6 +200,10 @@ namespace NC_Reactor_Planner
 
             foreach (Irradiator irradiator in irradiators)
                 irradiator.RevertToSetup();
+
+            foreach (var neutronShieldType in neutronShields)
+                foreach (NeutronShield neutronShield in neutronShieldType.Value)
+                    neutronShield.RevertToSetup();
 
             foreach (FuelCell fuelCell in fuelCells)
             {
@@ -217,6 +222,8 @@ namespace NC_Reactor_Planner
             foreach (FuelCell fuelCell in fuelCells)
                 fuelCell.FilterAdjacentStuff();
 
+            UpdateIrradiators();
+
             foreach (var reflectorType in reflectors)
                 foreach (Reflector reflector in reflectorType.Value)
                     reflector.UpdateStats();
@@ -228,6 +235,8 @@ namespace NC_Reactor_Planner
             UpdateModerators();
 
             OrderedUpdateHeatSinks();
+
+            UpdateNeutronShields();
 
             FormClusters();
             foreach (Cluster cluster in clusters)
@@ -249,6 +258,7 @@ namespace NC_Reactor_Planner
             conductors = new List<Conductor>();
             reflectors = new Dictionary<string, List<Reflector>>();
             irradiators = new List<Irradiator>();
+            neutronShields = new Dictionary<string, List<NeutronShield>>();
 
             functionalBlocks = 0;
 
@@ -290,6 +300,14 @@ namespace NC_Reactor_Planner
                     irradiators.Add(irradiator);
                     ++functionalBlocks;
                 }
+                else if (block is NeutronShield neutronShield)
+                {
+                    if (neutronShields.ContainsKey(neutronShield.NeutronShieldType))
+                        neutronShields[neutronShield.NeutronShieldType].Add(neutronShield);
+                    else
+                        neutronShields.Add(neutronShield.NeutronShieldType, new List<NeutronShield> { neutronShield });
+                    ++functionalBlocks;
+                }
             }
         }
 
@@ -317,8 +335,8 @@ namespace NC_Reactor_Planner
 
         private static void UpdateModerators()
         {
-            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
-                foreach (Moderator moderator in moderators.Value)
+            foreach (var moderatorType in moderators)
+                foreach (Moderator moderator in moderatorType.Value)
                     moderator.UpdateStats();
         }
 
@@ -328,6 +346,13 @@ namespace NC_Reactor_Planner
             {
                 irradiator.UpdateStats();
             }
+        }
+
+        private static void UpdateNeutronShields()
+        {
+            foreach (var neutronShieldType in neutronShields)
+                foreach (NeutronShield neutronShield in neutronShieldType.Value)
+                    neutronShield.UpdateStats();
         }
 
         private static void FormClusters()
@@ -582,21 +607,22 @@ namespace NC_Reactor_Planner
             Dictionary<string, List<Vector3>> saveReflectors = new Dictionary<string, List<Vector3>>();
             Dictionary<string, List<Vector3>> saveFuelCells = new Dictionary<string, List<Vector3>>();
             Dictionary<string, List<Vector3>> saveIrradiators = new Dictionary<string, List<Vector3>>();
+            Dictionary<string, List<Vector3>> saveneutronShields = new Dictionary<string, List<Vector3>>();
 
-            foreach (KeyValuePair<string, List<HeatSink>> kvp in heatSinks)
+            foreach (var heatSinkType in heatSinks)
             {
-                if (!saveHeatSinks.ContainsKey(kvp.Key))
-                    saveHeatSinks.Add(kvp.Key, new List<Vector3>());
-                foreach (HeatSink hs in kvp.Value)
-                    saveHeatSinks[kvp.Key].Add(hs.Position);
+                if (!saveHeatSinks.ContainsKey(heatSinkType.Key))
+                    saveHeatSinks.Add(heatSinkType.Key, new List<Vector3>());
+                foreach (HeatSink hs in heatSinkType.Value)
+                    saveHeatSinks[heatSinkType.Key].Add(hs.Position);
             }
 
-            foreach (KeyValuePair<string, List<Moderator>> kvp in moderators)
+            foreach (var moderatorType in moderators)
             {
-                if (!saveModerators.ContainsKey(kvp.Key))
-                    saveModerators.Add(kvp.Key, new List<Vector3>());
-                foreach (Moderator md in kvp.Value)
-                    saveModerators[kvp.Key].Add(md.Position);
+                if (!saveModerators.ContainsKey(moderatorType.Key))
+                    saveModerators.Add(moderatorType.Key, new List<Vector3>());
+                foreach (Moderator md in moderatorType.Value)
+                    saveModerators[moderatorType.Key].Add(md.Position);
             }
 
             foreach (Conductor cd in conductors)
@@ -626,6 +652,14 @@ namespace NC_Reactor_Planner
                     saveIrradiators[iv].Add(irradiator.Position);
             }
 
+            foreach (var neutronShieldType in neutronShields)
+            {
+                if (!saveneutronShields.ContainsKey(neutronShieldType.Key))
+                    saveneutronShields.Add(neutronShieldType.Key, new List<Vector3>());
+                foreach (NeutronShield neutronShield in neutronShieldType.Value)
+                    saveneutronShields[neutronShieldType.Key].Add(neutronShield.Position);
+            }
+
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("HeatSinks", saveHeatSinks);
             data.Add("Moderators", saveModerators);
@@ -633,6 +667,7 @@ namespace NC_Reactor_Planner
             data.Add("Reflectors", saveReflectors);
             data.Add("FuelCells", saveFuelCells);
             data.Add("Irradiators", saveIrradiators);
+            data.Add("NeutronShields", saveneutronShields);
             data.Add("InteriorDimensions", interiorDims);
             data.Add("CoolantRecipeName", coolantRecipeName);
             data.Add("OverallStats", GetOverallStats());
@@ -652,6 +687,7 @@ namespace NC_Reactor_Planner
             Dictionary<string, List<Vector3>> reflectors = null;
             List<Vector3> conductors = null;
             Dictionary<string, List<Vector3>> irradiators = null;
+            Dictionary<string, List<Vector3>> neutronShields = null;
             Vector3 inDimsVector;
             string coolantRecipeName = null;
 
@@ -680,6 +716,7 @@ namespace NC_Reactor_Planner
                     conductors = saveJSONObject["Data"]["Conductors"]?.ToObject<List<Vector3>>();
                     reflectors = saveJSONObject["Data"]["Reflectors"]?.ToObject<Dictionary<string, List<Vector3>>>();
                     irradiators = saveJSONObject["Data"]["Irradiators"]?.ToObject<Dictionary<string, List<Vector3>>>();
+                    neutronShields = saveJSONObject["Data"]["NeutronShields"]?.ToObject<Dictionary<string, List<Vector3>>>();
                     inDimsVector = saveJSONObject["Data"]["InteriorDimensions"].ToObject<Vector3>();
                     coolantRecipeName = saveJSONObject["Data"]["CoolantRecipeName"]?.ToObject<string>();
                 }
@@ -692,6 +729,7 @@ namespace NC_Reactor_Planner
                 data.Add("Reflectors", reflectors ?? new Dictionary<string, List<Vector3>>());
                 data.Add("FuelCells", fuelCells ?? new Dictionary<string, List<Vector3>>());
                 data.Add("Irradiators", irradiators ?? new Dictionary<string, List<Vector3>>());
+                data.Add("NeutronShields", neutronShields ?? new Dictionary<string, List<Vector3>>());
                 data.Add("InteriorDimensions", inDimsVector);
                 data.Add("CoolantRecipeName", coolantRecipeName ?? "None");
                 save = new SaveData(v, data);
@@ -779,7 +817,17 @@ namespace NC_Reactor_Planner
             foreach (var irradiator in saveIrradiators)
                 foreach (Vector3 pos in irradiator.Value)
                     SetBlock(new Irradiator("Irradiator", Palette.Textures["Irradiator"], pos, JsonConvert.DeserializeObject<IrradiatorValues>(irradiator.Key)), pos);
-            
+
+            Dictionary<string, List<Vector3>> saveNeutronShields = save.DataDictionary("NeutronShields");
+            foreach (var neutronShieldType in saveNeutronShields)
+            {
+                string textureName = neutronShieldType.Key.Replace('-', '_') + "_Off";
+                if (!Palette.Textures.ContainsKey(textureName))
+                    textureName = "NoTexture";
+                foreach (Vector3 pos in neutronShieldType.Value)
+                    SetBlock(new NeutronShield("NeutronShield", neutronShieldType.Key, Palette.Textures[textureName], pos), pos);
+            }
+
             coolantRecipeName = save.DataStringOrDefault("CoolantRecipeName", null);
         }
 

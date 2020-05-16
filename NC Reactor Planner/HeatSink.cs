@@ -39,24 +39,7 @@ namespace NC_Reactor_Planner
             report.Append(DisplayName);
             report.AppendLine(" heatsink");
 
-            if (Position != Palette.dummyPosition)
-            {
-                if (Cluster != -1)
-                {
-                    //TODO: Consolidate with Block tooltip
-                    report.AppendLine($"Cluster: {Cluster}");
-                    report.AppendLine((Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection" : $"--Invalid cluster!{Environment.NewLine}--No casing connection"));
-
-                    if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.Overheating)
-                        report.AppendLine("--Cluster is penalized for overheating!");
-                    else if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.Overcooled)
-                        report.AppendLine("--Cluster is penalized for overcooling!");
-                    else if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.HeatPositive)
-                        report.AppendLine("--Cluster is heat positive!");
-                }
-                else
-                    report.AppendLine("--No cluster!");
-            }
+            report.Append(base.GetToolTip());
 
             report.AppendLine($" Cooling: {Cooling} HU/t");
             report.AppendLine($" Requires: {Requirements}");

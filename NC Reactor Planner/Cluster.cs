@@ -78,6 +78,10 @@ namespace NC_Reactor_Planner
                         Irradiator irradiator = block as Irradiator;
                         TotalHeatPerTick += irradiator.HeatPerTick;
                         break;
+                    case BlockTypes.NeutronShield:
+                        NeutronShield neutronShield = block as NeutronShield;
+                        TotalHeatPerTick += neutronShield.HeatPerTick;
+                        break;
                     case BlockTypes.Moderator:
                     case BlockTypes.Air:
                     case BlockTypes.Casing:

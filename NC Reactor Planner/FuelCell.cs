@@ -9,7 +9,7 @@ namespace NC_Reactor_Planner
     public class FuelCell : Block
     {
         public double HeatProducedPerTick { get => HeatMultiplier * UsedFuel.BaseHeat;}
-        public double HeatMultiplier { get => AdjacentModeratorLines;}
+        public double HeatMultiplier { get => AdjacentModeratorLines + (UsedFuel.SelfPriming ? 1 : 0); }
         public List<FuelCell> AdjacentCells { get; private set; }
         public List<Reflector> AdjacentReflectors { get; private set; }
         public List<Irradiator> AdjacentIrradiators { get; private set; }
@@ -28,7 +28,7 @@ namespace NC_Reactor_Planner
         public FuelCell(string displayName, Bitmap texture, Vector3 position, Fuel usedFuel, bool primed = false, string neutronSource = "None") : base(displayName, BlockTypes.FuelCell, texture, position)
         {
             UsedFuel = usedFuel;
-            Primed = primed;
+            Primed = primed || UsedFuel.SelfPriming;
             NeutronSource = neutronSource;
             RevertToSetup();
         }
@@ -42,7 +42,7 @@ namespace NC_Reactor_Planner
             AdjacentModeratorLines = 0;
             PositionalEfficiency = 0;
             ModeratedNeutronFlux = 0;
-            Active = UsedFuel.SelfPriming;
+            Active = false;
         }
 
         public FuelCell(FuelCell parent, Vector3 position, Fuel usedFuel, bool primed = false) : this(parent.DisplayName, parent.Texture, position, usedFuel, primed, parent.NeutronSource)
@@ -51,19 +51,16 @@ namespace NC_Reactor_Planner
 
         public override string GetToolTip()
         {
-            if (Position == Palette.dummyPosition)
-                return base.GetToolTip();
-            else
+            StringBuilder tb = new StringBuilder(); //TooltipBuilder
+            tb.AppendLine(DisplayName);
+            if (Position != Palette.dummyPosition)
             {
-                StringBuilder tb = new StringBuilder(); //TooltipBuilder
                 tb.Append(base.GetToolTip());
-                if(Cluster != -1)
-                    tb.AppendLine(Reactor.clusters[Cluster].Valid ? " Has casing connection" : $"--Invalid cluster!{Environment.NewLine}--No casing connection");
                 tb.AppendLine($" Fuel : {UsedFuel.Name}");
                 tb.AppendLine(Active ? " Active" : "--Inactive!");
                 tb.AppendLine($" Adjacent cells: {AdjacentCells.Count}");
 #if DEBUG
-                foreach(FuelCell fc in AdjacentCells)
+                foreach (FuelCell fc in AdjacentCells)
                     tb.AppendLine($"   {fc.Position.ToString()}");
 #endif
                 tb.AppendLine($" Adjacent moderator lines: {AdjacentModeratorLines}");
@@ -74,16 +71,15 @@ namespace NC_Reactor_Planner
                 tb.AppendLine($" Positional Eff.: {(int)(PositionalEfficiency * 100)} %");
                 tb.AppendLine($" Total Neutron Flux: {ModeratedNeutronFlux}");
                 tb.AppendLine($" Criticality factor: {UsedFuel.CriticalityFactor}");
-                if(UsedFuel.SelfPriming)
-                    tb.AppendLine(" Self-priming!");
-                if(Primed)
+                if (UsedFuel.SelfPriming)
+                    tb.AppendLine("Self-priming!");
+                if (Primed)
                 {
                     tb.AppendLine("Primed");
-                    tb.AppendLine($" Neutron source: {NeutronSource}");
+                    tb.AppendLine($"Neutron source: {NeutronSource}");
                 }
-
-                return tb.ToString();
             }
+            return tb.ToString();
         }
 
         public List<FuelCell> FindModeratorsThenAdjacentCells()
@@ -104,6 +100,7 @@ namespace NC_Reactor_Planner
             int sumModeratorFlux = 0;
             double sumModeratorEfficiency = 0;
             int moderatorsInLine = 0;
+            List<NeutronShield> neutronShields = new List<NeutronShield>();
             Vector3 pos = Position + offset;
             int i = 1;
             while (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach + 1)
@@ -123,11 +120,11 @@ namespace NC_Reactor_Planner
                     fuelCell.PositionalEfficiency += sumModeratorEfficiency / moderatorsInLine;
                     fuelCell.ModeratedNeutronFlux += sumModeratorFlux;
                     fuelCell.AddAdjacentFuelCell(this);
-                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor)
+                    if (fuelCell.ModeratedNeutronFlux >= fuelCell.UsedFuel.CriticalityFactor || fuelCell.Active)
                     {
-                        ((Moderator)Reactor.BlockAt(Position + offset)).Active = true;
-                        ((Moderator)Reactor.BlockAt(pos - offset)).Active = true;
                         fuelCell.Activate();
+                        foreach (NeutronShield neutronShield in neutronShields)
+                            neutronShield.ModeratedNeutronFlux += (int)(sumModeratorFlux/2);
                         return fuelCell;
                     }
                     else
@@ -138,6 +135,8 @@ namespace NC_Reactor_Planner
                     irradiator.ModeratedNeutronFlux += sumModeratorFlux;
                     this.AdjacentIrradiators.Add(irradiator);
                     this.PositionalEfficiency += sumModeratorEfficiency * irradiator.EfficiencyMultiplier / moderatorsInLine;
+                    foreach (NeutronShield neutronShield in neutronShields)
+                        neutronShield.ModeratedNeutronFlux += sumModeratorFlux;
                     return null;
                 }
                 else if (block is Reflector reflector)
@@ -159,7 +158,21 @@ namespace NC_Reactor_Planner
                         reflector.Active = true;
                     }
                     AdjacentReflectors.Add(reflector);
+                    foreach (NeutronShield neutronShield in neutronShields)
+                        neutronShield.ModeratedNeutronFlux += (int)(2 * sumModeratorFlux * reflector.ReflectivityMultiplier);
                     return null;
+                }
+                else if(block is NeutronShield neutronShield)
+                {
+                    if (neutronShield.Active)
+                        return null;
+
+                    neutronShields.Add(neutronShield);
+                    sumModeratorEfficiency += neutronShield.EfficiencyFactor;
+                    moderatorsInLine++;
+                    i++;
+                    pos = Position + offset * i;
+                    continue;
                 }
                 else
                     return null;
@@ -218,6 +231,8 @@ namespace NC_Reactor_Planner
 
         public void CyclePrimed()
         {
+            if (UsedFuel.SelfPriming)
+                return;
             if(Primed)
             {
                 int currIndex = Palette.NeutronSourceNames.IndexOf(NeutronSource);

@@ -41,13 +41,14 @@ namespace NC_Reactor_Planner
         public virtual string GetToolTip()
         {
             StringBuilder report = new StringBuilder();
-            report.AppendLine(DisplayName);
+            if (BlockType == BlockTypes.Air)
+                report.AppendLine(DisplayName);
             if (Position != Palette.dummyPosition)
             {
                 if (Cluster != -1)
                 {
-                    //TODO: Consolidate with HeatSink tooltip
                     report.AppendLine($"Cluster: {Cluster}");
+                    report.AppendLine((Reactor.clusters[Cluster].HasPathToCasing ? " Has casing connection" : $"--Invalid cluster!{Environment.NewLine}--No casing connection"));
                     if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.Overheating)
                         report.AppendLine("--Cluster is penalized for overheating!");
                     else if (Reactor.clusters[Cluster].NetHeatClass == NetHeatClass.Overcooled)

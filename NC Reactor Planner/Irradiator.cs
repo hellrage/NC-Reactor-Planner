@@ -18,8 +18,8 @@ namespace NC_Reactor_Planner
 
         public Irradiator(string displayName, Bitmap texture, Vector3 position, IrradiatorValues values) : base(displayName, BlockTypes.Irradiator, texture, position)
         {
-            this.HeatPerFlux = values.IrradiatorHeatPerFlux;
-            this.EfficiencyMultiplier = values.IrradiatorEfficiencyMultiplier;
+            this.HeatPerFlux = values.HeatPerFlux;
+            this.EfficiencyMultiplier = values.EfficiencyMultiplier;
             RevertToSetup();
         }
 
@@ -51,6 +51,7 @@ namespace NC_Reactor_Planner
         public override string GetToolTip()
         {
             StringBuilder tb = new StringBuilder(); //TooltipBuilder
+            tb.AppendLine("Irradiator");
             tb.Append(base.GetToolTip());
 
             if (Position == Palette.dummyPosition)
