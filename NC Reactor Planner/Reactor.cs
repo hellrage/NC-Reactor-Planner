@@ -788,7 +788,7 @@ namespace NC_Reactor_Planner
                 foreach (Vector3 pos in fuelCellGroup.Value)
                 {
                     restoredFuelCell = new FuelCell("FuelCell", Palette.Textures["FuelCell"], pos, Palette.FuelPalette[props[0]], Convert.ToBoolean(props[1]), props[2]);
-                    if (restoredFuelCell.Primed && !Configuration.NeutronSources.ContainsKey(restoredFuelCell.NeutronSource))
+                    if (restoredFuelCell.Primed && !(restoredFuelCell.NeutronSource == "Self") && !Configuration.NeutronSources.ContainsKey(restoredFuelCell.NeutronSource))
                     {
                         System.Windows.Forms.MessageBox.Show("There is no " + restoredFuelCell.NeutronSource + " neutron source in the current configuration " +
                             "for FuelCell at " + restoredFuelCell.Position +

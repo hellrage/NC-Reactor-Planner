@@ -9,7 +9,7 @@ namespace NC_Reactor_Planner
     public class FuelCell : Block
     {
         public double HeatProducedPerTick { get => HeatMultiplier * UsedFuel.BaseHeat;}
-        public double HeatMultiplier { get => AdjacentModeratorLines + (UsedFuel.SelfPriming ? 1 : 0); }
+        public double HeatMultiplier { get => AdjacentModeratorLines; }
         public List<FuelCell> AdjacentCells { get; private set; }
         public List<Reflector> AdjacentReflectors { get; private set; }
         public List<Irradiator> AdjacentIrradiators { get; private set; }
@@ -29,7 +29,7 @@ namespace NC_Reactor_Planner
         {
             UsedFuel = usedFuel;
             Primed = primed || UsedFuel.SelfPriming;
-            NeutronSource = neutronSource;
+            NeutronSource = UsedFuel.SelfPriming ? "Self" : neutronSource;
             RevertToSetup();
         }
 
@@ -225,8 +225,8 @@ namespace NC_Reactor_Planner
 
         public void UnPrime()
         {
-            Primed = false;
-            NeutronSource = "None";
+            Primed = UsedFuel.SelfPriming;
+            NeutronSource = UsedFuel.SelfPriming ? "Self":  "None";
         }
 
         public void CyclePrimed()
@@ -257,7 +257,7 @@ namespace NC_Reactor_Planner
         private double CalculateEfficiency()
         {
             double eff = PositionalEfficiency * UsedFuel.BaseEfficiency * (1 / (1 + Math.Exp(2 * (ModeratedNeutronFlux - 2 * UsedFuel.CriticalityFactor))));
-            if(NeutronSource != "None")
+            if(NeutronSource != "None" && NeutronSource != "Self")
                 eff *= Configuration.NeutronSources[NeutronSource].Efficiency;
             return eff;
         }
