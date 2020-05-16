@@ -15,6 +15,7 @@ namespace NC_Reactor_Planner
         public int HeatPerTick { get => ModeratedNeutronFlux * HeatPerFlux; }
         public double EfficiencyMultiplier { get; set; }
         public override bool Valid { get => ModeratedNeutronFlux > 0; }
+        public override bool ReducesSparsity => Valid;
 
         public Irradiator(string displayName, Bitmap texture, Vector3 position, IrradiatorValues values) : base(displayName, BlockTypes.Irradiator, texture, position)
         {
@@ -42,10 +43,55 @@ namespace NC_Reactor_Planner
             SetCluster(-1);
         }
 
-        public void UpdateStats()
+        public void Update()
         {
-            if (!this.Valid)
-                Reactor.functionalBlocks--;
+            for (int p = 0; p < 6; p++)
+            {
+                Vector3 offset = Reactor.sixAdjOffsets[p];
+                WalkLineToValidSource(offset);
+            }
+        }
+
+        private void WalkLineToValidSource(Vector3 offset)
+        {
+            int i = 0;
+            int sumModeratorFlux = 0;
+            double sumModeratorEfficiency = 0;
+            int moderatorsInLine = 0;
+            while (++i <= Configuration.Fission.NeutronReach + 1)
+            {
+                Vector3 pos = Position + i * offset;
+                if (Reactor.PositionInsideInterior(pos))
+                {
+                    Block block = Reactor.BlockAt(pos);
+                    if (block is FuelCell fuelCell)
+                    {
+                        if (fuelCell.Active)
+                        {
+                            this.ModeratedNeutronFlux += sumModeratorFlux;
+                            fuelCell.PositionalEfficiency += sumModeratorEfficiency * EfficiencyMultiplier / moderatorsInLine;
+                        }
+                        return;
+                    }
+                    if (block is NeutronShield neutronShield)
+                    {
+                        if (neutronShield.Active)
+                            return;
+                        else
+                            continue;
+                    }
+                    if (block is Moderator moderator)
+                    {
+                        moderatorsInLine++;
+                        sumModeratorFlux += moderator.FluxFactor;
+                        sumModeratorEfficiency += moderator.EfficiencyFactor;
+                        continue;
+                    }
+
+                    return;
+
+                }
+            }
         }
 
         public override string GetToolTip()

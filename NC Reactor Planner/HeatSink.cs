@@ -16,6 +16,7 @@ namespace NC_Reactor_Planner
         public override bool Valid { get; protected set; }
         public List<Func<Vector3,List<string>,bool>> Validators { get => Palette.HeatSinkValidators[HeatSinkType]; }
         public List<string> Dependencies { get; private set; }
+        public override bool ReducesSparsity => Valid;
 
         public string HeatSinkType { get; private set; }
 
@@ -78,9 +79,6 @@ namespace NC_Reactor_Planner
             {
                 Valid = false;
             }
-
-            if (!Valid)
-                --Reactor.functionalBlocks;
             return Valid;
         }
 

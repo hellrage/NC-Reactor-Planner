@@ -14,6 +14,7 @@ namespace NC_Reactor_Planner
         public double EfficiencyFactor { get => Configuration.Moderators[ModeratorType].EfficiencyFactor; }
         public override bool Valid { get => Active & HasAdjacentValidFuelCell; }
         public bool HasAdjacentValidFuelCell { get; private set; }
+        public override bool ReducesSparsity { get => Active; }
 
         public Moderator(string displayName, string type, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Moderator, texture, position)
         {
@@ -33,43 +34,52 @@ namespace NC_Reactor_Planner
             HasAdjacentValidFuelCell = false;
         }
 
-        public void UpdateStats()
+        public void Update()
         {
+            // Determine whether this moderator is in a valid moderator line
+            // Checking pairs of opposite directions
             for(int p = 1; p < 5; p *= 2)
             {
                 Vector3 offset = Reactor.sixAdjOffsets[p];
                 Tuple<int, BlockTypes> toOffset = WalkLineToValidSource(offset);
                 Tuple<int, BlockTypes> oppositeOffset = WalkLineToValidSource(-offset);
-                if (toOffset.Item1 > 0 & oppositeOffset.Item1 > 0)
+                if (toOffset.Item1 > 0 && oppositeOffset.Item1 > 0
+                    && (toOffset.Item2 == BlockTypes.FuelCell || oppositeOffset.Item2 == BlockTypes.FuelCell))
                 {
+                    if (toOffset.Item2 == BlockTypes.Reflector || oppositeOffset.Item2 == BlockTypes.Reflector)
+                    {
+                        if (toOffset.Item1 + oppositeOffset.Item1 + 1 - 2 > Configuration.Fission.NeutronReach / 2)
+                            continue;
+                    }
+                    else if (toOffset.Item1 + oppositeOffset.Item1 + 1 - 2 > Configuration.Fission.NeutronReach)
+                        continue;
+
                     Active = true;
-                    if (toOffset.Item1 == 1 & toOffset.Item2 == BlockTypes.FuelCell || oppositeOffset.Item1 == 1 & oppositeOffset.Item2 == BlockTypes.FuelCell)
+                    if (toOffset.Item1 == 1 && toOffset.Item2 == BlockTypes.FuelCell
+                        || oppositeOffset.Item1 == 1 && oppositeOffset.Item2 == BlockTypes.FuelCell)
                     {
                         HasAdjacentValidFuelCell = true;
                         return;
                     }
                 }
             }
-            if (!Active)
-                --Reactor.functionalBlocks;
         }
 
-        public Tuple<int, BlockTypes> WalkLineToValidSource(Vector3 offset)
+        private Tuple<int, BlockTypes> WalkLineToValidSource(Vector3 offset)
         {
             int i = 0;
             while (++i <= Configuration.Fission.NeutronReach)
             {
                 Vector3 pos = Position + i * offset;
                 Block block = Reactor.BlockAt(pos);
-                if (Reactor.interiorDims.X >= pos.X & Reactor.interiorDims.Y >= pos.Y & Reactor.interiorDims.Z >= pos.Z & pos.X > 0 & pos.Y > 0 & pos.Z > 0 & i <= Configuration.Fission.NeutronReach)
+                if (Reactor.PositionInsideInterior(pos))
                 {
                     if (block.BlockType == BlockTypes.FuelCell && block.Valid)
                         return Tuple.Create(i, BlockTypes.FuelCell);
                     if (block.BlockType == BlockTypes.Irradiator && block.Valid)
                         return Tuple.Create(i, BlockTypes.Irradiator);
-                    if (block.BlockType == BlockTypes.Reflector)
-                        if(block.Valid & i < Configuration.Fission.NeutronReach / 2 + 1)
-                            return Tuple.Create(i, BlockTypes.Reflector);
+                    if (block.BlockType == BlockTypes.Reflector && block.Valid)
+                        return Tuple.Create(i, BlockTypes.Reflector);
                     if (block is NeutronShield neutronShield)
                     {
                         if (neutronShield.Active)
@@ -77,7 +87,7 @@ namespace NC_Reactor_Planner
                         else
                             continue;
                     }
-                    if (block.BlockType != BlockTypes.Moderator)
+                    if (block.BlockType != BlockTypes.NeutronShield && block.BlockType != BlockTypes.Moderator)
                         return Tuple.Create(-1, BlockTypes.Air);
                 }
                 else
@@ -93,12 +103,16 @@ namespace NC_Reactor_Planner
             result.AppendLine(" moderator");
             if (Position != Palette.dummyPosition)
             {
-                if(!Active)
+                if (!Active)
                     result.AppendLine($"--Inactive!");
-                if(Active)
+                else
+                {
                     result.AppendLine("In an active moderator line");
-                if(!HasAdjacentValidFuelCell)
-                    result.AppendLine("Cannot support any heatsinks");
+                    if (!HasAdjacentValidFuelCell)
+                        result.AppendLine("Cannot support any heatsinks");
+                    else
+                        result.AppendLine("Can support heatsinks");
+                }
             }
             result.AppendLine($"Flux Factor: {FluxFactor}");
             result.AppendLine($"Efficiency Factor: {EfficiencyFactor}");

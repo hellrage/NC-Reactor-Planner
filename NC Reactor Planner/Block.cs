@@ -14,6 +14,7 @@ namespace NC_Reactor_Planner
         public BlockTypes BlockType { get; private set; }
         public int Cluster { get; private set; }
         public virtual bool Valid { get { return true; } protected set { } }
+        public virtual bool ReducesSparsity { get => false; }
 
         public Block()
         {

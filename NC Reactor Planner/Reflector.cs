@@ -10,6 +10,7 @@ namespace NC_Reactor_Planner
     {
         public override bool Valid { get => Active; }
         public bool Active { get; set; }
+        public override bool ReducesSparsity => Active;
         public double ReflectivityMultiplier { get => Configuration.Reflectors[ReflectorType].ReflectivityMultiplier; }
         public double EfficiencyMultiplier { get => Configuration.Reflectors[ReflectorType].EfficiencyMultiplier; }
         public string ReflectorType { get; private set; }
@@ -31,12 +32,10 @@ namespace NC_Reactor_Planner
             Active = false;
         }
 
-        public void UpdateStats()
+        public void Update()
         {
             if (adjacentFuelCells.FindIndex(fuelCell => fuelCell.Valid) != -1)
                 Active = true;
-            else
-                --Reactor.functionalBlocks;
         }
 
         public void AddAdjacentFuelCell(FuelCell fuelCell)

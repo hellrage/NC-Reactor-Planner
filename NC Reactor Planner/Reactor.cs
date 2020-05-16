@@ -190,7 +190,11 @@ namespace NC_Reactor_Planner
         {
             RegenerateTypedLists();
             clusters = new List<Cluster>();
-            
+
+            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
+                foreach (Moderator moderator in moderators.Value)
+                    moderator.RevertToSetup();
+
             foreach (var heatSinkType in heatSinks)
                 foreach (HeatSink heatSink in heatSinkType.Value)
                     heatSink.RevertToSetup();
@@ -209,7 +213,7 @@ namespace NC_Reactor_Planner
             {
                 fuelCell.RevertToSetup();
                 if (fuelCell.Primed && !fuelCell.CanBePrimed())
-                    fuelCell.Primed = false;
+                    fuelCell.UnPrime();
             }
 
             foreach (var reflectorType in reflectors)
@@ -219,24 +223,26 @@ namespace NC_Reactor_Planner
             FormConductorGroups();
 
             RunFuelCellActivation();
+
+            foreach (var irradiator in irradiators)
+                irradiator.Update();
+
             foreach (FuelCell fuelCell in fuelCells)
                 fuelCell.FilterAdjacentStuff();
 
-            UpdateIrradiators();
-
             foreach (var reflectorType in reflectors)
                 foreach (Reflector reflector in reflectorType.Value)
-                    reflector.UpdateStats();
+                    reflector.Update();
 
-            foreach (KeyValuePair<string, List<Moderator>> moderators in moderators)
-                foreach (Moderator moderator in moderators.Value)
-                    moderator.RevertToSetup();
-
-            UpdateModerators();
+            foreach (var moderatorType in moderators)
+                foreach (Moderator moderator in moderatorType.Value)
+                    moderator.Update();
 
             OrderedUpdateHeatSinks();
 
-            UpdateNeutronShields();
+            foreach (var neutronShieldType in neutronShields)
+                foreach (NeutronShield neutronShield in neutronShieldType.Value)
+                    neutronShield.Update();
 
             FormClusters();
             foreach (Cluster cluster in clusters)
@@ -260,8 +266,6 @@ namespace NC_Reactor_Planner
             irradiators = new List<Irradiator>();
             neutronShields = new Dictionary<string, List<NeutronShield>>();
 
-            functionalBlocks = 0;
-
             foreach (Block block in blocks)
             {
                 if (block is HeatSink heatSink)
@@ -270,12 +274,10 @@ namespace NC_Reactor_Planner
                         heatSinks[heatSink.DisplayName].Add(heatSink);
                     else
                         heatSinks.Add(heatSink.DisplayName, new List<HeatSink> { heatSink });
-                    ++functionalBlocks;
                 }
                 else if (block is FuelCell fuelCell)
                 {
                     fuelCells.Add(fuelCell);
-                    ++functionalBlocks;
                 }
                 else if (block is Moderator moderator)
                 {
@@ -283,7 +285,6 @@ namespace NC_Reactor_Planner
                         moderators[moderator.DisplayName].Add(moderator);
                     else
                         moderators.Add(moderator.DisplayName, new List<Moderator> { moderator });
-                    ++functionalBlocks;
                 }
                 else if (block is Conductor conductor)
                     conductors.Add(conductor);
@@ -293,12 +294,10 @@ namespace NC_Reactor_Planner
                         reflectors[reflector.ReflectorType].Add(reflector);
                     else
                         reflectors.Add(reflector.ReflectorType, new List<Reflector> { reflector });
-                    ++functionalBlocks;
                 }
                 else if (block is Irradiator irradiator)
                 {
                     irradiators.Add(irradiator);
-                    ++functionalBlocks;
                 }
                 else if (block is NeutronShield neutronShield)
                 {
@@ -306,7 +305,6 @@ namespace NC_Reactor_Planner
                         neutronShields[neutronShield.NeutronShieldType].Add(neutronShield);
                     else
                         neutronShields.Add(neutronShield.NeutronShieldType, new List<NeutronShield> { neutronShield });
-                    ++functionalBlocks;
                 }
             }
         }
@@ -331,28 +329,6 @@ namespace NC_Reactor_Planner
                     }
                 }
             }
-        }
-
-        private static void UpdateModerators()
-        {
-            foreach (var moderatorType in moderators)
-                foreach (Moderator moderator in moderatorType.Value)
-                    moderator.UpdateStats();
-        }
-
-        private static void UpdateIrradiators()
-        {
-            foreach (var irradiator in irradiators)
-            {
-                irradiator.UpdateStats();
-            }
-        }
-
-        private static void UpdateNeutronShields()
-        {
-            foreach (var neutronShieldType in neutronShields)
-                foreach (NeutronShield neutronShield in neutronShieldType.Value)
-                    neutronShield.UpdateStats();
         }
 
         private static void FormClusters()
@@ -413,6 +389,11 @@ namespace NC_Reactor_Planner
                 if (FormCluster(irradiator, clusterID))
                     clusterID++;
             }
+
+            foreach (var neutronShieldType in neutronShields)
+                foreach (NeutronShield neutronShield in neutronShieldType.Value)
+                    if (!neutronShield.Active && FormCluster(neutronShield, clusterID))
+                        clusterID++;
         }
 
         public static void FormConductorGroups()
@@ -514,6 +495,8 @@ namespace NC_Reactor_Planner
 
             heatMultiplier = (activeFuelCells > 0) ? (sumHeatMultiplier / activeFuelCells) : 0;
 
+            functionalBlocks = CountFunctionalBlocks();
+
             double density = (double)functionalBlocks / (double)totalInteriorBlocks;
             double spt = Configuration.Fission.SparsityPenaltyThreshold;
             double mspm = Configuration.Fission.MaxSparsityPenaltyMultiplier;
@@ -528,6 +511,17 @@ namespace NC_Reactor_Planner
             efficiency = (activeFuelCells > 0) ? (sumEfficiency * sparsityPenalty / activeFuelCells) : 0;
             
             totalOutputPerTick *= sparsityPenalty;
+        }
+
+        private static int CountFunctionalBlocks()
+        {
+            int total = 0;
+            foreach (Block block in blocks)
+            {
+                if (block.ReducesSparsity)
+                    total++;
+            }
+            return total;
         }
 
         public static string GetStatString(bool includeClusterInfo = true)
@@ -1016,6 +1010,11 @@ namespace NC_Reactor_Planner
             }
             blocks = newBlocks;
             interiorDims = new Vector3(interiorX, interiorY, interiorZ);
+        }
+
+        public static bool PositionInsideInterior(Vector3 pos)
+        {
+            return (interiorDims.X >= pos.X && interiorDims.Y >= pos.Y && interiorDims.Z >= pos.Z && pos.X > 0 && pos.Y > 0 && pos.Z > 0);
         }
     }
 }
