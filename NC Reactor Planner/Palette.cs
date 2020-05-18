@@ -462,7 +462,10 @@ namespace NC_Reactor_Planner
                 case BlockTypes.Moderator:
                     return new Moderator((Moderator)selectedBlock, previousBlock.Position);
                 case BlockTypes.FuelCell:
-                    return new FuelCell((FuelCell)selectedBlock, previousBlock.Position, SelectedFuel);
+                    if(previousBlock.BlockType == BlockTypes.FuelCell)
+                        return new FuelCell((FuelCell)selectedBlock, previousBlock.Position, SelectedFuel, ((FuelCell)previousBlock).Primed);
+                    else
+                        return new FuelCell((FuelCell)selectedBlock, previousBlock.Position, SelectedFuel);
                 case BlockTypes.Conductor:
                     return new Conductor("Conductor", Textures["Conductor"], previousBlock.Position);
                 case BlockTypes.Reflector:

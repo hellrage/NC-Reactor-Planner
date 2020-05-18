@@ -29,8 +29,24 @@ namespace NC_Reactor_Planner
         public FuelCell(string displayName, Bitmap texture, Vector3 position, Fuel usedFuel, bool primed = false, string neutronSource = "None") : base(displayName, BlockTypes.FuelCell, texture, position)
         {
             UsedFuel = usedFuel;
-            Primed = primed || UsedFuel.SelfPriming;
-            NeutronSource = UsedFuel.SelfPriming ? "Self" : neutronSource;
+            if(UsedFuel.SelfPriming)
+            {
+                Primed = true;
+                NeutronSource = "Self";
+            }
+            else
+            {
+                if(neutronSource == "Self")
+                {
+                    NeutronSource = "None";
+                    Primed = false;
+                }
+                else
+                {
+                    Primed = primed;
+                    NeutronSource = neutronSource;
+                }
+            }
             RevertToSetup();
         }
 
