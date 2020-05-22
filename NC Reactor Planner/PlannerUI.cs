@@ -10,7 +10,7 @@ namespace NC_Reactor_Planner
 {
     public partial class PlannerUI : Form
     {
-        public static readonly List<string> OverlayedTypes = new List<string> { "Silver", "Iron", "Lithium", "Tin" };
+        public static readonly List<string> OverlayedTypes = new List<string> { "Silver", "Iron", "Lithium", "Tin", "Boron", "Quartz", "Arsenic" };
         public Panel ReactorGrid { get => reactorGrid; }
         public ScrollBar LayerScrollBar { get => layerScrollBar; }
         public decimal DrawingScale { get => imageScale.Value; }
