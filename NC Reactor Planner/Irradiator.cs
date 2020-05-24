@@ -66,7 +66,7 @@ namespace NC_Reactor_Planner
                     Block block = Reactor.BlockAt(pos);
                     if (block is FuelCell fuelCell)
                     {
-                        if (fuelCell.Active)
+                        if (fuelCell.Active && moderatorsInLine >= 1)
                         {
                             this.ModeratedNeutronFlux += sumModeratorFlux;
                             fuelCell.PositionalEfficiency += sumModeratorEfficiency * EfficiencyMultiplier / moderatorsInLine;
