@@ -64,7 +64,10 @@ namespace NC_Reactor_Planner
                     {
                         if (toOffset.Item1 + oppositeOffset.Item1 + 1 - 2 <= Configuration.Fission.NeutronReach / 2)
                         {
-                            ModeratedNeutronFlux += (int)((oppositeOffset.Item3 + toOffset.Item3) * (1 + ((Reflector)Reactor.BlockAt(Position + toOffset.Item1 * offset)).ReflectivityMultiplier));
+                            if (Reactor.BlockAt(Position + toOffset.Item1 * offset) is Reflector reflector)
+                                ModeratedNeutronFlux += (int)((oppositeOffset.Item3 + toOffset.Item3) * (1 + reflector.ReflectivityMultiplier));
+                            else if(Reactor.BlockAt(Position + oppositeOffset.Item1 * offset) is Reflector oppReflector)
+                                ModeratedNeutronFlux += (int)((oppositeOffset.Item3 + toOffset.Item3) * (1 + oppReflector.ReflectivityMultiplier));
                         }
                     }
                     else if (toOffset.Item1 + oppositeOffset.Item1 + 1 - 2 <= Configuration.Fission.NeutronReach)
