@@ -191,7 +191,7 @@ namespace NC_Reactor_Planner
                 nbt.Add(new NbtString("Name", "nuclearcraft:cell_block"));
             else if(bt == BlockTypes.Moderator)
             {
-                nbt.Add(new NbtCompound("Properties", new List<NbtString> { new NbtString("type", ((Moderator)block).ModeratorType.ToString().ToLower()) }));
+                nbt.Add(new NbtCompound("Properties", new List<NbtString> { new NbtString("type", ((Moderator)block).ModeratorType.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture)) }));
                 nbt.Add(new NbtString("Name", "nuclearcraft:ingot_block"));
             }
             else if(bt== BlockTypes.Cooler)
@@ -201,7 +201,7 @@ namespace NC_Reactor_Planner
                 else
                 {
                     nbt.Add(new NbtString("Name", "nuclearcraft:cooler"));
-                    nbt.Add(new NbtCompound("Properties", new List<NbtString> { new NbtString("type", ((Cooler)block).CoolerType.ToString().ToLower()) }));
+                    nbt.Add(new NbtCompound("Properties", new List<NbtString> { new NbtString("type", ((Cooler)block).CoolerType.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture)) }));
                 }
             }
 

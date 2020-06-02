@@ -24,13 +24,13 @@ namespace NC_Reactor_Planner
                     for (int x = 1; x <= Reactor.interiorDims.X;x++)
                     {
                         Block block = Reactor.blocks[x, y, z];
-                        string bt = block.BlockType.ToString().ToLower();
+                        string bt = block.BlockType.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture);
                         string ct;
                         if (bt == "cooler")
                         {
                             if (((Cooler)block).Active)
                                 continue;
-                            ct = ((Cooler)block).CoolerType.ToString().ToLower();
+                            ct = ((Cooler)block).CoolerType.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture);
                             if (!mapIntState.ContainsKey(ct))
                                 mapIntState.Add(ct, (mapIntState.Count>0)?(mapIntState.Values.Last() + 1):1);
                             stateInt.Add(mapIntState[ct]);
@@ -38,11 +38,11 @@ namespace NC_Reactor_Planner
                         }
                         else if (bt == "moderator")
                         {
-                            ct = ((Moderator)block).ModeratorType.ToString().ToLower();
+                            ct = ((Moderator)block).ModeratorType.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture);
                             if (!mapIntState.ContainsKey(ct))
                                 mapIntState.Add(ct, (mapIntState.Count > 0) ? (mapIntState.Values.Last() + 1) : 1);
                             stateInt.Add(mapIntState[ct]);
-                            preparedMapIntState.Add("{mapSlot:"+mapIntState[ct]+"s,mapState:{Properties:{type:\""+ct.ToString().ToLower()+"\"},Name:\"nuclearcraft:ingot_block\"}}");
+                            preparedMapIntState.Add("{mapSlot:"+mapIntState[ct]+"s,mapState:{Properties:{type:\""+ct.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture) +"\"},Name:\"nuclearcraft:ingot_block\"}}");
                         }
                         else
                         {

@@ -171,3 +171,6 @@
 	Added text format save-loading, rightclick the respective buttons to save the reactor to clipboard \ load from clipboard.
 	Fixed the palette not reloading its fuel list when reloading the configuration.
 	Enderium coolers now properly check for pancake reactor layouts.
+	
+02.06.2020 v1.2.25
+	Made BG and structure exports use an invariant locale, this fixes incorrect letter translation for cooler names.
