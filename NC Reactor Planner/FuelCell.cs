@@ -175,7 +175,7 @@ namespace NC_Reactor_Planner
                     pos = Position + offset * i;
                     continue;
                 }
-                else if (block is Irradiator irradiator)
+                else if (block is Irradiator irradiator && !AdjacentIrradiators.Contains(irradiator) && moderatorsInLine >= 1)
                 {
                     AdjacentIrradiators.Add(irradiator);
                     return null;
