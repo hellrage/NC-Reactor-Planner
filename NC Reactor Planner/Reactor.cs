@@ -360,7 +360,10 @@ namespace NC_Reactor_Planner
                         Block neighbour = BlockAt(pos);
                         if(neighbour is Conductor conductor)
                         {
-                                clusters[id].HasPathToCasing |= conductorGroups[conductor.GroupID].HasPathToCasing;
+                            clusters[id].HasPathToCasing |= conductorGroups[conductor.GroupID].HasPathToCasing;
+                            conductorGroups[conductor.GroupID].HasPathToCasing |= clusters[id].HasPathToCasing;
+                            if (neighbour.Cluster == -1)
+                                    queue.Add(neighbour);
                         }
                         else if (neighbour.BlockType == BlockTypes.Casing)
                         {

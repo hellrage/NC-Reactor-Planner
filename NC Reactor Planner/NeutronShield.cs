@@ -66,7 +66,7 @@ namespace NC_Reactor_Planner
                         {
                             if (Reactor.BlockAt(Position + toOffset.Item1 * offset) is Reflector reflector)
                                 ModeratedNeutronFlux += (int)((oppositeOffset.Item3 + toOffset.Item3) * (1 + reflector.ReflectivityMultiplier));
-                            else if(Reactor.BlockAt(Position + oppositeOffset.Item1 * offset) is Reflector oppReflector)
+                            else if(Reactor.BlockAt(Position - oppositeOffset.Item1 * offset) is Reflector oppReflector)
                                 ModeratedNeutronFlux += (int)((oppositeOffset.Item3 + toOffset.Item3) * (1 + oppReflector.ReflectivityMultiplier));
                         }
                     }

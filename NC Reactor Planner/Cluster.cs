@@ -82,10 +82,13 @@ namespace NC_Reactor_Planner
                         NeutronShield neutronShield = block as NeutronShield;
                         TotalHeatPerTick += neutronShield.HeatPerTick;
                         break;
+                    case BlockTypes.Conductor:
+                        Conductor conductor = block as Conductor;
+                        conductor.HasPathToCasing |= this.HasPathToCasing;
+                        break;
                     case BlockTypes.Moderator:
                     case BlockTypes.Air:
                     case BlockTypes.Casing:
-                    case BlockTypes.Conductor:
                     default:
                         throw new ArgumentException("Unexpected blockType in cluster: " + block.BlockType.ToString());
                 }

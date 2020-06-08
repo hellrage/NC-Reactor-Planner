@@ -210,7 +210,6 @@ namespace NC_Reactor_Planner
                 sf.LineAlignment = StringAlignment.Center;
                 sf.Alignment = StringAlignment.Center;
                 g.DrawString(block.DisplayName.Substring(0, 1), new Font(FontFamily.GenericSansSerif, (float)(Reactor.UI.BlockSize/2.7), FontStyle.Bold), Brushes.Black, cellRect, sf);
-                g.CompositingMode = CompositingMode.SourceCopy;
             }
 
             if (noChecking)
@@ -246,7 +245,7 @@ namespace NC_Reactor_Planner
                 if (moderator.Valid)
                     g.DrawRectangle(PlannerUI.ValidModeratorPen, location.X + ds, location.Y + ds, bs - 2 * ds, bs - 2 * ds);
             }
-            else if(block.BlockType == BlockTypes.HeatSink || block.BlockType == BlockTypes.Irradiator || block.BlockType == BlockTypes.NeutronShield)
+            else if(block.BlockType == BlockTypes.HeatSink || block.BlockType == BlockTypes.Irradiator || block.BlockType == BlockTypes.NeutronShield || block.BlockType == BlockTypes.Conductor)
             {
                 if(block.Cluster == -1)
                     g.DrawRectangle(PlannerUI.InactiveClusterPen, location.X + 2 * ds, location.Y + 2 * ds, bs - 4 * ds, bs - 4 * ds);

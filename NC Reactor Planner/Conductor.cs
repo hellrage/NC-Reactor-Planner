@@ -12,7 +12,7 @@ namespace NC_Reactor_Planner
     {
         public bool HasPathToCasing { get; set; }
         public int GroupID { get; set; }
-        public override bool Valid { get => HasPathToCasing; }
+        public bool Active { get => HasPathToCasing; }
 
         public Conductor(string displayName, Bitmap texture, Vector3 position) : base(displayName, BlockTypes.Conductor, texture, position)
         {
@@ -26,6 +26,7 @@ namespace NC_Reactor_Planner
 
         public override void RevertToSetup()
         {
+            SetCluster(-1);
             GroupID = -1;
             HasPathToCasing = false;
         }
@@ -37,11 +38,12 @@ namespace NC_Reactor_Planner
                     "Conducts heat from clusters,\r\n" +
                     "use these to make a path\r\n" +
                     "to a casing if a cluster isn't\r\n" +
-                    "touching one directly.";
+                    "touching one directly.\r\n" +
+                    "Connects clusters together.";
 
             return string.Format("Conductor \r\n" +
-                                "Group: " + GroupID.ToString() +"\r\n" +
-                                (HasPathToCasing?"Has path to casing":"--Has no path to casing!"));
+                                //"Group: " + GroupID.ToString() +"\r\n" +
+                                base.GetToolTip());
         }
 
         public override Block Copy(Vector3 newPosition)
