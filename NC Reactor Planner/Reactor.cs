@@ -8,6 +8,7 @@ using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Numerics;
+using System.Windows.Forms;
 
 namespace NC_Reactor_Planner
 {
@@ -484,7 +485,16 @@ namespace NC_Reactor_Planner
             CompressedSaveFile csf;
             JObject saveJSONObject = JObject.Parse(jsonText);
             Version v;
-            v = saveJSONObject["SaveVersion"].ToObject<Version>();
+            try
+            {
+                v = saveJSONObject["SaveVersion"].ToObject<Version>();
+            }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show($"Invalid JSON structure (missing SaveVersion). \r\nDid you accidentally load a config file?", "Load Reactor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             JsonSerializer js = new JsonSerializer();
 
             if (v.Major == 2)
