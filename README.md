@@ -1,3 +1,6 @@
+## Development is on a hiatus for now, please try the new planner by ThizThizzyDizzy: https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases
+It's a java app, has both pre- and overhaul mechanics, more drawing features and is in active development.
+
 # NC-Reactor-Planner
 An application for drawing and simulating NuclearCraft nuclear reactors. Find NuclearCraft at https://minecraft.curseforge.com/projects/nuclearcraft-mod
 
