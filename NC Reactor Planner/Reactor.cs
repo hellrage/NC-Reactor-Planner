@@ -1002,10 +1002,10 @@ namespace NC_Reactor_Planner
             for (int y = 1; y <= interiorY; y++)
             {
                 copyX = copyCorner.X;
-                for (int x = pasteCorner.X; x <= interiorX & copyX <= interiorX & copyX <= interiorDims.X; x++, copyX++)
+                for (int x = pasteCorner.X; x <= interiorX & copyX <= interiorDims.X; x++, copyX++)
                 {
                     copyZ = copyCorner.Y;
-                    for (int z = pasteCorner.Y; z <= interiorZ & copyZ <= interiorZ & copyZ <= interiorDims.Z; z++, copyZ++)
+                    for (int z = pasteCorner.Y; z <= interiorZ & copyZ <= interiorDims.Z; z++, copyZ++)
                     {
                         newBlocks[x, y, z] = blocks[copyX, y, copyZ].Copy(new Vector3(x,y,z));
                     }

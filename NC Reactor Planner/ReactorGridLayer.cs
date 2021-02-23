@@ -558,7 +558,7 @@ namespace NC_Reactor_Planner
                             MessageBox.Show("Can't remove the last blocks!");
                             return;
                         }
-                        Reactor.ModifySize(X -1, Y, Z, new Point(1, 1), new Point(1, 1));
+                        Reactor.ModifySize(X - 1, Y, Z, new Point(1, 1), new Point(1, 1));
                         break;
                     case "left":
                         if (X == 1)
