@@ -123,7 +123,11 @@ namespace NC_Reactor_Planner
 #if !DEBUG
             SetUpdateAvailableTextAsync();
 #endif
-            fuelSelector.Items.AddRange(Palette.FuelPalette.Values.ToArray());
+			fuelSelector.Sorted = false;
+			List<Fuel> fuels = new List<Fuel>();
+			fuels.AddRange(Palette.FuelPalette.Values.ToArray());
+			fuels.Sort();
+			fuelSelector.Items.AddRange(fuels.ToArray());
             coolantRecipeSelector.Items.AddRange(Configuration.CoolantRecipes.Keys.ToArray());
             UpdateStatsUIPosition();
 
